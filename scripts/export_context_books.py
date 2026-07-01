@@ -10,11 +10,13 @@ For every problem this does exactly what a full RMA pass does:
                                                   (``rma solve`` includes five
                                                   push-forwards by default; that
                                                   is the RMA_PUSHFORWARDS knob)
-    3. compile the context book PDF             → proofs + evaluations
-                                                  + meetings + issues
-    4. copy it out named
+    3. export four artifacts, all sharing one timestamped stem
+       <date>_<time>_<language>_<dataset>_<problem>_… :
 
-           <date>_<time>_<language>_<dataset>_<problem>.(pdf|md)
+           _report.tex   the full context report LaTeX (all parts)
+           _report.pdf   its PDF rendering (for humans)
+           _proof.tex    the best proof LaTeX
+           _proof.pdf    its PDF rendering
 
 Only datasets that carry a curated ``solve_set.json`` (the filtering system's
 10 valuable-unsolved problems) are processed, so "all datasets filtered, 10
@@ -105,53 +107,82 @@ def rma(*args: str) -> int:
     return subprocess.run(cmd, cwd=REPO).returncode
 
 
-def book_path(dataset: str, pid: str, ext: str) -> Path:
-    now = datetime.now()
+def _stem(dataset: str, pid: str, when: datetime) -> str:
     safe_ds  = re.sub(r"[^A-Za-z0-9_-]", "-", dataset)
     safe_pid = re.sub(r"[^A-Za-z0-9_-]", "-", pid)
-    stem = f"{now:%Y%m%d}_{now:%H%M%S}_{LANGUAGE}_{safe_ds}_{safe_pid}"
-    return OUTPUT / safe_ds / f"{stem}.{ext}"
+    return f"{when:%Y%m%d}_{when:%H%M%S}_{LANGUAGE}_{safe_ds}_{safe_pid}"
+
+
+def out_dir(dataset: str) -> Path:
+    return OUTPUT / re.sub(r"[^A-Za-z0-9_-]", "-", dataset)
 
 
 def already_done(dataset: str, pid: str) -> bool:
-    safe_ds  = re.sub(r"[^A-Za-z0-9_-]", "-", dataset)
-    safe_pid = re.sub(r"[^A-Za-z0-9_-]", "-", pid)
-    d = OUTPUT / safe_ds
+    """A problem is done once its four artifacts exist for this language."""
+    d = out_dir(dataset)
     if not d.is_dir():
         return False
-    pat = f"_{LANGUAGE}_{safe_ds}_{safe_pid}.pdf"
-    return any(p.name.endswith(pat) for p in d.glob("*.pdf"))
+    safe_ds  = re.sub(r"[^A-Za-z0-9_-]", "-", dataset)
+    safe_pid = re.sub(r"[^A-Za-z0-9_-]", "-", pid)
+    tail = f"_{LANGUAGE}_{safe_ds}_{safe_pid}_"
+    def _has(part: str, ext: str) -> bool:
+        return any(p.name.endswith(f"{part}.{ext}") and tail in p.name for p in d.glob("*"))
+    return _has("report", "pdf") and _has("report", "tex") \
+        and _has("proof", "pdf") and _has("proof", "tex")
 
 
 def export_book(dataset: str, pid: str) -> bool:
-    """Build the context-book PDF + markdown for one problem and copy them out."""
+    """Emit the four per-problem artifacts, all sharing one timestamped stem:
+
+        <stem>_report.tex   (1) the full context report LaTeX
+        <stem>_report.pdf   (3) its PDF rendering (for humans)
+        <stem>_proof.tex    (2) the best proof LaTeX
+        <stem>_proof.pdf    (4) its PDF rendering
+    """
     import shutil
-    from webapp.context_report import compile_report_pdf, build_problem_report
+    from webapp.context_report import compile_report_pdf
+    from webapp.proofs import get_best_proof, compile_best_pdf, _best_dir
 
-    # 1. context book PDF — proofs + evaluations + meetings + issues, one file.
+    when = datetime.now()
+    d = out_dir(dataset); d.mkdir(parents=True, exist_ok=True)
+    stem = _stem(dataset, pid, when)
+    got: list[str] = []
+
+    def _emit(src: Path, part: str, ext: str) -> None:
+        if src and src.is_file() and src.stat().st_size > 0:
+            shutil.copyfile(src, d / f"{stem}_{part}.{ext}")
+            got.append(f"{part}.{ext}")
+
+    def _write(text: str, part: str, ext: str) -> None:
+        if text and text.strip():
+            (d / f"{stem}_{part}.{ext}").write_text(text, encoding="utf-8")
+            got.append(f"{part}.{ext}")
+
+    # ── (1)+(3) report LaTeX + its PDF (proofs+evaluations+meetings+issues) ──
     res = compile_report_pdf(REPO, pid, dataset, force=True)
-    if not res.get("ok"):
-        log(f"  PDF build FAILED for {dataset}/{pid}: {res.get('log')}")
-        return False
     safe = re.sub(r"[^A-Za-z0-9_-]", "_", f"{pid}_{dataset}")
-    src = REPO / "documents" / "pdf" / f"report_{safe}.pdf"
-    dest = book_path(dataset, pid, "pdf")
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    if src.is_file():
-        shutil.copyfile(src, dest)
-        log(f"  ✅ book → {dest.relative_to(OUTPUT.parent)}")
+    pdf_dir = REPO / "documents" / "pdf"
+    if res.get("ok"):
+        _emit(pdf_dir / f"report_{safe}.pdf", "report", "pdf")
+        _emit(pdf_dir / f"report_{safe}.tex", "report", "tex")
     else:
-        log(f"  WARN: expected {src} missing")
-        return False
+        log(f"  WARN: report compile failed for {dataset}/{pid}: {res.get('log')}")
 
-    # 2. markdown twin (readable / greppable context book).
+    # ── (2)+(4) best proof LaTeX + its PDF ──
+    bp = get_best_proof(pid, dataset)
+    if bp and bp.get("solution_tex"):
+        _write(bp["solution_tex"], "proof", "tex")
+    else:
+        log(f"  WARN: no best proof yet for {dataset}/{pid}")
     try:
-        report = build_problem_report(REPO, pid, dataset, full=True)
-        md_dest = book_path(dataset, pid, "md")
-        md_dest.write_text(report.get("markdown", ""), encoding="utf-8")
+        if compile_best_pdf(pid, dataset):
+            _emit(_best_dir(dataset) / pid / "solution.pdf", "proof", "pdf")
     except Exception as exc:                                        # noqa: BLE001
-        log(f"  WARN: markdown twin failed for {dataset}/{pid}: {exc}")
-    return True
+        log(f"  WARN: best-proof PDF failed for {dataset}/{pid}: {exc}")
+
+    log(f"  → wrote {len(got)}/4 artifacts: {', '.join(got) or 'NONE'}  (stem={stem})")
+    # success = at least the two LaTeX sources landed (the point of the export)
+    return ("report.tex" in got) and ("proof.tex" in got)
 
 
 def main() -> int:
