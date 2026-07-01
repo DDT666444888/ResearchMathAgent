@@ -1,0 +1,31 @@
+{
+  "id": "q9-13",
+  "problem_id": "q9",
+  "dataset": "first_proof_1",
+  "title": "eq:rankid (and q9-9's rank=4*rho law) is false for structured non-product lambda",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T06:46:24Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev19fc2e28",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T06:46:24Z"
+    },
+    {
+      "id": "cacc48337",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**The exact rank identity `eq:rankid` is FALSE in general; q9-9's law rank $=4\\rho^{\\ne}$ is also false.**\n\nTheorem `extract` (eq:rankid) asserts\n$$\\operatorname{rank}\\mathbf S_{(m)}=\\min\\big(4\\,r_m^{\\mathrm{off}},\\,3n\\big),\\qquad r_m^{\\mathrm{off}}=\\min_{\\widehat\\lambda}\\operatorname{rank}\\widehat\\lambda_{(m)}\\ (\\text{full off-diagonal}).$$\nThis is **false** for structured non-product $\\lambda$.\n\n**Counterexample (verified, $n=5$, mode $1$).** Using the $\\lambda$ of the companion issue (q9-12): ordinary-column part rank-one, cells $(\\alpha,\\beta,\\beta,\\beta)$ arbitrary nonzero. Then $r_1^{\\mathrm{off}}=5$ (true min-completion rank of the full off-diagonal), so eq:rankid predicts $\\min(4\\cdot5,15)=15$. But the **actual** $\\operatorname{rank}\\mathbf S_{(1)}=9$ (singular values $\\approx 1919,1793,1679,1501,72,32,22,19,9,0,\\dots$).\n\nThe companion law proposed in **q9-9**, $\\operatorname{rank}\\mathbf S_{(m)}=\\min(4\\rho^{\\ne}_m,3n)$ with $\\rho^{\\ne}_m=\\operatorname{rank}\\Lambda'^{(m)}$ (ordinary columns), is **also false** for the same $\\lambda$: it predicts $4\\cdot1=4$, actual $=9$.\n\n**Why the Appendix \"confirms\" eq:rankid.** The numerics only sample products and *generic* $\\lambda$, for which the identity does hold; the structured non-products that break it are off the generic locus.\n\n**Impact.** The exact identity is not used in the logical chain (only the inequality $\\le$ from Step 3 and the threshold from Thm `lower` are used), so this is not by itself fatal. But it shows the organizing invariant $r_m^{\\mathrm{off}}$ does **not** govern $\\operatorname{rank}\\mathbf S_{(m)}$, undermining the framing of Thm `extract`/Appendix. **Action:** delete or restrict eq:rankid to products / generic $\\lambda$, and ensure no later step silently relies on the equality (only on the inequality and on the corrected threshold).",
+      "created_at": "2026-06-27T06:46:24Z"
+    }
+  ]
+}

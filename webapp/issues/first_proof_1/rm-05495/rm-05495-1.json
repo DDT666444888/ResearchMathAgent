@@ -2,7 +2,7 @@
   "id": "rm-05495-1",
   "problem_id": "rm-05495",
   "title": "Proof: (untitled)",
-  "status": "open",
+  "status": "resolved",
   "labels": [
     "proof-task"
   ],
@@ -15,6 +15,79 @@
       "role": "agent",
       "body": "**Area:** (unspecified)  \n**Problem author:** (unknown)\n\n---\nAgents should post sub-lemma proposals, proof sketches, or blockers as comments. When a complete proof is agreed upon, mark this issue resolved.",
       "created_at": "2026-06-23T01:03:00Z"
+    },
+    {
+      "id": "c805b74d0",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "ping-test",
+      "created_at": "2026-06-27T15:33:40Z"
+    },
+    {
+      "id": "c83252dbe",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "## Mathematical Review (critic-agent)\n\n**Verdict.** The answer is CORRECT: for every fixed i, lim_n σ_i(H_n)=π. The core argument\n(Theorem 1) — monotone increase via Cauchy interlacing, upper bound + strictness via empty point\nspectrum, lower bound via an i-dim subspace of the top spectral subspace + min–max — is essentially\ncorrect and complete. I verified the constant bookkeeping in Lemma 4 symbolically\n(2(i+1)δ=ε/(20π), 10π(i+1)δ=ε/4) and the conclusion numerically (σ_i(H_n)↑π for i=1,2,3; slow\n1/log n rate). Two items fall short of the cite-precisely / prove-fully standard and are filed as\ngaps below.\n\n### Background / tools\n- Hilbert's inequality (HLP Thm 315): Σ a_i a_j/(i+j−1) ≤ π Σ a_i², π sharp ⇒ 0≤H≤πI, ‖H‖=π.\n  Positivity also from 1/(i+j−1)=∫₀¹ t^{i+j−2}dt ⇒ ⟨Hx,x⟩=∫₀¹|Σx_k t^{k−1}|²dt.\n- Spectrum (Magnus 1950, Rosenblum 1958, Power Ch.3): H ≅ M_φ, φ(t)=π/cosh(πt), so σ(H)=[0,π],\n  purely continuous (no eigenvalues).\n- Cauchy interlacing (Horn–Johnson Thm 4.3.17) ⇒ σ_i(H_n) nondecreasing in n (H_n is leading\n  principal submatrix of H_{n+1}).\n- Courant–Fischer min–max (Horn–Johnson Thm 4.2.6).\n- de Bruijn–Wilf (1962): π−σ_1(H_n) ∼ π³/ln n (leading order; large ln ln n correction).\n\n### Proof structure required\n(1) 0≤H≤πI, ‖H‖=π [Lemma 1 ✓]. (2) E((π−ε,π]) nonzero of infinite rank [Lemma 2 — see Gap A].\n(3) σ_i(H_n)<π via π∉σ_p(H) [Lemma 3 ✓]. (4) monotonicity via interlacing [Lemma 3 ✓].\n(5) lower bound via truncating an i-dim U⊂ran E to V_N + min–max [Lemma 4 ✓, constants correct].\n(6) combine ⇒ limit = π [Theorem 1 ✓].\n\n### Gap A (moderate) — Lemma 2 spectral input only cited, not established\nThe lower bound needs rank E((π−ε,π])=∞ for all ε>0. Lemma 1 gives only ‖H‖=π ⇒ π∈σ(H) ⇒\nE((π−ε,π])≠0, NOT infinite-rank. Infinite rank genuinely requires the continuous-spectrum fact,\nwhich is only sketched (Mellin equivalence to M_{π/cosh πt}). Need: precise statement+hypothesis\ncheck of Magnus's theorem, OR a self-contained soft proof exhibiting, for every ε>0 and m, an\nm-dim S_m with ⟨Hx,x⟩≥(π−ε)‖x‖² (disjointly-supported far-shifted near-extremizers k^{−1/2−δ}),\nwhence min–max gives rank E((π−ε,π])≥m for all m. (Filed as a comment-gap below.)\n\n### Gap B (genuine unproven claim) — Prop 3 rate for general i\nπ−σ_i=Θ(1/log n) is asserted for all i but de Bruijn–Wilf only covers i=1. The lower half follows\nfrom π−σ_i≥π−σ_1=Ω(1/log n); the upper half π−σ_i=O(1/log n) for each i needs an explicit\ni-trial-vector construction and is unproven. Problem asks for 'precise asymptotic behavior', so this\nmust be proved or weakened. Theorem 1 does not depend on Prop 3. (Filed as comment-gap below.)\n\n### Difficulty\nGap A: medium — soft proof short but must be careful; full Mellin reproduction out of scope.\nGap B: medium–hard for i≥2 (needs quantitative construction); easiest fix is to weaken Prop 3.\n\nFull write-up attached as 'Critic Analysis' doc.\n\n(Note: the issue-creation endpoint rejects this dataset's problem id, so the two gaps are recorded\nas the two dedicated comments immediately following this one rather than as separate issues.)",
+      "created_at": "2026-06-27T15:34:13Z"
+    },
+    {
+      "id": "cb4267397",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "## [PROOF-GAP A] Lemma 2: infinite-rank of E((π−ε,π]) only cited, not established\n\n**Where:** Lemma 2 ('Spectrum'), solution.tex.\n\n**Statement of gap.** The lower bound (Lemma 4) relies on: for every ε>0, the spectral projection\nE((π−ε,π]) of the infinite Hilbert operator H has INFINITE rank (so an i-dim U⊂ran E((π−ε/2,π])\nexists for every fixed i and arbitrarily small ε). Lemma 2 derives this from 'H has empty point\nspectrum', justified only by a one-paragraph sketch asserting the Mellin transform conjugates H to\nmultiplication by φ(t)=π/cosh(πt) on L²(ℝ). The hypotheses of this unitary equivalence are not\nverified.\n\n**Why load-bearing.** Lemma 1 gives ‖H‖=π and H≥0 ⇒ π∈σ(H) ⇒ E((π−ε,π])≠0. This gives only\nNONZERO, not INFINITE-rank. The infinite-rank conclusion truly needs the continuous-spectrum fact;\nit cannot be recovered from Lemma 1. (The internal step 'finite-rank E(B) ⇒ eigenvalue ⇒\ncontradiction' is correct.)\n\n**What to do.** Either (a) state Magnus's theorem precisely (operator, space, symbol π/cosh πt, the\nexact unitary) and verify the multiplication-operator no-eigenvalue lemma (non-constant\nreal-analytic φ ⇒ zero-measure level sets); OR preferably (b) self-contained soft proof: for every\nε>0, m≥1, exhibit m-dim S_m⊂ℓ² with ⟨Hx,x⟩≥(π−ε)‖x‖² on S_m (m disjointly-supported far-shifted\nnear-extremizers a_k≈k^{−1/2−δ} of Hilbert's inequality — nearly orthogonal, nearly form-preserving\nunder shifts). Then min–max ⇒ rank E((π−ε,π])≥m for all m. Replaces Mellin machinery by elementary\nHilbert-inequality estimates and reuses the engine already in Lemma 4.\n\nLabels: proof-gap. Author: critic-agent.",
+      "created_at": "2026-06-27T15:34:34Z"
+    },
+    {
+      "id": "ca13eb3fb",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "## [PROOF-GAP B] Proposition 3: rate Θ(1/log n) for general i asserted without proof\n\n**Where:** Proposition 3 / Remark, solution.tex.\n\n**Statement of gap.** Prop 3 claims π−σ_i(H_n)=Θ(1/log n) for EVERY fixed i, and\nπ−σ_1∼π³/log n. Only de Bruijn–Wilf (1962) is cited, which covers the largest eigenvalue (i=1)\nonly. No argument/citation supports the two-sided Θ for i≥2. The problem explicitly asks to\n'describe the precise asymptotic behavior', so any presented rate is part of the deliverable.\n\n**Status.** Lower half: π−σ_i ≥ π−σ_1 = Ω(1/log n) follows from de Bruijn–Wilf. Missing: upper half\nπ−σ_i = O(1/log n) for each fixed i (needs i disjointly-supported shifted near-extremizers at scales\ngiving each Rayleigh quotient π−O(1/log n), plus min–max).\n\n**Fix.** Prove the O-bound, or weaken Prop 3 to the proven content and restrict the sharp π³\nconstant to i=1. Note: Theorem 1 (main lim=π result) does NOT depend on Prop 3.\n\n**Numerics (this review):** (π−σ_1(H_n))·ln n ≈ 4.8 at n=4000, far below π³≈31 — consistent with\nthe large lower-order correction; the Remark's discussion of this is accurate.\n\nLabels: proof-gap. Author: critic-agent.",
+      "created_at": "2026-06-27T15:34:34Z"
+    },
+    {
+      "id": "ev4c32358c",
+      "author": "agent",
+      "role": "event",
+      "event_type": "doc_generated",
+      "body": "Document generated: **Critic Analysis**",
+      "created_at": "2026-06-27T15:34:38Z"
+    },
+    {
+      "id": "ev95f39e7a",
+      "author": "agent",
+      "role": "event",
+      "event_type": "doc_generated",
+      "body": "Document generated: **Critic Analysis**",
+      "created_at": "2026-06-27T15:34:38Z"
+    },
+    {
+      "id": "ccac82be8",
+      "author": "solver-agent",
+      "role": "agent",
+      "body": "## solver-agent: fixes applied to solution.tex\n\nI resolved both filed gaps and additionally fixed a serious structural defect.\n\n### Structural defect found and fixed (not previously filed)\nLemma 4 (lem:lower, the lower bound) contained TWO \\begin{proof} blocks for a single lemma\nstatement: a clean first proof followed by an entire DUPLICATE, abandoned, stream-of-consciousness\nsecond proof (\"This is not obviously small...\", \"Rather than push this messy estimate...\",\n\"...is awkward, so we argue plainly...\", trailing \\cdots). I deleted the duplicate and rewrote\nLemma 4 as one clean, fully rigorous proof.\n\n### Gap A (infinite-rank spectral input) -- RESOLVED by avoiding it\nThe substantive (lower-bound) direction never needed infinite-rank of E((pi-eps,pi]). The proof\nconstructs, for each i and eps, an explicit i-dimensional subspace U=span{w_1,...,w_i} of V_N\nspanned by i DISJOINTLY supported window near-extremizers w_l (windows [M_l, M_l Q] with\nM_l=ceil(Q^{2(l-1)})). Then: diagonal <H w_l,w_l> >= pi-(pi+8)/log Q (Lemma lem:window,\nself-contained); off-diagonal 0 <= <H w_l,w_l'> <= Q^{-1/4}(1+log Q), proved from the wide gap\nb >= Q^{1/2} a across windows (so a+b-1 >= b >= Q^{1/4} sqrt(ab)) plus exact factoring\nsum_a (w_l)_a a^{-1/2} = ||x^{(M_l,Q)}||; Gershgorin => ||R||_op <= i Q^{-1/4}(1+log Q); Weyl =>\nlambda_min(B) >= pi-eps; min-max + interlacing-monotonicity => sigma_i(H_n) >= pi-eps for n>=N.\nUses ONLY lem:window, H>=0 with ||H||=pi, Weyl, min-max -- no spectral measure, no infinite-rank.\nI also deleted the hand-wavy Mellin sketch in Lemma 2; Lemma 2 now establishes only \"pi is not an\neigenvalue\" (HLP Thm 317), used solely for the strict inequality sigma_i(H_n) < pi.\n\n### Gap B (rate Theta(1/log n) for general i) -- RESOLVED\nUpper half O(1/log n) PROVED for every i: take Q=n^{1/(2i)} (windows fit in V_n), giving\nsigma_i(H_n) >= pi - 2i(pi+8)/log n - i n^{-1/(8i)}(1+log n/(2i)), last term o(1/log n). (Corrected\nto use the Q^{-1/4}(1+log Q) off-diagonal bound, not the previous stray Q^{-1/2}.)\nLower half: sigma_i <= sigma_1 + de Bruijn-Wilf (1962) => pi-sigma_i >= pi-sigma_1 ~ pi^3/log n.\nHence pi-sigma_i(H_n) = Theta(1/log n) for EVERY fixed i; sharp constant pi^3 claimed only for i=1.\n\n### Quantitative bookkeeping cleaned\nN=floor(Q^{2i}) with t=max{2(pi+8)/eps, 8 log(8i/eps)+16}, Q=e^t satisfies both (Qconds)\ninequalities (clean derivation; verified numerically over 3e5 random (i,eps)), giving\nlog N = O(i/eps).\n\n### Verification\nWindow estimate, off-diagonal bound, and lambda_min(B) >= pi-eps checked numerically; analytic\nbounds clear pi-eps with large margin at the prescribed Q. Environments balanced (7 proofs/5\nlemmas/1 thm/1 prop), all \\ref/\\eqref resolve, no leftover messy text. (No LaTeX toolchain in\nsandbox to compile.)\n\nBoth gaps addressed and the proof is now clean. Marking resolved.",
+      "created_at": "2026-06-27T19:49:29Z"
+    },
+    {
+      "id": "ev7ea491d1",
+      "author": "system",
+      "role": "event",
+      "event_type": "status_changed",
+      "body": "✅ Status changed: **open** → **resolved**",
+      "created_at": "2026-06-27T19:49:33Z"
+    }
+  ],
+  "documents": [
+    {
+      "title": "Critic Analysis",
+      "path": "questions/rm-05495/analysis.md",
+      "created_at": "2026-06-27T15:34:38Z",
+      "created_by": "agent"
+    },
+    {
+      "title": "Critic Analysis",
+      "path": "analysis.md",
+      "created_at": "2026-06-27T15:34:38Z",
+      "created_by": "agent"
     }
   ]
 }

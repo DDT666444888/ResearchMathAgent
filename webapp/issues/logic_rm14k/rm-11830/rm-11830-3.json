@@ -1,0 +1,31 @@
+{
+  "id": "rm-11830-3",
+  "problem_id": "rm-11830",
+  "dataset": "logic_rm14k",
+  "title": "G2: Completeness — non-SN(R/S) implies an infinite relative chain",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T01:40:28Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "eve4bb2ba0",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T01:40:28Z"
+    },
+    {
+      "id": "c3154dbeb",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Direction:** $\\neg\\mathrm{SN}(R/S)\\Rightarrow$ exists infinite relative chain (contrapositive of task (1)'s $\\Leftarrow$).\n\nUse the characterization: $\\neg\\mathrm{SN}(R/S)$ iff there is an infinite $\\to_{R\\cup S}$ derivation with infinitely many $\\to_R$-steps. Must extract from it an infinite relative chain over $\\mathrm{DP}_{\\mathrm{rel}}(R,S)$.\n\n**Why nontrivial / what must be proved:**\n- Classical proof picks a *minimal* non-terminating term and follows root reductions. Here \"minimal\" must be w.r.t. $R/S$; define it and prove existence.\n- Each marked $R$-step at the root produces the next pair; the interleaved $\\to_S$ steps below the marked position must be absorbed into the chain's connection relation $\\to_{R\\cup S}^{*}$.\n- **Key obstacle:** since $S$ need not terminate, $\\to_S$ activity between two consecutive root-$R$-steps can be unbounded; show this does not obstruct the extraction (the connection relation tolerates arbitrarily long $\\to_S^*$ segments).\n- Handle that $\\to_R$-steps may occur strictly below the marked position too; argue that infinitely many *root-level* marked $R$-steps can still be extracted (use minimality / pigeonhole).\n\nDeliver a full proof, no \"standard argument\" shortcuts.",
+      "created_at": "2026-06-28T01:40:28Z"
+    }
+  ]
+}

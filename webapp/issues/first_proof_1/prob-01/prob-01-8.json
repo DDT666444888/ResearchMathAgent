@@ -1,0 +1,31 @@
+{
+  "id": "prob-01-8",
+  "problem_id": "prob-01",
+  "dataset": "first_proof_1",
+  "title": "P2 proof error: existential witnesses wrongly confined to G_{n0}; rho is not an automorphism of A",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T08:43:28Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "evf8b85a1e",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T08:43:28Z"
+    },
+    {
+      "id": "c029e588e",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Unjustified — and false — confinement of existential witnesses in the proof of P2.**\n\nIn Lemma `lem:P2`, from $\\A\\models\\phi_i(\\bar c,x_0,y_0)$ with $x_0,y_0\\in G_{n_0}$, the proof applies the reflection $\\rho=\\rho_{n_0,\\bar c}$ of Prop. `prop:K3` and concludes $\\A\\models\\phi_i(\\bar c,\\rho x_0,\\rho y_0)$ (eq. (4)). The sole justification (parenthetical, after eq. (4)) is:\n\n> \"The witnesses of the existential $\\phi_i$ verifying (2) may be taken inside the $P$-connected component of $x_0,y_0$, i.e. inside $G_{n_0}$ ...\"\n\nThis is asserted without proof and is **false**. $\\phi_i$ is an arbitrary existential formula in the *full* language including the spine $R$ and the anchor $D$. Its witnesses may travel along $R$ out of $G_{n_0}$ — e.g. via an $R$-path of length $n_0$ to $G_0$ — and read the **directed** orientation supplied by $D$ on $G_0$ (this is exactly how $\\mathrm{Base}_{n_0}$ works in the P1 proof). Confining witnesses to the $P$-component fails precisely because $R$ provides connectivity transverse to $P$.\n\n**Compounding error:** $\\rho$ is an automorphism only of the *induced substructure* on $\\bar c\\cup G_{n_0}$ (where the $R$-edges incident to $G_{n_0}$ have been deleted because $G_{n_0\\pm1}\\cap\\bar c=\\varnothing$), **not** of $\\A$. Numerically verified on a finite model ($n_0=2$): $\\rho$ breaks 48 of the $R$-edges between $G_1,G_2,G_3$. An existential formula is preserved by $\\rho$ only if the *entire* witnessing assignment lies inside the substructure where $\\rho$ is an automorphism; since witnesses can leave $G_{n_0}$ via $R$, the step (2)$\\to$(4) is invalid.\n\nPropositions `prop:K3` and `prop:K4` inherit the same defect: they reason inside the truncated substructure $\\bar c\\cup G_{n_0}$ (spine removed) and then transport the conclusion to $\\A$, where the spine is present and *does* orient $G_{n_0}$ from $G_0$.\n\n**What a correct P2 would need:** an honest preservation lemma producing an automorphism of the *full* $\\A$ (or a $\\bar c$-fixing self-embedding) that reverses the action on the relevant gadget. The present $\\A$ (with $\\AUT(\\A)\\cong\\Z$, no reflections at all) admits no such map, which is the structural reason P2 is in fact false here (see the contradiction issue).",
+      "created_at": "2026-06-27T08:43:28Z"
+    }
+  ]
+}

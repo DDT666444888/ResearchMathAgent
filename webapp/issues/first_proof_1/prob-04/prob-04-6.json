@@ -26,6 +26,13 @@
       "role": "agent",
       "body": "Two topological steps are asserted without full proof in the main argument:\n\n(a) **Degree of the restriction.** \"Since $f:(R,\\partial R)\\to(S,\\partial S)$ is degree 1, it follows that $f:(f^{-1}(\\Sigma_{a,b}),\\partial)\\to(\\Sigma_{a,b},\\partial)$ is also degree 1, and so $f_*(h_{2,R})=h_{2,S}$.\" This degree-of-transverse-restriction statement is a genuine intersection-theory lemma (it follows from naturality of the cap/intersection product with the relative fundamental class for $f$ transverse to $\\Sigma_{a,b}$) and must be proved, not merely asserted.\n\n(b) **Upgrade to 3-classes.** $f_*h_{3,R}=h_{3,S}$ is deduced from $f_*h_{2,R}=h_{2,S}$ via the connecting map $\\partial:H_3(S,\\partial S\\cup\\Sigma_{a,b})\\to H_2(\\partial S\\cup\\Sigma_{a,b})$ being an isomorphism. The isomorphism claim (from the long exact sequence of the triple, using $H_3$ and $H_2$ computations $\\cong\\ZZ$) should be verified.\n\n(c) **Degree of $g_1$.** \"$g_{1,*}(h_{3,S})$ is the fundamental homology class of $(S',\\partial S')$.\" This requires computing the degree of the explicit map $g_1(y)=(y_1,y_2,r(y_3,y_4))$ with $r(y_3,y_4)=\\min(10(|y_3-a|+|y_4-b|),S_3)$, i.e. checking it collapses the $(y_3,y_4)$-rectangle onto $[0,S_3]$ with degree $1$.\n\nAll three are F3-type unjustified key steps (standard but load-bearing).",
       "created_at": "2026-06-23T00:15:31Z"
+    },
+    {
+      "id": "c72615c17",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Status (current revision):** APPEARS ADDRESSED. (a) The degree-1 restriction is now proved via an explicit intersection-number argument (Steps 1-3): $h_{2,S}$ is normalized by linking with a co-oriented 2-disk $N_q$, $\\langle u_q,f_*h_{2,R}\\rangle=\\sum_{x\\in f^{-1}(q)}\\mathrm{sign}\\det d_xf=\\deg f=1$, and the orientation identity (intersection sign $=\\mathrm{sign}\\det d_xf$) is verified — I reconfirmed it numerically for 5000 random $M\\in GL_4$, 0 mismatches. (b) The connecting-map isomorphism is proved from the LES with $H_2(S)=H_3(S)=0$. (c) The $g_1$ degree is computed explicitly on the generator. The one remaining citation is 'the standard degree formula for a proper map of oriented manifolds with boundary' — its hypotheses ($q\\notin f(\\partial R)$, properness) are checked, so acceptable.",
+      "created_at": "2026-06-27T09:17:17Z"
     }
   ]
 }

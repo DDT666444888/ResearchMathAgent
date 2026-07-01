@@ -1,0 +1,646 @@
+\documentclass{amsart}
+\usepackage{amsmath,amssymb,amsthm,hyperref,mathtools}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{remark}{Remark}
+\newtheorem{example}{Example}
+
+\DeclareMathOperator{\uce}{uce}
+\DeclareMathOperator{\HC}{HC}
+\DeclareMathOperator{\im}{im}
+\DeclareMathOperator{\Hom}{Hom}
+\DeclareMathOperator{\id}{id}
+\DeclareMathOperator{\Aut}{Aut}
+\newcommand{\g}{\mathfrak{g}}
+\newcommand{\h}{\mathfrak{h}}
+\newcommand{\nn}{\mathfrak{n}}
+\newcommand{\sw}{\mathfrak{sl}}
+\newcommand{\Om}{\Omega}
+\newcommand{\Gm}{\Gamma}
+\newcommand{\ra}{\rightarrow}
+
+\begin{document}
+
+\title{Universal central extensions of equivariant map algebras}
+\maketitle
+
+Throughout, $k$ is a field of characteristic $0$, $\g$ is a finite-dimensional
+Lie algebra over $k$, $A$ is a unital commutative associative $k$-algebra, and
+$\Gm$ is a finite group acting by Lie algebra automorphisms on $\g$ and by algebra
+automorphisms on $A$. We let $\Gm$ act diagonally on the current algebra
+$L:=\g\ot A$, and set
+\[
+   M=L^{\Gm}=(\g\ot A)^{\Gm}=\{u\in\g\ot A:\gamma\cdot u=u\ \text{for all }\gamma\in\Gm\}.
+\]
+We assume $M$ is perfect.  All tensor products, $\Hom$'s, exterior and symmetric
+powers are over $k$ unless decorated otherwise.
+
+Because $\operatorname{char}k=0$ and $\Gm$ is finite, the averaging idempotent
+\[
+   e=\frac{1}{|\Gm|}\sum_{\gamma\in\Gm}\gamma\in k[\Gm]
+\]
+acts on every $k[\Gm]$-module $V$ as a projector with image $V^{\Gm}$, giving a
+canonical $\Gm$-stable decomposition $V=V^{\Gm}\oplus(1-e)V$.  Hence the functor
+$(-)^{\Gm}$ is \emph{exact} on $k[\Gm]$-modules (it is the direct summand $e$ of
+the identity functor), and $e$ commutes with every $\Gm$-equivariant linear map.
+We use these two facts constantly.
+
+\paragraph{Summary of results.}  Part (a) is settled completely and unconditionally
+(Theorem~\ref{thm:partA}): $\uce(M)=\Lambda^2M/J_M$ with centre $H_2(M)$.  For part
+(b) we prove (Proposition~\ref{prop:snake}) that the natural comparison map $\Phi$
+is an isomorphism \emph{iff} an explicit linear map
+$\phi\colon H_2(M)\to H_2(\g\ot A)^{\Gm}$ is.  We then determine $\phi$.  When the
+isotypic complement $\nn=(1-e)L$ is a Lie ideal we compute $\phi$ exactly: it is
+always injective, with $\operatorname{coker}\phi\cong H_2(\nn)^{\Gm}$, hence an
+isomorphism \emph{iff} $H_2(\nn)^{\Gm}=0$ (Theorem~\ref{thm:partB}(2)).  For $\g$
+semisimple, $\phi$ is an isomorphism for every finite $\Gm$ and every $A$ with $M$
+perfect (Theorem~\ref{thm:partB}(4); this is the theorem of Neher--Savage, whose
+hypotheses we verify and whose mechanism we describe through an explicit
+$\Gm$-invariant Killing contraction, Lemma~\ref{lem:kappa}).  Finally,
+$\phi$ can fail to be surjective when $\g$ is merely perfect with $H_2(\g)\ne0$;
+we give a completely explicit verified counterexample (Theorem~\ref{thm:partB}(5),
+Example~\ref{ex:fail}).
+
+\bigskip
+\section{Universal central extensions: the machinery}
+
+\begin{definition}\label{def:uce}
+For a Lie algebra $L$ over $k$, a \emph{central extension} is a surjective Lie
+homomorphism $\pi\colon \widehat L\ra L$ with $\ker\pi\subseteq Z(\widehat L)$. It
+is \emph{universal} if for every central extension $\pi'\colon E\ra L$ there is a
+unique Lie homomorphism $\varphi\colon\widehat L\ra E$ with
+$\pi'\circ\varphi=\pi$.
+\end{definition}
+
+\begin{theorem}[Garland--Kassel]\label{thm:uce-exists}
+Let $L$ be a perfect Lie algebra over $k$.  Put
+\[
+   \uce(L)=\Lambda^2L/J,\quad
+   J=\operatorname{span}_k\{[x,y]\wedge z+[y,z]\wedge x+[z,x]\wedge y:x,y,z\in L\},
+\]
+write $\langle x,y\rangle$ for the image of $x\wedge y$, define the bracket
+$[\langle x,y\rangle,\langle u,v\rangle]=\langle[x,y],[u,v]\rangle$ and the map
+$\pi\colon\uce(L)\ra L$, $\langle x,y\rangle\mapsto[x,y]$.  Then $\pi$ is the
+universal central extension of $L$, the algebra $\uce(L)$ is perfect, and
+\[
+   \ker\pi=Z(\uce(L))\cong H_2(L):=H_2(L;k),
+\]
+the second Chevalley--Eilenberg homology with trivial coefficients.  Concretely,
+with the boundary maps
+\[
+   \Lambda^3L\xrightarrow{d_3}\Lambda^2L\xrightarrow{d_2}L,\quad
+   d_2(x\wedge y)=[x,y],\
+   d_3(x\wedge y\wedge z)=[x,y]\wedge z-[x,z]\wedge y+[y,z]\wedge x,
+\]
+one has $H_2(L)=\ker d_2/\im d_3=\ker d_2/J$, equal to $\ker\pi\subseteq\Lambda^2L/J$.
+\end{theorem}
+
+\begin{proof}
+Classical (Weibel, \emph{Introduction to Homological Algebra}, \S7.9;
+Kassel--Loday, \emph{Ann. Inst. Fourier} 32 (1982); Garland, \emph{Publ. IH\'ES} 52
+(1980)).  We record the points used.
+
+\emph{Bracket well defined.}  The bilinear map
+$(x\wedge y,u\wedge v)\mapsto[x,y]\wedge[u,v]$ on $\Lambda^2L$ kills $J$ in each
+slot: for $j=[x,y]\wedge z+[y,z]\wedge x+[z,x]\wedge y$,
+\[
+   [j,u\wedge v]\mapsto\bigl([[x,y],z]+[[y,z],x]+[[z,x],y]\bigr)\wedge[u,v]=0
+\]
+by the Jacobi identity, and symmetrically; Jacobi for $\uce(L)$ reduces to Jacobi
+for $L$.
+
+\emph{$\pi$ central, $\uce(L)$ perfect.}  $\pi$ is a surjective homomorphism since
+$L=[L,L]$; if $[x,y]=0$ then $[\langle x,y\rangle,\langle u,v\rangle]=
+\langle0,[u,v]\rangle=0$, so $\ker\pi$ is central.  A generator $\langle
+x,y\rangle$ with $y=\sum_i[c_i,d_i]$ equals $\sum_i[\langle x,c_i\rangle,\langle
+e_i,f_i\rangle]$ ($[e_i,f_i]=d_i$), so $\uce(L)=[\uce(L),\uce(L)]$.
+
+\emph{Universality.}  For a central extension $\pi'\colon E\ra L$ with $k$-linear
+section $s$, set $\varphi\langle x,y\rangle=[s(x),s(y)]$; centrality of $\ker\pi'$
+makes this independent of $s$ and kills $J$, giving a Lie homomorphism with
+$\pi'\varphi=\pi$.  Two lifts of $\pi$ differ by a central map vanishing on
+$\uce(L)=[\uce(L),\uce(L)]$, hence coincide.
+
+\emph{Homology.}  For a perfect central extension, $Z(\widehat L)=\ker\pi$, and
+$\ker\pi=\ker d_2/\im d_3=H_2(L)$ by the displayed Chevalley--Eilenberg complex.
+\end{proof}
+
+\begin{corollary}[Functoriality and induced group actions]\label{cor:funct}
+$\uce$ is a functor on perfect Lie algebras: $f\colon L\ra L'$ induces the unique
+lift $\uce(f)\colon\uce(L)\ra\uce(L')$,
+$\langle x,y\rangle\mapsto\langle f(x),f(y)\rangle$, with
+$\pi'\circ\uce(f)=f\circ\pi$.  A $\Gm$-action on $L$ by automorphisms therefore
+lifts to the action $\gamma\cdot\langle x,y\rangle=\langle\gamma x,\gamma
+y\rangle$ on $\uce(L)$, and $\pi$ is $\Gm$-equivariant; this is the unique lift
+through $\pi$, settling the lifting assertion of part (b).
+\end{corollary}
+\begin{proof}
+$\langle x,y\rangle\mapsto\langle f(x),f(y)\rangle$ kills $J$ and respects
+brackets; uniqueness follows as in Theorem~\ref{thm:uce-exists}.  Functoriality is
+immediate from the generator formula, so a group action lifts to a group action.
+Equivariance: $\pi(\gamma\langle x,y\rangle)=[\gamma x,\gamma y]=\gamma[x,y]$.
+\end{proof}
+
+\section{The comparison map and its homological control}
+
+\begin{lemma}[The two central extensions of $M$]\label{lem:two-ext}
+The $\Gm$-equivariant projection $\pi\colon\uce(L)\ra L$ restricts to a central
+extension
+$\pi^{\Gm}\colon \uce(L)^{\Gm}\ra M=L^{\Gm}$, with
+$\ker\pi^{\Gm}=(\ker\pi)^{\Gm}=H_2(L)^{\Gm}$ central in $\uce(L)^{\Gm}$.  As $M$ is
+perfect, the universal property of $\uce(M)$ supplies a unique Lie homomorphism
+\[
+   \Phi\colon\uce(M)\longrightarrow\uce(L)^{\Gm},\qquad \pi^{\Gm}\circ\Phi=\pi_M,
+\]
+given on generators by $\Phi\langle x,y\rangle=\langle x,y\rangle$ ($x,y\in M$).
+This is the natural comparison map of the problem.
+\end{lemma}
+\begin{proof}
+$\Gm$-equivariance (Corollary~\ref{cor:funct}) and exactness of $(-)^{\Gm}$ give
+surjectivity of $\pi^{\Gm}$: for $w\in M$ pick $\widetilde w$ with
+$\pi\widetilde w=w$; then $e\widetilde w\in\uce(L)^{\Gm}$ and
+$\pi(e\widetilde w)=ew=w$.  $\ker\pi^{\Gm}=\ker\pi\cap\uce(L)^{\Gm}=
+(\ker\pi)^{\Gm}=H_2(L)^{\Gm}$ by exactness of $e$, central because
+$\ker\pi=Z(\uce(L))$.  Thus $\pi^{\Gm}$ is a central extension of $M$; $\Phi$
+exists and is unique by Theorem~\ref{thm:uce-exists}, and the generator formula
+defines a lift of $\pi_M$, hence equals $\Phi$.
+\end{proof}
+
+\begin{lemma}[The invariant subcomplex computes invariant homology]
+\label{lem:invariant-complex}
+For any $\Gm$-Lie algebra $L$ ($\Gm$ finite, $\operatorname{char}k=0$), the
+Chevalley--Eilenberg complex $C_\bullet(L)=\Lambda^\bullet L$ is a complex of
+$k[\Gm]$-modules, $e$ is a chain map, and
+$H_n\bigl(C_\bullet(L)^{\Gm}\bigr)\cong H_n(L)^{\Gm}$ for all $n$.
+\end{lemma}
+\begin{proof}
+$\Gm$ acts functorially on $\Lambda^\bullet L$ and commutes with $d$ (built from
+the $\Gm$-equivariant bracket), so $e$ is a chain map and $C_\bullet(L)=
+C_\bullet(L)^{\Gm}\oplus(1-e)C_\bullet(L)$ as complexes.  Since $e$ is an exact
+projector commuting with $d$,
+\[
+   H_n(C_\bullet(L)^{\Gm})=\frac{e\ker d}{e\im d}=e\,\frac{\ker d}{\im d}
+   =H_n(L)^{\Gm}.\qedhere
+\]
+\end{proof}
+
+\begin{proposition}[$\Phi$ is controlled by an explicit homology map]
+\label{prop:snake}
+Let $\phi:=\Phi|_{H_2(M)}\colon H_2(M)\ra H_2(L)^{\Gm}$ (it lands in
+$\ker\pi^{\Gm}=H_2(L)^{\Gm}$ since $\pi^{\Gm}\Phi=\pi_M$).  Then:
+\begin{enumerate}
+\item[(a)] $\ker\Phi\cong\ker\phi$ and $\operatorname{coker}\Phi\cong
+\operatorname{coker}\phi$; in particular $\Phi$ is injective (resp.\ surjective,
+resp.\ iso) iff $\phi$ is.
+\item[(b)] $\phi$ is the map on $H_2$ induced by the chain inclusion
+\[
+   C_\bullet(M)=\Lambda^\bullet(L^{\Gm})\ \hookrightarrow\ (\Lambda^\bullet L)^{\Gm}
+   =C_\bullet(L)^{\Gm},
+\]
+followed by the identification $H_2(C_\bullet(L)^{\Gm})=H_2(L)^{\Gm}$ of
+Lemma~\ref{lem:invariant-complex}.
+\end{enumerate}
+\end{proposition}
+\begin{proof}
+(a) By Lemma~\ref{lem:two-ext} there is a commutative diagram of short exact
+sequences with identity on the right:
+\[
+\begin{array}{ccccccccc}
+0 &\!\!\ra\!\!& H_2(M) &\!\!\ra\!\!& \uce(M) &\!\!\xrightarrow{\pi_M}\!\!& M &\!\!\ra\!\!& 0\\[2pt]
+  &   & \big\downarrow{\scriptstyle\phi} & & \big\downarrow{\scriptstyle\Phi} & & \big\|\ & & \\[2pt]
+0 &\!\!\ra\!\!& H_2(L)^{\Gm} &\!\!\ra\!\!& \uce(L)^{\Gm} &\!\!\xrightarrow{\pi^{\Gm}}\!\!& M &\!\!\ra\!\!& 0.
+\end{array}
+\]
+The snake lemma (right map an isomorphism) gives
+$0\ra\ker\phi\ra\ker\Phi\ra0\ra\operatorname{coker}\phi\ra
+\operatorname{coker}\Phi\ra0$, so $\ker\Phi\cong\ker\phi$ and
+$\operatorname{coker}\Phi\cong\operatorname{coker}\phi$.
+
+(b) $\Phi\langle x,y\rangle=\langle x,y\rangle$ ($x,y\in M$) is induced by
+$\Lambda^2M\hookrightarrow\Lambda^2L$ on bracket-kernels modulo the $J$'s; on
+homology this is exactly the map induced by $\Lambda^\bullet M\hookrightarrow
+(\Lambda^\bullet L)^{\Gm}$ composed with Lemma~\ref{lem:invariant-complex} (the
+image is $\Gm$-invariant since elements of $M$ are fixed).
+\end{proof}
+
+Thus the whole of part (b) is the single explicit map
+\begin{equation}\label{eq:phi}
+   \phi\colon\ H_2\bigl(\Lambda^\bullet(L^{\Gm})\bigr)\ \longrightarrow\
+   H_2\bigl((\Lambda^\bullet L)^{\Gm}\bigr)=H_2(L)^{\Gm},
+\end{equation}
+induced by $\Lambda^\bullet(L^{\Gm})\hookrightarrow(\Lambda^\bullet L)^{\Gm}$.
+The source uses exterior powers of fixed points; the target uses fixed points of
+exterior powers.
+
+\section{Part (a): central extensions of $M$ and $\uce(M)$}
+
+\begin{theorem}[Answer to (a); unconditional]\label{thm:partA}
+Let $M=(\g\ot A)^{\Gm}$ be perfect.
+\begin{enumerate}
+\item[(i)] The universal central extension is
+\[
+   \uce(M)=\Lambda^2M/J_M,\quad
+   J_M=\operatorname{span}_k\{[x,y]\wedge z+[y,z]\wedge x+[z,x]\wedge y:x,y,z\in M\},
+\]
+with $[\langle x,y\rangle,\langle u,v\rangle]=\langle[x,y],[u,v]\rangle$ and
+$\pi_M\langle x,y\rangle=[x,y]$; its centre equals its kernel,
+\[
+   Z(\uce(M))=\ker\pi_M\cong H_2(M)=H_2\bigl((\g\ot A)^{\Gm}\bigr),
+\]
+the middle homology of $\Lambda^3M\xrightarrow{d_3}\Lambda^2M\xrightarrow{d_2}M$.
+\item[(ii)] Up to equivalence, central extensions of $M$ form the vector space
+$H^2(M;k)\cong\Hom_k(H_2(M),k)$; each is a unique pushout of the universal one
+along a linear map $H_2(M)\ra\mathfrak z$ into its central kernel, the universal
+extension corresponding to $\id_{H_2(M)}$.
+\end{enumerate}
+\end{theorem}
+\begin{proof}
+(i) is Theorem~\ref{thm:uce-exists} with $L=M$ (legitimate since $M$ is perfect by
+hypothesis).  (ii): for a perfect Lie algebra in characteristic $0$, equivalence
+classes of central extensions form a torsor over $H^2(M;k)=\Hom(H_2(M),k)$ (the
+Chevalley--Eilenberg $H^2$ is the $k$-dual of $H_2$), and the universal extension
+is the initial object, obtained as $\id_{H_2(M)}$; every extension is a unique
+pushout of it.
+\end{proof}
+
+To make $H_2(M)$ \emph{explicit} we combine the structural reduction of part (b)
+with Kassel's computation of $H_2(\g\ot A)$.
+
+\begin{theorem}[Kassel]\label{thm:kassel}
+Let $\g$ be finite-dimensional over $k$ ($\operatorname{char}k=0$), $A$
+commutative unital, $\Om^1_A=\Om^1_{A/k}$ the K\"ahler differentials,
+$\HC_1(A)=\Om^1_A/dA$ the first cyclic homology.  If $\g$ is perfect there is a
+natural ($\g$- and $\Aut(\g)\!\times\!\Aut(A)$-equivariant) isomorphism
+\begin{equation}\label{eq:kassel}
+   H_2(\g\ot A)\ \cong\ \bigl(H_2(\g)\ot A\bigr)\ \oplus\
+   \bigl(W(\g)\ot\Om^1_A/dA\bigr),
+\end{equation}
+where $W(\g)=S^2\g/\g\!\cdot\!S^2\g$ is the coinvariant space of the symmetric
+square (the universal recipient of $\g$-invariant symmetric bilinear forms).  For
+$\g$ simple, $\dim(S^2\g^*)^{\g}=1$ (Killing form), so $W(\g)\cong k$.
+\end{theorem}
+\begin{proof}
+Kassel, \emph{J. Pure Appl. Algebra} 34 (1984) 265--275 (building on
+Kassel--Loday).  Structure: $\g\ot\g=\Lambda^2\g\oplus S^2\g$; the $2$-cycles of
+$\g\ot A$ split accordingly.  The $\Lambda^2\g$-part contributes $H_2(\g)\ot A$
+modulo Jacobi relations; the $S^2\g$-part pairs with the antisymmetric part of
+$A\ot A$ and the $d_3$-relations realise it as $\Om^1_A/dA$ (via $a\,db$, with
+$a\,db+b\,da=d(ab)\equiv0$), the adjoint action projecting $S^2\g$ onto $W(\g)$.
+Naturality in $\g,A$ is part of the statement.
+\end{proof}
+
+\begin{corollary}[Simple $\g$]\label{cor:simple}
+For $\g$ simple: $H_2(\g)=0$, $W(\g)=k$, and
+\[
+   H_2(\g\ot A)\cong\Om^1_A/dA,\qquad
+   \uce(\g\ot A)=(\g\ot A)\oplus(\Om^1_A/dA),
+\]
+with $[x\ot a,y\ot b]=[x,y]\ot ab+(x,y)_\kappa\,\overline{a\,db}$,
+$(\cdot,\cdot)_\kappa$ the Killing form.  Automorphisms preserve $\kappa$
+($\kappa(\gamma x,\gamma y)=\kappa(x,y)$), so $\Gm$ acts trivially on $W(\g)=k$
+and only through $\Om^1_A/dA$.  Combined with Theorem~\ref{thm:partB}(4) (which
+gives $\uce(M)\cong\uce(\g\ot A)^{\Gm}$ for $\g$ semisimple) and exactness of
+$(-)^{\Gm}$:
+\[
+   \boxed{\ \uce\bigl((\g\ot A)^{\Gm}\bigr)\ \cong\ M\ \oplus\ (\Om^1_A/dA)^{\Gm}\ }
+   \qquad(\g\ \text{simple}),
+\]
+a central extension whose centre is $(\Om^1_A/dA)^{\Gm}$, with $\Gm$ acting by
+$\gamma\cdot\overline{a\,db}=\overline{(\gamma a)\,d(\gamma b)}$.
+\end{corollary}
+\begin{proof}
+$H_2(\g)=0$ (Whitehead) and $\dim(S^2\g^*)^\g=1$ (simplicity) give the first line;
+$\kappa$-invariance is immediate from $\operatorname{ad}(\gamma x)=\gamma\,
+\operatorname{ad}(x)\,\gamma^{-1}$ and the trace formula for $\kappa$.  The boxed
+formula combines Theorem~\ref{thm:partB}(4) with
+$\uce(\g\ot A)^{\Gm}=(M)\oplus(\Om^1_A/dA)^{\Gm}$, where the splitting of
+invariants is the exact functor $(-)^{\Gm}$ applied to
+$\uce(\g\ot A)=(\g\ot A)\oplus(\Om^1_A/dA)$.
+\end{proof}
+
+\section{Part (b): when is the comparison map an isomorphism?}
+
+By Whitehead's lemmas, $\g$ semisimple has $H_1(\g)=H_2(\g)=0$, so Kassel
+\eqref{eq:kassel} becomes the natural isomorphism
+\begin{equation}\label{eq:ss-kassel}
+   H_2(\g\ot A)\ \cong\ W(\g)\ot\Om^1_A/dA ,\qquad
+   W(\g)=\textstyle\bigoplus_{s}k\,\kappa_s ,
+\end{equation}
+the sum over the simple ideals $\g_s$ of $\g$, with $\g\ot A$ acting trivially and
+$\Gm$ acting diagonally (permuting the simple factors $\g_s$ -- equivalently the
+$\kappa_s$ -- through its action on $\g$, and through $A$ on $\Om^1_A/dA$).  For
+a $\kappa_s$-dual pair of bases $\{p^{(s)}_\alpha\},\{p^{(s)\alpha}\}$ of $\g_s$
+(so $\kappa_s(p^{(s)}_\alpha,p^{(s)\beta})=\delta_\alpha^\beta$), the class of
+$\overline{\kappa_s\ot a\,db}$ is represented by the $2$-cycle
+\begin{equation}\label{eq:cas-cycle}
+   z_s(a,b)=\sum_\alpha (p^{(s)}_\alpha\ot a)\wedge(p^{(s)\alpha}\ot b)
+   \ \in\ \Lambda^2(\g\ot A),
+\end{equation}
+which is a cycle because $\sum_\alpha[p^{(s)}_\alpha,p^{(s)\alpha}]=0$ (the
+Casimir element of $\g_s$ is central).
+
+\begin{lemma}[The $\Gm$-invariant Killing contraction]\label{lem:kappa}
+Let $\g$ be semisimple, $\kappa$ its Killing form (restricting to $\kappa_s$ on the
+simple ideal $\g_s$), and $W(\g)=\bigoplus_s k\,\kappa_s$.  Define the linear map
+\[
+   c\colon\ \Lambda^2(\g\ot A)\longrightarrow W(\g)\ot\Om^1_A/dA,\qquad
+   c\bigl((x\ot a)\wedge(y\ot b)\bigr)=\textstyle\sum_s\kappa_s(x,y)\,\kappa_s\ot\overline{a\,db}.
+\]
+Then:
+\begin{enumerate}
+\item[(i)] $c$ is $\Gm$-equivariant for the $\Gm$-actions described after
+\eqref{eq:ss-kassel};
+\item[(ii)] $c\circ d_3=0$, so $c$ descends to $\bar c\colon H_2(\g\ot A)\ra
+W(\g)\ot\Om^1_A/dA$;
+\item[(iii)] $\bar c$ is an isomorphism, equal to the inverse of the Kassel
+isomorphism \eqref{eq:ss-kassel} up to the positive scalars $\dim\g_s$.
+\end{enumerate}
+\end{lemma}
+\begin{proof}
+(i) For $\gamma\in\Gm$, $\gamma$ permutes the simple ideals; if
+$\gamma\g_s=\g_{s'}$ then $\kappa_{s'}(\gamma x,\gamma y)=\kappa_s(x,y)$ because the
+Killing form is $\Aut(\g)$-invariant and a sum over simple ideals.  Hence
+\[
+   c\bigl(\gamma\cdot((x\ot a)\wedge(y\ot b))\bigr)
+   =\sum_s\kappa_s(\gamma x,\gamma y)\,\kappa_s\ot\overline{(\gamma a)\,d(\gamma b)}
+   =\sum_{s}\kappa_{s}(x,y)\,(\gamma\kappa_{s})\ot\overline{(\gamma a)\,d(\gamma b)}
+   =\gamma\cdot c\bigl((x\ot a)\wedge(y\ot b)\bigr),
+\]
+where in the middle step we reindexed $s\mapsto s'=\gamma s$ and used
+$\gamma\cdot\kappa_s=\kappa_{\gamma s}$.
+
+(ii) Fix simple ideal $\g_s$ and put $T_s(x,y,z)=\kappa_s([x,y],z)$.  Invariance of
+$\kappa_s$ ($\kappa_s([u,v],w)=-\kappa_s(v,[u,w])$) makes $T_s$ totally
+antisymmetric.  Using $[x\ot a,y\ot b]=[x,y]\ot ab$,
+\[
+\begin{aligned}
+c\,d_3\bigl((x\ot a)\wedge(y\ot b)\wedge(z\ot c)\bigr)
+ &=c\Bigl(([x,y]\ot ab)\wedge(z\ot c)-([x,z]\ot ac)\wedge(y\ot b)\\
+ &\hspace{2.6em}+([y,z]\ot bc)\wedge(x\ot a)\Bigr)\\
+ &=\sum_s\kappa_s\ot\Bigl(\kappa_s([x,y],z)\,\overline{(ab)\,dc}
+   -\kappa_s([x,z],y)\,\overline{(ac)\,db}\\
+ &\hspace{6.0em}+\kappa_s([y,z],x)\,\overline{(bc)\,da}\Bigr)\\
+ &=\sum_s\kappa_s\ot T_s(x,y,z)\,\overline{(ab)\,dc+(ac)\,db+(bc)\,da}\\
+ &=\sum_s\kappa_s\ot T_s(x,y,z)\,\overline{d(abc)}=0,
+\end{aligned}
+\]
+using $\kappa_s([x,z],y)=T_s(x,z,y)=-T_s(x,y,z)$,
+$\kappa_s([y,z],x)=T_s(y,z,x)=T_s(x,y,z)$, the Leibniz rule
+$d(abc)=(bc)\,da+(ac)\,db+(ab)\,dc$, and $\overline{dA}=0$ in $\Om^1_A/dA$.
+
+(iii) On the Casimir cycle \eqref{eq:cas-cycle} one computes
+\[
+   \bar c\,[z_s(a,b)]
+   =\sum_{s'}\kappa_{s'}\ot\Bigl(\sum_\alpha\kappa_{s'}(p^{(s)}_\alpha,p^{(s)\alpha})\Bigr)\overline{a\,db}
+   =\kappa_s\ot(\dim\g_s)\,\overline{a\,db},
+\]
+since $\kappa_{s'}(p^{(s)}_\alpha,p^{(s)\alpha})=0$ for $s'\ne s$ (orthogonality of
+distinct simple ideals under $\kappa$) and $=1$ for $s'=s$.  As the classes
+$[z_s(a,b)]$ span $H_2(\g\ot A)$ and correspond under \eqref{eq:ss-kassel} exactly
+to $\kappa_s\ot\overline{a\,db}$, the map $\bar c$ sends the basis class
+$\kappa_s\ot\overline{a\,db}$ to $(\dim\g_s)\,\kappa_s\ot\overline{a\,db}$; being a
+nonzero rescaling on each factor, $\bar c$ is an isomorphism.
+\end{proof}
+
+\begin{theorem}[Answer to (b)]\label{thm:partB}
+Let $\Phi\colon\uce(M)\ra\uce(\g\ot A)^{\Gm}$ be the comparison map and
+$\phi\colon H_2(M)\ra H_2(\g\ot A)^{\Gm}$ the induced homology map of
+\eqref{eq:phi}.
+\begin{enumerate}
+\item[(1)] \textup{(Unconditional reduction.)} $\Phi$ is an isomorphism iff $\phi$
+is; $\Phi$ is injective (resp.\ surjective) iff $\phi$ is, with
+$\ker\Phi\cong\ker\phi$ and $\operatorname{coker}\Phi\cong\operatorname{coker}\phi$
+(Proposition~\ref{prop:snake}).
+\item[(2)] \textbf{Splitting hypothesis: exact computation of $\phi$.}  Suppose the
+isotypic complement $\nn:=(1-e)L$ is a Lie ideal of $L$, equivalently $L=M\oplus\nn$
+as Lie algebras.  Then $\phi$ is injective and there is a canonical isomorphism
+\[
+   \operatorname{coker}\phi\ \cong\ H_2(\nn)^{\Gm}.
+\]
+In particular $\phi$ \emph{is an isomorphism iff $H_2(\nn)^{\Gm}=0$}, and then
+$\uce\bigl((\g\ot A)^{\Gm}\bigr)\cong\bigl(\uce(\g\ot A)\bigr)^{\Gm}$.
+\item[(3)] \textbf{Consequences of (2).}  The following are cases where (2)
+applies with $H_2(\nn)^{\Gm}=0$:
+\begin{itemize}
+\item $\Gm=\{1\}$ (then $\nn=0$, so $H_2(\nn)^{\Gm}=0$);
+\item $\Gm$ acts only on $A$ (trivially on $\g$) and $A=A^{\Gm}\oplus B$ is a
+$\Gm$-equivariant decomposition of $A$ into ideals with $B=(1-e)A$, provided
+$H_2(\g\ot B)^{\Gm}=0$ (e.g.\ $\g$ semisimple and $(\Om^1_B/dB)^{\Gm}=0$).
+\end{itemize}
+\item[(4)] \textbf{Full isomorphism for semisimple $\g$ (Neher--Savage).}  If $\g$
+is finite-dimensional semisimple, then $\phi$ is an isomorphism for every finite
+$\Gm$ (char.\ $0$) and every $A$ with $M$ perfect, so
+\[
+   \uce\bigl((\g\ot A)^{\Gm}\bigr)\ \cong\ \bigl(\uce(\g\ot A)\bigr)^{\Gm}.
+\]
+\item[(5)] \textbf{Failure for merely perfect $\g$.}  If $\g$ is perfect with
+$H_2(\g)\ne0$, $\phi$ can fail to be surjective.  An explicit instance with
+$A=k$ and $\Gm=\mathbb Z/2$ is given in Example~\ref{ex:fail}; there
+$H_2(M)=0$ while $H_2(L)^{\Gm}\cong k$, so $\operatorname{coker}\phi\cong k\ne0$.
+The obstruction is the strict inclusion
+$\Lambda^2(L^{\Gm})\subsetneq(\Lambda^2L)^{\Gm}$ (Lemma~\ref{lem:strict}) feeding
+the $H_2(\g)\ot A$ summand of \eqref{eq:kassel}.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(1) is Proposition~\ref{prop:snake}.
+
+\smallskip
+(2) Assume $L=M\oplus\nn$ with $M,\nn$ Lie ideals, $\nn=(1-e)L$.  Then $\Gm$ acts
+trivially on $M=L^{\Gm}$ and stabilises $\nn$ (an isotypic component is
+$\Gm$-stable), with $\nn^{\Gm}=(1-e)L\cap L^{\Gm}=0$.
+
+For a direct sum of Lie algebras the Chevalley--Eilenberg chain complex is the
+tensor product of the two complexes (the bracket has no cross terms, so on
+$\Lambda^\bullet M\ot\Lambda^\bullet\nn=\Lambda^\bullet(M\oplus\nn)$ the
+differential is $d=d^M\ot1+(-1)^{\deg}\,1\ot d^{\nn}$):
+\[
+   C_\bullet(L)=C_\bullet(M)\ot C_\bullet(\nn).
+\]
+Both factors are complexes of $k[\Gm]$-modules ($\Gm$ trivial on $C_\bullet(M)$,
+acting on $C_\bullet(\nn)$).  Taking $\Gm$-invariants commutes with the tensor
+decomposition because $C_\bullet(M)$ is $\Gm$-trivial:
+\[
+   C_\bullet(L)^{\Gm}=C_\bullet(M)\ot C_\bullet(\nn)^{\Gm},
+\]
+again a tensor product of complexes.  By the K\"unneth theorem over the field $k$,
+\[
+   H_2\bigl(C_\bullet(L)^{\Gm}\bigr)\ \cong\
+   \bigoplus_{i+j=2}H_i(C_\bullet(M))\ot H_j\bigl(C_\bullet(\nn)^{\Gm}\bigr).
+\]
+Now $H_0(C_\bullet(M))=H_0(M)=k$ and $H_1(C_\bullet(M))=H_1(M)=M/[M,M]=0$ because
+$M$ is perfect; and by Lemma~\ref{lem:invariant-complex}
+$H_j(C_\bullet(\nn)^{\Gm})=H_j(\nn)^{\Gm}$, with $H_0(\nn)^{\Gm}=k^{\Gm}=k$.  The
+three terms $(i,j)=(2,0),(1,1),(0,2)$ are therefore
+\[
+   H_2(M)\ot k,\qquad 0\ot H_1(\nn)^{\Gm},\qquad k\ot H_2(\nn)^{\Gm},
+\]
+giving
+\begin{equation}\label{eq:split-H2}
+   H_2(L)^{\Gm}=H_2(C_\bullet(L)^{\Gm})\ \cong\ H_2(M)\ \oplus\ H_2(\nn)^{\Gm}.
+\end{equation}
+Under the K\"unneth identification the first summand $H_2(M)\ot H_0(\nn)^{\Gm}$ is
+exactly the image of the chain inclusion $C_\bullet(M)=C_\bullet(M)\ot k\hookrightarrow
+C_\bullet(M)\ot C_\bullet(\nn)^{\Gm}=C_\bullet(L)^{\Gm}$ that defines $\phi$
+(Proposition~\ref{prop:snake}(b)).  Hence $\phi$ is the inclusion of the first
+summand of \eqref{eq:split-H2}: it is injective with
+$\operatorname{coker}\phi\cong H_2(\nn)^{\Gm}$.  Thus $\phi$ is an isomorphism iff
+$H_2(\nn)^{\Gm}=0$, and the displayed conclusion follows from (1).
+
+\smallskip
+(3) If $\Gm=\{1\}$ then $\nn=(1-e)L=0$, $H_2(\nn)^{\Gm}=H_2(0)=0$, so (2) gives an
+isomorphism.  If $\Gm$ acts only on $A$ and $A=A^{\Gm}\oplus B$ is a
+$\Gm$-equivariant decomposition into ideals with $B=(1-e)A$, then
+$L=\g\ot A=(\g\ot A^{\Gm})\oplus(\g\ot B)$ is a decomposition of $L$ into Lie ideals
+(the two factors commute since $A^{\Gm}\cdot B=0$ inside the product ring), with
+$M=\g\ot A^{\Gm}$ and $\nn=\g\ot B$.  Then $H_2(\nn)^{\Gm}=H_2(\g\ot B)^{\Gm}$, and
+if this vanishes (e.g.\ $\g$ semisimple, when by \eqref{eq:ss-kassel}
+$H_2(\g\ot B)^{\Gm}\cong(W(\g)\ot\Om^1_B/dB)^{\Gm}$, which is $0$ once
+$(\Om^1_B/dB)^{\Gm}=0$) part (2) yields an isomorphism.
+
+\smallskip
+(4) For $\g$ semisimple this is the theorem of E.~Neher and A.~Savage,
+\emph{Universal central extensions of Lie algebras of equivariant maps}:
+\begin{quote}
+\emph{If $\g$ is a finite-dimensional semisimple Lie algebra over a field of
+characteristic $0$, $A$ is a commutative associative unital algebra, and $\Gm$ is a
+finite group acting on $\g$ and $A$ such that $M=(\g\ot A)^{\Gm}$ is perfect, then
+the natural comparison map $\Phi\colon\uce(M)\ra\uce(\g\ot A)^{\Gm}$ is an
+isomorphism.}
+\end{quote}
+We verify the hypotheses in our setting: $\g$ semisimple finite-dimensional,
+$\operatorname{char}k=0$, $A$ commutative associative unital, $\Gm$ finite, $M$
+perfect -- all assumed.  Hence $\phi$ is an isomorphism; by (1) so is $\Phi$.
+
+The mechanism is the $\Gm$-invariant Killing contraction of Lemma~\ref{lem:kappa}.
+Indeed $\bar c\colon H_2(\g\ot A)\xrightarrow{\sim}W(\g)\ot\Om^1_A/dA$ is
+$\Gm$-equivariant (Lemma~\ref{lem:kappa}(i),(iii)), so on invariants
+\[
+   H_2(\g\ot A)^{\Gm}\ \xrightarrow[\ \sim\ ]{\bar c}\ \bigl(W(\g)\ot\Om^1_A/dA\bigr)^{\Gm}.
+\]
+By Lemma~\ref{lem:invariant-complex}, $H_2(\g\ot A)^{\Gm}$ is spanned by classes of
+averaged Casimir $2$-cycles $e\,z_s(a,b)$.  The content of Neher--Savage is exactly
+that every such invariant class is represented by a $2$-cycle lying in
+$\Lambda^2M=\Lambda^2(L^{\Gm})$ (surjectivity of $\phi$) and that distinct classes
+of $H_2(M)$ remain distinct in $H_2(L)^{\Gm}$ (injectivity of $\phi$); both follow
+from the $\Gm$-equivariant Casimir descent and the fact that, $\g$ being
+semisimple, only the \emph{symmetric} (Killing) data of \eqref{eq:ss-kassel}
+contributes, and that data is $\Gm$-invariantly carried by $M$.
+
+\smallskip
+(5) is established by the explicit Example~\ref{ex:fail} below: there $\g$ is
+perfect with $H_2(\g)\cong k$, $A=k$, $\Gm=\mathbb Z/2$, $M$ is perfect with
+$H_2(M)=0$, and $\phi\colon0\ra H_2(L)^{\Gm}\cong k$ has cokernel $k\ne0$.
+For $\g$ semisimple this failure cannot occur because $H_2(\g)=0$ removes the
+antisymmetric summand of \eqref{eq:kassel}, leaving only the symmetric Killing
+data which descends by (4).
+\end{proof}
+
+\begin{lemma}[$\Lambda^2(V^{\Gm})$ can be strictly smaller than $(\Lambda^2V)^{\Gm}$]
+\label{lem:strict}
+There exist a finite group $\Gm$ and a $k[\Gm]$-module $V$ with
+$\Lambda^2(V^{\Gm})\subsetneq(\Lambda^2 V)^{\Gm}$.  Concretely, let
+$\Gm=\mathbb Z/2=\langle\sigma\rangle$ act on $V=k^2=k v_0\oplus k v_1$ by
+$\sigma=-\id$.  Then $V^{\Gm}=0$, so $\Lambda^2(V^{\Gm})=0$, while
+$\Lambda^2 V=k\,(v_0\wedge v_1)$ with $\sigma(v_0\wedge v_1)=(-v_0)\wedge(-v_1)=
+v_0\wedge v_1$, so $(\Lambda^2 V)^{\Gm}=\Lambda^2 V\cong k$.
+\end{lemma}
+\begin{proof}
+$V^{\Gm}=\ker(\sigma-\id)=\ker(-2\,\id)=0$ since $\operatorname{char}k=0$, hence
+$\Lambda^2(V^{\Gm})=0$.  On the line $\Lambda^2V=k(v_0\wedge v_1)$, $\sigma$ acts by
+$(-1)^2=1$, so $(\Lambda^2V)^{\Gm}=k(v_0\wedge v_1)$.  Thus
+$0=\Lambda^2(V^{\Gm})\subsetneq(\Lambda^2V)^{\Gm}\cong k$.
+\end{proof}
+
+\begin{example}[Explicit failure of surjectivity for perfect non-semisimple $\g$]
+\label{ex:fail}
+Let $\g=\sw_2(k)\ltimes V$ be the semidirect product of $\sw_2=\sw_2(k)$ with its
+$2$-dimensional standard module $V=k v_0\oplus k v_1$, with basis
+$\{e,f,h,v_0,v_1\}$ and nonzero brackets
+\[
+   [h,e]=2e,\ [h,f]=-2f,\ [e,f]=h,\quad
+   [h,v_0]=v_0,\ [h,v_1]=-v_1,\ [e,v_1]=v_0,\ [f,v_0]=v_1,
+\]
+and $[V,V]=0$.  Take $A=k$, so $L=\g\ot k=\g$.  Let $\Gm=\mathbb Z/2=
+\langle\sigma\rangle$ act by $\sigma=\id$ on $\sw_2$ and $\sigma=-\id$ on $V$.
+Then:
+\begin{enumerate}
+\item[(i)] $\g$ is a perfect Lie algebra;
+\item[(ii)] $\sigma$ is a Lie algebra automorphism of $\g$ of order $2$;
+\item[(iii)] $H_2(\g)\cong k$, represented by the $2$-cycle $v_0\wedge v_1$;
+\item[(iv)] $M=\g^{\Gm}=\sw_2$ is perfect, and $H_2(M)=H_2(\sw_2)=0$;
+\item[(v)] $\sigma$ acts trivially on $H_2(\g)$, so $H_2(L)^{\Gm}=H_2(\g)\cong k$;
+\item[(vi)] consequently $\phi\colon H_2(M)=0\ra H_2(L)^{\Gm}\cong k$ has
+$\operatorname{coker}\phi\cong k\ne0$, so $\Phi$ is not surjective.
+\end{enumerate}
+\end{example}
+\begin{proof}
+(i) $[\g,\g]\supseteq[\sw_2,\sw_2]=\sw_2$ and $[\sw_2,V]=V$ (e.g.\ $[e,v_1]=v_0$,
+$[f,v_0]=v_1$ give all of $V$); thus $[\g,\g]=\g$.
+
+(ii) Write $\g=\sw_2\oplus V$ as vector spaces.  For $x,y\in\sw_2$:
+$\sigma[x,y]=[x,y]=[\sigma x,\sigma y]$.  For $x\in\sw_2$, $v\in V$:
+$[x,v]\in V$, so $\sigma[x,v]=-[x,v]$, while $[\sigma x,\sigma v]=[x,-v]=-[x,v]$;
+equal.  For $v,v'\in V$: $[v,v']=0=\sigma 0=[\sigma v,\sigma v']$.  Hence $\sigma$
+is a Lie automorphism; $\sigma^2=\id$ since $(-\id)^2=\id$ on $V$.
+
+(iii) By Kassel's formula \eqref{eq:kassel} with $A=k$ (so $\Om^1_k/dk=0$),
+$H_2(\g\ot k)=H_2(\g)$.  A direct computation of the Chevalley--Eilenberg complex
+$\Lambda^3\g\xrightarrow{d_3}\Lambda^2\g\xrightarrow{d_2}\g$ for the above brackets
+gives $\dim\ker d_2-\operatorname{rank}d_3=1$, with the surviving class represented
+by the cycle $v_0\wedge v_1$ (note $d_2(v_0\wedge v_1)=[v_0,v_1]=0$, so it is a
+cycle, and one checks it is not a boundary).  This computation was carried out and
+verified numerically over $\mathbb Q$: $\dim\Lambda^2\g=10$,
+$\operatorname{rank}d_2=5$, $\operatorname{rank}d_3=4$, hence
+$\dim H_2(\g)=10-5-4=1$, and the unique homology class is supported on
+$v_0\wedge v_1$.
+
+(iv) $\g^{\Gm}=\{x\in\g:\sigma x=x\}=\sw_2$ (the $+1$-eigenspace of $\sigma$),
+which is perfect; $H_2(\sw_2)=0$ by Whitehead's second lemma ($\sw_2$ is simple).
+
+(v) $\sigma$ acts on $\Lambda^2\g$ functorially; on the representative
+$v_0\wedge v_1$, $\sigma(v_0\wedge v_1)=(-v_0)\wedge(-v_1)=v_0\wedge v_1$, so the
+generator of $H_2(\g)\cong k$ is $\Gm$-fixed.  Hence $H_2(L)^{\Gm}=H_2(\g)^{\Gm}=
+H_2(\g)\cong k$ (using Lemma~\ref{lem:invariant-complex} and $A=k$).
+
+(vi) $\phi$ is the map $H_2(M)\ra H_2(L)^{\Gm}$ of \eqref{eq:phi}; here
+$H_2(M)=0$ by (iv) and $H_2(L)^{\Gm}\cong k$ by (v), so $\operatorname{coker}\phi
+\cong k\ne0$.  By Theorem~\ref{thm:partB}(1) $\operatorname{coker}\Phi\cong
+\operatorname{coker}\phi\cong k$, so $\Phi$ is not surjective.  This realises the
+mechanism of Lemma~\ref{lem:strict}: the nonzero invariant class lives in
+$(\Lambda^2\g)^{\Gm}$ (it is $v_0\wedge v_1$ with $V^{\Gm}=0$) but not in
+$\Lambda^2(\g^{\Gm})=\Lambda^2(\sw_2)$, so it cannot be represented by a cycle from
+$M$.
+\end{proof}
+
+\begin{remark}[Summary of hypotheses]\label{rem:summary}
+\begin{itemize}
+\item The comparison map $\Phi$ always exists and is natural
+(Lemma~\ref{lem:two-ext}); it is an isomorphism \emph{iff} the explicit homology
+map $\phi$ of \eqref{eq:phi} is (Proposition~\ref{prop:snake}).  This reduction is
+unconditional.
+\item When the isotypic complement $\nn=(1-e)L$ is a Lie ideal, $\phi$ is computed
+exactly: injective, with $\operatorname{coker}\phi\cong H_2(\nn)^{\Gm}$
+(Theorem~\ref{thm:partB}(2)); it is an isomorphism precisely when $H_2(\nn)^{\Gm}=0$
+(automatic for $\Gm=\{1\}$).
+\item $\Phi$ \emph{is} an isomorphism whenever $\g$ is semisimple, for all finite
+$\Gm$ and all $A$ with $M$ perfect (Theorem~\ref{thm:partB}(4),
+Neher--Savage): Whitehead's lemmas leave only the symmetric Killing factor
+$W(\g)\ot\Om^1_A/dA$, carried $\Gm$-invariantly by $M$ via the Casimir contraction
+(Lemma~\ref{lem:kappa}).  For $\g$ simple this yields the explicit answer of
+Corollary~\ref{cor:simple}: $\uce(M)\cong M\oplus(\Om^1_A/dA)^{\Gm}$.
+\item $\Phi$ \emph{can fail} (already in surjectivity) for merely perfect $\g$ with
+$H_2(\g)\ne0$; Example~\ref{ex:fail} is an explicit, fully verified instance with
+$\g=\sw_2\ltimes V$, $A=k$, $\Gm=\mathbb Z/2$.  The obstruction is the strict
+inclusion $\Lambda^2(L^{\Gm})\subsetneq(\Lambda^2 L)^{\Gm}$ (Lemma~\ref{lem:strict})
+feeding the $H_2(\g)\ot A$ summand of Kassel's formula.
+\end{itemize}
+\end{remark}
+
+\end{document}

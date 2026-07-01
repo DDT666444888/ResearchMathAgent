@@ -1,0 +1,31 @@
+{
+  "id": "rm-01271-3",
+  "problem_id": "rm-01271",
+  "dataset": "researchmath_14k",
+  "title": "Justify coefficient extraction in symbols q^{k^alpha} (independence)",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T09:54:51Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev270346d6",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T09:54:51Z"
+    },
+    {
+      "id": "c27201944",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Justification of coefficient extraction (rigor gap shared by both parts).**\n\nThe problem fixes a complex number $\\alpha$ and asks to interpret the LHS \"as formal power series in $x$ with coefficients in the ring of formal expressions in $q$ and $q^{k^\\alpha}$ for positive integers $k$.\"\n\nA solver must:\n1. State precisely the coefficient ring, treating the symbols $Q_k:=q^{k^\\alpha}$ ($k\\ge1$) as **algebraically independent indeterminates** over $\\mathbb Z$ (or $\\mathbb Q$).\n2. Show that for each fixed $n$, only finitely many $Q_k$ (namely $k\\le n$) appear on either side, so the formal manipulations $\\tfrac{x^k}{1-x^k}=\\sum_{m\\ge1}x^{km}$ and the product with $P(x)$ are legitimate.\n3. Conclude that equality of the two formal power series is **equivalent** to equality of the coefficient of every monomial $Q_k\\,x^n$.\n\nThis step is what makes both the proof of (ii) and the disproof of (i) airtight: it rules out the worry that accidental relations among the genuine numbers $q^{k^\\alpha}$ could create cancellations. Without it, the single-point disproof of (i) is not rigorous.\n\nAlso address $\\alpha$-independence: $M_v(n),N_v(n),R_v(n)$ are $\\alpha$-free integers, so the conclusions hold for every $\\alpha$.",
+      "created_at": "2026-06-27T09:54:51Z"
+    }
+  ]
+}

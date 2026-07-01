@@ -1,0 +1,31 @@
+{
+  "id": "rm-11440-6",
+  "problem_id": "rm-11440",
+  "dataset": "researchmath_14k",
+  "title": "Family (f) Bernoulli: incorrect numerator listing and a_2 value",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T00:56:24Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev528d0658",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T00:56:24Z"
+    },
+    {
+      "id": "c81074358",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Factual error in Section (f).**\n\nThe solution lists the absolute numerators of $B_{2m}$ as '$1,1,1,1,1,691,7,3617,\\dots$' and states the sorted distinct sequence starts with $a_2=3$.\n\nThe correct numerators $|\\mathrm{num}(B_{2m})|$ are $1,1,1,1,5,691,7,3617,\\dots$ — i.e. $B_{10}=5/66$ has numerator $5$, not $1$; there is no run of five $1$'s. The sorted set of distinct values begins $1,5,7,691,3617,\\dots$, so $a_1=1,\\ a_2=5$ (not $3$).\n\nThe conclusion $M=1$ (since $a_2\\ne2$) is unaffected, and the leading asymptotic $N(n)\\sim\\log n/(2\\log\\log n)$ is consistent with $\\log(\\mathrm{num}\\,B_{2m})\\sim 2m\\log m$ (verified). But the displayed data must be corrected, and the $k(n)$ asymptotic is subject to the separate $\\log^*$ issue.",
+      "created_at": "2026-06-28T00:56:24Z"
+    }
+  ]
+}

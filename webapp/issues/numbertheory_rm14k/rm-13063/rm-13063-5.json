@@ -1,0 +1,38 @@
+{
+  "id": "rm-13063-5",
+  "problem_id": "rm-13063",
+  "dataset": "numbertheory_rm14k",
+  "title": "Vague 'partial search up to 250' has no proof content; remove or make precise",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T02:43:10Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev3769187b",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T02:43:10Z"
+    },
+    {
+      "id": "cc7398ade",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "The proof of Proposition 1 ends: 'the same procedure was also run, partially, for bases up to 250 without finding any solution.' A *partial* search is not a theorem: the range searched, the tuples covered, and the bound on $z$ are unspecified, so this sentence asserts nothing verifiable. It should be deleted or upgraded to a precise exhaustive claim ('no solution with $\\max x_i\\le B$', $z\\le\\lfloor B\\cdot5^{1/6}\\rfloor$, with the finite verification).",
+      "created_at": "2026-06-28T02:43:10Z"
+    },
+    {
+      "id": "c0a6007f3",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "Re-review against the current solution.tex (N=220 revision): the vague 'partial search up to 250' sentence has been REMOVED. Proposition 1 now makes only the precise exhaustive claim $\\max_i x_i\\le 220$, backed by Algorithm 1 with proved soundness/completeness/termination. I independently re-ran the exhaustive ordered search to $N=220$ (two-sided $z$-range from Lemma 1) and confirmed no solutions. Recommend marking resolved.",
+      "created_at": "2026-06-28T03:27:42Z"
+    }
+  ]
+}

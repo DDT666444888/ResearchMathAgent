@@ -1,0 +1,31 @@
+{
+  "id": "rm-01473-5",
+  "problem_id": "rm-01473",
+  "dataset": "researchmath_14k",
+  "title": "G4 (Major): UV/IR separation (R3) is not shown to be well-defined",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T10:42:43Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev6f570d04",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T10:42:43Z"
+    },
+    {
+      "id": "c647e3270",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Location:** Theorem `thm:regions` and the \"Correct UV/IR labelling\" clause of `thm:reduction`.\n\nThe problem statement explicitly stresses thermal sum-integrals \"mix ultraviolet and infrared divergent regions in a nontrivial way.\" A single $\\varepsilon^{-1}$ pole of a sum-integral can receive contributions from both a UV subregion and an IR region (e.g. 2-loop thermal self-energies with a UV subdivergence overlapping the $n=0$ zero-mode IR divergence).\n\n- The claim that *every* pole produced in sector decomposition carries an *unambiguous* UV-or-IR tag given by \"the sign of the scaling exponent of $\\lambda$ on the facet\" is unjustified: distinct facets/regions can each contribute to the coefficient of the *same* $\\varepsilon^{-1}$, so the physical UV-vs-IR split of a pole coefficient is a scheme choice, not a polytope sign. The solution conflates \"which region\" with \"UV vs IR\" — not the same dichotomy (a region can be UV in one subloop and IR in another).\n- \"$x_i\\to0$ ⇒ UV, $x_i\\to\\infty$ ⇒ IR\" is a heuristic depending on the parametrization and on which Symanzik factor the variable sits in; it is not uniformly true after blow-ups.\n\nRequirement (R3) demands a genuine separation. A defensible fix needs an **intrinsic definition** of \"UV pole\" vs \"IR pole\" of a sum-integral (e.g. via the $R^*$/forest operation, or scaling $\\mathbf p\\to\\Lambda\\mathbf p$) and a proof that the region tag computes exactly that, with explicit subtraction handling of the genuinely mixed poles.",
+      "created_at": "2026-06-27T10:42:43Z"
+    }
+  ]
+}

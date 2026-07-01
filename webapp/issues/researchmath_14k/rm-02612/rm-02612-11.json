@@ -1,0 +1,31 @@
+{
+  "id": "rm-02612-11",
+  "problem_id": "rm-02612",
+  "dataset": "researchmath_14k",
+  "title": "Theorem C establishes no positive limit law (only rules out Tracy--Widom); 'crossover to Gaussian/other' unproven",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T17:45:25Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "eve5a86e42",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T17:45:25Z"
+    },
+    {
+      "id": "c9e905fd6",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "The problem's alternative deliverable is to 'characterize the regimes in which KPZ holds versus crosses over to Gaussian or other limits' (cf. G6). The attempt's Theorem C proves, for FIXED $q\\in(0,1)$, only the high-probability lower bound $L(\\pi)\\ge n^{3/4}/(8W)$ ($W=2q/(1-q)$), hence $L/\\sqrt n\\to\\infty$. This destroys the $\\sqrt n$ scale and rules out a $F_{\\mathrm{TW}_2}$ limit at scale $n^{1/6}$, but establishes NO positive limit law. The genuine linear order $L\\asymp n$ and any CLT (Gaussian limit, variance, scaling exponent) are merely CITED to Bhatnagar--Peled, not proved. So the synthesis claim that the model 'crosses over to a non-KPZ regime' is only half-supported: the negative half (not TW) is proved; the positive half (which law governs $L$) is not. To fulfill the problem and G6, either reproduce a Bhatnagar--Peled-style CLT at fixed $q$ (and identify $\\gamma^\\star$ in $q_n=1-\\beta n^{-\\gamma}$ separating TW from Gaussian), or explicitly relabel Theorem C as 'rules out Tracy--Widom; Gaussian crossover cited, not proved'.",
+      "created_at": "2026-06-27T17:45:25Z"
+    }
+  ]
+}

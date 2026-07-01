@@ -1,0 +1,31 @@
+{
+  "id": "prob-06-8",
+  "problem_id": "prob-06",
+  "dataset": "first_proof_1",
+  "title": "Lemma:length / Lemma:apex: 'two-component spanning forest' means an edge subgraph, not a vertex bipartition",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T09:51:56Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev1b852e46",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T09:51:56Z"
+    },
+    {
+      "id": "cacea6b00",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "In Lemma:length and Lemma:apex, 'two-component spanning forest {A,B}' must be read as an EDGE subgraph (a pair of subtrees with their edges), not merely a vertex bipartition. This distinction is never made explicit and is a genuine source of ambiguity that affects the counting.\n\nKey fact: the square-flux F_{A,B}(x) = (chi_{A,B}.x)^2 depends ONLY on the cut edge set E(A,B), i.e. only on the vertex bipartition {V(A),V(B)} -- NOT on the internal edges of A,B. Hence many DISTINCT edge-subgraph forests sharing one bipartition all have the SAME flux.\n\nWhy this matters and must be addressed:\n(1) Lemma:length sums sum_{{A,B}} F_{A,B}(x) over forests. The diagonal-term count uses bijection (a): {forests with e in E(A,B)} <-> {spanning trees containing e}, which is a bijection at the level of EDGE subgraphs (delete e / add e). For the total coefficient of x_e^2 to equal tau, the sum MUST be over edge-subgraph forests, not over vertex bipartitions. If one mistakenly summed over bipartitions the identity tau||x||^2 = sum F + sum C would fail.\n(2) In Lemma:apex the target of the injection phi is '{A,B} with F != 0'. The injection phi(R) = {R_ell, R - R_ell} produces a specific EDGE subgraph, and injectivity (Step 3) reconstructs the EDGE SET of R = (A union B) + {f or e}. So '>= tau_e forests with F != 0' must mean >= tau_e edge-subgraph forests. This is correct as written but only because everything is at the edge-subgraph level; the proof should say so.\n\nConcrete illustration (apex multigraph, T = path 0-1-2 with weights (2,4,3), apex v_inf): there are 19 edge-subgraph two-component spanning forests but only 6 distinct vertex bipartitions; tau = 19, tau_e = 6 for the apex edge from v=1, and |v*|^2 = (G_T^{-1})_{11} = 6/19. Lemma:length and the self-pairing both check out numerically ONLY when forests are counted as edge subgraphs.\n\nFix: add one sentence defining 'two-component spanning forest' as an edge subgraph with two tree components, note F_{A,B} depends only on the bipartition, and confirm phi's outputs are distinct as edge subgraphs (Step 3 already reconstructs the edge set). Also confirm bijections (a),(b),(c) and the matrix-tree count tau = #spanning trees are all at the edge-subgraph level.\n\nSeverity: minor (completeness/clarity); the argument is correct under the edge-subgraph reading, which is the intended one. Numerically verified.",
+      "created_at": "2026-06-27T09:51:56Z"
+    }
+  ]
+}

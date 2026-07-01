@@ -1,0 +1,31 @@
+{
+  "id": "rm-1013-8",
+  "problem_id": "rm-1013",
+  "dataset": "analysis_rm14k",
+  "title": "(d) General Relative Entropy: construct adjoint eigenfunction φ and prove the dissipation law",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T21:20:49Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "evf0bf69a8",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T21:20:49Z"
+    },
+    {
+      "id": "c50447234",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Open sub-lemma, part (d).** The GRE/Lyapunov program requires:\n(i) existence and positivity of the **dual** eigenfunction $\\phi>0$ solving the formal adjoint of the operator in (a) with the same $\\lambda$ (the operator is non-self-adjoint due to drift; existence again needs Krein–Rutman on the adjoint);\n(ii) definition $\\mathcal H[h\\mid F]=\\int \\phi\\,F\\,H(h/F)\\,dx$ for convex $H$, with $h=e^{-\\lambda t}f$ the renormalized density;\n(iii) the entropy-dissipation identity $\\frac{d}{dt}\\mathcal H = -\\mathcal D\\le0$ with $\\mathcal D$ written explicitly, including justification that boundary terms at $\\pm\\infty$ vanish (uses decay of $F,\\phi$);\n(iv) a convergence statement $h\\to \\rho_\\infty F$, with rate under a spectral-gap hypothesis (gap between $\\lambda$ and the rest of the spectrum). All four steps must be carried out in full. Reference: Michel–Mischler–Perthame (2005).",
+      "created_at": "2026-06-27T21:20:49Z"
+    }
+  ]
+}

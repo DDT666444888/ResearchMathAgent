@@ -1,0 +1,32 @@
+{
+  "id": "rm-10836-3",
+  "problem_id": "rm-10836",
+  "dataset": "researchmath_14k",
+  "title": "No quantitative bias rates: discretization and truncation bias only qualitative",
+  "status": "open",
+  "labels": [
+    "proof-gap",
+    "bias-rate"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T22:21:49Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev01ad21de",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T22:21:49Z"
+    },
+    {
+      "id": "c5dc01f94",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Location:** Lemma `lem:disc` (qualitative $B_{\\rm disc}\\to0$), Remark `rem:rate`, Lemma `lem:trunc`, and the tuning prescription Step 1-2.\n\n**Problem requirement:** \"quantifiable error (bias and variance)\" and \"rigorous error bounds ... for the whole class.\"\n\n**Gap A (discretization).** For the admissible class, regular variation is at INFINITY (index $\\alpha\\in(0,2)$); the behavior of $\\sigma^2$ near $0$ is unconstrained beyond continuity ($\\sigma^2(t)\\to0$). Remark `rem:rate` provides a rate $B_{\\rm disc}=O(\\sigma(\\delta)\\sqrt{\\log(T/\\delta)})$ ONLY under local power-law self-similarity ($\\sigma^2(t)\\asymp t^\\alpha$ near 0, e.g. fBm). For the general class Lemma `lem:disc` gives only $B_{\\rm disc}\\to0$ (no rate). Hence \"quantifiable bias\" is met only qualitatively, and the tuning step \"choose $\\delta$ so $|B_{\\rm disc}|\\le\\varepsilon/3$\" is not effective (cannot bound $\\delta(\\varepsilon)$).\n\n**Gap B (truncation).** Lemma `lem:trunc` \"proves\" $B_{\\rm trunc}=H_\\eta(T)/T-H_\\eta\\to0$ by merely restating the given limit (eq. `Hdef`). No rate is established. Consequently tuning Step 1 (\"choose $T$ so $|B_{\\rm trunc}|\\le\\varepsilon/3$\") cannot produce an explicit $T(\\varepsilon)$; the plateau/Richardson diagnostic is purely heuristic and not backed by a proven monotonicity-with-rate statement.\n\n**What is needed.** (i) A quantitative truncation rate, e.g. $H_\\eta(T)/T-H_\\eta=O(1/T)$ via Kingman subadditivity for $\\log$ of the sojourn functional + regular variation, OR an honest statement that only qualitative convergence is available with the diagnostic flagged as heuristic. (ii) For discretization, either an explicit rate under a stated local-regularity hypothesis (separate theorem), or an honest \"qualitative only for the general class\" statement faithful to what the class guarantees.",
+      "created_at": "2026-06-27T22:21:49Z"
+    }
+  ]
+}

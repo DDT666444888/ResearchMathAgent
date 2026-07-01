@@ -1,0 +1,31 @@
+{
+  "id": "rm-11345-2",
+  "problem_id": "rm-11345",
+  "dataset": "rmac",
+  "title": "Garbled/incorrect value of q in the n=15 worked example (should be q=1897/27≈70.259)",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T00:26:10Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "evb123b5cb",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T00:26:10Z"
+    },
+    {
+      "id": "cbf384573",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Severity: minor / expository (factual error in worked example, not a logical gap).**\n\nIn the Cardano section, immediately after the boxed formula (eq. cardano), the worked example at $n=15$ contains a garbled and numerically wrong expression for $q$:\n\n> \"$q=-\\tfrac{83}{27}\\cdot 11+\\dots$\"\n\nThe correct value from eq. (pq), $q=\\dfrac{3382-99n}{27}$, at $n=15$ is\n$$q=\\frac{3382-99\\cdot 15}{27}=\\frac{3382-1485}{27}=\\frac{1897}{27}\\approx 70.259.$$\n\nAll the OTHER numbers quoted in the same example are correct and consistent with $q=1897/27$: $p=-16/3$, $R=q^2/4+p^3/27\\approx 1228.47$, $u_+=-q/2+\\sqrt R\\approx -0.0801$, $u_-=-q/2-\\sqrt R\\approx -70.179$, and $x=19/3+\\sqrt[3]{u_+}+\\sqrt[3]{u_-}\\approx 1.77753$, giving $(y+x/y)x=15$ to high precision (verified: $|(y+x/y)x-n|<10^{-9}$).\n\nSo only the displayed formula for $q$ is malformed. **Fix:** replace it with $q=\\tfrac{1897}{27}\\approx 70.259$ (or write the symbolic form $\\tfrac{3382-99\\cdot15}{27}$). This does not affect any logical step but a line-by-line verifier will flag the inconsistency.",
+      "created_at": "2026-06-28T00:26:10Z"
+    }
+  ]
+}

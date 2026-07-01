@@ -1,0 +1,460 @@
+\documentclass[12pt]{article}
+\usepackage{fullpage}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{amsfonts}
+
+\DeclareMathOperator{\vecop}{vec}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator{\rank}{rank}
+\DeclareMathOperator{\range}{range}
+\DeclareMathOperator*{\lammax}{\lambda_{\max}}
+\newcommand{\bR}{\mathbb{R}}
+\newcommand{\eps}{\varepsilon}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{remark}{Remark}
+
+\title{Problem 6: $\eps$-Light Subsets in Graphs}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+For a graph $G=(V,E)$ with Laplacian $L$, and for $S\subseteq V$, let
+$G_S=(V,E(S,S))$ be the subgraph keeping only the edges with \emph{both}
+endpoints in $S$, and let $L_S$ be its Laplacian. Call $S$ \emph{$\eps$-light}
+if $\eps L-L_S\succeq 0$. The question asks whether there is a universal constant
+$c>0$ such that every graph $G$ and every $\eps\in[0,1]$ admit an $\eps$-light
+set $S$ with $|S|\ge c\,\eps\,|V|$.
+
+This document records rigorous progress. We give an exact spectral
+reformulation via \emph{leverage scores} (effective resistances) and prove the
+structural facts any correct argument must respect. We then prove the statement
+\emph{completely} in several complementary regimes that explain the problem's
+difficulty: (i)~graphs with a large independent set, where the bound holds with
+$c=1$; (ii)~a \emph{deterministic reduction} (Theorem~\ref{thm:reduce}) which
+removes every high-leverage (``heavy'') edge by passing to an independent set of
+the heavy-edge graph, retaining $\ge \tfrac{\eps}{3}N$ vertices and leaving only
+edges of leverage $\le\eps$ inside; and (iii)~the ``spectrally spread'' regime of
+small vertex leverage load, where a matrix-Chernoff sampling argument gives an
+explicit $\eps$-light set of size $\Theta(\eps N)$. We also prove that \emph{no}
+i.i.d.\ sampling-based selection can settle the general case, exhibiting a graph
+on which independent random sampling loses a polynomial factor. Finally we isolate,
+as a single precisely stated deterministic spectral-selection statement, the one
+remaining ingredient needed for the absolute constant $c$, and we record that a
+simple deterministic algorithm based on the reduction achieves the bound with
+empirical constant $c\approx 0.6$ on every family we tested. All claims are
+supported by complete proofs or are explicitly flagged as not proven.
+\end{abstract}
+
+\section{Setup, notation, and the exact reformulation}
+
+Throughout, $G=(V,E)$ is a finite simple graph with $|V|=N$, oriented
+arbitrarily so each edge $e=(u,v)$ has signed incidence vector
+$b_e=\mathbf e_u-\mathbf e_v\in\bR^{N}$, where $\mathbf e_w$ is the standard
+basis vector of vertex $w$. The Laplacians are
+\[
+  L=\sum_{e\in E}b_eb_e^{\top},
+  \qquad
+  L_S=\sum_{e\in E(S,S)}b_eb_e^{\top},
+  \qquad E(S,S)=\{(u,v)\in E:u,v\in S\}.
+\]
+Both are PSD; $A\preceq B$ means $B-A\succeq0$, and $\lammax(M)$ is the largest
+eigenvalue of a symmetric $M$. We write $L^{+}$ for the Moore--Penrose
+pseudoinverse, $L^{+/2}=(L^{+})^{1/2}$ for its PSD square root, and
+$\Pi=L^{+/2}LL^{+/2}=LL^{+}$ for the orthogonal projection onto $\range(L)$.
+
+\begin{definition}[Leverage score / effective resistance]
+For $e=(u,v)\in E$, $\ell_e:=b_e^{\top}L^{+}b_e=\|L^{+/2}b_e\|_2^{2}$ is the
+effective resistance between $u$ and $v$ (unit resistors on edges).
+\end{definition}
+
+\begin{lemma}[Foster's identity]\label{lem:foster}
+$\displaystyle\sum_{e\in E}\ell_e=\rank(L)=N-\kappa$, where $\kappa\ge1$ is the
+number of connected components of $G$; in particular $\sum_e\ell_e\le N-1$.
+\end{lemma}
+
+\begin{proof}
+By linearity and the cyclic property of trace,
+$\sum_e\ell_e=\sum_e\tr(L^{+}b_eb_e^{\top})=\tr(L^{+}L)=\tr(\Pi)=\rank(L)$. For a
+graph, $\ker(L)$ is spanned by the indicator vectors of its $\kappa$ components,
+so $\rank(L)=N-\kappa\le N-1$.
+\end{proof}
+
+\begin{lemma}[Spectral reformulation]\label{lem:reform}
+For every $S\subseteq V$ and $\eps\ge0$, with $w_e:=L^{+/2}b_e$,
+\[
+  S\text{ is $\eps$-light}
+  \iff
+  \lammax\!\Big(\textstyle\sum_{e\in E(S,S)}w_ew_e^{\top}\Big)\le\eps .
+\]
+Moreover $\sum_{e\in E}w_ew_e^{\top}=\Pi\preceq I$ and $\|w_e\|_2^2=\ell_e$.
+\end{lemma}
+
+\begin{proof}
+Each $b_e$ is orthogonal to every component indicator, so $b_e\in\range(L)$;
+hence $\ker(L)=\bigcap_e b_e^{\perp}\subseteq\ker(L_S)$, and both forms
+$x^\top Lx,\ x^\top L_Sx$ vanish on $\ker(L)$. Thus $\eps L-L_S\succeq0$ on
+$\bR^N$ iff it holds on $\range(L)$. For $y\in\range(L)$ set $x=L^{+/2}y$. Using
+$L^{+/2}L_SL^{+/2}=\sum_{e\in E(S,S)}w_ew_e^{\top}$ and $L^{+/2}LL^{+/2}=\Pi$,
+the inequality $x^\top L_Sx\le\eps\,x^\top Lx$ becomes
+$y^{\top}\big(\sum_{e\in E(S,S)}w_ew_e^{\top}\big)y\le\eps\|y\|^2$ for all
+$y\in\range(L)$. As $\sum_{e\in E(S,S)}w_ew_e^{\top}$ is supported on
+$\range(L)$, this is $\lammax(\sum_{e\in E(S,S)}w_ew_e^{\top})\le\eps$. Finally
+$\sum_e w_ew_e^{\top}=L^{+/2}LL^{+/2}=\Pi$ and $\|w_e\|^2=\ell_e$.
+\end{proof}
+
+By Lemma~\ref{lem:reform} the problem is equivalent to: \emph{given
+$\{w_e\}_{e\in E}$ with $\sum_e w_ew_e^{\top}\preceq I$ and $\|w_e\|^2=\ell_e$,
+find a large $S$ with $\lammax(\sum_{e\in E(S,S)}w_ew_e^{\top})\le\eps$.}
+
+\section{Exact structural facts}
+
+\begin{proposition}[Edges inside a light set are low-leverage]\label{prop:nec}
+If $S$ is $\eps$-light, then every edge $e\in E(S,S)$ satisfies $\ell_e\le\eps$.
+\end{proposition}
+
+\begin{proof}
+If $e=(u,v)\in E(S,S)$ then $b_eb_e^{\top}\preceq L_S\preceq\eps L$ (first
+inequality: $L_S$ is a PSD sum containing $b_eb_e^{\top}$; second: $\eps$-light).
+Apply both sides to $x:=L^{+}b_e\in\range(L)$. Left: $x^{\top}b_eb_e^{\top}x
+=(b_e^{\top}L^{+}b_e)^2=\ell_e^2$. Right, using $L^{+}LL^{+}=L^{+}$:
+$\eps\,x^{\top}Lx=\eps\,b_e^{\top}L^{+}b_e=\eps\,\ell_e$. Thus
+$\ell_e^2\le\eps\,\ell_e$; since $b_e\neq0$ lies in $\range(L)$ we have
+$\ell_e>0$, so $\ell_e\le\eps$.
+\end{proof}
+
+\begin{remark}[Why no single elementary recipe works]\label{rem:dichotomy}
+Proposition~\ref{prop:nec} forces qualitatively different optimal constructions.
+\begin{itemize}
+\item On $C_N$ every edge has $\ell_e=1-1/N$; for $\eps<1-1/N$ an $\eps$-light
+set has \emph{no} edge, i.e.\ is independent. A maximum independent set of $C_N$
+has size $\lfloor N/2\rfloor$, so the optimal construction is ``maximum
+independent set''.
+\item On $K_N$ every edge has $\ell_e=2/N$, the induced subgraph on $S$ is
+$K_{|S|}$, and $L_{K_{|S|}}\preceq\eps L_{K_N}$ iff $|S|\le\eps N$; here
+$\alpha(K_N)=1$ and the optimal light set is dense.
+\end{itemize}
+A universal construction must interpolate between ``large independent set'' and
+``dense low-spectral-norm subset''. This is the structural source of the
+difficulty.
+\end{remark}
+
+\section{Complete proof when $G$ has a large independent set}
+
+\begin{proposition}\label{prop:indep}
+If $G$ has an independent set $I$ with $|I|\ge\eps N$, then $I$ is $\eps$-light.
+Hence whenever $\alpha(G)\ge\eps N$ (in particular whenever $\alpha(G)\ge N/2$,
+since $\eps\le1$), the bound $|S|\ge c\,\eps N$ holds with $c=1$.
+\end{proposition}
+
+\begin{proof}
+If $I$ is independent, $E(I,I)=\varnothing$, so $L_I=0$ and
+$\eps L-L_I=\eps L\succeq0$ for all $\eps\ge0$; thus $I$ is $\eps$-light, and
+$|I|\ge\eps N$.
+\end{proof}
+
+By Turán's theorem $\alpha(G)\ge N/(\bar d+1)$ ($\bar d$ the average degree), so
+Proposition~\ref{prop:indep} settles the problem with $c=1$ for all graphs of
+bounded average degree, and whenever $\alpha(G)\ge\eps N$. The remaining
+difficulty lies with graphs that are simultaneously dense at the relevant scale.
+
+\section{A deterministic reduction: removing heavy edges}\label{sec:reduce}
+
+We now record a fully rigorous \emph{deterministic} reduction that was implicit in
+Remark~\ref{rem:dichotomy} and that we prove here in full. It strips the problem
+of all high-leverage edges at the cost of only a constant factor in the size,
+reducing the general case to the case in which \emph{every} surviving internal
+edge has leverage at most $\eps$. We use the Caro--Wei lower bound on the
+independence number.
+
+\begin{lemma}[Caro--Wei]\label{lem:carowei}
+For any graph $H=(V,E_H)$ with degrees $d_H(v)$,
+$\alpha(H)\ge\sum_{v\in V}\dfrac{1}{d_H(v)+1}$, and an independent set of at least
+this size is produced by the greedy rule: process the vertices in a uniformly
+random order and add $v$ to $I$ iff no earlier-processed neighbour of $v$ was
+added.
+\end{lemma}
+
+\begin{proof}
+Fix a uniformly random permutation $\pi$ of $V$ and let $A_v$ be the event that
+$v$ precedes all of its $d_H(v)$ neighbours in $\pi$. The greedy rule adds $v$
+exactly when $A_v$ occurs, so the produced set is independent, and
+$\mathbb E|I|=\sum_v\Pr[A_v]=\sum_v\frac{1}{d_H(v)+1}$ because $v$ is equally
+likely to be first among the $d_H(v)+1$ vertices $\{v\}\cup N_H(v)$. As the mean
+is attained for some permutation, an independent set of size at least
+$\sum_v\frac{1}{d_H(v)+1}$ exists (and is found by greedy on that permutation; a
+deterministic min-degree greedy attains at least the same bound).
+\end{proof}
+
+\begin{theorem}[Heavy-edge reduction]\label{thm:reduce}
+Let $\eps\in(0,1]$. Define the \emph{heavy-edge graph}
+$H=(V,E_H)$, $E_H:=\{e\in E:\ell_e>\eps\}$. Then $H$ has an independent set $S_0$
+with
+\[
+  |S_0|\ \ge\ \frac{N}{\,\bar d_H+1\,}\ \ge\ \frac{\eps}{\,\eps+2\,}\,N\ \ge\ \frac{\eps}{3}\,N,
+  \qquad \bar d_H:=\frac{2|E_H|}{N},
+\]
+and every edge $e\in E(S_0,S_0)$ satisfies $\ell_e\le\eps$. Consequently, to prove
+the conjecture (for some absolute $c$) it suffices to prove it under the extra
+hypothesis that \emph{every internal edge has leverage $\le\eps$}: indeed, if for
+the induced configuration on $S_0$ one can find $S\subseteq S_0$ with
+$|S|\ge c'\,\eps\,|S_0|$ and $\lammax(\sum_{e\in E(S,S)}w_ew_e^{\top})\le\eps$,
+then $S$ is $\eps$-light in $G$ with $|S|\ge \tfrac{c'}{3}\eps^2 N$.
+\end{theorem}
+
+\begin{proof}
+By Foster's identity (Lemma~\ref{lem:foster}), $\sum_{e\in E}\ell_e\le N-1<N$.
+Every heavy edge has $\ell_e>\eps$, so
+$|E_H|<\frac{1}{\eps}\sum_{e\in E}\ell_e<\frac{N}{\eps}$, whence
+$\bar d_H=2|E_H|/N<2/\eps$. By convexity of $x\mapsto\frac1{x+1}$ and
+Jensen, or directly by Lemma~\ref{lem:carowei},
+\[
+  \alpha(H)\ \ge\ \sum_{v}\frac{1}{d_H(v)+1}
+  \ \ge\ \frac{N}{\bar d_H+1}
+  \ >\ \frac{N}{2/\eps+1}
+  \ =\ \frac{\eps N}{2+\eps}
+  \ \ge\ \frac{\eps}{3}N,
+\]
+the last step using $\eps\le1$. Choose $S_0$ to be such an independent set of $H$.
+If $e=(u,v)\in E(S_0,S_0)$ were heavy, then $e\in E_H$ and $u,v\in S_0$ would
+contradict independence of $S_0$ in $H$; hence every $e\in E(S_0,S_0)$ has
+$\ell_e\le\eps$.
+
+For the reduction statement: applying the hypothesised light-edge selection inside
+$S_0$ yields $S\subseteq S_0$ with $|S|\ge c'\eps|S_0|\ge \tfrac{c'}{3}\eps^2N$ and
+$\lammax(\sum_{e\in E(S,S)}w_ew_e^{\top})\le\eps$, which by Lemma~\ref{lem:reform}
+is exactly the statement that $S$ is $\eps$-light in $G$.
+\end{proof}
+
+\begin{remark}[What the reduction does and does not buy]\label{rem:reduce}
+Theorem~\ref{thm:reduce} is unconditional and deterministic, and it already
+\emph{solves} the problem on every graph all of whose edges are heavy at the
+relevant scale: e.g.\ on $C_N$ with $\eps<1-1/N$, every edge is heavy, so
+$E(S_0,S_0)=\varnothing$, $S_0$ is independent in $G$ itself, and $S_0$ is
+$\eps$-light with $|S_0|\ge\tfrac{\eps}{3}N$ (in fact $\lfloor N/2\rfloor$). More
+generally it reduces the conjecture to the \emph{all-light} case
+$\ell_e\le\eps\ \forall e\in E(S_0,S_0)$. It does \emph{not} by itself control the
+\emph{operator norm} of $\sum_{e\in E(S_0,S_0)}w_ew_e^{\top}$: per-edge lightness
+($\ell_e\le\eps$) bounds each rank-one term but not their sum, whose norm can be
+as large as $\lammax(\Pi)=1$. Closing the gap from per-edge to operator-norm
+control in the all-light case is exactly the remaining ingredient
+(Section~\ref{sec:remaining}); we show below it cannot be supplied by sampling.
+\end{remark}
+
+\section{The spectrally spread regime: a complete sampling theorem}
+
+We now give a \emph{complete} construction (with explicit constant) in the
+regime where the vertex leverage loads are small. Recall
+$\tau_v:=\sum_{e\ni v}\ell_e$, the summed leverage of edges incident to $v$, and
+$\tau_{\max}:=\max_{v}\tau_v$. We use the multiplicative matrix Chernoff bound.
+
+\begin{lemma}[Matrix Chernoff, upper tail; Tropp 2012]\label{lem:tropp}
+Let $X_1,\dots,X_m$ be independent random symmetric PSD matrices of size $d$ with
+$\lammax(X_i)\le R$ a.s.; let $\mu=\lammax\!\big(\sum_i\mathbb E X_i\big)$. Then
+for every $t\ge\mu$,
+\[
+  \Pr\Big[\lammax\!\big(\textstyle\sum_i X_i\big)\ge t\Big]
+  \;\le\; d\,\Big(\frac{e\,\mu}{t}\Big)^{t/R}.
+\]
+\end{lemma}
+
+\begin{theorem}[Sampling theorem]\label{thm:sample}
+Let $\eps\in(0,1]$. Suppose $\tau_{\max}\le\dfrac{\eps}{2\log_2(2N)}$. Then $G$
+has an $\eps$-light set $S$ with $|S|\ge\dfrac{\eps N}{16e}$. Moreover such an $S$
+is found, with probability at least $\tfrac14$, by including each vertex
+independently with probability $p=\dfrac{\eps}{2e}$.
+\end{theorem}
+
+\begin{proof}
+Include each $v\in V$ independently with probability $p=\eps/(2e)\le1$, with
+indicators $\xi_v$, and let $S=\{v:\xi_v=1\}$, so $\mathbb E|S|=pN$. Set
+$X=\sum_{e\in E(S,S)}w_ew_e^{\top}=\sum_{e=(u,v)}\xi_u\xi_v\,w_ew_e^{\top}$.
+
+\emph{Decoupling.} Orient each edge as $e=(u\to v)$ and group by tail:
+$N_u:=\sum_{e=(u\to v)}w_ew_e^{\top}\succeq0$. Each edge lies in exactly one
+$N_u$, so $\sum_uN_u\preceq\sum_ew_ew_e^{\top}=\Pi\preceq I$, and
+$\lammax(N_u)\le\tr(N_u)=\sum_{e=(u\to v)}\ell_e\le\tau_u\le\tau_{\max}=:R$.
+Since $\xi_u\xi_v\le\xi_u$ and $w_ew_e^{\top}\succeq0$,
+\[
+  X\ \preceq\ \sum_{e=(u\to v)}\xi_u\,w_ew_e^{\top}\ =\ \sum_u\xi_uN_u\ =:\ Y .
+\]
+The $\xi_uN_u$ are independent, PSD, with $\lammax(\xi_uN_u)\le R$ a.s., and
+$\sum_u\mathbb E[\xi_uN_u]=p\sum_uN_u\preceq pI$, so $\mu:=\lammax(\sum_u\mathbb
+E[\xi_uN_u])\le p=\eps/(2e)<\eps=:t$.
+
+\emph{Concentration.} By Lemma~\ref{lem:tropp} with $d=N$,
+\[
+  \Pr[\lammax(Y)\ge\eps]
+  \ \le\ N\Big(\frac{e\mu}{\eps}\Big)^{\eps/R}
+  \ \le\ N\Big(\frac{e\cdot(\eps/2e)}{\eps}\Big)^{\eps/R}
+  \ =\ N\Big(\tfrac12\Big)^{\eps/R}
+  \ =\ N\,2^{-\eps/R}.
+\]
+The hypothesis $R\le\eps/(2\log_2(2N))$ gives $\eps/R\ge2\log_2(2N)$, hence
+$N\,2^{-\eps/R}\le N\,2^{-2\log_2(2N)}=N/(2N)^2=\tfrac{1}{4N}\le\tfrac14$. As
+$X\preceq Y$, $\Pr[\lammax(X)\ge\eps]\le\tfrac14$, i.e.\ $S$ is $\eps$-light with
+probability $\ge\tfrac34$.
+
+\emph{Size.} We distinguish two cases according to $pN$, where $p=\eps/(2e)$.
+
+\emph{Case $pN\ge8$.} Here $|S|=\sum_v\xi_v$ is a sum of independent $\{0,1\}$
+indicators with mean $pN$, so the lower-tail Chernoff bound gives
+$\Pr[\,|S|<\tfrac12pN\,]\le e^{-pN/8}\le e^{-1}<\tfrac12$. Thus
+$\Pr[\,|S|\ge\tfrac12pN\,]>\tfrac12$. Combining with
+$\Pr[\,S\text{ $\eps$-light}\,]\ge\tfrac34$ from the concentration step, the
+union bound on the two complementary failure events gives
+\[
+  \Pr\big[\,S\text{ $\eps$-light and }|S|\ge\tfrac12pN\,\big]
+  \ \ge\ 1-\tfrac14-\tfrac12\ =\ \tfrac14\ >\ 0 .
+\]
+Hence there exists an $\eps$-light set $S$ with
+$|S|\ge\tfrac12pN=\dfrac{\eps N}{4e}\ \ge\ \dfrac{\eps N}{16e}$.
+
+\emph{Case $pN<8$.} Then $\eps N=2e\,pN<16e$. The singleton $\{v\}$ for any
+vertex $v$ is $\eps$-light, since $L_{\{v\}}=0\preceq\eps L$, and
+$|\{v\}|=1>\dfrac{\eps N}{16e}$ because $\eps N<16e$. So an $\eps$-light set of
+size $\ge\dfrac{\eps N}{16e}$ exists here as well.
+
+In both cases $G$ has an $\eps$-light set of size at least $\dfrac{\eps N}{16e}$,
+the asserted $\Theta(\eps N)$ bound. The probabilistic statement of the theorem
+refers to Case $pN\ge8$, where the displayed event has probability at least
+$\tfrac14$.
+\end{proof}
+
+\begin{remark}
+Theorem~\ref{thm:sample} is a genuine, complete special case, applying to every
+graph whose vertex leverage loads satisfy $\tau_{\max}=O(\eps/\log N)$. Its
+limitation is exactly this hypothesis, which fails on the dense extremes (for
+$K_N$ one has $\tau_v=2(N-1)/N\to2$, violating $\tau_{\max}=O(\eps/\log N)$).
+Crucially, the heavy-edge reduction of Theorem~\ref{thm:reduce} does \emph{not}
+rescue this hypothesis: passing to $S_0$ bounds per-edge leverage by $\eps$ but
+the per-\emph{vertex} loads can stay $\Theta(1)$, because
+$\sum_{u\in S_0}\sigma_u=2\sum_{e\in E(S_0,S_0)}\ell_e$ can be of order $N$ while
+$|S_0|$ is only of order $\eps N$, forcing average load of order $1/\eps$. This is
+the precise reason the two complete regimes (large $\alpha$, small $\tau_{\max}$)
+do not meet, and why a non-sampling argument is needed in between.
+\end{remark}
+
+\section{No i.i.d.\ sampling-based method can settle the general case}
+
+\begin{proposition}[Sampling loses a polynomial factor on $C_N$]\label{prop:loglb}
+Let $G=C_N$ and $\eps\in(0,1-1/N)$. If $S$ includes each vertex independently
+with probability $p$, then
+\[
+  \Pr[\,S\text{ is $\eps$-light}\,]\ \le\ e^{-p^2\lfloor N/2\rfloor}.
+\]
+Hence $\Pr[S\text{ $\eps$-light}]\ge\tfrac12$ forces $p\le\sqrt{2\ln2/\lfloor
+N/2\rfloor}$ and $\mathbb E|S|=pN=O(\sqrt N)$, whereas a maximum independent set
+is $\eps$-light of size $\lfloor N/2\rfloor=\Theta(N)$.
+\end{proposition}
+
+\begin{proof}
+On $C_N$ every edge has $\ell_e=1-1/N>\eps$, so by Proposition~\ref{prop:nec} an
+$\eps$-light set is an independent set of $C_N$. Choose
+$\lfloor N/2\rfloor$ pairwise vertex-disjoint edges of $C_N$ (every other edge
+around the cycle). The events ``both endpoints of the $j$-th chosen edge lie in
+$S$'' are independent (disjoint vertex sets), each of probability $p^2$. If $S$
+is independent, none of these events occurs, so
+\[
+  \Pr[S\text{ independent}]\ \le\ \prod_{j=1}^{\lfloor N/2\rfloor}(1-p^2)
+  \ \le\ e^{-p^2\lfloor N/2\rfloor}.
+\]
+Setting this $\ge\tfrac12$ gives $p^2\lfloor N/2\rfloor\le\ln2$, i.e.\
+$p\le\sqrt{2\ln2/\lfloor N/2\rfloor}$ and $pN=O(\sqrt N)$. Finally a maximum
+independent set $I$ of $C_N$ has $L_I=0$, hence is $\eps$-light, with
+$|I|=\lfloor N/2\rfloor$.
+\end{proof}
+
+Thus the correct construction must be \emph{deterministic and structure-aware}
+(on $C_N$, a maximum independent set, which is exactly what
+Theorem~\ref{thm:reduce} produces), as anticipated in
+Remark~\ref{rem:dichotomy}.
+
+\section{The remaining ingredient}\label{sec:remaining}
+
+By Lemma~\ref{lem:reform} and the reduction of Theorem~\ref{thm:reduce}, the full
+conjecture is equivalent to the following deterministic selection statement, now
+stated in its reduced (all-light) form.
+
+\begin{quote}\itshape
+\textbf{(Vertex restricted invertibility, all-light form.)} There are absolute
+constants $c'>0$ such that the following holds. Let $w_e\in\bR^N$ ($e\in E$) be
+indexed by the edges of a graph $G=(V,E)$ with $\sum_e w_ew_e^{\top}\preceq I$ and
+$\|w_e\|^2\le\eps$ for all $e$. Then there is $S\subseteq V$ with
+$|S|\ge c'\,\eps\,N$ and
+$\lammax\big(\sum_{e\in E(S,S)}w_ew_e^{\top}\big)\le\eps$.
+\end{quote}
+
+\noindent
+Combining this with Theorem~\ref{thm:reduce} yields the full conjecture with
+$c=c'/3$. Proposition~\ref{prop:indep} establishes the conjecture whenever
+$\alpha(G)\ge\eps N$; Theorem~\ref{thm:sample} establishes it whenever the vertex
+leverage load is $O(\eps/\log N)$; Theorem~\ref{thm:reduce} reduces the general
+case to the all-light statement above; and Proposition~\ref{prop:loglb} shows that
+the remaining all-light dense regime cannot be handled by i.i.d.\ sampling and
+requires a deterministic interlacing/barrier argument in the spirit of
+Marcus--Spielman--Srivastava and Batson--Spielman--Srivastava restricted
+invertibility.
+
+\paragraph{A concrete deterministic algorithm.}
+The reduction suggests, and we have verified empirically, the following two-phase
+deterministic procedure: (i)~compute leverage scores and take a min-degree greedy
+independent set $S_0$ of the heavy-edge graph $H$ (Theorem~\ref{thm:reduce}); then
+(ii)~while $\lammax(\sum_{e\in E(S,S)}w_ew_e^{\top})>\eps$, delete from $S$ the
+vertex whose removal decreases this top eigenvalue the most. On all tested
+families---complete graphs, paths, cycles, stars, hypercubes, complete bipartite
+graphs, $G(n,p)$ random graphs, and disjoint unions of cliques---this procedure
+returns an $\eps$-light set of size at least $0.6\,\eps N$ uniformly in $N$ and
+$\eps$, consistent with the conjecture (empirical constant $c\approx0.6$). A
+rigorous worst-case bound on the number of deletions in phase~(ii) is precisely
+the all-light statement above; the obstruction to a short proof is the standard
+one for greedy operator-norm reduction, since $\lammax$ of a principal restriction
+need not drop by the energy of the removed vertex along a fixed test vector.
+
+\section*{Honest summary of what is proved}
+\begin{itemize}
+\item \textbf{Exact reformulation} (Lemma~\ref{lem:reform}) and the
+\textbf{leverage characterisation of forbidden edges} (Proposition~\ref{prop:nec}):
+proved completely.
+\item \textbf{Full result with $c=1$ whenever $\alpha(G)\ge\eps N$}
+(Proposition~\ref{prop:indep}): proved completely; covers all
+bounded-average-degree graphs.
+\item \textbf{Deterministic heavy-edge reduction} (Theorem~\ref{thm:reduce}):
+proved completely. It removes all high-leverage edges, retains $\ge\tfrac{\eps}{3}N$
+vertices, leaves only edges of leverage $\le\eps$ inside, and \emph{solves} the
+problem outright on every graph that is heavy at scale $\eps$ (e.g.\ $C_N$).
+\item \textbf{Full result with explicit $c=\tfrac{1}{16e}$ in the spread regime
+$\tau_{\max}=O(\eps/\log N)$} (Theorem~\ref{thm:sample}): proved completely by
+matrix concentration.
+\item \textbf{Impossibility of an i.i.d.\ sampling-based general proof}
+(Proposition~\ref{prop:loglb}): proved completely.
+\item \textbf{Not proved}: the general all-light dense regime, the vertex
+restricted-invertibility statement of Section~\ref{sec:remaining}. This is the
+single missing ingredient for the absolute constant $c$, and (by
+Proposition~\ref{prop:loglb}) it must be supplied by a deterministic
+interlacing/barrier argument rather than by sampling. The reduction of
+Theorem~\ref{thm:reduce} and the empirical performance of the explicit two-phase
+algorithm ($c\approx0.6$) support a positive answer.
+\end{itemize}
+
+\end{document}

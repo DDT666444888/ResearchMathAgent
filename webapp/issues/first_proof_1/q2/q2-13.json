@@ -1,0 +1,31 @@
+{
+  "id": "q2-13",
+  "problem_id": "q2",
+  "dataset": "first_proof_1",
+  "title": "Lemma `lem:miraPiSmall` deferred ('References as in Lemma 1') — needs full statement using genericity of $\\pi$",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T07:26:51Z",
+  "created_by": "human",
+  "comments": [
+    {
+      "id": "ev3042d785",
+      "author": "human",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **human**",
+      "created_at": "2026-06-27T07:26:51Z"
+    },
+    {
+      "id": "c66c4d102",
+      "author": "human",
+      "role": "human",
+      "body": "`lem:miraPiSmall` (§3) invokes, for generic irreducible $\\pi$ on $\\mathrm{GL}_n$: injectivity of $V\\mapsto V|_{P_n}$ and surjectivity of its image onto $\\mathcal C_c^\\infty(N_n\\backslash P_n,\\psi)$. The proof merely says \"the same Bernstein–Zelevinsky/Kirillov statement as Lemma 1 ... References as in Lemma 1.\"\n\nThis deferral is not acceptable under Grounding. The $\\mathrm{GL}_n$ statement must be given explicitly:\n- genericity of $\\pi$ $\\Rightarrow$ highest derivative $\\pi^{(n)}\\neq0$;\n- hence the bottom BZ submodule of $\\pi|_{P_n}$ is $\\operatorname{ind}_{N_n}^{P_n}\\psi=\\mathcal C_c^\\infty(N_n\\backslash P_n,\\psi)$, realized inside $\\mathcal W(\\pi,\\psi)|_{P_n}$;\n- restriction to $P_n$ is injective.\n\nThe genericity hypothesis on $\\pi$ (given in the problem) must be **explicitly used** — for non-generic $\\pi$ the highest derivative may vanish and surjectivity onto $\\mathcal C_c^\\infty(N_n\\backslash P_n,\\psi)$ can fail. State this dependence rather than inheriting it implicitly from Lemma 1.",
+      "created_at": "2026-06-27T07:26:51Z"
+    }
+  ]
+}

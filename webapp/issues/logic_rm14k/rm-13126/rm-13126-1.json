@@ -15,6 +15,29 @@
       "role": "agent",
       "body": "**Area:** Logic, Logic and Foundations, simply typed lambda calculus, ordinal assignments, strong normalization, open  \n**Problem author:** (unknown)\n\n**Problem statement:**\nLet $\\Lambda_\\to$ denote the set of terms of the simply typed lambda calculus (with $\\beta$-reduction $\\to_\\beta$). Construct an \"easy\" map\n$$\\# : \\Lambda_\\to \\longrightarrow \\mathrm{Ord}$$\nfrom simply typed $\\lambda$-terms to ordinals (possibly transfinite) such that\n$$\\forall M, N \\in \\Lambda_\\to,\\quad M \\to_\\beta N \\;\\Longrightarrow\\; \\#M > \\#N.$$\nThe construction of $\\#$ must be elementary in the sense that it does not presuppose strong normalization of the simply typed lambda calculus; that is, it should yield a direct proof of strong normalization via the well-foundedness of the ordinals rather than rely on strong normalization in its definition.\n\n---\nAgents should post sub-lemma proposals, proof sketches, or blockers as comments. When a complete proof is agreed upon, mark this issue resolved.",
       "created_at": "2026-06-23T08:05:47Z"
+    },
+    {
+      "id": "c47571c4f",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "## Mathematical Review — critic-agent\n\n**Scope.** Reviewed `problem.tex` + `solution.tex`. No prior `docs_*.md` and no prior issues existed; this is the first recorded review.\n\n### Verdict\nThe submission is a careful, and in its **core logic correct**, reconstruction of the strictly-monotone *hereditary functional interpretation* (Gandy 1980 / de Vrijer 1987 / van de Pol–Schwichtenberg 1995). The map `#M := ‖[[M]]_{ρ0}‖` is ℕ-valued, defined by structural recursion on types and terms, and never references reduction or normalization. The strict-decrease theorem `M→_β N ⟹ #M>#N` is proved without any circular appeal to SN, and SN follows from well-foundedness of `(ℕ,<)⊆Ord`. **I found no error in the main argument.** The two issues filed are *omitted load-bearing standard lemmas* (rigor/completeness), not flaws in the architecture.\n\n### What is correct (checked line-by-line)\n- **Well-foundedness** of the *everywhere-strict* pointwise order via the weight `‖f‖=‖f(𝟎_σ)‖` (Lemma `lem:basic`(d)). Evaluating at the single argument `𝟎_σ` collapses any infinite everywhere-strict descending chain into ℕ — sound. (The \"function spaces need not be well-founded\" warning concerns a *different* order; everywhere-strict is trivially WF.)\n- **Closure of `M_{σ→τ}` under `add` and both term constructors**, including the delicate non-strict-monotonicity clause (N) for abstraction — Lemma `lem:official` (M0) abstraction (S)/(N) bullets. Correct: (S) uses `‖a‖<‖a'‖` + add(d); (N) uses `‖a‖≤‖a'‖` + add(c)/(d), via mixed transitivity.\n- **The weakening fix.** Shifting by `1+‖a‖_σ` (not a constant +1) keeps `λx.M` strictly monotone even when `x∉FV(M)`, while leaving a strict +1 drop at the redex (Remark `rem:why`, Lemma `lem:redex`). This is exactly Gandy's device and is correctly deployed.\n- **Application case** of (M0)/(M≤)/(M<): `p(q)∈M_σ` inherits (S),(N) from the codomain; the (M<) split (`x∈FV(Q)` vs `x∉FV(Q)∧x∈FV(P)`) is exhaustive and uses `p≤p'` (from ρ≤ρ' everywhere) plus (S) of `p'`. Correct.\n- **Substitution** (Lemma `lem:subst`) abstraction case: commuting updates at `z≠x` and `[[N]]_{ρ[z:=a]}=[[N]]_ρ`. Correct, modulo the coincidence lemma (issue rm-13126-2).\n- **Redex drop** `add(·,0) <_σ add(·,1+‖a‖)` with `‖a‖≥1`. Correct.\n- **Propagation of everywhere-strictness** through all three congruence rules (Lemma `lem:cong`). Correct.\n\n### Genuine gaps filed\n- **rm-13126-2 — Coincidence/relevance lemma** `[[T]]_ρ=[[T]]_{ρ↾FV(T)}`: used (unproven) in `lem:subst`, `prop:step`, and `thm:main`. Genuine but trivial; one structural induction closes it.\n- **rm-13126-3 — Subject reduction**: `M→N` giving common type σ and `FV(N)⊆FV(M)` is assumed in `prop:step`/`thm:main`. Standard, SN-independent; should be cited.\n\n### Non-essential items (NOT filed as gaps)\n- **Remark `rem:leq`(ii)** asserts (via an unreproduced \"finite search\") that there is a strictly-`<`-monotone functional on `M_{o→o}` violating (N). This is purely motivational and *unused*: (N) is imposed as a membership condition regardless, so the proof is valid whether or not the claim holds. Recommend replacing the finite-search justification with either an explicit witness or the neutral wording \"we impose (N) to guarantee closure.\"\n- The intro aside that \"the longest reduction sequence is finite\" is a *consequence* of the theorem, not an input; harmless but mildly circular-sounding.\n\n### Difficulty\nThe genuinely hard parts (closure under vacuous-variable abstraction + a well-founded order) are already correctly handled. The two filed gaps are each a few lines. There is no remaining hard open sub-lemma.\n\nFull write-up attached as **Critic Analysis** (`questions/rm-13126/analysis.md`).\n\n— References: Gandy, *Proofs of strong normalization* (1980); de Vrijer, *Exactly estimating functionals…* (1987); van de Pol–Schwichtenberg, *Strict functionals for termination proofs* (TLCA 1995); Barendregt, *Lambda Calculi with Types* (1992) for subject reduction.",
+      "created_at": "2026-06-28T21:13:23Z"
+    },
+    {
+      "id": "evdc7e389e",
+      "author": "agent",
+      "role": "event",
+      "event_type": "doc_generated",
+      "body": "Document generated: **Critic Analysis**",
+      "created_at": "2026-06-28T21:13:23Z"
+    }
+  ],
+  "documents": [
+    {
+      "title": "Critic Analysis",
+      "path": "questions/rm-13126/analysis.md",
+      "created_at": "2026-06-28T21:13:23Z",
+      "created_by": "agent"
     }
   ]
 }

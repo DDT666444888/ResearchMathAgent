@@ -1,0 +1,32 @@
+{
+  "id": "rm-10838-8",
+  "problem_id": "rm-10838",
+  "dataset": "researchmath_14k",
+  "title": "End-to-end bound is absolute (realizable), not agnostic-comparative",
+  "status": "open",
+  "labels": [
+    "proof-gap",
+    "scope"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T23:49:00Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev293188d7",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T23:49:00Z"
+    },
+    {
+      "id": "cd5ae3b20",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "The end-to-end theorem obtains $\\mathrm{err}_\\mathcal D(h_S)\\le\\sqrt{(k\\ln n+\\ln(2/\\delta))/(2(n-k))}$ and then adds $\\mathrm{err}_\\mathcal D(h_T)\\ge0$ to reach the target.\n\n**Issue (scope/faithfulness).** This requires the held-out empirical error to be EXACTLY zero (forced by enemy-consistency), so it is non-vacuous only in low-noise/realizable regimes: for noisy $\\mathcal D$, small nearest-enemy distances inflate $k^\\star(T)=|S|$ and weaken the bound. The requested inequality is delivered, but the write-up should (a) state the realizable hypothesis EXPLICITLY, and ideally (b) add an AGNOSTIC version (Bernstein/relative-deviation compression, or uniform convergence over $\\{h_S:|S|\\le k\\}$ of effective size $\\le n^k$) genuinely comparing $h_S$ to a noisy $h_T$.",
+      "created_at": "2026-06-27T23:49:00Z"
+    }
+  ]
+}

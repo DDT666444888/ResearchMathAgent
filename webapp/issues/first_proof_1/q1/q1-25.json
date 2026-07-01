@@ -1,0 +1,31 @@
+{
+  "id": "q1-25",
+  "problem_id": "q1",
+  "dataset": "first_proof_1",
+  "title": "Lemma logdiv: reduction of the space-time contraction c_{N,2} to the spatial sum, and uniform time-integral lower bound, are glossed",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T11:50:45Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev44ba5efd",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T11:50:45Z"
+    },
+    {
+      "id": "ceab980ff",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Location:** Lemma `lem:logdiv` and the derivation of the renormalization constant in eq. `eq:cN2`.\n\n**Gap (MODERATE, rigor).** The proof of $c_{N,2}\\simeq\\log N$ is given only for the\n*already-reduced* equal-time spatial sum\n$$c_{N,2}=3\\sum_{|q_1|,|q_2|\\le N}\\frac{1}{\\langle q_1\\rangle^2\\langle q_2\\rangle^2(\\langle q_1\\rangle^2+\\langle q_2\\rangle^2+1)}.$$\nWhat is **not** written is the reduction of the actual space–time object (the contraction of\nthe stationary covariance of $\\mathbf l$ with the Duhamel representation $K$ of $\\mathbf C$,\neq. `eq:Ckernel`/`eq:order1field`) to this spatial sum. Two sub-steps are glossed:\n\n1. The **time integration** of the two OU/heat kernels that produces the equal-time weight\n   $K(-q_1,-q_2,0)=(\\langle q_1\\rangle^2+\\langle q_2\\rangle^2+1)^{-1}$. The summand of\n   `eq:cN2` is asserted but the integral $\\int K\\,dt$ giving it is not carried out.\n2. A **uniform-in-frequency positive lower bound** on that time integral, which is what is\n   actually needed for the *lower* bound $c_{N,2}\\ge c_-\\log N$ (the spatial argument\n   $\\int_1^N dr/r=\\log N$ is fine *given* the summand, but the positivity of the time\n   integral uniformly in $(q_1,q_2)$ must be stated).\n\n**Status of the spatial part.** The lattice-sum $\\asymp\\log N$ argument itself is\nessentially correct; I confirmed numerically that the positive lattice sum grows and is\nconsistent with $\\log N$ up to a slowly varying factor for small $N$. So this is a\nfixable write-up gap, not a fatal one — but the lower bound $c_{N,2}\\gtrsim\\log N$ is the\nquantitative engine of the whole strategy and must be derived from the genuine space–time\ncontraction, not from a postulated spatial summand.\n\n(Not covered by existing open issues, which target the resonance constant's *combinatorial*\nvalue q1-15/q1-4, not the analytic reduction to the spatial sum.)",
+      "created_at": "2026-06-28T11:50:45Z"
+    }
+  ]
+}

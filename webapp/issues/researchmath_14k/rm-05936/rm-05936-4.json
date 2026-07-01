@@ -1,0 +1,31 @@
+{
+  "id": "rm-05936-4",
+  "problem_id": "rm-05936",
+  "dataset": "researchmath_14k",
+  "title": "Minor/expository: tighten well-definedness of φ in Lemma 2 (lem:rho-surj)",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T10:00:20Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "evc5d11507",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T10:00:20Z"
+    },
+    {
+      "id": "ce7f19bcb",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Location.** solution.tex Lemma 2 (lem:rho-surj), the paragraph beginning \"This is well defined:\".\n\nThe well-definedness of $\\varphi\\in\\operatorname{Hom}_A(I/I^2,A)$ is load-bearing (it is what makes $\\rho$ surjective), and the current write-up is correct but logically muddled. The clean statement: since the chosen $f_1,\\dots,f_r$ reduce to a **$k$-basis** of $V=I/\\mathfrak m_R I$, any $A$-linear relation $\\sum_j a_j[f_j]=0$ in $I/I^2$ lifts to $\\sum_j\\tilde a_j f_j\\in I^2\\subseteq\\mathfrak m_R I$; reducing mod $\\mathfrak m_R$ gives $\\sum_j\\bar a_j(f_j\\bmod\\mathfrak m_R I)=0$ in $V$, and because the $f_j\\bmod\\mathfrak m_R I$ are a **basis**, *every* $\\bar a_j=0$, i.e. each $a_j\\in\\mathfrak m$. Since $\\varphi([f_j])\\in k\\cdot 1_A$ is annihilated by $\\mathfrak m$, $a_j\\varphi([f_j])=0$ and the relation is preserved.\n\n**How to close.** Replace the existing paragraph with the above. This is a clarity fix, not a true error; flagged because the step is essential and the present phrasing obscures that all coefficients (not merely a particular linear combination) vanish.",
+      "created_at": "2026-06-28T10:00:20Z"
+    }
+  ]
+}

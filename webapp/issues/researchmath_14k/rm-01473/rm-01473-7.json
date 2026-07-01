@@ -1,0 +1,31 @@
+{
+  "id": "rm-01473-7",
+  "problem_id": "rm-01473",
+  "dataset": "researchmath_14k",
+  "title": "G6 (Moderate): Termination of Laporta/IBP reduction is argued circularly",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T10:42:43Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "evfe148da8",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T10:42:43Z"
+    },
+    {
+      "id": "c6db9e9d8",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Location:** Theorem `thm:reduction`, \"Termination of Steps 2–4.\"\n\nTermination is justified by \"the standard termination guarantee of Laporta's algorithm given a known finite basis size,\" citing `thm:finite`. Since `thm:finite` is itself unestablished for the thermal case (see G2), this is circular. Laporta's algorithm has no general termination proof independent of (i) finiteness of masters and (ii) an a-priori bound on the index range that must be seeded. The solution provides no such bound. A fix requires either a constructive bound on the maximal $|\\nu_j|$ entering the reduction or a separate Noetherian-stabilization argument.",
+      "created_at": "2026-06-27T10:42:43Z"
+    }
+  ]
+}

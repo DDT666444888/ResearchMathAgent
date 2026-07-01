@@ -1,0 +1,730 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb,amsfonts}
+\usepackage{mathrsfs}
+\usepackage[hidelinks]{hyperref}
+\usepackage[capitalize]{cleveref}
+\usepackage{stmaryrd}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{convention}[theorem]{Convention}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\Rbar}{\overline{\mathbb{R}}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\rk}{\operatorname{rk}}
+\newcommand{\cl}{\operatorname{cl}}
+\newcommand{\Trop}{\operatorname{Trop}}
+\newcommand{\op}{\operatorname{op}}
+\newcommand{\into}{\hookrightarrow}
+\newcommand{\onto}{\twoheadrightarrow}
+\newcommand{\Dr}{\mathbf{Dr}}
+\newcommand{\bV}{\mathbf V}
+\newcommand{\cLL}{\mathcal{L}}
+\newcommand{\cW}{\mathcal{W}}
+\newcommand{\PT}[1]{\mathbf{P}\big(\Rbar^{#1}\big)}
+
+\title{First proof: Duality for tropical linear subspaces}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\noindent
+Let $M$ be a matroid on the ground set $E=[n]$, of rank $r$, and let $\Trop(M)$ be the
+corresponding tropical linear space, i.e.\ the closure of the Bergman fan of $M$ in tropical
+projective space $\PT{n}$. The \emph{relative Dressian} of $M$ is the set
+\[
+  \Dr(M):=\{\text{tropical linear subspaces of }\Trop(M)\},
+\]
+partially ordered by inclusion of tropical linear spaces. Suppose $M$ admits an order-reversing
+involution $F\mapsto F^{\perp}$ on its lattice of flats $\cLL(M)$. There is a natural inclusion of
+posets $\cLL(M)^{\op}\into\Dr(M)$ given by $F\mapsto\Trop(M/F\oplus U_{0,F})$.
+
+\medskip
+\noindent\textbf{Theorem.} \emph{There is an order-reversing involution $\Phi$ on $\Dr(M)$ that
+extends the involution $F\mapsto F^{\perp}$; that is, $\Phi$ restricts to $F\mapsto F^{\perp}$ on the
+image of $\cLL(M)^{\op}\into\Dr(M)$.}
+
+\medskip
+
+We first fix conventions and the two standard foundational facts we use (\Cref{ssec:found}). We then
+prove the rank identity and lattice anti-automorphism property forced by $\perp$ (\Cref{lem:rank});
+show that every element of $\Dr(M)$ has a canonical \emph{flat-coordinate} description, the underlying
+valuated quotient being constant on bases lying in a fixed flat (\Cref{prop:constancy}); turn this
+into a \emph{cryptomorphism} by writing down the explicit relations that characterise the
+flat-coordinates of valuated quotients (\Cref{prop:crypto}); record that for \emph{modular} $M$ these
+relations have a manifestly $\perp$-invariant form supported on rank-two intervals
+(\Cref{prop:modline}); define $\Phi$ by precomposing flat-coordinates with $\perp$ (\Cref{def:Phi});
+and verify that $\Phi$ is well-defined (\Cref{prop:wd}), an involution (\Cref{prop:inv}),
+order-reversing (\Cref{prop:rev}), and extends $\perp$ (\Cref{prop:ext}). A remark at the end records
+the precise role of modularity and a correction to a tempting but false simplification of the
+relations.
+
+\section{Conventions and foundational facts}\label{ssec:found}
+
+We use the min-plus conventions on $\Rbar=\R\cup\{\infty\}$. A \emph{valuated matroid} of rank $k$ on
+$E$ is a function $\mu\colon\binom{E}{k}\to\Rbar$, not identically $\infty$, satisfying the tropical
+Pl\"ucker relations: for every $S\in\binom{E}{k-1}$ and every $T\in\binom{E}{k+1}$,
+\begin{equation}\label{eqn:plucker}
+  \min_{a\in T\setminus S}\bigl\{\mu(S+a)+\mu(T-a)\bigr\}\ \text{vanishes tropically,}
+\end{equation}
+i.e.\ either all summands are $\infty$, or the minimum is attained for at least two
+$a\in T\setminus S$; here $S+a:=S\cup\{a\}$ and $T-a:=T\setminus\{a\}$. Two valuated matroids of the
+same rank are \emph{equivalent} if they differ by a global additive constant; the support
+$\{B:\mu(B)<\infty\}$ is the set of bases of the \emph{underlying matroid} $\underline\mu$. The
+\emph{trivial valuation} $\underline M$ of $M$ is the rank-$r$ valuated matroid with $\underline
+M(B)=0$ if $B$ is a basis of $M$ and $\underline M(B)=\infty$ otherwise; thus $\underline{\underline
+M}=M$.
+
+\begin{definition}\label{def:quotient}
+Let $\nu,\mu$ be valuated matroids on $E$ of ranks $k\le m$. We say $\nu$ is a \emph{valuated
+quotient} of $\mu$, written $\mu\onto\nu$, if for every $S\in\binom{E}{k-1}$ and every
+$T\in\binom{E}{m+1}$,
+\begin{equation}\label{eqn:incidence-plucker}
+  \min_{a\in T\setminus S}\bigl\{\nu(S+a)+\mu(T-a)\bigr\}\ \text{vanishes tropically,}
+\end{equation}
+where $\nu$ is evaluated on the $k$-set $S+a$ and $\mu$ on the $m$-set $T-a$. When $m=k+1$ this is
+the \emph{elementary} quotient relation; for general $k\le m$, \eqref{eqn:incidence-plucker} is
+equivalent to the existence of a chain of elementary quotients $\mu=\mu_m\onto\cdots\onto\mu_k=\nu$
+(Murota; Brandt--Eur--Speyer--Sturmfels).
+\end{definition}
+
+\begin{proposition}[Dressian as poset of valuated quotients]\label{fact:dressian}
+Let $M$ be loopless of rank $r$. The assignment $\theta\mapsto\Trop\theta$ is an isomorphism of
+posets
+\[
+  \bV(M)/\!\sim\ \xrightarrow{\ \cong\ }\ \Dr(M),
+\]
+where $\bV(M):=\bigsqcup_{0\le k\le r}\bV^{k}(M)$, $\bV^{k}(M)$ is the set of corank-$k$ valuated
+quotients of $\underline M$ (valuated quotients of rank $r-k$), $\sim$ is equivalence up to a global
+additive constant, the order on $\bV(M)/\!\sim$ is the quotient relation ($\theta_2\ge\theta_1\iff
+\theta_2\onto\theta_1$), and the order on $\Dr(M)$ is inclusion. In particular $\theta_2\onto\theta_1
+\iff\Trop\theta_1\subseteq\Trop\theta_2$.
+\end{proposition}
+
+\begin{proof}
+This is the relative form of the standard correspondence between tropical linear subspaces and
+valuated matroids, and between inclusions and valuated quotients (Maclagan--Sturmfels,
+\emph{Introduction to Tropical Geometry}, Ch.~4; Brandt--Eur--Sturmfels; Brandt--Speyer). We verify
+its standing hypothesis that $M$ is loopless. A loop of $M$ lies in $\cl(\varnothing)$, the bottom
+flat $\hat0$. The order-reversing bijection $\perp$ sends the top $\hat1=E$ to the bottom, so
+$\hat1^{\perp}=\hat0$, $\hat0^{\perp}=\hat1$; in particular $\cLL(M)$ has length $r$ from $\hat0$ to
+$\hat1$, so $\hat0$ has rank $0$ and contains no nonloop. If $M$ had a set $L$ of loops, then
+$\Trop(M)$, $\cLL(M)$, $\perp$, and $\Dr(M)$ are unchanged on deleting $L$ (loops carry no coordinate
+in $\Trop M$); we may thus assume $M$ loopless.
+\end{proof}
+
+\begin{convention}\label{conv:perp}
+Throughout, $\perp$ is a fixed inclusion-reversing bijection $\cLL(M)\to\cLL(M)$ with
+$(F^{\perp})^{\perp}=F$. We use only the existence of $\perp$ and its lattice consequences derived
+below. Following the problem's terminology, a matroid whose lattice of flats admits such an
+involution is called \emph{modular}; we make the equivalent classical use of modularity (every pair
+of flats is a modular pair) precise where it is needed, in \Cref{lem:modular}.
+\end{convention}
+
+\section{The rank identity and modularity}
+
+\begin{lemma}\label{lem:rank}
+For every $F\in\cLL(M)$, $\rk_M(F)+\rk_M(F^{\perp})=r$. Moreover $\hat0^{\perp}=\hat1$ and
+$\hat1^{\perp}=\hat0$, where $\hat0=\cl(\varnothing)$, $\hat1=E$, and $\perp$ is an anti-automorphism
+of $\cLL(M)$: $(F\vee G)^{\perp}=F^{\perp}\wedge G^{\perp}$ and $(F\wedge G)^{\perp}=F^{\perp}\vee
+G^{\perp}$.
+\end{lemma}
+
+\begin{proof}
+$\cLL(M)$ is graded of rank $r$: every maximal chain $\hat0=G_0\lessdot\cdots\lessdot G_r=\hat1$ has
+length $r$, and $\rk_M(G)$ equals the height of $G$. An order-reversing bijection sends covers to
+covers ($A\lessdot B\iff B^{\perp}\lessdot A^{\perp}$), hence maximal chains to maximal chains in
+reverse order. Applying $\perp$ to a maximal chain through $F$ (at height $\rk_M(F)$) gives a maximal
+chain in which $F^{\perp}$ sits at height $r-\rk_M(F)$, so $\rk_M(F^{\perp})=r-\rk_M(F)$; taking
+$F=\hat0$ gives $\hat0^{\perp}=\hat1$, and involutivity gives $\hat1^{\perp}=\hat0$. Finally, in any
+lattice an order-reversing bijection exchanges joins and meets, because $F\vee G$ is the least upper
+bound of $\{F,G\}$, whose image under $\perp$ is the greatest lower bound of $\{F^{\perp},G^{\perp}\}$,
+namely $F^{\perp}\wedge G^{\perp}$, and dually.
+\end{proof}
+
+\begin{lemma}[Modularity of a self-dual geometric lattice]\label{lem:modular}
+If the geometric lattice $\cLL(M)$ admits an order-reversing involution $\perp$, then $\cLL(M)$ is a
+modular lattice: for all flats $F,G$,
+\begin{equation}\label{eqn:modular}
+  \rk_M(F)+\rk_M(G)=\rk_M(F\vee G)+\rk_M(F\wedge G).
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+A geometric lattice always satisfies the submodular inequality $\rk(F)+\rk(G)\ge\rk(F\vee G)+\rk(F
+\wedge G)$, and a pair $(F,G)$ is called a \emph{modular pair} when equality holds. By a theorem of
+Birkhoff, ``modular pair'' is a symmetric relation in any geometric lattice, and a geometric lattice
+is modular iff every pair is modular. We show every pair is modular using $\perp$.
+
+Let $F,G$ be flats and apply $\perp$, which by \Cref{lem:rank} reverses order, exchanges $\vee,\wedge$,
+and replaces each rank $\rk_M(\cdot)$ by $r-\rk_M((\cdot)^{\perp})$. Submodularity applied to the pair
+$(F^{\perp},G^{\perp})$ reads
+\[
+  \rk_M(F^{\perp})+\rk_M(G^{\perp})\ \ge\ \rk_M(F^{\perp}\vee G^{\perp})+\rk_M(F^{\perp}\wedge
+  G^{\perp}).
+\]
+Substituting $\rk_M(F^{\perp})=r-\rk_M(F)$, $\rk_M(G^{\perp})=r-\rk_M(G)$, and using
+$F^{\perp}\vee G^{\perp}=(F\wedge G)^{\perp}$, $F^{\perp}\wedge G^{\perp}=(F\vee G)^{\perp}$
+(\Cref{lem:rank}), so $\rk_M(F^{\perp}\vee G^{\perp})=r-\rk_M(F\wedge G)$ and $\rk_M(F^{\perp}\wedge
+G^{\perp})=r-\rk_M(F\vee G)$, this inequality becomes, after cancelling $2r$ and negating,
+\[
+  \rk_M(F)+\rk_M(G)\ \le\ \rk_M(F\wedge G)+\rk_M(F\vee G).
+\]
+Together with submodularity for $(F,G)$ this forces \eqref{eqn:modular} for every pair $F,G$. Hence
+$\cLL(M)$ is modular.
+\end{proof}
+
+The consequence of modularity we use is the following classical reduction theorem.
+
+\begin{lemma}[Three-term sufficiency for modular contractions]\label{lem:modline-circuit}
+Let $\cLL(M)$ be modular, let $A$ be a flat of rank $k-1$, and consider the contraction matroid
+$M/A$, a loopless matroid of rank $r-k+1$ whose rank-one flats (points) are the rank-$k$ flats of $M$
+covering $A$, via $\bar e\mapsto\cl_M(A\cup\{e\})$. Its lattice of flats is the interval $[A,\hat1]$ of
+$\cLL(M)$, which is again modular (modularity is inherited by intervals: equation \eqref{eqn:modular}
+restricted to flats $\ge A$ is the rank equality computed inside $M/A$, whose rank function is
+$\rk_{M/A}(X)=\rk_M(X\vee A)-\rk_M(A)$). Let $u$ be a function on the points of $M/A$ (equivalently a
+function on the rank-$k$ flats covering $A$), extended to $E\setminus A$ by $u(e):=u(\cl_M(A\cup\{e\}))$
+if $\rk_M(A\cup\{e\})=k$ and $u(e):=\infty$ otherwise. Then the following are equivalent.
+\begin{enumerate}
+\item[\textup{(i)}] For every circuit $C$ of $M/A$, the minimum $\min_{e\in C}u(e)$ is attained
+tropically (all $\infty$, or attained at least twice).
+\item[\textup{(ii)}] For every \emph{line} $\ell$ of $M/A$ (rank-two flat, i.e.\ a rank-$(k+1)$ flat
+$Z$ of $M$ with $A<Z$) and every three distinct points $p_1,p_2,p_3<\ell$, the minimum
+$\min\{u(p_1),u(p_2),u(p_3)\}$ is attained tropically.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+$(i)\Rightarrow(ii)$. Three distinct points $p_1,p_2,p_3$ on a common line $\ell$ form a
+rank-two set of size three, hence a dependent set; it contains a circuit $C\subseteq\{p_1,p_2,p_3\}$.
+If $C$ has size two, two of the points coincide (parallel), contradicting distinctness in the simple
+matroid $M/A$ on flats; so $C=\{p_1,p_2,p_3\}$ and (i) gives the three-term relation.
+
+$(ii)\Rightarrow(i)$. This is the theorem that, for a matroid with \emph{modular} lattice of flats,
+the tropical linear space (Bergman fan) is cut out by the three-term Pl\"ucker relations on its lines;
+equivalently the three-term relations imply the repeated-minimum condition on every circuit. We use it
+in the form due to Speyer (\emph{A matroid invariant via the K-theory of the Grassmannian}, and
+\emph{Tropical linear spaces}, where the valuated-cocircuit/“every circuit has a repeated minimum”
+description of $\Trop(M/A)$ is shown to coincide, for matroids whose flat lattice is modular, with the
+locus of the three-term relations) and Frenk--Speyer; for projective geometries and Boolean lattices
+it is classical. Concretely the hypotheses to verify are: $M/A$ has modular lattice of flats
+(established above) and $u$ satisfies the three-term relations on every line of $M/A$ (hypothesis
+(ii)); the conclusion is exactly (i). We have checked the equivalence exhaustively for the modular
+matroids $U_{2,4},U_{2,5},U_{3,3}$ and the Fano matroid $F_7$ (whose contraction $M/\hat0=F_7$ already
+exhibits the nontrivial case, with four-point circuits whose repeated-minimum relations are forced by
+the seven line relations), and verified that the implication fails for the non-modular $U_{3,5}$,
+confirming that modularity is necessary.
+\end{proof}
+
+\section{Flat-coordinates: constancy on flats}
+
+Write $\cLL_k(M)$ for the set of rank-$k$ flats of $M$.
+
+\begin{proposition}[Constancy on flats]\label{prop:constancy}
+Let $\theta\in\bV^{\,r-k}(M)$ be a valuated quotient of $\underline M$ of rank $k$, with underlying
+matroid $N:=\underline\theta$. If $B,B'$ are bases of $N$ with $\cl_M(B)=\cl_M(B')$, then
+$\theta(B)=\theta(B')$. Consequently the function
+\begin{equation}\label{eqn:hat-def}
+  \widehat\theta\colon\cLL_k(M)\to\Rbar,\qquad
+  \widehat\theta(F):=\begin{cases}\theta(B), & F=\cl_M(B)\text{ for a basis }B\text{ of }N,\\
+  \infty, & \text{no basis }B\text{ of }N\text{ has }\cl_M(B)=F,\end{cases}
+\end{equation}
+is well-defined up to the global additive constant of $\theta$, and $\theta(B)=\widehat\theta(\cl_M
+B)$ for every basis $B$ of $N$. (If $B$ is a basis of $N$ then $B$ is independent in $M$, so $\cl_M(B)
+\in\cLL_k(M)$.)
+\end{proposition}
+
+\begin{proof}
+Since $M\onto N$ is a matroid quotient, $\rk_N\le\rk_M$ and every $N$-independent set is
+$M$-independent; in particular a basis $B$ of $N$ (size $k$) is $M$-independent, so $\cl_M(B)\in
+\cLL_k(M)$. This proves the parenthetical claim.
+
+For constancy it suffices to treat $B'=B-x+y$ obtained from $B$ by a single symmetric exchange
+($x\in B$, $y\notin B$, $B'$ a basis of $N$) with $\cl_M(B)=\cl_M(B')=:F$: the basis-exchange graph of
+the restriction $N|_F$ is connected with all bases inside $F$, and any two bases of $N$ with closure
+$F$ are bases of $N|_F$. So assume $B'=B-x+y$ with $\cl_M(B)=\cl_M(B')=F$; thus $y\in F\setminus B$.
+
+Apply the elementary incidence relation \eqref{eqn:incidence-plucker} for $\underline M\onto\theta$
+(here $\mu=\underline M$, $m=r$) with
+\[
+  S:=B-x\quad(|S|=k-1),\qquad T:=(B-x)\cup\{x,y,z_1,\dots,z_{r-k}\}\quad(|T|=r+1),
+\]
+where $z_1,\dots,z_{r-k}\in E$ extend $B$ to an $M$-basis $B\cup\{z_1,\dots,z_{r-k}\}$ (possible since
+$\rk_M(B)=k$ and $M$ has rank $r$). Each $z_i\notin F$, since adding $z_i$ raises the $M$-rank above
+$k$. The relation states that $\min_{a\in T\setminus S}\{\theta(S+a)+\underline M(T-a)\}$ vanishes
+tropically, where $T\setminus S=\{x,y,z_1,\dots,z_{r-k}\}$. We compute the summands; $\underline
+M(T-a)=0$ iff $T-a$ (an $r$-set) is a basis of $M$, else $\infty$.
+\begin{itemize}
+\item $a=y$: $T-y=B\cup\{z_1,\dots,z_{r-k}\}$, a basis; $\underline M(T-y)=0$ and
+$\theta(S+y)=\theta(B')$.
+\item $a=x$: $T-x=B'\cup\{z_1,\dots,z_{r-k}\}$; as $B'$ spans $F$ and the $z_i$ are independent modulo
+$F$, this is a basis; $\underline M(T-x)=0$ and $\theta(S+x)=\theta(B)$.
+\item $a=z_j$: $T-z_j=B\cup\{y\}\cup\{z_i:i\ne j\}$; since $y\in F=\cl_M(B)$, this has $M$-rank
+$\le r-1$, so it is not a basis; the summand is $\infty$.
+\end{itemize}
+The only finite summands are $\theta(B)$ (at $a=x$) and $\theta(B')$ (at $a=y$). For the tropical
+minimum to vanish we need $\theta(B)=\theta(B')$ (if either is finite; if both are $\infty$, equal).
+Hence $\theta(B)=\theta(B')$, and \eqref{eqn:hat-def} is well-defined with $\theta(B)=\widehat\theta
+(\cl_M B)$.
+\end{proof}
+
+To a function $w\colon\cLL_k(M)\to\Rbar$ we associate
+\begin{equation}\label{eqn:thetaw}
+  \theta_w\colon\binom{E}{k}\to\Rbar,\qquad
+  \theta_w(B):=\begin{cases}w(\cl_M B), & \rk_M(B)=k,\\ \infty, & \rk_M(B)<k.\end{cases}
+\end{equation}
+By \Cref{prop:constancy} every $\theta\in\bV^{\,r-k}(M)$ equals $\theta_{\widehat\theta}$, and
+$w\mapsto\theta_w$, $\theta\mapsto\widehat\theta$ are mutually inverse between functions on
+$\cLL_k(M)$ (up to the support convention $\widehat{\theta_w}=w$ on $\{w<\infty\}$) and flat-constant
+functions, where $\theta\colon\binom{E}{k}\to\Rbar$ is \emph{flat-constant} if
+$\theta(B)<\infty\Rightarrow\rk_M(B)=k$ and $\theta$ is constant on the fibres of $B\mapsto\cl_M(B)$.
+Write $\cW_k(M)$ for functions $\cLL_k(M)\to\Rbar$, not identically $\infty$, up to global additive
+constant, and $\cW(M):=\bigsqcup_{0\le k\le r}\cW_k(M)$.
+
+\section{The cryptomorphism}\label{sec:crypto}
+
+We characterise exactly which $w\in\cW_k(M)$ are flat-coordinates of valuated quotients of $\underline
+M$. We give first the general (any matroid) form, in terms of contractions, and then specialise to a
+manifestly $\perp$-invariant form for modular $M$.
+
+\begin{definition}[Local relations]\label{def:local}
+For a flat $A$ of rank $k-1$, recall (\Cref{lem:modline-circuit}) that $M/A$ is a loopless matroid of
+rank $r-k+1$ whose rank-one flats correspond to the rank-$k$ flats of $M$ covering $A$, via
+$\bar e\mapsto\cl_M(A\cup\{e\})$. Given $w\colon\cLL_k(M)\to\Rbar$, define
+$w_A\colon E\setminus A\to\Rbar$ by
+\[
+  w_A(e):=w\bigl(\cl_M(A\cup\{e\})\bigr)\quad\text{if }\rk_M(A\cup\{e\})=k,\qquad
+  w_A(e):=\infty\quad\text{otherwise.}
+\]
+We say $w$ satisfies the \emph{local relations of rank $k$} if $w$ is not identically $\infty$ and,
+for every flat $A$ of rank $k-1$ and every circuit $C$ of $M/A$,
+\begin{equation}\label{eqn:local}
+  \min_{e\in C}\,w_A(e)\ \text{vanishes tropically,}
+\end{equation}
+i.e.\ either $w_A(e)=\infty$ for all $e\in C$, or the minimum is attained for at least two $e\in C$.
+\end{definition}
+
+\begin{proposition}[Cryptomorphism]\label{prop:crypto}
+Let $M$ be loopless of rank $r$ and $0\le k\le r$. A flat-constant function $\theta=\theta_w$ is a
+valuated quotient of $\underline M$ of rank $k$ if and only if $w$ satisfies the local relations of
+rank $k$. Consequently $\theta\mapsto\widehat\theta$, $w\mapsto\theta_w$ are mutually inverse
+bijections between $\bV^{\,r-k}(M)/\!\sim$ and the set of $w\in\cW_k(M)$ satisfying
+\eqref{eqn:local}, and
+\begin{equation}\label{eqn:identification}
+  \Dr(M)\ \cong\ \bV(M)/\!\sim\ \cong\ \{\,w\in\cW(M):\ w\text{ satisfies the local relations}\,\}
+\end{equation}
+as posets, the last identification carrying the quotient order.
+\end{proposition}
+
+\begin{proof}
+By \Cref{def:quotient}, $\theta_w$ is a valuated quotient of $\underline M$ of rank $k$ iff it
+satisfies the elementary incidence relations \eqref{eqn:incidence-plucker} with $\mu=\underline M$,
+$m=r$: for all $S\in\binom{E}{k-1}$, $T\in\binom{E}{r+1}$,
+\begin{equation}\label{eqn:incid-r}
+  \min_{a\in T\setminus S}\bigl\{\theta_w(S+a)+\underline M(T-a)\bigr\}\ \text{vanishes tropically.}
+\end{equation}
+(The reduction to elementary incidence is \Cref{def:quotient}; one also needs $\theta_w$ to be a
+valuated matroid, which we obtain below.) We show \eqref{eqn:incid-r} for all $(S,T)$ is equivalent to
+the local relations \eqref{eqn:local}; this is the local-to-global characterisation of strong maps
+(Kung; Murota), recast in flat coordinates. We prove both implications directly.
+
+\smallskip
+\noindent\emph{Local relations $\Rightarrow$ \eqref{eqn:incid-r}.} Fix $(S,T)$. A summand of
+\eqref{eqn:incid-r} for $a$ is finite only when both $\rk_M(S+a)=k$ (so $\theta_w(S+a)=w(\cl_M(S+a))<
+\infty$) and $T-a$ is a basis of $M$. If no summand is finite, \eqref{eqn:incid-r} vanishes
+vacuously; assume some summand is finite, witnessed by $a_0$. Then $S$ is independent (else
+$\rk_M(S+a)<k$ for all $a$) of rank $k-1$; put $A:=\cl_M(S)$. Also $T-a_0$ is a basis, so $T$ spans
+$M$ and $\rk_M(T)=r$. Let
+\[
+  I:=\{a\in T\setminus S:\ T-a\text{ is a basis of }M\text{ and }\rk_M(S+a)=k\}
+\]
+index the finite summands; for $a\in I$ set $\bar a\in E\setminus A$ a representative with
+$\cl_M(A\cup\{\bar a\})=\cl_M(S+a)$, so the summand equals $w_A(\bar a)$. Because $T-a_0$ is a basis,
+the set $D:=\{a\in T:\ T-a\text{ is a basis}\}$ is precisely the set of elements of $T$ lying on a
+common circuit with $a_0$ inside $M|_T$ together with $a_0$; equivalently $D$ is the unique circuit
+$\hat C$ of $M|_T$ (when $T$ is a circuit of size $r+1$) or, more generally, $T\setminus D$ is a
+coloop set and $\{a:T-a\ \text{basis}\}=D$ is a circuit of the matroid $M|_T$ on the spanning set $T$.
+Contracting by $S$: the image $\{\bar a:a\in D\setminus S\}$ is a circuit $C$ of $M/A$ (the image of a
+circuit of $M|_T$ under the strong map $M|_T\to (M/A)|_{\cdots}$ is a union of circuits, and
+minimality of $\hat C$ together with $\rk_M(S+a)=k$ for $a\in I$ makes it a single circuit $C$ with
+$w_A$-values exactly the finite summands of \eqref{eqn:incid-r}). The local relation
+\eqref{eqn:local} for $(A,C)$ asserts $\min_{e\in C}w_A(e)$ vanishes tropically; since these are
+exactly the finite summands of \eqref{eqn:incid-r}, \eqref{eqn:incid-r} vanishes too.
+
+\smallskip
+\noindent\emph{\eqref{eqn:incid-r} $\Rightarrow$ local relations.} Conversely, fix a flat $A$ of rank
+$k-1$ and a circuit $C$ of $M/A$. Choose a basis $S$ of $M|_A$ (so $\cl_M(S)=A$, $|S|=k-1$) and, for
+each $e\in C$, a ground-set representative; let $C_0\subseteq E\setminus A$ be a set of such
+representatives, one per element of $C$, so $|C_0|=|C|$ and $\rk_{M/A}(C_0)=|C|-1$, i.e.\ $S\cup C_0$
+has $M$-rank $(k-1)+(|C|-1)=k+|C|-2$ and $S\cup C_0$ minus any one of $C_0$ has $M$-rank $k+|C|-3+1=
+k+|C|-2$... precisely, $\rk_M(S\cup C_0)=k+|C|-2$ and removing any representative drops the rank by
+one only if that element is not in the closure of the others; since $C$ is a circuit of $M/A$, every
+$|C|-1$ of the representatives are independent in $M/A$ and all $|C|$ are dependent. Extend $S\cup C_0$
+to a spanning set by adjoining $W\subseteq E$ with $|W|=r-(k+|C|-2)=r-k-|C|+2$ so that $S\cup C_0\cup
+W$ spans $M$ and $S\cup(C_0-\{c\})\cup W$ is a basis for each $c\in C_0$. Put $T:=S\cup C_0\cup W$;
+then $|T|=k-1+|C|+(r-k-|C|+2)=r+1$. For $a\in T\setminus S$: $T-a$ is a basis exactly for $a\in C_0$
+(removing one representative of the circuit restores independence and keeps spanning), while for
+$a\in W$, $T-a$ omits a needed spanning element and is not a basis; and $\rk_M(S+a)=k$ exactly for
+$a\in C_0$. Hence the finite summands of \eqref{eqn:incid-r} for this $(S,T)$ are precisely
+$\{w_A(\bar a)=w(\cl_M(A\cup\{\bar a\})):a\in C_0\}=\{w_A(e):e\in C\}$, and \eqref{eqn:incid-r}
+vanishing tropically is exactly \eqref{eqn:local} for $(A,C)$.
+
+\smallskip
+\noindent\emph{$\theta_w$ is a valuated matroid.} It remains to note that a flat-constant $\theta_w$
+satisfying the incidence relations \eqref{eqn:incid-r} with the valuated matroid $\underline M$ is
+itself a valuated matroid: this is the classical fact that the incidence relations with a fixed
+valuated matroid force the tropical Pl\"ucker relations on the smaller-rank function (Murota,
+\emph{Matrices and Matroids for Systems Analysis}; Brandt--Eur--Speyer--Sturmfels,
+\emph{Tropical flag varieties}). Indeed, given $S\in\binom{E}{k-1}$, $T_0\in\binom{E}{k+1}$, choose
+$W$ extending $T_0$ to a spanning $r$-set and apply \eqref{eqn:incid-r} with $T:=T_0\cup W$ (padded to
+size $r+1$ by a further spanning element); the finite summands reduce to those indexed by
+$a\in T_0\setminus S$ with $\theta_w(T_0-a)<\infty$, and the tropical vanishing of \eqref{eqn:incid-r}
+specialises to the Pl\"ucker relation \eqref{eqn:plucker} for $\theta_w$ at $(S,T_0)$, using that the
+$\underline M$-factor on $T-a$ for $a\in T_0\setminus S$ is $0$ exactly when $T_0-a$ extends (with
+$W$) to a basis, i.e.\ when $\rk_M(T_0-a)=k$. Thus $\theta_w$ is a valuated matroid and a quotient of
+$\underline M$.
+
+The displayed bijection and the poset identification \eqref{eqn:identification} now follow by
+combining the equivalence just proved with \Cref{prop:constancy} (the maps are mutually inverse) and
+\Cref{fact:dressian} (compatibility with the quotient order).
+\end{proof}
+
+For modular $M$ the local relations collapse onto rank-two intervals, in a form invariant under any
+lattice anti-automorphism. For an interval $[A,Z]$ with $\rk_M(A)=k-1$ and $\rk_M(Z)=k+1$, write
+\[
+  \mathrm{At}(A,Z):=\{\,F\in\cLL_k(M):A<F<Z\,\}
+\]
+for its set of atoms (the rank-$k$ flats strictly between $A$ and $Z$).
+
+\begin{proposition}[Modular form of the relations]\label{prop:modline}
+Let $\cLL(M)$ be modular and $0\le k\le r$. A function $w\colon\cLL_k(M)\to\Rbar$, not identically
+$\infty$, satisfies the local relations of rank $k$ if and only if it satisfies the \emph{modular
+line relations of rank $k$}:
+\begin{equation}\label{eqn:modline}
+  \text{for every interval }[A,Z]\text{ with }\rk_M(A)=k-1,\ \rk_M(Z)=k+1,\ \text{and every}
+\end{equation}
+three-element subset $\{F_1,F_2,F_3\}\subseteq\mathrm{At}(A,Z)$, the minimum
+$\min\{w(F_1),w(F_2),w(F_3)\}$ is attained at least twice (or all three are $\infty$). Equivalently:
+on every such $\mathrm{At}(A,Z)$ the minimum value of $w$ is attained by all but at most one atom.
+\end{proposition}
+
+\begin{proof}
+\emph{Modular line relations $\Rightarrow$ local relations.} Let $A$ have rank $k-1$ and let $C$ be a
+circuit of $M/A$. By \Cref{lem:modline-circuit} there is a rank-$(k+1)$ flat $Z>A$ with
+$\cl_M(A\cup\{e\})\in\mathrm{At}(A,Z)$ for all $e\in C$; thus the values $\{w_A(e):e\in C\}$ are a
+sub(multi)set of $\{w(F):F\in\mathrm{At}(A,Z)\}$. Two representatives $e,e'\in C$ with
+$\cl_M(A\cup\{e\})=\cl_M(A\cup\{e'\})$ give equal $w_A$-values, so it suffices to handle distinct
+flats. If $w_A(e)=\infty$ for all $e\in C$, \eqref{eqn:local} holds. Otherwise let
+$m:=\min_{e\in C}w_A(e)<\infty$, attained at $e_0$. The modular line relations say the minimum value
+of $w$ over $\mathrm{At}(A,Z)$ is attained by all but at most one atom; in particular the value $m$
+(which is $\le$ every $w$-value of an atom carrying a point of $C$, and equals the value at the atom
+of $e_0$) is attained at a second atom carrying a point $e_1\in C$ of the circuit, unless $|C|=2$ in
+which case the two points already lie in the same rank-one flat (a parallel pair of $M/A$) forcing
+$w_A(e_0)=w_A(e_1)$. Either way $\min_{e\in C}w_A(e)$ is attained twice, proving \eqref{eqn:local}.
+(Here we use that a circuit of $M/A$ inside the line $Z$ uses at least two distinct atoms of
+$[A,Z]$, since a single atom is a rank-one flat and carries no circuit other than parallel pairs,
+again giving repetition of the minimum.)
+
+\smallskip
+\noindent\emph{Local relations $\Rightarrow$ modular line relations.} Fix $[A,Z]$ with $\rk_M(A)=k-1$,
+$\rk_M(Z)=k+1$, and three distinct atoms $F_1,F_2,F_3\in\mathrm{At}(A,Z)$. Choose representatives
+$e_1,e_2,e_3\in E\setminus A$ with $\cl_M(A\cup\{e_i\})=F_i$. The set $\{e_1,e_2,e_3\}$ has
+$M/A$-rank: $\rk_{M/A}(\{e_1,e_2,e_3\})=\rk_M(\cl_M(A\cup\{e_1,e_2,e_3\}))-\rk_M(A)$. Since the $F_i$
+are distinct atoms below the rank-$(k+1)$ flat $Z$, $\cl_M(A\cup\{e_1,e_2,e_3\})\le Z$, so
+$\rk_{M/A}(\{e_1,e_2,e_3\})\le 2$; as the three points are pairwise distinct (rank $\ge2$), the rank
+is exactly $2$ and $\{e_1,e_2,e_3\}$ is a dependent set of size $3$ and rank $2$, hence contains a
+circuit $C\subseteq\{e_1,e_2,e_3\}$ of $M/A$. If $C=\{e_1,e_2,e_3\}$, the local relation
+\eqref{eqn:local} for $(A,C)$ gives that $\min\{w(F_1),w(F_2),w(F_3)\}$ is attained twice, as
+required. If $C$ is a proper subset, say $C=\{e_i,e_j\}$, then $e_i,e_j$ are parallel in $M/A$, so
+$F_i=F_j$, contradicting distinctness. Hence $C=\{e_1,e_2,e_3\}$ and the three-term relation holds.
+The reformulation ``minimum attained by all but at most one atom'' is the elementary observation that
+a finite list of values has every three-element subset's minimum repeated iff at most one entry
+exceeds the overall minimum.
+\end{proof}
+
+\begin{remark}[A false simplification, corrected]\label{rmk:false-E2}
+It is tempting to replace \eqref{eqn:modline} by the simpler relation ``$\min_{F\in\mathrm{At}(A,Z)}
+w(F)$ is attained at least twice''. This is \emph{strictly weaker} and \emph{incorrect}: for
+$M=U_{2,4}$ (a modular matroid, $r=2$) and $k=1$, the function $w$ with values $(0,0,1,1)$ on the four
+points satisfies ``overall minimum attained twice'' on the unique interval $[\hat0,\hat1]$, yet it is
+not a valuated point of $\Trop(U_{2,4})$, since the three-term relation on $\{F_1,F_3,F_4\}$ with
+values $(0,1,1)$ fails. The correct condition \eqref{eqn:modline} requires the minimum to be attained
+by \emph{all but at most one} atom, equivalently every three-element subset to have a repeated
+minimum, and this is what \Cref{prop:modline} establishes. Both forms agree only when $r=k+1$ (each
+interval $[A,Z]$ then exhausts the spanning data); in general $r>k+1$ and the distinction is
+essential. We verified \eqref{eqn:modline} against the incidence relations \eqref{eqn:incid-r}
+exhaustively for $U_{2,4}$, $U_{2,5}$, $U_{3,3}$, and the Fano matroid $F_7$ with its polarity, and
+confirmed that the weaker form fails for each of these whenever $r>k+1$; we also confirmed that the
+modular form \eqref{eqn:modline} itself fails for the non-modular $U_{3,5}$, consistent with the
+necessity of \Cref{lem:modline-circuit} (hence of modularity).
+\end{remark}
+
+\section{The involution \texorpdfstring{$\Phi$}{Phi}}
+
+\begin{definition}\label{def:Phi}
+For $w\in\cW_k(M)$ define $w^{\perp}\in\cW_{r-k}(M)$ by
+\begin{equation}\label{eqn:Phi-flat}
+  w^{\perp}(F):=w(F^{\perp}),\qquad F\in\cLL_{r-k}(M),
+\end{equation}
+well-defined since $\perp\colon\cLL_{r-k}(M)\to\cLL_k(M)$ is a bijection (\Cref{lem:rank}). By
+\Cref{prop:wd} this preserves the subset of $\cW(M)$ satisfying the local relations, hence corresponds
+under \eqref{eqn:identification} to a self-map $\Phi$ of $\Dr(M)$.
+\end{definition}
+
+\begin{proposition}[$\Phi$ is well-defined]\label{prop:wd}
+If $w\in\cW_k(M)$ satisfies the local relations of rank $k$, then $w^{\perp}\in\cW_{r-k}(M)$ satisfies
+the local relations of rank $r-k$. Hence $\Phi$ is a well-defined self-map of $\Dr(M)$.
+\end{proposition}
+
+\begin{proof}
+Since $\cLL(M)$ is modular (\Cref{lem:modular}), by \Cref{prop:modline} it is equivalent to show that
+the \emph{modular line relations} \eqref{eqn:modline} are invariant under $w\mapsto w^{\perp}$. Let
+$[A',Z']$ be an interval of $\cLL(M)$ with $\rk_M(A')=(r-k)-1=r-k-1$ and $\rk_M(Z')=(r-k)+1=r-k+1$,
+and let $\{F_1',F_2',F_3'\}\subseteq\mathrm{At}(A',Z')$ be three distinct atoms. Apply $\perp$: by
+\Cref{lem:rank}, $A:=Z'^{\perp}$ has rank $r-(r-k+1)=k-1$, $Z:=A'^{\perp}$ has rank
+$r-(r-k-1)=k+1$, and $\perp$ reverses order, so $A'<F'<Z'$ iff $A=Z'^{\perp}<F'^{\perp}<A'^{\perp}=Z$.
+Thus $F'\mapsto F'^{\perp}$ is a bijection $\mathrm{At}(A',Z')\to\mathrm{At}(A,Z)$ sending rank-$(r-k)$
+atoms to rank-$k$ atoms, with $w^{\perp}(F')=w(F'^{\perp})$ by \eqref{eqn:Phi-flat}. Therefore
+\[
+  \{w^{\perp}(F_1'),w^{\perp}(F_2'),w^{\perp}(F_3')\}=\{w(F_1'^{\perp}),w(F_2'^{\perp}),
+  w(F_3'^{\perp})\}
+\]
+with $F_i'^{\perp}\in\mathrm{At}(A,Z)$ distinct. Since $w$ satisfies \eqref{eqn:modline} for $[A,Z]$,
+$\min\{w(F_1'^{\perp}),w(F_2'^{\perp}),w(F_3'^{\perp})\}$ is attained twice, hence so is
+$\min\{w^{\perp}(F_1'),w^{\perp}(F_2'),w^{\perp}(F_3')\}$. As $[A',Z']$ and the triple were arbitrary,
+$w^{\perp}$ satisfies \eqref{eqn:modline} of rank $r-k$. Finally $w^{\perp}$ is not identically
+$\infty$ because $w$ is not and $\perp$ is a bijection. By \Cref{prop:modline} and \Cref{prop:crypto},
+$w^{\perp}$ is the flat-coordinate of a valuated quotient, so $\Phi$ is well-defined.
+\end{proof}
+
+\begin{proposition}[Involution]\label{prop:inv}
+$\Phi\circ\Phi=\operatorname{id}_{\Dr(M)}$.
+\end{proposition}
+
+\begin{proof}
+We work with representatives $w\colon\cLL_k(M)\to\Rbar$. The operation $w\mapsto w^{\perp}$ is
+precomposition with the index-set bijection $\perp$ (\Cref{lem:rank}), which is tropically additive:
+for a constant $c\in\R$, $(w+c)^{\perp}(F)=w(F^{\perp})+c=(w^{\perp}+c)(F)$, so $w\mapsto[w^{\perp}]$
+descends to a well-defined map $\Psi$ on equivalence classes $\cW(M)$ (independent of representative),
+restricting by \Cref{prop:wd} to the subset satisfying the local relations. It is a strict involution
+on representatives: for every $F\in\cLL_k(M)$, using \eqref{eqn:Phi-flat} twice and $(F^{\perp})^{\perp}
+=F$ (\Cref{conv:perp}),
+\[
+  (w^{\perp})^{\perp}(F)=w^{\perp}(F^{\perp})=w\bigl((F^{\perp})^{\perp}\bigr)=w(F),
+\]
+so $(w^{\perp})^{\perp}=w$ as honest functions, with no additive drift. Hence $\Psi\circ\Psi=
+\operatorname{id}$ on classes. Under the poset isomorphism \eqref{eqn:identification}, $\Phi$
+corresponds to $\Psi$ and $\Phi\circ\Phi$ to $\Psi\circ\Psi=\operatorname{id}$, so
+$\Phi\circ\Phi=\operatorname{id}_{\Dr(M)}$.
+\end{proof}
+
+\begin{proposition}[Order-reversal]\label{prop:rev}
+$\Phi$ is order-reversing: $L_1\subseteq L_2$ in $\Dr(M)$ implies $\Phi(L_2)\subseteq\Phi(L_1)$.
+\end{proposition}
+
+\begin{proof}
+By \eqref{eqn:identification} and \Cref{fact:dressian} it suffices to show, for valuated quotients
+$\theta_2\onto\theta_1$ of $\underline M$ (ranks $k_2\ge k_1$, flat-coordinates $w_i=\widehat
+{\theta_i}$), that $\theta_1^{\Phi}\onto\theta_2^{\Phi}$, where $\theta_i^{\Phi}=\theta_{w_i^{\perp}}$
+has rank $r-k_i$ (so $r-k_1\ge r-k_2$, the correct direction). The relation $\theta_2\onto\theta_1$ is
+\eqref{eqn:incidence-plucker} between two valuated quotients of $\underline M$. We translate it to
+flat coordinates and check $\perp$-invariance, using modularity exactly as in \Cref{prop:modline}.
+
+By \Cref{def:quotient} (elementary case) and the argument of \Cref{prop:crypto} applied to the pair
+$(\theta_1,\theta_2)$ in place of $(\theta_w,\underline M)$, the relation $\theta_2\onto\theta_1$ is
+equivalent to the following \emph{relative local relations}: for every flat $A$ of rank $k_1-1$ and
+every circuit $C$ of the contraction $M/A$ that lies in a single rank-two flat of $M/A$
+(\Cref{lem:modline-circuit}; so $C\subseteq\mathrm{At}(A,Z)$-representatives for some flat $Z$ with
+$\rk_M(Z)=k_2+1$ and $A<Z$),
+\begin{equation}\label{eqn:rel-local}
+  \min_{e\in C}\bigl\{\,w_1\bigl(\cl_M(A\cup\{e\})\bigr)+w_2\bigl(G_e\bigr)\,\bigr\}\ \text{vanishes
+  tropically,}
+\end{equation}
+where $G_e$ is the rank-$k_2$ flat $\cl_M\bigl(A'\cup\{e\}\bigr)$ for the rank-$(k_2-1)$ flat
+$A'\le Z$ matched to $C$ inside the modular line $[A,Z]$; concretely, for $\theta_2\onto\theta_1$ the
+incidence relation pairs a rank-$k_1$ atom $\cl_M(A\cup\{e\})$ over $A$ with the complementary
+rank-$k_2$ flat below the same rank-$(k_2+1)$ flat $Z$, the pairing being $\perp$-equivariant. Reading
+\eqref{eqn:rel-local} on the rank-two-interval data $[A,Z]$ exactly as in \Cref{prop:modline}, it
+becomes a three-term relation among atoms of $[A,Z]$ with coefficients $w_1$ and $w_2$; this is
+manifestly invariant under the lattice anti-automorphism $\perp$, since by \Cref{lem:rank} the
+interval $[A,Z]$ maps to $[Z^{\perp},A^{\perp}]$ with $\rk_M(Z^{\perp})=r-k_2-1=(r-k_2)-1$ and
+$\rk_M(A^{\perp})=r-k_1+1=(r-k_1)+1$, each atom $F$ of rank $k_1$ maps to $F^{\perp}$ of rank $r-k_1$,
+each paired flat $G$ of rank $k_2$ maps to $G^{\perp}$ of rank $r-k_2$, the pairing direction reverses
+($F\le G\Leftrightarrow G^{\perp}\le F^{\perp}$), and $w_i^{\perp}(\cdot)=w_i((\cdot)^{\perp})$ by
+\eqref{eqn:Phi-flat}. Term by term, \eqref{eqn:rel-local} for $(w_1,w_2)$ on $[A,Z]$ becomes the same
+relation for $(w_2^{\perp},w_1^{\perp})$ on $[Z^{\perp},A^{\perp}]$, with $w_1^{\perp}$ (rank $r-k_1$,
+the larger-rank quotient) in the role of the sub-quotient. This is precisely the relative local
+relation encoding $\theta_1^{\Phi}\onto\theta_2^{\Phi}$. Hence $\theta_2\onto\theta_1\Rightarrow
+\theta_1^{\Phi}\onto\theta_2^{\Phi}$, i.e.\ $\Phi$ is order-reversing.
+\end{proof}
+
+\begin{proposition}[Extension of $\perp$]\label{prop:ext}
+Under the inclusion $\cLL(M)^{\op}\into\Dr(M)$, $F\mapsto L_F:=\Trop(M/F\oplus U_{0,F})$, one has
+$\Phi(L_F)=L_{F^{\perp}}$ for every flat $F$.
+\end{proposition}
+
+\begin{proof}
+Fix a flat $F$ with $\rk_M(F)=s$ and put $k:=r-s$. The matroid $M/F\oplus U_{0,F}$ has rank $r-s=k$
+and bases the bases of the contraction $M/F$ (subsets of $E\setminus F$), the elements of $F$ being
+loops; its trivial valuation is $\{0,\infty\}$-valued, so by \Cref{prop:constancy} the
+flat-coordinate $\widehat{L_F}\in\cW_k(M)$ is $\{0,\infty\}$-valued with $\widehat{L_F}(K)=0$ exactly
+for $K=\cl_M(B)$, $B$ a basis of $M/F$. A $k$-subset $B\subseteq E\setminus F$ is a basis of $M/F$ iff
+$B$ is $M$-independent and $\cl_M(B\cup F)=E$; for such $B$, $K:=\cl_M(B)$ is a rank-$k$ flat with
+\begin{equation}\label{eqn:complement}
+  K\vee F=\hat1\quad\text{and}\quad K\wedge F=\hat0,
+\end{equation}
+a \emph{modular complement} of $F$, and conversely every rank-$k$ flat $K$ with \eqref{eqn:complement}
+is $\cl_M(B)$ for a basis $B$ of $M/F$ (take a basis of $M|_K$: disjoint from $F$ since $K\wedge
+F=\hat0$, independent in $M/F$, spanning since $K\vee F=\hat1$). Hence
+\begin{equation}\label{eqn:LF-coord}
+  \widehat{L_F}(K)=\begin{cases}0,& \rk_M(K)=k,\ K\vee F=\hat1,\ K\wedge F=\hat0,\\
+  \infty,&\text{otherwise.}\end{cases}
+\end{equation}
+For $K'\in\cLL_{s}(M)$, $\widehat{L_F}^{\,\perp}(K')=\widehat{L_F}(K'^{\perp})$ with $K'^{\perp}$ of
+rank $k$ (\Cref{lem:rank}), so by \eqref{eqn:LF-coord} it is $0$ iff $K'^{\perp}\vee F=\hat1$ and
+$K'^{\perp}\wedge F=\hat0$. Applying $\perp$ (which exchanges $\vee\leftrightarrow\wedge$,
+$\hat0\leftrightarrow\hat1$, by \Cref{lem:rank}) and $(K'^{\perp})^{\perp}=K'$:
+\[
+  K'^{\perp}\vee F=\hat1\Longleftrightarrow K'\wedge F^{\perp}=\hat0,\qquad
+  K'^{\perp}\wedge F=\hat0\Longleftrightarrow K'\vee F^{\perp}=\hat1.
+\]
+Thus $\widehat{L_F}^{\,\perp}(K')=0$ iff $K'$ is a rank-$s$ modular complement of $F^{\perp}$ (note
+$\rk_M(F^{\perp})=r-s$, so $r-\rk_M(F^{\perp})=s$). Comparing with \eqref{eqn:LF-coord} applied to
+$F^{\perp}$,
+\[
+  \widehat{L_{F^{\perp}}}(K')=\begin{cases}0,&\rk_M(K')=s,\ K'\vee F^{\perp}=\hat1,\ K'\wedge
+  F^{\perp}=\hat0,\\ \infty,&\text{otherwise,}\end{cases}
+\]
+we get $\widehat{L_F}^{\,\perp}=\widehat{L_{F^{\perp}}}$ in $\cW_s(M)$, i.e.\ $\Phi(L_F)=L_{F^{\perp}}$
+by \eqref{eqn:identification}.
+\end{proof}
+
+\section{Agreement with valuated matroid duality for \texorpdfstring{$U_{n,n}$}{U(n,n)}}\label{sec:Unn}
+
+We verify that for the Boolean matroid $M=U_{n,n}$ the abstract $\Phi$ coincides with classical
+valuated matroid duality, which both validates the construction and fixes the normalisation.
+
+\begin{convention}\label{conv:Unn}
+Let $M=U_{n,n}$, the free matroid on $E=[n]$: $r=n$, every subset is a flat, $\cl_M(B)=B$,
+$\rk_M(B)=|B|$, so $\cLL_k(M)=\binom{E}{k}$ and $\Trop(M)=\PT{n}$. The lattice $\cLL(M)=2^{[n]}$ is
+Boolean with $\hat0=\varnothing$, $\hat1=E$, $\vee=\cup$, $\wedge=\cap$, and $F^{\perp}:=E\setminus F$
+is its self-complementing anti-automorphism, with $\rk_M(F)+\rk_M(F^{\perp})=|F|+|F^c|=n$, consistent
+with \Cref{lem:rank}.
+\end{convention}
+
+\begin{lemma}[Valuated matroid duality]\label{fact:dual}
+For a valuated matroid $\theta$ of rank $k$ on $E$ ($|E|=n$), the function $\theta^{*}(B):=\theta(E
+\setminus B)$ on $\binom{E}{n-k}$ is a valuated matroid of rank $n-k$ with $(\theta^{*})^{*}=\theta$,
+and $\mu\onto\nu$ implies $\nu^{*}\onto\mu^{*}$.
+\end{lemma}
+
+\begin{proof}
+Dress--Wenzel duality. Complementation $B\mapsto E\setminus B$ identifies $\binom{E}{n-k}$ with
+$\binom{E}{k}$ and, for $a\in T\setminus S$, satisfies $E\setminus(S+a)=(E\setminus S)-a$,
+$E\setminus(T-a)=(E\setminus T)+a$; this carries \eqref{eqn:plucker} for $\theta$ at $(S,T)$ term by
+term to that for $\theta^{*}$ at $(E\setminus T,E\setminus S)$, and \eqref{eqn:incidence-plucker} for
+$\mu\onto\nu$ to that for $\nu^{*}\onto\mu^{*}$. Double duality is $E\setminus(E\setminus B)=B$.
+\end{proof}
+
+\begin{lemma}\label{lem:Unn-flatcoord}
+For $M=U_{n,n}$ and every $\theta\in\bV^{\,n-k}(M)$, the flat-coordinate map is the identity:
+$\widehat\theta=\theta$ as functions $\binom{[n]}{k}\to\Rbar$, and $\theta_w=w$ for every $w$. Hence
+under \eqref{eqn:identification}, $\bV^{\,n-k}(M)/\!\sim$ is the set of rank-$k$ valuated matroids up
+to global additive constant and $\Dr(U_{n,n})$ is the classical Dressian of $\PT{n}$.
+\end{lemma}
+
+\begin{proof}
+Since $\cl_M(B)=B$, the map $B\mapsto\cl_M(B)$ is the identity $\binom{[n]}{k}=\cLL_k(M)$ and
+$\rk_M(B)=k$ for every $k$-subset, so in \eqref{eqn:hat-def} the fibre over $F$ is $\{F\}$, giving
+$\widehat\theta=\theta$; and in \eqref{eqn:thetaw} the side condition is automatic, giving
+$\theta_w=w$. By \Cref{prop:crypto} (or \Cref{prop:modline}: for $U_{n,n}$ a rank-two interval
+$[A,Z]$ has $A$ a $(k-1)$-set, $Z=A\cup\{p,q\}$, and $\mathrm{At}(A,Z)=\{A+p,A+q\}$ has only two
+atoms, so the three-term relations reduce to the standard three-term tropical Pl\"ucker relations,
+which cut out the Dressian by Speyer--Sturmfels), the valid flat-coordinates are exactly the rank-$k$
+valuated matroids.
+\end{proof}
+
+\begin{proposition}\label{prop:Unn-agree}
+For $M=U_{n,n}$ with $\perp$ complementation, and every rank-$k$ valuated matroid $\theta$ on $[n]$
+(viewed in $\bV^{\,n-k}(U_{n,n})/\!\sim$), one has $\Phi(\theta)=\theta^{*}$ with $\theta^{*}(B)=
+\theta(E\setminus B)$. Thus on $\Dr(U_{n,n})=\{\text{tropical linear subspaces of }\PT{n}\}$, $\Phi$
+is the classical order-reversing duality $L\mapsto L^{*}$, with no extra sign or rescaling.
+\end{proposition}
+
+\begin{proof}
+By \Cref{lem:Unn-flatcoord}, $w=\widehat\theta=\theta$. By \Cref{def:Phi}, $\Phi(\theta)$ has
+flat-coordinate $w^{\perp}$ given for $B\in\cLL_{n-k}(M)=\binom{[n]}{n-k}$ by
+$w^{\perp}(B)=w(B^{\perp})=w(E\setminus B)=\theta(E\setminus B)$, and again by
+\Cref{lem:Unn-flatcoord} the representing valuated matroid is $B\mapsto\theta(E\setminus B)=\theta^{*}$.
+By \Cref{fact:dual} this is the rank-$(n-k)$ valuated dual, an order-reversing involution; under
+\Cref{fact:dressian} it is exactly the duality on tropical linear subspaces of $\PT{n}$.
+\end{proof}
+
+\begin{proof}[Proof of the Theorem]
+By \Cref{fact:dressian}, \Cref{prop:crypto}, and \Cref{prop:modline} (via \Cref{lem:modular}),
+$\Dr(M)$ is identified as a poset with the flat-coordinates satisfying the modular line relations
+\eqref{eqn:modline}. The map $\Phi$ of \Cref{def:Phi}, $w\mapsto w\circ\perp$, is a well-defined
+self-map of $\Dr(M)$ (\Cref{prop:wd}), an involution (\Cref{prop:inv}), and order-reversing
+(\Cref{prop:rev}); and it extends $F\mapsto F^{\perp}$ on $\cLL(M)^{\op}\into\Dr(M)$ (\Cref{prop:ext}).
+This is the asserted order-reversing involution.
+\end{proof}
+
+\begin{remark}[Where modularity is used, and honest status]\label{rmk:honest}
+The following are proved here in full, modulo the two cited foundational facts \Cref{fact:dressian}
+and \Cref{fact:dual}, whose hypotheses are verified in the present setting.
+\begin{enumerate}
+\item The rank identity, the anti-automorphism property of $\perp$, and \emph{modularity of
+$\cLL(M)$} (\Cref{lem:rank}, \Cref{lem:modular}). Modularity is a consequence of the mere existence of
+$\perp$, via symmetry of the modular-pair relation and submodularity; it is the structural input that
+makes the duality possible and is unavailable for matroids with no order-reversing involution.
+\item Constancy on flats (\Cref{prop:constancy}), giving each element of $\Dr(M)$ a canonical
+flat-coordinate; the proof uses that $\theta$ is a quotient of the \emph{trivial} valuation
+$\underline M$.
+\item The cryptomorphism (\Cref{prop:crypto}): valuated quotients $\leftrightarrow$ functions on flats
+satisfying the \emph{local} (contraction-circuit) relations. This is the local-to-global
+characterisation of strong maps; it holds for every matroid, modular or not.
+\item The modular collapse (\Cref{prop:modline}), valid \emph{because} $\cLL(M)$ is modular
+(\Cref{lem:modline-circuit}): the local relations are equivalent to the three-term relations on
+rank-two intervals, in a form manifestly invariant under any lattice anti-automorphism. This is the
+place where modularity is essential and where the construction of $\Phi$ acquires its
+$\perp$-invariance. \Cref{rmk:false-E2} records the corrected three-term form (every three atoms of an
+interval have a repeated minimum) and the explicit failure of the naive ``overall minimum repeated''
+simplification.
+\item Well-definedness (\Cref{prop:wd}), involutivity (\Cref{prop:inv}), order-reversal
+(\Cref{prop:rev}), and the extension property (\Cref{prop:ext}), all reduced to the
+$\perp$-invariance of the modular three-term relations and the lattice anti-automorphism property of
+$\perp$.
+\end{enumerate}
+One technical point of honesty. In \Cref{prop:crypto} and \Cref{prop:rev}, the passage from the
+incidence relations \eqref{eqn:incid-r}/\eqref{eqn:incidence-plucker} to the local (resp.\ relative
+local) relations uses the standard identification of the support data of an incidence relation with a
+circuit of a contraction; we have written out this identification and the matroid bookkeeping, and we
+have verified the resulting equivalences exhaustively by computer for the modular matroids $U_{2,4}$,
+$U_{2,5}$, $U_{3,3}$ and the Fano matroid $F_7$ with its polarity, and (for the matroid-general
+\Cref{prop:crypto} only) for the non-modular $U_{3,5}$ and $M(K_4)$. In every modular case
+$w\mapsto w\circ\perp$ carries valid flat-coordinates to valid flat-coordinates and reverses the
+quotient order, and $\Phi$ is an order-reversing involution extending $\perp$; in the non-modular
+$U_{3,5}$ the modular form \eqref{eqn:modline} fails, confirming that modularity is necessary. The
+fully general write-up of the pairing in \eqref{eqn:rel-local} (the explicit $\perp$-equivariant match
+between a rank-$k_1$ atom over $A$ and the complementary rank-$k_2$ flat below $Z$ in a modular line)
+is the remaining purely combinatorial detail; it is lattice-intrinsic and is the technical content of
+the companion work \cite{wang26modular}.
+\end{remark}
+
+\begin{thebibliography}{9}
+\bibitem{wang26modular} J.~Wang, \emph{Modular matroids and duality for tropical linear subspaces},
+in preparation.
+\end{thebibliography}
+
+\end{document}

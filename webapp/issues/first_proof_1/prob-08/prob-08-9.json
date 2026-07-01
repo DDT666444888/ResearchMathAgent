@@ -1,0 +1,31 @@
+{
+  "id": "prob-08-9",
+  "problem_id": "prob-08",
+  "dataset": "first_proof_1",
+  "title": "Injectivity of theta -> widehat theta: 'N determined by rank-k flats' unproven",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T02:33:02Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev4a7b5bef",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T02:33:02Z"
+    },
+    {
+      "id": "cc7c8b883",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Gap in injectivity of $\\theta\\mapsto\\widehat\\theta$ / the poset iso $\\Dr(M)\\cong\\cW^{\\Dr}(M)$.**\n\nAfter `prop:constancy`, the solution claims $\\theta$ is recovered from $\\widehat\\theta$ because:\n\n> \"the underlying matroid is itself determined by $\\operatorname{supp}\\widehat\\theta=\\{F:\\widehat\\theta(F)<\\infty\\}$ (the rank-$k$ flats of $N$), since a quotient of a fixed matroid is determined by its flats.\"\n\nThis is not justified: $\\operatorname{supp}\\widehat\\theta$ records only the **rank-$k$** $M$-flats $\\{\\cl_M(B):B\\text{ a basis of }N\\}$ — a *single rank level*, not the full lattice $\\cLL(N)$. A matroid is determined by its **entire** lattice of flats, not by the flats of one fixed rank. The cited principle (\"a quotient is determined by its flats\") refers to all flats, so it does not apply.\n\n**What must be proved:** A rank-$k$ matroid quotient $N$ of the fixed $M$ is uniquely determined by the set $\\{\\cl_M(B):B\\text{ basis of }N\\}\\subseteq\\cLL_k(M)$. (Plausible: the bases of $N$ should be exactly the size-$k$ $M$-independent sets contained in, and spanning, one of these flats; but this needs an honest argument using that $N$ is a quotient of $M$.)\n\n**Why it matters:** This injectivity is used to define $\\Phi$ by transport across $\\Dr(M)\\cong\\cW^{\\Dr}(M)$ (`def:Phi`). Without it, the transport is ill-defined. Additionally, the *both-directions* order isomorphism (quotient relation among $\\theta$'s $\\iff$ quotient relation among $\\widehat\\theta$'s) is asserted, not proved, and is needed for `prop:rev`.\n\nSeverity: secondary (likely true) but currently unproven.",
+      "created_at": "2026-06-27T02:33:02Z"
+    }
+  ]
+}

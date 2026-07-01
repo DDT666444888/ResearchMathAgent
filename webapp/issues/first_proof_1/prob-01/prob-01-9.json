@@ -1,0 +1,32 @@
+{
+  "id": "prob-01-9",
+  "problem_id": "prob-01",
+  "dataset": "first_proof_1",
+  "title": "Resolve the dichotomy: construct a YES witness OR prove a NO no-go theorem (Q1.2 currently unanswered)",
+  "status": "open",
+  "labels": [
+    "proof-gap",
+    "key-step"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T05:19:32Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev67e97c68",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T05:19:32Z"
+    },
+    {
+      "id": "c1e67c88d",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Open dichotomy not addressed: is Question 1.2 even answerable YES? Consider a no-go theorem.**\n\nThe current `solution.tex` proves its only concrete candidate $\\A$ (Definition `def:A`) **fails** the negative clause (P2) (Lemma `lem:leak`, Cor. `cor:P2-fails`), and closes by leaving the actual construction \"as the outstanding task.\" So *no* witnessing structure exists in the attempt, and Question 1.2 is unanswered.\n\nCrucially, the draft's Remark `rem:spec` argues only **heuristically** that (P1) and (P2) are \"in genuine tension\":\n\n> any mechanism that propagates orientation from finitely many anchored gadgets to all gadgets (needed for (i)/(P1) with a uniform shift) is equally available to the adversary's existential formulas (defeating (ii)/(P2)).\n\nThis is presented as informal motivation, not a theorem. It leaves a genuine **dichotomy unresolved**, and a solver should pursue *both* branches in parallel:\n\n**(B1) YES branch.** Build a single computably-represented $\\B$ with $\\AUT(\\B)$ countable such that\n- (P1) every $\\pi\\in\\AUT(\\B)$ is $\\Sigma^{in}_1$-definable from *some* finite tuple; and\n- (P2) for every finite $\\bar a$, some $\\pi\\in\\AUT(\\B)$ is not $\\Sigma^{in}_1$-definable from $\\bar a\\cup\\pi(\\bar a)$ — via the embedding criterion `lem:embcrit`: a self-embedding $h$ of $\\B$ (global, preserving+reflecting **all** relations) fixing $\\bar a\\cup\\pi(\\bar a)$ pointwise with $h\\pi\\neq\\pi h$.\n\nThis requires decoupling *coordination* (needed for countability) from *orientation transmission* (which kills P2). The spine+anchor of `def:A` does the opposite and is provably fatal.\n\n**(B2) NO branch (currently entirely unconsidered).** Prove a no-go theorem: that every countable structure with countable automorphism group that is computably $\\AUT$-countable on a cone admits, for some fixed finite $\\bar a$, a uniform $\\Sigma^{in}_1$-definition of every automorphism from $\\bar a\\cup\\pi(\\bar a)$ — i.e. the naive effectivization of Theorem 2.2 cannot be defeated. If true, the answer to Question 1.2 is NO, and Remark `rem:spec`'s \"tension\" upgrades to a proof.\n\n**Why this matters / why it is hard.** The draft has correctly: (i) fixed the abstract negative-clause criterion (embedding preservation of $\\exists$-formulas, sound), and (ii) diagnosed the orientation-leak trap. But it has *not* established that the YES branch is achievable at all, nor ruled it out. The countability constraint ($(\\Z/2)^{\\N}$ is uncountable, so per-gadget choices must be collapsed) is in direct opposition to keeping per-gadget data existentially invisible — this is the crux and the content of the Thm 2.2 / Thm 2.3 gap.\n\n**Concrete next steps.**\n1. Attempt the YES construction with an *undirected*/parity coupling (no directed spine an $\\exists$-witness can traverse to read an absolute orientation), so that the local reflection $\\rho$ extends to a **global** self-embedding fixing any external tuple.\n2. Alternatively code a non-c.e.-on-a-cone set $X$ (per prob-01-5) on gadgets above $\\max$ index touched by $\\bar a\\cup\\pi(\\bar a)$, and check (P1) survives.\n3. In parallel, attempt to convert Remark `rem:spec`'s tension into a no-go theorem (B2).",
+      "created_at": "2026-06-28T05:19:32Z"
+    }
+  ]
+}

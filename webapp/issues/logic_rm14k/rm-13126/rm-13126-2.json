@@ -1,0 +1,31 @@
+{
+  "id": "rm-13126-2",
+  "problem_id": "rm-13126",
+  "dataset": "logic_rm14k",
+  "title": "Missing coincidence/relevance lemma: [[T]]_ρ depends only on ρ↾FV(T)",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T21:12:22Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev330cb4ab",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T21:12:22Z"
+    },
+    {
+      "id": "c8a6ce340",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "The interpretation is asserted to depend only on the environments restriction to free variables, i.e. [[T]]_ρ = [[T]]_{ρ↾FV(T)}, but this is never stated or proved, yet it is load-bearing at THREE points:\n\n1. Lemma (Substitution) lem:subst — explicitly: \"we use that [[T]]_ρ depends only on ρ↾FV(T)\"; and in the abstraction case via [[N]]_{ρ[z:=a]} = [[N]]_ρ since z∉FV(N).\n2. Proposition (One-step decrease) prop:step — \"Since FV(N)⊆FV(M), restricting ρ to FV(N) is legitimate.\"\n3. Theorem thm:main — applies a single canonical environment ρ0 to both M and N when FV(N)⊆FV(M).\n\nStatus: GENUINE but MINOR. It is true and closable by a one-line structural induction on T (the recursion only ever reads ρ(x) for x∈FV(T)). A self-contained writeup should add it explicitly as a Coincidence Lemma and cite it at the three sites above.\n\nSuggested statement: For every term T and environments ρ,ρ_2 with ρ(x)=ρ_2(x) for all x∈FV(T), one has [[T]]_ρ=[[T]]_{ρ_2}. Proof by induction on T: variable reads only ρ(x), x∈FV(T); application IH on both subterms; abstraction λz.P — for each argument a, ρ[z:=a] and ρ_2[z:=a] agree on FV(P), apply IH.",
+      "created_at": "2026-06-28T21:12:22Z"
+    }
+  ]
+}

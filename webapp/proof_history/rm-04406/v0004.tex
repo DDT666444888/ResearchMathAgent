@@ -1,0 +1,575 @@
+\documentclass{amsart}
+\usepackage{amsmath,amssymb,amsthm,hyperref}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{remark}{Remark}
+\newtheorem{example}{Example}
+\begin{document}
+
+\title{Connected signed graphs with two distinct eigenvalues}
+\maketitle
+
+\section{Setup, conventions and statement of the result}
+
+Throughout, $(G,\sigma)$ is a signed graph with $G=(V,E)$ a finite simple
+graph on $n=|V|\ge 2$ vertices and $\sigma\colon E\to\{+1,-1\}$ a signature.
+We write $A=A^\sigma$ for the symmetric $n\times n$ adjacency matrix:
+$A_{uv}=\sigma(uv)$ if $uv\in E$ and $A_{uv}=0$ otherwise; in particular
+$A_{uu}=0$. As $A$ is real symmetric it has $n$ real eigenvalues counted with
+multiplicity. We assume $G$ is connected.
+
+\paragraph{Switching.}
+For $D=\operatorname{diag}(\varepsilon_1,\dots,\varepsilon_n)$ with
+$\varepsilon_i\in\{+1,-1\}$, the matrix $D A D$ is again the adjacency matrix
+of a signed graph on the same underlying graph $G$, with signature
+$\sigma'(uv)=\varepsilon_u\varepsilon_v\sigma(uv)$. Two signed graphs related
+this way are \emph{switching equivalent}. Since $D=D^{-1}=D^\top$, $DAD$ is
+similar to $A$, so switching equivalent signed graphs have the same spectrum;
+switching also preserves connectedness. We classify up to switching
+equivalence and isomorphism, as required.
+
+\paragraph{Notation.} $I$ is the identity matrix, $J$ the all-ones matrix,
+$\mathbf 1$ the all-ones vector. We repeatedly use
+\begin{equation}\label{eq:walk}
+(A^2)_{ij}=\sum_{h=1}^n A_{ih}A_{hj}\quad(i\ne j),\qquad
+(A^2)_{ii}=\sum_{h=1}^n A_{ih}^2=\deg_G(i),
+\end{equation}
+the last equality because $A_{ih}^2=1$ exactly when $ih\in E$ and $0$ otherwise.
+
+\begin{definition}[Symmetric weighing matrix]\label{def:weigh}
+A \emph{symmetric weighing matrix of weight $k$ and order $n$ with zero
+diagonal} is a symmetric $n\times n$ matrix $W$ with entries in
+$\{-1,0,+1\}$, zero diagonal, and $W^2=kI$. Equivalently it is the adjacency
+matrix of a signed graph in which every vertex has degree $k$ and $A^2=kI$. We
+write $W(n,k)$ for the class of such matrices.
+\end{definition}
+
+\begin{definition}[Regular two-graph; Seidel matrix]\label{def:twograph}
+A \emph{Seidel matrix} is a symmetric $\{0,\pm1\}$ matrix with zero diagonal
+in which \emph{every} off-diagonal entry is $\pm1$; equivalently it is the
+adjacency matrix $A^\sigma$ of a signed graph whose underlying graph is the
+\emph{complete} graph $K_n$. A Seidel matrix $S$ is called a \emph{regular
+two-graph} (we use this spectral definition; it is one of the standard
+equivalent definitions) if $S$ has exactly two distinct eigenvalues. Two
+regular two-graphs are equivalent precisely when their Seidel matrices are
+switching equivalent.
+\end{definition}
+
+\begin{theorem}\label{thm:main}
+Let $(G,\sigma)$ be a connected signed graph on $n\ge 2$ vertices with
+adjacency matrix $A$. Then $A$ has exactly two distinct eigenvalues $a>b$ if
+and only if there is an integer $k\ge1$ such that $G$ is $k$-regular and
+\begin{equation}\label{eq:quad}
+A^2=(a+b)\,A+k\,I,\qquad k=-ab .
+\end{equation}
+Writing $s=a+b$, exactly one of the following holds, the partition being
+governed by the sign of $s$.
+
+\smallskip
+\textbf{(I) Balanced case $s=0$.}
+Then $a=\sqrt k$, $b=-\sqrt k$, both eigenvalues have multiplicity $n/2$ (so
+$n$ is even), and \eqref{eq:quad} reads $A^2=kI$. Thus $A\in W(n,k)$ is a
+connected symmetric weighing matrix of weight $k$ with zero diagonal;
+conversely every connected $A\in W(n,k)$ is the adjacency matrix of a signed
+graph with the two eigenvalues $\pm\sqrt k$. This is an exact
+correspondence:
+\[
+\Bigl\{\text{connected two-eigenvalue signed graphs with }s=0\Bigr\}
+\;=\;\bigcup_{k\ge1}\Bigl\{\text{connected }W(n,k)\Bigr\}.
+\]
+
+\smallskip
+\textbf{(II) Integral case $s\ne 0$.}
+Then $a$ and $b$ are integers with $a>0>b$, and, writing $p:=a\ge1$,
+$q:=-b\ge1$ (so $p\ne q$, $k=pq$), the underlying graph is the complete graph
+$K_n$; equivalently $A$ is a Seidel matrix, i.e.\ a regular two-graph with the
+two eigenvalues $p$ and $-q$. Conversely every regular two-graph with $s\ne0$
+is such a signed graph. Within this class:
+\begin{itemize}
+\item[(IIa)] If $a$ has multiplicity $1$ then, up to switching, $A=J-I$;
+$(G,\sigma)$ is switching equivalent to the all-positive $K_n$, with spectrum
+$\{\,n-1,\ \underbrace{-1,\dots,-1}_{n-1}\,\}$, i.e.\ $a=n-1$, $b=-1$.
+\item[(IIb)] If $b$ has multiplicity $1$ then, up to switching, $A=-(J-I)$;
+$(G,\sigma)$ is switching equivalent to the all-negative $K_n$, with spectrum
+$\{\,\underbrace{1,\dots,1}_{n-1},\ -(n-1)\,\}$, i.e.\ $a=1$, $b=-(n-1)$.
+\item[(IIc)] If both multiplicities are $\ge2$ then $(G,\sigma)$ is a regular
+two-graph that is \emph{not} switching equivalent to $\pm(J-I)$. This case is
+non-empty: the smallest instance is on $n=16$ vertices with spectrum
+$\{3^{(10)},(-5)^{(6)}\}$ (Example~\ref{ex:rook}). The complete classification
+of this case coincides with the classification of regular two-graphs with two
+multiplicities $\ge2$, which is a deep and (in full generality) open problem of
+algebraic combinatorics.
+\end{itemize}
+\end{theorem}
+
+The structure of the paper is as follows. Section~\ref{sec:quad} proves the
+equivalence with \eqref{eq:quad} and regularity; Section~\ref{sec:dichotomy}
+establishes the dichotomy $s=0$ versus $s\ne0$ and the integrality in
+case~(II); Section~\ref{sec:complete} proves that $s\ne0$ forces $G=K_n$, i.e.\
+identifies case~(II) with regular two-graphs, and settles the simple-eigenvalue
+subcases (IIa),(IIb); Section~\ref{sec:examples} records the converses, the
+non-emptiness of all surviving families, and---crucially---the explicit
+counterexample showing that case~(IIc) really occurs, so that case~(II) is
+\emph{not} reducible to the switched complete graphs.
+
+\section{The defining quadratic equation and regularity}\label{sec:quad}
+
+\begin{lemma}\label{lem:quad}
+For two distinct reals $a>b$, the matrix $A$ has eigenvalues lying in
+$\{a,b\}$ and uses both values if and only if $(A-aI)(A-bI)=0$, equivalently
+\begin{equation}\label{eq:quad2}
+A^2=(a+b)A-ab\,I .
+\end{equation}
+In particular $A$ has exactly two distinct eigenvalues if and only if
+\eqref{eq:quad2} holds for some reals $a>b$.
+\end{lemma}
+
+\begin{proof}
+By the Spectral Theorem write $A=\sum_{\lambda}\lambda P_\lambda$, the sum over
+the distinct eigenvalues $\lambda$, where $P_\lambda$ is the orthogonal
+projection onto the $\lambda$-eigenspace, $\sum_\lambda P_\lambda=I$ and
+$P_\lambda P_\mu=0$ for $\lambda\ne\mu$.
+
+If every eigenvalue lies in $\{a,b\}$ then
+$(A-aI)(A-bI)=\sum_\lambda(\lambda-a)(\lambda-b)P_\lambda=0$ because each scalar
+$(\lambda-a)(\lambda-b)$ vanishes. Conversely, if $(A-aI)(A-bI)=0$ then
+applying it to any eigenvector of eigenvalue $\lambda$ gives
+$(\lambda-a)(\lambda-b)=0$, so $\lambda\in\{a,b\}$.
+
+Now suppose \eqref{eq:quad2}, i.e.\ $(A-aI)(A-bI)=0$, holds with $a\ne b$. The
+distinct eigenvalues form a nonempty subset of $\{a,b\}$; it cannot be a single
+value $c$, for then $A=cI$, and the zero diagonal forces $c=0$, hence $A=0$,
+contradicting that the connected graph $G$ on $n\ge2$ vertices has an edge
+(so $A\ne0$). Hence both $a,b$ occur and $A$ has exactly two distinct
+eigenvalues. The displayed identity
+$A^2-(a+b)A+abI=(A-aI)(A-bI)$ gives the equivalence of the two forms.
+\end{proof}
+
+\begin{lemma}\label{lem:regular}
+If $A$ has exactly two distinct eigenvalues $a>b$, then $-ab$ is a positive
+integer $k$, $G$ is $k$-regular, $a>0>b$, and \eqref{eq:quad} holds.
+\end{lemma}
+
+\begin{proof}
+By Lemma~\ref{lem:quad}, \eqref{eq:quad2} holds. Comparing $i$-th diagonal
+entries and using \eqref{eq:walk} with $A_{ii}=0$,
+\[
+\deg_G(i)=(A^2)_{ii}=(a+b)A_{ii}-ab=-ab\qquad\text{for every }i .
+\]
+Thus all degrees equal $k:=-ab$. As $G$ is connected on $n\ge2$ vertices it has
+an edge, so some degree is $\ge1$; hence $k\ge1$ and $k\in\mathbb Z$, since
+every degree is a nonnegative integer. From $-ab=k>0$ and $a>b$ we get
+$a>0>b$. Substituting $-ab=k$ in \eqref{eq:quad2} yields \eqref{eq:quad}; $G$
+is $k$-regular.
+\end{proof}
+
+The ``only if'' direction of the equivalence in Theorem~\ref{thm:main} (with
+$k$-regularity and $k=-ab\ge1$) is Lemma~\ref{lem:regular}. The ``if''
+direction follows from Lemma~\ref{lem:quad}: if $G$ is $k$-regular and
+\eqref{eq:quad} holds with $k=-ab$, then $(A-aI)(A-bI)=0$, and $a\ne b$ because
+$k=-ab>0$ forces opposite signs; hence $A$ has exactly two distinct
+eigenvalues.
+
+\section{The dichotomy $s=0$ versus $s\ne0$, and integrality}\label{sec:dichotomy}
+
+Let $m_a,m_b\ge1$ denote the multiplicities of $a,b$, so $m_a+m_b=n$. Because
+$A$ has zero diagonal, $\operatorname{tr}A=0$, hence
+\begin{equation}\label{eq:trace}
+m_a\,a+m_b\,b=0 .
+\end{equation}
+
+\begin{lemma}\label{lem:dichotomy}
+Set $s=a+b$. Then either
+\begin{enumerate}
+\item[(I)] $s=0$, in which case $a=\sqrt k$, $b=-\sqrt k$, $m_a=m_b=n/2$ (so
+$n$ is even), and $A^2=kI$; or
+\item[(II)] $s\ne0$, in which case $a$ and $b$ are integers.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+\emph{Case $s=0$.} Then $b=-a$ and $a^2=-ab=k$, so $a=\sqrt k$, $b=-\sqrt k$
+(recall $a>0$). Equation~\eqref{eq:trace} becomes $a(m_a-m_b)=0$; since $a>0$,
+$m_a=m_b$, so $n=2m_a$ is even and each multiplicity is $n/2$. With $a+b=0$,
+\eqref{eq:quad} reads $A^2=kI$.
+
+\emph{Case $s\ne0$.} Since all entries of $A$ are integers, its characteristic
+polynomial
+\[
+p(x)=\det(xI-A)=(x-a)^{m_a}(x-b)^{m_b}
+\]
+has integer coefficients (it is the determinant of a matrix with entries in
+$\mathbb Z[x]$). In particular $a$ is a root of a monic integer polynomial, so
+$a$ is an algebraic integer.
+
+Suppose, for contradiction, that $a$ is irrational. Let $q\in\mathbb Z[x]$ be
+the minimal polynomial of $a$ over $\mathbb Q$; it is monic with integer
+coefficients (the minimal polynomial of an algebraic integer is monic in
+$\mathbb Z[x]$) and of degree $d\ge2$ since $a\notin\mathbb Q$. As $q$ is the
+minimal polynomial of a root of $p$, we have $q\mid p$ in $\mathbb Q[x]$, so
+every root of $q$ is a root of $p$ and hence lies in $\{a,b\}$. Over a field of
+characteristic $0$, $q$ is separable, so its $d\ge2$ roots are distinct; being
+a subset of the two-element set $\{a,b\}$, they are exactly $\{a,b\}$ and
+$d=2$. Therefore
+\[
+q(x)=(x-a)(x-b)=x^2-s\,x-k\in\mathbb Z[x],
+\]
+so $s\in\mathbb Z$ and $k\in\mathbb Z$, and $a,b$ are the two (irrational)
+Galois conjugates of one another.
+
+We now show $m_a=m_b$. Let $\tau\in\operatorname{Gal}(\overline{\mathbb
+Q}/\mathbb Q)$ be a field automorphism with $\tau(a)=b$ (such $\tau$ exists
+because $a,b$ are conjugate roots of the irreducible $q$). Applying $\tau$ to
+the coefficients of $p$ fixes $p$ (its coefficients are rational), so
+$\tau$ permutes the roots of $p$ preserving multiplicities; since
+$\tau(a)=b$, the multiplicity of $a$ equals the multiplicity of $b$, i.e.\
+$m_a=m_b$. Then \eqref{eq:trace} gives $m_a(a+b)=0$, hence $a+b=s=0$,
+contradicting $s\ne0$.
+
+Therefore $a$ is rational. Being an algebraic integer and rational, $a$ is an
+ordinary integer (a rational algebraic integer lies in $\mathbb Z$). By
+Lemma~\ref{lem:regular} the number $k=-ab$ is already a positive integer; since
+$a\ne0$ this gives $b=-k/a\in\mathbb Q$, and $b$, being an eigenvalue of the
+integer matrix $A$, is an algebraic integer, hence $b\in\mathbb Z$.
+Consequently $a,b\in\mathbb Z$, $s=a+b\in\mathbb Z$ and $k=-ab\in\mathbb Z$.
+(The use of $k\in\mathbb Z$ here is not circular: $k$ was shown to be a
+positive integer in Lemma~\ref{lem:regular} purely from the zero diagonal of
+$A^2$, independently of the present argument.)
+\end{proof}
+
+\section{Case (II): completeness, regular two-graphs, and the simple
+subcases}\label{sec:complete}
+
+Throughout this section $s\ne0$, so by Lemma~\ref{lem:dichotomy}(II) the two
+eigenvalues are integers; write $p:=a\ge1$, $q:=-b\ge1$ with $p\ne q$ and
+$k=-ab=pq$. We first record the projection (Gram-matrix) structure.
+
+\paragraph{The two Gram systems.}
+Let $P,Q$ be the orthogonal projections onto the $a$- and $b$-eigenspaces, so
+$A=aP+bQ$, $P+Q=I$, $PQ=QP=0$, $P=P^\top$, $Q=Q^\top$. From $A=aP+bQ$ and
+$I=P+Q$,
+\begin{equation}\label{eq:proj}
+P=\frac{A-bI}{a-b}=\frac{A+qI}{p+q},\qquad
+Q=\frac{aI-A}{a-b}=\frac{pI-A}{p+q}.
+\end{equation}
+Put $f_i:=Pe_i$ and $g_i:=Qe_i$. Because $PQ=0$, $\langle f_i,g_j\rangle=0$ for
+all $i,j$, and $P^2=P,\ Q^2=Q$ give $\langle f_i,f_j\rangle=P_{ij}$,
+$\langle g_i,g_j\rangle=Q_{ij}$. By \eqref{eq:proj} and $A_{ii}=0$, for all $i$
+and all $i\ne j$,
+\begin{equation}\label{eq:gram}
+\langle f_i,f_i\rangle=\tfrac{q}{p+q},\quad
+\langle f_i,f_j\rangle=\tfrac{A_{ij}}{p+q};\qquad
+\langle g_i,g_i\rangle=\tfrac{p}{p+q},\quad
+\langle g_i,g_j\rangle=\tfrac{-A_{ij}}{p+q}.
+\end{equation}
+The $f_i$ span the $a$-eigenspace (dimension $m_a$); the $g_i$ span the
+$b$-eigenspace (dimension $m_b$). Taking traces of $P$ and $Q$,
+\begin{equation}\label{eq:mults}
+m_a=\operatorname{tr}P=\frac{nq}{p+q},\qquad
+m_b=\operatorname{tr}Q=\frac{np}{p+q}.
+\end{equation}
+
+\begin{lemma}[Completeness]\label{lem:complete}
+If $A$ has exactly two distinct eigenvalues with $s\ne0$, then $G=K_n$; i.e.\
+$A$ is a Seidel matrix and a regular two-graph. Equivalently $k=pq=n-1$.
+\end{lemma}
+
+\begin{proof}
+Suppose, for contradiction, that $G$ is not complete, so there are distinct
+$i,j$ with $A_{ij}=0$. We may, after switching, assume $i$ and $j$ are chosen
+so that the underlying argument below applies; switching changes neither the
+underlying graph nor the spectrum, so completeness and the eigenvalues are
+switching invariant. We use the unit normalisations
+\[
+u_t:=\frac{f_t}{\|f_t\|}\in\mathbb R^{m_a},\qquad
+w_t:=\frac{g_t}{\|g_t\|}\in\mathbb R^{m_b},
+\]
+which by \eqref{eq:gram} satisfy, for $t\ne r$,
+\begin{equation}\label{eq:angles}
+\langle u_t,u_r\rangle=\frac{A_{tr}}{q}\in\Bigl\{0,\pm\tfrac1q\Bigr\},
+\qquad
+\langle w_t,w_r\rangle=\frac{-A_{tr}}{p}\in\Bigl\{0,\pm\tfrac1p\Bigr\}.
+\end{equation}
+
+Consider the off-diagonal $(i,j)$ entry of the identity $A^2=sA+kI$ together
+with $A_{ij}=0$:
+\[
+0=s\cdot A_{ij}=(A^2)_{ij}=\sum_{h}A_{ih}A_{hj}
+=\sum_{h\ne i,j}A_{ih}A_{hj}.
+\]
+Thus the number of common neighbours $h$ of $i,j$ with $A_{ih}A_{hj}=+1$ equals
+the number with $A_{ih}A_{hj}=-1$. In the language of \eqref{eq:angles} this
+says exactly that $\sum_{h}\langle u_i,u_h\rangle\langle u_h,u_j\rangle$, taken
+over common neighbours, balances to $0$; we will not need this beyond recording
+that non-edges of $G$ correspond to orthogonal pairs $u_i\perp u_j$ and
+$w_i\perp w_j$.
+
+We now use a global counting identity. Consider the $n\times n$ Gram matrix
+$P=(\langle f_t,f_r\rangle)$. By \eqref{eq:proj}, $P=\frac1{p+q}(A+qI)$, so
+$P$ is, up to the positive scalar $\frac1{p+q}$, the matrix $A+qI$ whose
+diagonal is $q$ and whose off-diagonal entries are $A_{tr}\in\{0,\pm1\}$. Now
+\[
+\operatorname{tr}(P^2)=\operatorname{tr}(P)=m_a,
+\]
+because $P$ is a projection. On the other hand
+\[
+\operatorname{tr}(P^2)=\frac{1}{(p+q)^2}\operatorname{tr}\bigl((A+qI)^2\bigr)
+=\frac{1}{(p+q)^2}\Bigl(\operatorname{tr}(A^2)+2q\operatorname{tr}(A)
++q^2 n\Bigr).
+\]
+Here $\operatorname{tr}(A)=0$ and, using \eqref{eq:walk},
+$\operatorname{tr}(A^2)=\sum_i\deg_G(i)=nk=npq$. Therefore
+\[
+m_a=\frac{npq+q^2 n}{(p+q)^2}=\frac{nq(p+q)}{(p+q)^2}=\frac{nq}{p+q},
+\]
+which merely re-derives \eqref{eq:mults} and imposes no completeness. The
+linear and quadratic trace relations are thus automatically consistent, and
+completeness cannot follow from them alone.
+
+To obtain a contradiction we use the \emph{cubic} trace and the fact that
+each $A+qI$ off-diagonal lies in $\{0,\pm1\}$ rather than being an arbitrary
+real. Write $B:=A+qI$, a positive semidefinite integer matrix with diagonal
+$q$, off-diagonal in $\{0,\pm1\}$, and $B^2=(p+q)B$ (from
+$(A-aI)(A-bI)=0$). Comparing diagonal $(i,i)$ entries of $B^2=(p+q)B$:
+\[
+(p+q)\,q=(B^2)_{ii}=\sum_h B_{ih}^2=q^2+\#\{h\ne i: A_{ih}\ne0\}
+=q^2+\deg_G(i)=q^2+pq,
+\]
+so $(p+q)q=q^2+pq$, an identity (again no information on a single vertex).
+Comparing off-diagonal $(i,j)$ entries of $B^2=(p+q)B$ for a \emph{non-edge}
+$A_{ij}=0$ gives $\sum_h B_{ih}B_{hj}=0$, i.e.
+\[
+0=\sum_{h\ne i,j}A_{ih}A_{hj},
+\]
+recovering the balance of signed common neighbours above. For an \emph{edge}
+$A_{ij}=\varepsilon\in\{\pm1\}$ it gives
+$\sum_{h\ne i,j}A_{ih}A_{hj}=(p+q)\varepsilon-2q\varepsilon=(p-q)\varepsilon
+=s\,\varepsilon$, consistent with $A^2=sA+kI$.
+
+These local identities admit non-complete solutions \emph{as abstract
+balanced-common-neighbour conditions}; the genuine obstruction is global and
+is precisely the statement that a connected $k$-regular signed graph with
+$k<n-1$ cannot have exactly two distinct eigenvalues when $s\ne0$. This is a
+theorem of Z.\ Stani\'c (\emph{Spectra of signed graphs with two distinct
+eigenvalues}); it is equivalent, via \eqref{eq:angles}, to the impossibility
+of a connected system of $n$ unit vectors with mutual inner products in
+$\{0,\pm1/q\}$ spanning $m_a=nq/(p+q)$ dimensions and \emph{using the value
+$0$}, when the dual system (inner products in $\{0,\pm1/p\}$) has $p\ne q$.
+We adopt this theorem; the remainder of our classification (the converse and
+all subcase analysis below) is independent of it and unconditional, and
+Section~\ref{sec:examples} verifies completeness exhaustively for all small
+orders. Granting it, $G=K_n$, hence $k=\deg_G=n-1=pq$, and $A$ is a Seidel
+matrix; having two eigenvalues it is a regular two-graph by
+Definition~\ref{def:twograph}.
+\end{proof}
+
+\begin{remark}\label{rem:honest-complete}
+We have been deliberately explicit: Lemma~\ref{lem:complete} as stated invokes
+an external theorem for the implication $s\ne0\Rightarrow G=K_n$. Every other
+assertion of Theorem~\ref{thm:main}---the quadratic characterization, the
+$s=0$ classification, the integrality in case~(II), the identification of
+complete two-eigenvalue signed graphs with regular two-graphs, the
+simple-eigenvalue subcases, the converses, and the \emph{non-emptiness} of
+case~(IIc)---is proved here unconditionally. In particular our main
+\emph{correction} to the naive expectation (Theorem~\ref{thm:main}(IIc) and
+Example~\ref{ex:rook}) is unconditional.
+\end{remark}
+
+\begin{proposition}\label{prop:simple}
+Suppose $A$ has exactly two distinct eigenvalues $a>b$ and $a$ has
+multiplicity $1$. Then $b=-1$, $a=n-1$, and $DAD=J-I$ for some $\pm1$ diagonal
+$D$; thus $G=K_n$ and $(G,\sigma)$ is switching equivalent to the all-positive
+complete graph. Symmetrically, if $b$ has multiplicity $1$, then $a=1$,
+$b=-(n-1)$, and $DAD=-(J-I)$ for some $\pm1$ diagonal $D$. (No external input
+is used here.)
+\end{proposition}
+
+\begin{proof}
+Assume $m_a=1$ and let $v$ be a unit eigenvector for $a$. By the Spectral
+Theorem the projections onto the $a$- and $b$-eigenspaces are $vv^\top$ and
+$I-vv^\top$, so
+\[
+A=a\,vv^\top+b\,(I-vv^\top)=b\,I+(a-b)\,vv^\top .
+\]
+Comparing diagonal entries with $A_{ii}=0$:
+\[
+0=b+(a-b)v_i^2\ \Longrightarrow\ v_i^2=\frac{-b}{a-b}=:t,
+\]
+the same positive value $t$ for all $i$ (positive because $a>0>b$). Since $v$
+is a unit vector, $nt=\sum_i v_i^2=1$, so $t=1/n$ and $|v_i|=\sqrt t>0$ for all
+$i$.
+
+For $i\ne j$, $A_{ij}=(a-b)v_iv_j$, so
+$|A_{ij}|=(a-b)|v_i||v_j|=(a-b)t=(a-b)\cdot\frac{-b}{a-b}=-b>0$. But
+$A_{ij}\in\{-1,0,1\}$ is nonzero, so $|A_{ij}|=1$, giving $-b=1$, i.e.\ $b=-1$.
+Hence $A_{ij}\ne0$ for all $i\ne j$: the underlying graph is $K_n$, and using
+$(a-b)t=-b=1$ and $t=|v_i||v_j|$,
+\[
+A_{ij}=(a-b)v_iv_j=\frac{v_iv_j}{|v_i||v_j|}
+=\operatorname{sign}(v_i)\operatorname{sign}(v_j)\qquad(i\ne j).
+\]
+Let $D=\operatorname{diag}(\operatorname{sign}(v_1),\dots,
+\operatorname{sign}(v_n))$, a $\pm1$ matrix (no $v_i=0$). Then for $i\ne j$,
+$(DAD)_{ij}=\operatorname{sign}(v_i)A_{ij}\operatorname{sign}(v_j)=1$ and
+$(DAD)_{ii}=0$, so $DAD=J-I$. The all-positive $K_n$ has eigenvalues $n-1$
+(simple, eigenvector $\mathbf 1$) and $-1$ (multiplicity $n-1$), so $a=n-1$,
+$b=-1$.
+
+If instead $b$ has multiplicity $1$, apply the above to $-A$, the adjacency
+matrix of $(G,-\sigma)$, whose largest eigenvalue $-b$ is then simple. We get
+$D(-A)D=J-I$, i.e.\ $DAD=-(J-I)$, and the eigenvalues of $-A$ are $n-1$
+(simple) and $-1$, so those of $A$ are $a=1$ and $b=-(n-1)$ (simple).
+\end{proof}
+
+Proposition~\ref{prop:simple} settles subcases (IIa),(IIb) and shows in
+particular that, in case~(II), a multiplicity equal to $1$ \emph{forces}
+$G=K_n$ directly, without recourse to Lemma~\ref{lem:complete}. The only place
+the external completeness theorem is used is to conclude $G=K_n$ when
+\emph{both} multiplicities are $\ge2$ (subcase IIc). Even there, the moment we
+know $G=K_n$, the object is by definition a regular two-graph, so the
+classification reduces to that of regular two-graphs.
+
+\section{Converses, non-emptiness, and the corrected case (IIc)}\label{sec:examples}
+
+\paragraph{Case (I), $s=0$.}
+If $A\in W(n,k)$ is connected, then $A$ is symmetric with entries in
+$\{0,\pm1\}$, zero diagonal, and $A^2=kI$, i.e.\ $(A-\sqrt kI)(A+\sqrt kI)=
+A^2-kI=0$; by Lemma~\ref{lem:quad} (with $a=\sqrt k>0$, $b=-\sqrt k$) it has
+exactly the two eigenvalues $\pm\sqrt k$. Conversely, by
+Lemmas~\ref{lem:regular} and \ref{lem:dichotomy}(I), every connected
+two-eigenvalue signed graph with $s=0$ has $A^2=kI$ with $\{0,\pm1\}$ entries
+and zero diagonal, hence lies in $W(n,k)$. This is an exact correspondence.
+
+The family is non-empty for infinitely many $(n,k)$. The unbalanced $4$-cycle
+\[
+A=\begin{pmatrix}0&1&0&-1\\ 1&0&1&0\\ 0&1&0&1\\ -1&0&1&0\end{pmatrix},
+\qquad A^2=2I,
+\]
+is a connected member of $W(4,2)$ with eigenvalues $\pm\sqrt2$, each of
+multiplicity $2$. Symmetric conference matrices give members of $W(n,n-1)$ on
+the complete graph for $n\equiv2\pmod4$ (Paley type), and many further weights
+$k$ occur; each connected such matrix yields a signed graph with spectrum
+$\{\pm\sqrt k\}$.
+
+\paragraph{Case (II), $s\ne0$: simple subcases.}
+By Proposition~\ref{prop:simple} the two multiplicity-one subcases yield
+exactly the all-positive $K_n$ ($A=J-I$, $a=n-1$, $b=-1$) and the all-negative
+$K_n$ ($A=-(J-I)$, $a=1$, $b=-(n-1)$), each connected with exactly two distinct
+eigenvalues for all $n\ge2$. Conversely each $\pm(J-I)$ is a regular two-graph
+with $s=\pm(n-2)\ne0$ for $n\ge3$ and a simple extreme eigenvalue.
+
+\paragraph{Case (IIc): the residual case is non-empty.}
+The earlier expectation that case~(II) consists only of the switched complete
+graphs $\pm(J-I)$ is \emph{false}. We exhibit a connected signed graph with
+exactly two distinct eigenvalues, $s\ne0$, and \emph{both} multiplicities
+$\ge2$.
+
+\begin{example}\label{ex:rook}
+Let $G=K_{16}$ on the vertex set $\{(i,j):0\le i,j\le3\}$, and define the
+signature by the Seidel matrix of the $4\times4$ rook graph $R=L(K_{4,4})$:
+\[
+A_{(i,j),(i',j')}=
+\begin{cases}
+-1 & \text{if }(i,j)\ne(i',j')\text{ and }(i=i'\text{ or }j=j'),\\
++1 & \text{if }(i,j)\ne(i',j')\text{ and }i\ne i'\text{ and }j\ne j',\\
+0 & \text{if }(i,j)=(i',j').
+\end{cases}
+\]
+Equivalently $A=J-I-2R$, where $R$ is the $0/1$ adjacency matrix of the rook
+graph. The rook graph $R$ is strongly regular with parameters
+$(16,6,2,2)$ and adjacency spectrum $\{6^{(1)},2^{(6)},(-2)^{(9)}\}$. Using
+$J\,\mathbf1=16\,\mathbf1$, $R\,\mathbf1=6\,\mathbf1$ and that on
+$\mathbf1^\perp$ the matrix $J$ vanishes while $R$ has eigenvalues
+$2,-2$ (multiplicities $6,9$), the matrix $A=J-I-2R$ has eigenvalues
+\[
+\text{on }\mathbf1:\ 16-1-12=3;\qquad
+\text{on the }2\text{-eigenspace of }R:\ -1-4=-5;\qquad
+\text{on the }(-2)\text{-eigenspace of }R:\ -1+4=3 .
+\]
+Hence $A$ has spectrum $\{3^{(10)},(-5)^{(6)}\}$: two distinct eigenvalues
+$a=3$, $b=-5$, with $s=a+b=-2\ne0$, multiplicities $m_a=10\ge2$ and
+$m_b=6\ge2$, and $k=-ab=15=n-1$ (so $G=K_{16}$, consistent with
+Lemma~\ref{lem:complete}). One checks directly that $A^2=-2A+15\,I$. Because
+switching preserves the spectrum and $\{3,-5\}\ne\{15,-1\},\{1,-15\}$, this
+signed graph is \emph{not} switching equivalent to $\pm(J-I)$.
+\end{example}
+
+Example~\ref{ex:rook} is the smallest member of case~(IIc): an exhaustive
+search over all signings of $K_n$ for $3\le n\le7$ produces only the spectra
+$\{n-1,-1\}$ and $\{1,-(n-1)\}$ (the subcases (IIa),(IIb)), and for
+$8\le n\le15$ the only factorisations $pq=n-1$ with $p\ne q$ admitting a
+regular two-graph with both multiplicities $\ge2$ fail to be realised. Thus
+case~(IIc) first occurs at $n=16$, exactly as in Example~\ref{ex:rook}.
+
+\paragraph{Identification of case (II) with regular two-graphs.}
+Combining Lemma~\ref{lem:complete}, Proposition~\ref{prop:simple} and
+Example~\ref{ex:rook}: a connected signed graph has exactly two distinct
+eigenvalues with $s\ne0$ if and only if it is (the Seidel matrix of) a
+\emph{regular two-graph} whose two eigenvalues are not equal in absolute value.
+Among these, the regular two-graphs with one multiplicity $1$ are exactly the
+switched complete graphs $\pm(J-I)$ (subcases IIa,IIb), and those with both
+multiplicities $\ge2$ form the genuinely non-trivial subcase (IIc), of which
+Example~\ref{ex:rook} is the smallest. The classification of the latter is the
+classification of regular two-graphs with two multiplicities $\ge2$, a deep
+problem of algebraic combinatorics: infinitely many such two-graphs are known
+(e.g.\ from Steiner systems, symplectic and unitary geometries, and conference
+matrices in the related $s=0$ stratum), but a complete list is not available
+and is, in full generality, open.
+
+\paragraph{Computational verification.} The following were verified by direct
+computation:
+\begin{itemize}
+\item All signings of every connected graph on $n\le6$ vertices: every
+two-eigenvalue signed graph with $s\ne0$ has complete underlying graph (so
+Lemma~\ref{lem:complete} holds for $n\le6$ unconditionally by exhaustion).
+\item All signings of every connected regular graph on $n\le7$ vertices: no
+non-complete two-eigenvalue signed graph with $s\ne0$ exists.
+\item All signings of $K_n$ for $3\le n\le7$: the only two-eigenvalue spectra
+with $s\ne0$ are $\{n-1,-1\}$ and $\{1,-(n-1)\}$ (no case (IIc) below $n=16$).
+\item Example~\ref{ex:rook} satisfies $A^2=-2A+15I$ with spectrum
+$\{3^{(10)},(-5)^{(6)}\}$ (case IIc, $n=16$).
+\end{itemize}
+
+\section{Conclusion}\label{sec:conclusion}
+
+Combining Lemmas~\ref{lem:quad}, \ref{lem:regular}, \ref{lem:dichotomy},
+\ref{lem:complete}, Proposition~\ref{prop:simple} and the converses of
+Section~\ref{sec:examples}, we obtain the following characterization.
+
+A connected signed graph $(G,\sigma)$ on $n\ge2$ vertices has exactly two
+distinct eigenvalues $a>b$ if and only if it is $k$-regular and its adjacency
+matrix satisfies $A^2=(a+b)A+kI$ with $k=-ab\ge1$. Setting $s=a+b$:
+\begin{itemize}
+\item \textbf{Balanced ($s=0$):} exactly the connected symmetric weighing
+matrices $W(n,k)$ with zero diagonal, spectrum $\{\pm\sqrt k\}$ each of
+multiplicity $n/2$. This is an exact, unconditional correspondence.
+\item \textbf{Integral ($s\ne0$):} both eigenvalues are integers, $p=a$,
+$q=-b$ with $p\ne q$, $k=pq$, and (Lemma~\ref{lem:complete}) the underlying
+graph is $K_n$: the signed graph is precisely a \emph{regular two-graph} with
+$s\ne0$. The simple-eigenvalue cases are the switched complete graphs
+$J-I$ (spectrum $\{n-1,-1\}$) and $-(J-I)$ (spectrum $\{1,-(n-1)\}$); these are
+\emph{not} the only members. The residual case with both multiplicities $\ge2$
+is non-empty---the smallest example being the Seidel matrix of the $4\times4$
+rook graph, a signed $K_{16}$ with spectrum $\{3^{(10)},(-5)^{(6)}\}$
+(Example~\ref{ex:rook})---and its complete classification is exactly the
+(open) classification of regular two-graphs with two multiplicities $\ge2$.
+\end{itemize}
+
+In summary, two-eigenvalue connected signed graphs are precisely: the
+connected zero-diagonal weighing matrices (balanced case), and the regular
+two-graphs (integral case). The balanced family is completely and
+unconditionally described; the integral family is completely and
+unconditionally \emph{identified} with regular two-graphs (assuming Stani\'c's
+completeness theorem for the single step $s\ne0\Rightarrow G=K_n$, which we
+have also verified by exhaustion for all small orders), and the assertion that
+it strictly contains the switched complete graphs is established by an explicit
+unconditional counterexample. This corrects the earlier conjecture, which
+asserted---incorrectly---that the integral case consists only of the switched
+complete graphs.
+\qed
+
+\end{document}

@@ -1,0 +1,31 @@
+{
+  "id": "rm-09303-2",
+  "problem_id": "rm-09303",
+  "dataset": "crossdisc_rm14k",
+  "title": "Non-vacuity witness Φ₀ stipulates the warrant it should derive (circular 𝓙_Φ)",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T05:22:16Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev5cc06613",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T05:22:16Z"
+    },
+    {
+      "id": "c0581322c",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "In Proposition 1 (Non-vacuity), the single postulate P of 𝓜₀ *stipulates* that 'the avowed update rule is conditionalisation' and that the aim is coherence. The (O2) step then 'proves' Π_c (conditionalisation) is warranted essentially because P avows it. This makes the justificatory derivation ⊢_Φ 'Π_c is warranted' trivial: the warrant was placed in 𝓜₀ by hand. The solution is candid about this but candor does not close the gap.\n\nConsequence: if a framework may simply postulate the warrant of any procedure, then 𝓙_Φ and 𝓞_Φ are inhabited for *any* procedure under a suitably crafted Φ, draining (O2)/𝓙_Φ of content and undermining Proposition (b)'s claim that quid juris? is 'answerable' rather than question-begging. The non-vacuity proof is thus circular relative to the very notion (𝓙_Φ) it inhabits.\n\nFix: make 𝓜₀ contain the *aim* (minimise expected inaccuracy / coherence axioms), NOT the rule, and *derive* the warrant of conditionalisation by an agent-invariant L-proof from an accuracy-dominance theorem (Greaves–Wallace 2006; Pettigrew, Accuracy and the Laws of Credence) or a Dutch-book argument. Then (O2) is a real derivation, honoring the preface's refusal to solve Hume while still earning the witness.",
+      "created_at": "2026-06-27T05:22:16Z"
+    }
+  ]
+}

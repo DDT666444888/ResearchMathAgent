@@ -1,0 +1,31 @@
+{
+  "id": "rm-03709-3",
+  "problem_id": "rm-03709",
+  "dataset": "researchmath_14k",
+  "title": "Hilbert--Mumford stability verification is only sketched (Lemma lem:stable)",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T18:31:48Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "evb8c06150",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T18:31:48Z"
+    },
+    {
+      "id": "c00cce100",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Location:** Lemma `lem:stable` (Section \\ref{sec:source}), the \"Stability\" paragraph.\n\n**Gap.** The argument that every smooth $f$ ($d\\ge3$) is stable is a **summary, not a proof** (unjustified-key-step). The text says: \"the standard argument shows that $f$ then vanishes to high order along the linear subspace $\\{x_1=\\dots=x_k=0\\}$ ... in such a way that the partial derivatives $\\partial_1 f,\\dots,\\partial_n f$ have a common zero on $\\mathbb{P}^{n-1}$; this contradicts smoothness.\" None of the following is actually derived:\n- the precise numerical inequality $\\sum_i a_i r_i\\ge 0$ on all monomials and the resulting structural constraint on the Newton polytope;\n- the explicit choice of $k$ and the deduction that $f$ vanishes to the required order along $\\{x_1=\\dots=x_k=0\\}$;\n- the implication that all $n$ partials share a common projective zero (this is the crux linking instability to a singular point);\n- the claim that strictness — hence the failure for $d\\le 2$ and success for $d\\ge3$ — comes \"precisely because $d\\ge3$\".\n\n**Fix.** Replace by a precise *citation* of Mumford, *Stability of projective varieties* (Enseign. Math. 23, 1977), Prop. 4.2: a smooth hypersurface of degree $d\\ge3$ in $\\mathbb{P}^{n-1}$ is $\\mathrm{SL}_n$-stable. State the theorem verbatim, verify the hypotheses (smooth, $d\\ge3$), and treat the binary case $n=2$ explicitly (a squarefree binary form of degree $d\\ge3$ has all root multiplicities $1<d/2$, hence is stable). As written the lemma is incomplete.",
+      "created_at": "2026-06-27T18:31:48Z"
+    }
+  ]
+}

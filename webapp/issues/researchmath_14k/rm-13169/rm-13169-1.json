@@ -30,6 +30,21 @@
       "event_type": "doc_generated",
       "body": "Document generated: **Critic Analysis**",
       "created_at": "2026-06-23T08:27:46Z"
+    },
+    {
+      "id": "cf4aa6bb5",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "## Mathematical Review of current solution.tex (critic-agent)\n\nI reviewed `solution.tex` against the open issues rm-13169-2 … rm-13169-7. The draft is mathematically careful in several places but has **one central, disqualifying gap** and several partial gaps. I did **not** open duplicate issues; the existing decomposition already covers everything. Full write-up linked as \"Critic Analysis\".\n\n### Status per open issue\n\n- **rm-13169-2 (G1) — CLOSED.** `eq:posterior`,`eq:condexp`,`Lemma naive` correctly derive the posterior and show $\\tfrac54x\\iff f(x)=f(x/2)$; switching sign $=\\operatorname{sgn}(2f(x)-f(x/2))$. Good.\n- **rm-13169-4 (G3) — CLOSED.** `Lemma notall` proves $E[Y-X]=0$ and sign-change for proper **integrable** priors. Good.\n- **rm-13169-5 (G4) — OPEN / NOT ADDRESSED. This is the decisive failure.** The draft omits Broome's proper-non-integrable model and asserts a **false dichotomy**: R1/R2, `Prop env`, `Thm unified`(2) claim that \"$E[Y\\mid X=x]>x$ for every $x$\" requires an **improper** prior (`Lemma noproper`/`Lemma improper`). But propriety does NOT imply integrability. The proper prior $P(A=2^k)=\\tfrac13(\\tfrac23)^k$ ($k\\ge0$) is a genuine probability measure with $E[Y\\mid X=x]>x$ for **every** $x$ (verified: $\\Pr(Y=2x\\mid X=x)=2/3$, so $E[Y\\mid X=x]=1.1\\,x$ at $x=2^j$; trivially favorable at $x=1$), yet $E[X]=E[Y]=\\tfrac13\\sum(\\tfrac43)^k=\\infty$. So the headline \"located error = improper prior\" is refutable by a counterexample. `Lemma notall` quietly assumes $E[T]<\\infty$ and `Prop env`(1) restricts to \"proper integrable\" — exactly skipping this regime. The correct located error is **non-integrability** (improperness is just one cause).\n- **rm-13169-3 (G2) — PARTIAL.** `Lemma noproper` proves the continuous impropriety claim rigorously. Missing: (a) the **discrete** doubling-orbit case (dismissed as \"identical\" — yet this is where G4 lives); (b) measure-theoretic rigor of conditioning under an improper prior (`eq:Xlaw`/density $g$ are only formal when $f$ is non-normalizable); cite Dawid–Stone–Zidek (1973).\n- **rm-13169-6 (G5) — PARTIAL.** `Theorem fubini` correctly proves the zero-sum identity and exchangeable $E[G_A]=E[G_B]=0$ (swap map $G_A\\circ\\sigma=G_B$ verified). Missing: the **non-integrable analogue** (exchangeable proper non-integrable prior with $E[G_A\\mid A=v]>0$ for all $v$); `Prop tie`(2) again invokes the false improper/integrable dichotomy instead of constructing it.\n- **rm-13169-7 (G6) — PARTIAL.** `Theorem unified` states a principle but (a) only for ratio $r=2$, whereas G6 demands the **general $r>1$** exchange game; (b) phrases the principle around \"proper\" priors — too strong (bans admissible improper priors the problem allows) and simultaneously misses regime 2. The operative clause should be **integrability** (so Fubini/tower applies), the very hypothesis that fails in both the improper and the Broome regimes.\n\n### Bottom line\nThe draft proves the easy regime (proper integrable) and the improper regime, but the *single most indispensable* component — the **proper but non-integrable (Broome) regime, rm-13169-5** — is absent, and the proof's central dichotomy is therefore incorrect. Until G4 is incorporated and the classification is recast as a **trichotomy keyed on integrability**, the claim of \"a single coherent resolution covering all cases\" is not established. G2 (discrete + improper-conditioning rigor), G5 (non-integrable necktie analogue), and G6 (general $r$, integrability-based principle) remain partial.",
+      "created_at": "2026-06-28T03:56:07Z"
+    },
+    {
+      "id": "ev415463c4",
+      "author": "agent",
+      "role": "event",
+      "event_type": "doc_generated",
+      "body": "Document generated: **Critic Analysis**",
+      "created_at": "2026-06-28T03:56:21Z"
     }
   ],
   "documents": [
@@ -37,6 +52,12 @@
       "title": "Critic Analysis",
       "path": "questions/rm-13169/analysis.md",
       "created_at": "2026-06-23T08:27:46Z",
+      "created_by": "agent"
+    },
+    {
+      "title": "Critic Analysis",
+      "path": "questions/rm-13169/analysis.md",
+      "created_at": "2026-06-28T03:56:21Z",
       "created_by": "agent"
     }
   ]

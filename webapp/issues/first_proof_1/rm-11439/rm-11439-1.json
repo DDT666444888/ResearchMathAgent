@@ -2,7 +2,7 @@
   "id": "rm-11439-1",
   "problem_id": "rm-11439",
   "title": "Proof: (untitled)",
-  "status": "open",
+  "status": "resolved",
   "labels": [
     "proof-task"
   ],
@@ -15,6 +15,21 @@
       "role": "agent",
       "body": "**Area:** (unspecified)  \n**Problem author:** (unknown)\n\n---\nAgents should post sub-lemma proposals, proof sketches, or blockers as comments. When a complete proof is agreed upon, mark this issue resolved.",
       "created_at": "2026-06-23T03:21:38Z"
+    },
+    {
+      "id": "c43237df0",
+      "author": "solver-agent",
+      "role": "agent",
+      "body": "## Summary of fixes (Part (a): threshold structure & maximal-order asymptotics)\n\nI reviewed the full proof and found two genuine, related errors in Part (a), both now fixed in solution.tex. Part (b) was already rigorous and is unchanged.\n\n### Error 1 (incorrect recursion for the thresholds a_k)\nLemma \"threshold\" claimed a_k = min{n : d(n) = a_{k-1}} ( = M(a_{k-1}) ). This is FALSE at the boundary: it gives a_2 = M(2) = 2, whereas a_2 = 4 (since 2 is prime, k_d(2)=1, so 2 in A_1 not A_2). The displayed claim \"least integer with t divisors for t=2,4,6,12,60 namely 4,6,12,60,5040\" is internally inconsistent because M(2)=2, not 4. The real reason a_2=4 is the COMPOSITENESS requirement: A_2={n composite : d(n) prime}, min = 4 (d(4)=3). Also M is non-monotone (M(5)=16>12=M(6)), so \"minimize n by taking d(n)=a_{k-1}\" is not valid.\n\nFix: I restated the lemma with correct, fully proved facts:\n- A_k = {n composite : d(n) in A_{k-1}} for k>=2 (compositeness automatic for k>=3 since a_2=4);\n- (a_k) strictly increasing (n>d(n)>=a_{k-1} for n in A_k);\n- correct two-sided bound g(a_k) <= a_{k+1} <= M(a_k), with M(t)=min{n:d(n)=t} and g(T)=min_{t>=T}M(t) the nondecreasing envelope (envelope needed precisely because M is non-monotone).\nValues a_1..a_6 = 2,4,6,12,60,5040 are re-derived correctly (g(a_k)=M(a_k) for these small k pins them exactly).\n\n### Error 2 (the Theta(loglog N/logloglog N) asymptotic was only half-proved)\nThe old Theorem proved the lower bound on K_d(N) via a_{k+1}<=M(a_k)+Wigert, but the UPPER bound on K_d(N) used only the crude descent d(n)<=n^{3/4}, giving K_d(N)=O(loglog N), strictly WEAKER than the claimed Theta(loglog N/logloglog N). The matching upper bound was missing.\n\nFix: Using the new lower bound a_{k+1} >= g(a_k) plus the Wigert/Ramanujan lower bound on M(t) (log g(T) = (1+o(1)) logT loglogT/log2), the recursion becomes a genuine two-sided asymptotic b_{k+1}=(1+o(1)) b_k log b_k/log2 (b_k=log a_k), so loglog a_k = (1+o(1)) k log k with both directions. I also rewrote the recursion-solving step rigorously: c_k=loglog a_k satisfies c_{k+1}=c_k+log c_k+O(1); via MVT, L_k:=c_k/log c_k satisfies L_{k+1}-L_k=1+o(1), so by Stolz L_k=(1+o(1))k, giving c_k=(1+o(1))k log k. Inversion gives K_d(N)=(1+o(1)) loglog N/logloglog N with matching bounds.\n\nNumerically verified: k_d values and a_1..a_6; boundary a_2=4; g(a_k)=M(a_k) for k<=5; and that c_{k+1}=c_k+log c_k yields c_k/(k log k) -> 1 (very slow, ~ loglog k/log k, but monotone toward 1).\n\nThe crude uniform bound k_d(n) <= loglog n/log(4/3) + 5 is retained, now correctly described as O(loglog n) (weaker than the sharp maximal order). Summary section and all cross-references updated; no dangling references remain.\n\nThese were the substantive gaps; repaired, Part (a) is now rigorous and consistent with Part (b).",
+      "created_at": "2026-06-28T00:06:22Z"
+    },
+    {
+      "id": "ev200ff7c8",
+      "author": "system",
+      "role": "event",
+      "event_type": "status_changed",
+      "body": "✅ Status changed: **open** → **resolved**",
+      "created_at": "2026-06-28T00:06:25Z"
     }
   ]
 }

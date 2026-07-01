@@ -3,7 +3,7 @@
   "problem_id": "prob-01",
   "dataset": "first_proof_1",
   "title": "Prove AUT(A) is countable (finite-support automorphisms only)",
-  "status": "open",
+  "status": "resolved",
   "labels": [
     "proof-gap"
   ],
@@ -26,6 +26,28 @@
       "role": "agent",
       "body": "**Sub-lemma (G2).** Prove that the constructed $A$ has *countable* automorphism group, as required for the framing (Theorems 2.2 and 2.3 both assume $\\AUT(A)$ countable).\n\nKey danger: with infinitely many independent binary choices one naively gets $\\AUT(A)\\cong(\\Z/2)^{\\N}$, which is **uncountable**. The construction must instead force every automorphism to act nontrivially on only *finitely many* gadgets, so that\n$$\\AUT(A)\\cong\\bigoplus_n \\AUT(G_n)\\quad(\\text{direct sum, countable}),$$\nrather than the direct product. Typically this needs a 'linking/coordination' relation that forces finite support — but the lemma must verify this linking does **not** (a) create new unexpected automorphisms, nor (b) rigidify $A$ so much that the diagonal clause (G4) becomes impossible.\n\nDeliverable: a complete characterization of $\\AUT(A)$ and a proof it is countable.",
       "created_at": "2026-06-22T23:23:44Z"
+    },
+    {
+      "id": "cd9d3eb1b",
+      "author": "solver-agent",
+      "role": "agent",
+      "body": "test",
+      "created_at": "2026-06-27T08:56:06Z"
+    },
+    {
+      "id": "c8066e5e9",
+      "author": "solver-agent",
+      "role": "agent",
+      "body": "## G2 resolved: AUT(A) ≅ ℤ, countable — with two corrections to claims inside the G2 section\n\n**Deliverable met.** Complete characterization:\nAUT(A) ≅ ℤ via σ_k(n,i)=(n,i+k), infinite cyclic, hence **countable** and nontrivial. Four-step proof (each re-checked, incl. numerically):\n1. σ_k ∈ AUT(A) (preserves/reflects P,D,R).\n2. Every φ fixes the gadget index via the R in/out-degree invariant (G₀ = R-in-degree 0; induction along the directed spine).\n3. A single f:ℤ→ℤ acts uniformly on all gadgets: applying φ to R-edge (n,i)→(n+1,i) forces I(n+1,i)=I(n,i).\n4. f is a translation: P forces f to be a ±1-step bijection of ℤ ⇒ monotone (sign change ⇒ f(i)=f(i+2), contradicting injectivity); the directed anchor D on G₀ kills the reflection f(i)=c−i.\n\n**(a) No unexpected automorphisms:** the characterization is exact; spine+anchor collapse the naive uncountable (ℤ/2)^ℕ of independent reflections to the single ℤ of simultaneous translations.\n\n**(b) No over-rigidification:** Prop (K3) — for any finite c̄, an unanchored gadget G_{n₀} (n₀≥1, G_{n₀±1} disjoint from c̄) still admits an orientation-reversing automorphism of the induced substructure on c̄∪G_{n₀} (spine edges incident to G_{n₀} vanish there). Verified numerically.\n\n### Two false claims removed from the G2 section (honesty)\n- **Old Prop K2** (σ^k↾G_n definable from a single in-gadget base point via an orientation formula) is **false** for n≥1: reflection of the undirected path about the parameter is an automorphism preserving existential formulas, so a lone in-gadget point cannot orient the path. Replaced with the **correct parameter-free** definition that imports orientation by walking the directed spine R back to G₀ and using the D-chain there (verified on a finite truncation).\n- **Old Prop K4** (σ^k↾G_{n₀} not definable from outside G_{n₀}) is **false** (contradicts corrected K2: σ^k is even parameter-free definable); its \"proof\" misapplied the partial automorphism ρ, whose action does not extend to the spine-escaping witnesses. Replaced with the correct weaker statement + retraction, consistent with the G5 diagnosis.\n\nNone of these corrections affect the G2 deliverable (characterization, countability, (a), (b)), which rests on K1–K3 and the main theorem. solution.tex updated in place; macros/environments balanced (no LaTeX toolchain available to compile).",
+      "created_at": "2026-06-27T08:56:23Z"
+    },
+    {
+      "id": "eva7c0b139",
+      "author": "system",
+      "role": "event",
+      "event_type": "status_changed",
+      "body": "✅ Status changed: **open** → **resolved**",
+      "created_at": "2026-06-27T08:56:31Z"
     }
   ]
 }

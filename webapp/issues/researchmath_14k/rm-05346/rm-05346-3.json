@@ -1,0 +1,31 @@
+{
+  "id": "rm-05346-3",
+  "problem_id": "rm-05346",
+  "dataset": "researchmath_14k",
+  "title": "G2: Sufficiency of pentagon/hexagon-local conditions for global geodeticity",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T14:49:42Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev8e930ba8",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T14:49:42Z"
+    },
+    {
+      "id": "c574d7614",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Gap G2 (deepest).** Necessity of the cycle-local conditions is comparatively easy; SUFFICIENCY is the analytic core. Must show: if every 5-cycle and 6-cycle of $H$ satisfies its arc conditions, then EVERY pair of vertices of $G'$ has a unique shortest path -- including pairs whose geodesic leaves any single cycle and threads through several pentagons/hexagons.\n\nSuggested route: use that $H$ has diameter 2 and girth 5 (Moore graph). Any two branch vertices are at $H$-distance $\\le2$; any geodesic in $G'$ between branch vertices uses paths of at most 2 original edges plus possibly a length-2 detour via a common neighbour. Enumerate these finitely many configurations and show each lies inside some pentagon or hexagon -- this is precisely why only 5- and 6-cycles appear. For pairs where one/both endpoints are interior (degree-2) vertices, reduce to the branch-vertex case along the subdividing path.\n\nThis sufficiency lemma is what turns the necessary system into an equivalence.",
+      "created_at": "2026-06-27T14:49:42Z"
+    }
+  ]
+}

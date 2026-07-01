@@ -1,0 +1,31 @@
+{
+  "id": "rm-00332-3",
+  "problem_id": "rm-00332",
+  "dataset": "numbertheory_rm14k",
+  "title": "Linking congruence Sigma_1 ≡ p (mod p^2) imported from cited thm:iiiiv; needs elementary proof",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T15:13:35Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "evd35844db",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T15:13:35Z"
+    },
+    {
+      "id": "c046ecc66",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Location:** Section 3, Theorem `thm:link`, proof of the congruence $\\Sigma_1\\equiv p\\pmod{p^2}$ (it invokes `thm:iiiiv`(2)/(1) plus integrality of $E_{p-3},B_{p-3}$).\n\n**Gap.** The *algebraic* identity $\\Sigma_1=S_0+3S_1$ is proved correctly. But the *congruence* $\\Sigma_1\\equiv p\\pmod{p^2}$ — equivalently the linking relation $3S_1\\equiv p-S_0\\pmod{p^2}$ used for part (ii) and for the refutation of (i.2) — is obtained only as the mod-$p^2$ shadow of the cited deep `thm:iiiiv`. Thus the linking relation is conditional on an unproved theorem.\n\n**Consequence for the abstract's claim.** The abstract states the refutation of (i.2) is \"unconditional\". As written it is not: it depends on (a) the value of $S_0$ from the cited `thm:S0` (see separate issue) and (b) $\\Sigma_1\\equiv p\\pmod{p^2}$ from the cited `thm:iiiiv`.\n\n**What must be proved.** Supply an ELEMENTARY mod-$p^2$ proof of $\\Sigma_1=\\sum_{k=0}^{p-1}(3k+1)\\binom{2k}{k}^3/16^k\\equiv p\\pmod{p^2}$, independent of the third-order machinery. Candidate routes: (i) WZ/creative-telescoping for $(3k+1)\\binom{2k}{k}^3$ reduced mod $p^2$; or (ii) a direct mod-$p^2$ evaluation of $S_1$ combined with the (separately needed) value of $S_0$. Closing this makes the refutation genuinely unconditional as claimed. Numerics confirm $\\Sigma_1\\equiv p\\pmod{p^2}$ for all $p\\le 100$.",
+      "created_at": "2026-06-27T15:13:35Z"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "id": "rm-1013-4",
+  "problem_id": "rm-1013",
+  "dataset": "analysis_rm14k",
+  "title": "(a)/(b) Reaction coefficient: justify 2β − (β+μ) = β − μ and the factor 2 (binary division)",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T21:20:49Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "eve701a0f9",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T21:20:49Z"
+    },
+    {
+      "id": "c7a97d641",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Verification obligation, parts (a)-(b).** The zeroth-order term of the expanded integral is $+2\\beta(x)F(x)$ (binary division, factor 2), and the loss term is $-(\\beta+\\mu)F$. The net reaction coefficient is therefore $(\\beta-\\mu-\\lambda)$. The problem writes this as $[2\\beta-\\beta-\\mu-\\lambda]$. A proof must show explicitly that (i) the factor $2$ multiplies only the gain integral, (ii) there is no double-counting of $\\beta$, and (iii) the zeroth Taylor order of $2\\int\\varphi g$ is exactly $2\\beta F$ (uses $\\int\\varphi=1$). Small but error-prone; must be written out.",
+      "created_at": "2026-06-27T21:20:49Z"
+    }
+  ]
+}

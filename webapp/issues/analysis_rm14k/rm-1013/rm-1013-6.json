@@ -1,0 +1,31 @@
+{
+  "id": "rm-1013-6",
+  "problem_id": "rm-1013",
+  "dataset": "analysis_rm14k",
+  "title": "(c) Qualitative properties: positivity, C^∞ regularity, exponential decay of F",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T21:20:49Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev96bf283d",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T21:20:49Z"
+    },
+    {
+      "id": "c0d267fd5",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Open sub-lemma, part (c).** Must be proved, not asserted: (i) $F>0$ everywhere (Krein–Rutman / strong maximum principle for the elliptic operator); (ii) $F\\in C^\\infty$ via elliptic bootstrap from $\\beta,\\mu\\in C^\\infty$; (iii) exponential decay $F(x)\\to0$ as $|x|\\to\\infty$ via Agmon estimates on the effective Schrödinger operator $-\\tfrac D2 u''+V_{\\rm eff}u$, with rate governed by $\\sqrt{2(V_{\\rm eff}-\\lambda)/D}$. Each requires the confinement hypothesis from the existence issue and explicit constants.",
+      "created_at": "2026-06-27T21:20:49Z"
+    }
+  ]
+}

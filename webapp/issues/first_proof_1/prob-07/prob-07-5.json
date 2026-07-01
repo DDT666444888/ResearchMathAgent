@@ -3,7 +3,7 @@
   "problem_id": "prob-07",
   "dataset": "first_proof_1",
   "title": "Prove |F_w| is homeomorphic to S^2 (not merely chi = 2)",
-  "status": "open",
+  "status": "resolved",
   "labels": [
     "proof-gap"
   ],
@@ -26,6 +26,28 @@
       "role": "agent",
       "body": "**Gap D.** From the cell structure (5 vertices, 6 edges, 3 squares; $\\chi=5-6+3=2$) prove $|F_w|\\cong S^2$. **Euler characteristic alone is insufficient** (it cannot by itself exclude non-manifold pinch points, wedges, or non-orientable possibilities with the same $\\chi$).\n\nProvide one of:\n(i) Show $F_w$ is a closed surface: every 1-cell lies on exactly two 2-cells (no boundary), and the link of every 0-cell is a single circle (manifold point); then show it is connected and orientable, and conclude $S^2$ by the classification of compact surfaces.\n(ii) Construct an explicit cellular homeomorphism to a standard CW structure on $S^2$ (e.g. boundary of a triangular bipyramid).\n(iii) Compute $H_*(F_w)$ and $\\pi_1$: show $\\pi_1=1$ (van Kampen) and $H_2=\\mathbb{Z}$, so $F_w$ is a simply connected closed surface with $H_2=\\mathbb{Z}$, hence $\\simeq S^2$.\n\nThe genuine content is ruling out non-manifold/wedge points via the link conditions.",
       "created_at": "2026-06-23T01:21:59Z"
+    },
+    {
+      "id": "cf8ed0bce",
+      "author": "solver-agent",
+      "role": "agent",
+      "body": "connectivity probe",
+      "created_at": "2026-06-27T10:07:47Z"
+    },
+    {
+      "id": "cfd8781d4",
+      "author": "solver-agent",
+      "role": "agent",
+      "body": "**Resolved (Gap D / option (i)).** The closed-surface argument in Proposition \\ref{prop:s2} now rigorously rules out non-manifold pinch points, wedges, and non-orientable possibilities; it does *not* rely on $\\chi=2$ alone.\n\nWhat is established (all checked numerically over the 15 pairings of $P$):\n\n1. **No boundary:** every $1$-cell $E_k$ is a face of *exactly two* $2$-cells (incidence table \\eqref{eq:faces}; a script confirms `edge -> squares` is 2-valued for all six edges).\n\n2. **Manifold at edge-interiors:** since $F_w$ is a *regular* CW complex (Prop. \\ref{prop:W3}), each edge is glued into each incident square as a single facet, so the two incident squares contribute two half-disks glued along the edge = an open disk. Free edges (1 square) and book-with-$\\ge3$-pages (3+ squares) are explicitly excluded.\n\n3. **Manifold at vertices (the genuine content):** the link graph $\\Lambda(Q)$ is shown to be connected and 2-regular, i.e. a single cycle, for every vertex. Verified: $\\Lambda(Q_1),\\Lambda(Q_4)$ are 3-cycles; $\\Lambda(Q_2),\\Lambda(Q_3),\\Lambda(Q_5)$ are bigons (two nodes joined by two arcs — still a circle). All node-degrees are exactly 2. This is precisely what rules out pinch/wedge points (which would give a disconnected link or a node of degree != 2).\n\n4. **Connected** (spanning tree $E_3,E_2,E_1,E_4$ on the 5 vertices).\n\n5. **Classification:** $|F_w|$ is therefore a compact, connected, boundaryless topological $2$-manifold. By the classification of compact surfaces and $\\chi=2$, it is $S^2$. I made explicit that orientability need not be checked separately: no non-orientable closed surface has $\\chi=2$ ($\\chi(N_k)=2-k\\le1$), so $\\chi=2$ already forces $S^2$.\n\n6. **Homological confirmation:** independent $\\mathbb{Z}/2$-homology gives Betti numbers $(1,0,1)$, matching $S^2$; in particular $H_2\\ne0$ so $F_w$ is not contractible.\n\nEdits: the \"$F_w$ is a closed surface\" and \"Identification\" paragraphs of Prop. \\ref{prop:s2} were rewritten to make the manifold-point reasoning explicit (cone-on-link criterion; single-facet gluing from regularity). All link/incidence/attaching data re-verified by exhaustive script. Gap closed.",
+      "created_at": "2026-06-27T10:08:00Z"
+    },
+    {
+      "id": "ev918a62de",
+      "author": "system",
+      "role": "event",
+      "event_type": "status_changed",
+      "body": "✅ Status changed: **open** → **resolved**",
+      "created_at": "2026-06-27T10:08:03Z"
     }
   ]
 }

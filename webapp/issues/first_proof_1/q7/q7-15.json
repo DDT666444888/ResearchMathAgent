@@ -1,0 +1,54 @@
+{
+  "id": "q7-15",
+  "problem_id": "q7",
+  "dataset": "first_proof_1",
+  "title": "FATAL: Q-acyclicity of universal cover deduced via an invalid Zeeman/SS comparison (counterexample RP^2)",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T06:14:54Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev5fab2bbf",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T06:14:54Z"
+    },
+    {
+      "id": "ce104e908",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Location.** `thm:main`, paragraph \"Rational acyclicity of $\\widetilde M$\" (final step).\n\n**The error.** The proof establishes that $c\\colon M\\to B\\Gamma$ is a $\\pi_1$-isomorphism and a $\\mathbb{Q}$-homology isomorphism (this part is fine), then invokes the **Zeeman comparison theorem** on the ladder of Serre fibrations over $B\\Gamma$ to deduce\n$$\\widetilde c_*\\colon H_*(\\widetilde M;\\mathbb{Q})\\xrightarrow{\\cong}H_*(E\\Gamma;\\mathbb{Q})=H_*(\\mathrm{pt};\\mathbb{Q}),$$\ni.e. $\\widetilde M$ is $\\mathbb{Q}$-acyclic.\n\n**This inference is invalid.** Zeeman's comparison theorem requires a **simply connected base** (or trivial/nilpotent local coefficients). Here the base is $B\\Gamma$ with $\\Gamma$ **infinite**, and the $E^2$-terms are $H_p(\\Gamma;H_q(\\widetilde M;\\mathbb{Q}))$ with $\\Gamma$ acting **nontrivially** on the fiber homology (the deck action). The offered \"hyperhomology/Tor\" reformulation is equally invalid: from\n$$\\mathbb{Q}\\otimes_{\\mathbb{Q}\\Gamma}\\widetilde c_\\#\\ \\text{a quasi-iso}$$\none **cannot** conclude $\\widetilde c_\\#$ is a quasi-iso over $\\mathbb{Q}\\Gamma$ — $\\mathbb{Q}\\Gamma$ for infinite $\\Gamma$ is not local, and Nakayama/descent fails.\n\n**Counterexample to the rule used.** Take $\\Gamma=\\mathbb{Z}/2$, $M=\\mathbb{RP}^2$. Then $c\\colon\\mathbb{RP}^2\\to B\\mathbb{Z}/2$ is a $\\pi_1$-iso and a $\\mathbb{Q}$-homology iso ($H_*(\\mathbb{RP}^2;\\mathbb{Q})=\\mathbb{Q}=H_*(B\\mathbb{Z}/2;\\mathbb{Q})$), yet the universal cover $\\widetilde M=S^2$ is **not** $\\mathbb{Q}$-acyclic. The nontrivial action on $H_2(S^2;\\mathbb{Q})$ by $-1$ makes the coinvariants vanish, so $H_*(M;\\mathbb{Q})$ \"hides\" the fiber homology — exactly the mechanism the proof ignores.\n\n**Consequence.** The argument for the *central conclusion of the whole paper* is wrong. The conclusion may still hold for the specific $\\widetilde M$ constructed, but it must be proved by a **direct $\\Gamma$-equivariant computation** of $H_*(\\widetilde M;\\mathbb{Q})$ (equivariant/proper Mayer–Vietoris over $\\widetilde M=(X\\setminus\\Gamma\\cdot\\text{cones})\\cup\\Gamma\\cdot\\widetilde W_F$, using $X$ contractible, $V_F$ $\\mathbb{Q}$-acyclic rel boundary, links $\\mathbb{Q}HS$), **not** by descent from $H_*(M;\\mathbb{Q})$. (Open issue q7-12 asks for that direct computation; this issue flags that the *submitted* proof uses an invalid shortcut that must be removed.)",
+      "created_at": "2026-06-27T06:14:54Z"
+    },
+    {
+      "id": "ca1cce556",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "## Mathematical Review (critic-agent) — current `solution.tex`\n\nI re-reviewed the present `solution.tex` against all prior docs and open issues. The\nstrategy (Weinberger-style equivariant rational resolution of the orbifold $X/\\Gamma$) is\ncorrect and the YES answer is very likely right, but **the proof is not correct as\nwritten**. Full write-up linked as *Critic Analysis* (`questions/q7/analysis.md`). Summary\nof findings, each verified against the current file:\n\n### FATAL — q7-15 (Zeeman descent is invalid). STILL PRESENT.\nIn `thm:main`, paragraph \"*Rational acyclicity of $\\widetilde M$*\", the proof correctly\nshows $c\\colon M\\to B\\Gamma$ is a $\\pi_1$-iso and a $\\mathbb{Q}$-homology iso, then invokes\nthe **Zeeman comparison theorem** over the base $B\\Gamma$ to conclude\n$H_*(\\widetilde M;\\mathbb{Q})\\cong H_*(E\\Gamma;\\mathbb{Q})$. Zeeman requires a\n**simply-connected base**; $B\\Gamma$ is not (here $\\Gamma$ is infinite and acts\nnontrivially on fiber homology). The \"Tor over $\\mathbb{Q}\\Gamma$\" reformulation is also\ninvalid (no Nakayama descent for infinite $\\Gamma$).\n\n**Counterexample to the exact rule used** (numerically checked): $\\Gamma=\\mathbb{Z}/2$,\n$M=\\mathbb{RP}^2$. Then $c\\colon\\mathbb{RP}^2\\to B\\mathbb{Z}/2$ is a $\\pi_1$-iso and a\n$\\mathbb{Q}$-homology iso, but the universal cover $\\widetilde M=S^2$ is **not**\n$\\mathbb{Q}$-acyclic (the $\\mathbb{Z}/2$-action on $H_2(S^2;\\mathbb{Q})$ by $-1$ kills the\ncoinvariants, so base homology hides fiber homology). The conclusion must instead be proved\nby a **direct $\\Gamma$-equivariant Mayer–Vietoris** computation on $\\widetilde M$ — exactly\n**q7-12**. Drop the Zeeman step entirely.\n\n### Structural gaps — all STILL PRESENT.\n- **q7-16 (surgery framing):** `thm:atomic` Step 2/3 kills $H_i(V_0;\\mathbb{Q})$ by surgery\n  asserting the normal bundle is \"stably trivial and hence trivial,\" but $V_0$ is an\n  arbitrary null-bordism with **no normal-map data**; killing homology needs a *trivialized*\n  normal bundle (degree-one normal map), not mere embeddability.\n- **q7-17 (bundle of models):** $R_F:=W_F\\times_{O(\\nu)}P(\\nu)$ requires $O(\\nu)$ to\n  **act on the fiber $W_F$**, extending the linear action on $\\partial W_F=S(V)$. $W_F$ is\n  built by non-canonical surgery; no such action exists, so $R_F$ is not constructed for\n  $\\dim C>0$ and `lem:tube` (Leray–Hirsch) does not get off the ground.\n- **q7-18 (scope overstated):** unconditional only for all-$\\mathbb{Z}/2$ free-slice\n  isotropy. Larger $2$-group stabilizers give non-atomic links; the $N$-fold rational device\n  produces $N$ disjoint copies, not a single filling with the correct boundary.\n- **q7-19 (non-atomic boundary matching):** the resolved link $\\widehat L$ (from\n  `prop:induct`) is glued to the genuine frontier $S(\\nu)$ without an explicit\n  $F$-diffeomorphism; resolved boundary $\\neq$ genuine frontier in general.\n\n### Carry-over: q7-10 (∂W_F = S(V) equivariantly), q7-11 (π₁≅Γ — sound for atomic, depends\non q7-17/19 in non-atomic), q7-12 (the correct acyclicity route), q7-4 (local model, depends\non q7-16) remain open and unmet.\n\n### Stale: q7-20, q7-21, q7-23 cite `thm:resolution` / `prop:lefschetz`, which **do not\nappear** in the current `solution.tex` (0 occurrences). They pertain to an earlier variant\nand are not applicable to the present file.\n\n**Bottom line.** No new issues needed — the existing open issues fully and accurately\ncapture the genuine gaps. The single highest-leverage fix is to replace the broken Zeeman\ndescent (q7-15) with the direct equivariant Mayer–Vietoris computation (q7-12); after that,\nclose q7-16/17 to make the local model and its bundle rigorous, then either restrict scope\n(q7-18) or supply the $2$-primary bordism input for non-atomic strata (q7-18/19).",
+      "created_at": "2026-06-27T13:12:07Z"
+    },
+    {
+      "id": "ev0ff43f1a",
+      "author": "agent",
+      "role": "event",
+      "event_type": "doc_generated",
+      "body": "Document generated: **Critic Analysis**",
+      "created_at": "2026-06-27T13:12:12Z"
+    }
+  ],
+  "documents": [
+    {
+      "title": "Critic Analysis",
+      "path": "questions/q7/analysis.md",
+      "created_at": "2026-06-27T13:12:12Z",
+      "created_by": "agent"
+    }
+  ]
+}

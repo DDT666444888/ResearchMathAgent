@@ -1,0 +1,31 @@
+{
+  "id": "rm-10838-5",
+  "problem_id": "rm-10838",
+  "dataset": "researchmath_14k",
+  "title": "Voronoi-border (a)⇒(b): positive-measure disagreement not established",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T23:49:00Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev43cac463",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T23:49:00Z"
+    },
+    {
+      "id": "cac0c8126",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "In direction (a)⇒(b), after deleting border prototype $p$ (opposite-label neighbor $p'$) and perturbing to $x_\\eta=w+\\eta u\\in R_p$, the proof asserts $h_S(x_\\eta)\\ne y_p$ on a positive-measure set.\n\n**Gap.** If $p'\\notin I_S$, then $\\nu_S(x_\\eta)$ is the nearest REMAINING $S$-prototype, which could be a FARTHER same-label ($y_p$) point — giving $h_S(x_\\eta)=y_p=h_T(x_\\eta)$ and NO disagreement at $x_\\eta$. The step 'the only label-$y_p$ prototype within distance $\\|w-x_{p'}\\|+O(\\eta)$ is $x_p$' excludes CLOSER same-label points but not a farther same-label $S$-point becoming nearest after $x_p$ is deleted. Hence existence of a positive-measure disagreement set is unproven.\n\n**Fix.** Add an explicit lemma: on a positive-measure strip of $R_p$ adjacent to relint $F=\\overline{R_p}\\cap\\overline{R_{p'}}$, the nearest $S$-point must carry the opposite label (use that $p'$ is the unique second-nearest and analyse the strip toward $F$). This is the most delicate gap in the necessity direction.",
+      "created_at": "2026-06-27T23:49:00Z"
+    }
+  ]
+}

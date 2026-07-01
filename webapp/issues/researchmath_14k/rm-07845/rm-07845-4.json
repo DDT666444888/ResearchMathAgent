@@ -1,0 +1,31 @@
+{
+  "id": "rm-07845-4",
+  "problem_id": "rm-07845",
+  "dataset": "researchmath_14k",
+  "title": "Full-profile observation vs. finite-N kriging: matrix theory does not cover continuum depth data ('N matches n' hand-waved)",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T17:30:51Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "evb5ac15a5",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T17:30:51Z"
+    },
+    {
+      "id": "cb65393b2",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Location:** Depth-handling subsection (option (ii) 'joint kriging in $(x,h)$' called 'exact') and Theorem `\\label{thm:anticipated}` ('each borehole a full noiseless profile so $N$ matches $n$ via the depth treatment').\n\nAll kriging results in parts (b),(d) are proved for a **finite** data vector $\\mathbf Y\\in\\mathbb R^N$ with an **invertible matrix** $\\Sigma\\in\\mathbb R^{N\\times N}$ (the BLP/BLUP proofs explicitly use $\\Sigma\\succ0$ and $\\Sigma^{-1}$). A *full noiseless depth profile* at a borehole is a **continuum** of observations on the interval $I$, i.e. functional data; the matching predictor is an infinite-dimensional ($L^2(\\Omega)$ / Hilbert-space) kriging problem with a covariance **operator**, not an $N\\times N$ inverse. The phrase 'N matches n' does not reconcile a finite matrix theory with continuum data, so option (ii) is not justified by the proved theorems, and Theorem thm:anticipated's sample-size bookkeeping is unsupported.\n\n**Suggested fix.** Either (a) commit to finitely many sampled depths per borehole, so $N=\\sum_i p_i<\\infty$ and the matrix theory applies — but then keep the within-hole quadrature/integration error of option (i) explicitly in every MSE budget (it is not zero); or (b) develop continuous BLP: data span a closed subspace $H_{\\mathbf Y}\\subset L^2(\\Omega)$, $\\widehat R=\\Pi_{H_{\\mathbf Y}}R$, kriging variance $=\\|R-\\Pi_{H_{\\mathbf Y}}R\\|^2$, with existence justified via a Karhunen–Loève expansion of the field.",
+      "created_at": "2026-06-27T17:30:51Z"
+    }
+  ]
+}

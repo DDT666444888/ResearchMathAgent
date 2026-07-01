@@ -1,0 +1,31 @@
+{
+  "id": "q7-23",
+  "problem_id": "q7",
+  "dataset": "first_proof_1",
+  "title": "Equivariance transport in prop:lefschetz: tau_* = conjugation-by-t on rational K(Gamma_0,1) not fully justified",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T08:02:23Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "evadffc688",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T08:02:23Z"
+    },
+    {
+      "id": "c865add6d",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Location.** `prop:lefschetz` (necessary fixed-point condition) and `lem:qhomology`.\n\n**The gap (likely closable, but currently terse).** The proof identifies the Lefschetz number of the deck involution $\\tau$ on $M_0$ with that of the isometry $\\sigma$ on $N_0=\\Gamma_0\\backslash X$, via the claim that the $\\mathbb{Q}[\\mathbb{Z}/2]$-module structure on rational homology \"is intrinsic to the pair $(\\Gamma_0,t)$, hence the same on the rational homology of any $K(\\Gamma_0,1)$.\"\n\nFor $N_0$ (genuinely aspherical) the action on $H_*(N_0;\\mathbb{Q})=H_*(\\Gamma_0;\\mathbb{Q})$ is conjugation-by-$t$ and is canonical. But $M_0$ is only a **rational** $K(\\Gamma_0,1)$; to conclude $\\tau_*$ corresponds to conjugation-by-$t$ one must know the isomorphism of `lem:qhomology` (induced by the classifying map $M_0\\to B\\Gamma_0$) **intertwines** $\\tau_*$ with the conjugation action. `lem:qhomology` asserts naturality/$Q$-equivariance, but the displayed justification (\"the deck action of $q$ covers a self-homotopy-equivalence inducing conjugation by a lift of $q$\") is terse and is exactly the place where rational-vs-equivariant transport must be pinned down (cf. resolved q7-8, re-introduced in a new form).\n\n**Fix.** State explicitly that the classifying map $M_0\\to B\\Gamma_0$ is, up to homotopy, $\\tau$-equivariant for the deck involution covering $\\bar t$ (it induces on $\\pi_1$ the conjugation by a lift of $\\bar t$, and maps into the aspherical $B\\Gamma_0$ are determined up to homotopy by their $\\pi_1$-effect), so the `lem:qhomology` iso intertwines $\\tau_*$ and conjugation-by-$t$, giving $L(\\tau)=L(\\sigma)$.\n\nThis does not appear to be fatal, but the necessary-condition argument is incomplete without it.",
+      "created_at": "2026-06-27T08:02:23Z"
+    }
+  ]
+}

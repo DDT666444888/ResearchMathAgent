@@ -1,0 +1,31 @@
+{
+  "id": "rm-11830-5",
+  "problem_id": "rm-11830",
+  "dataset": "logic_rm14k",
+  "title": "G4: Reduction pair processor for relative DP problems",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T01:40:28Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev94689ec6",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T01:40:28Z"
+    },
+    {
+      "id": "c00bab8c7",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "Adapt the reduction pair processor and prove soundness in the relative setting.\n\n**Conjectured statement.** Let $(\\succsim,\\succ)$ be a reduction pair (stable monotone quasi-order $\\succsim$; well-founded stable order $\\succ$; $\\succsim\\circ\\succ\\subseteq\\succ$). If\n$$R\\cup S\\subseteq\\succsim,\\qquad \\mathcal P\\subseteq\\succ\\cup\\succsim,$$\nthen the relative DP problem $(\\mathcal P,R,S)$ is finite iff $(\\mathcal P\\setminus\\succ,\\,R,\\,S)$ is.\n\n**Why hard / must prove:**\n- Crucially must **not** require $\\mathrm{SN}(\\to_S)$ — put both $R$ and $S$ in $\\succsim$ only. (Example $R=\\{a\\to b\\},S=\\{b\\to b\\}$: $S$ nonterminating yet $\\mathrm{SN}(R/S)$.)\n- Prove that along an infinite relative chain, every step is weakly decreasing ($\\succsim$) and pairs in $\\succ$ strictly decrease, so a $\\succ$-pair used infinitely often contradicts well-foundedness of $\\succ$ — but the $\\to_S^*$ connections must only weakly decrease; verify $S\\subseteq\\succsim$ suffices.\n- State whether *strict* monotonicity is needed and on which symbols (marked vs unmarked).\n\nDeliver full soundness proof.",
+      "created_at": "2026-06-28T01:40:28Z"
+    }
+  ]
+}

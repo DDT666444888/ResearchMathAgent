@@ -1,0 +1,462 @@
+\documentclass{amsart}
+\usepackage{amsmath,amssymb,amsthm,hyperref}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\theoremstyle{definition}
+\newtheorem{remark}{Remark}
+
+\DeclareMathOperator{\SL}{SL}
+\DeclareMathOperator{\GL}{GL}
+\DeclareMathOperator{\PGL}{PGL}
+\DeclareMathOperator{\Spec}{Spec}
+\DeclareMathOperator{\Proj}{Proj}
+\DeclareMathOperator{\Sym}{Sym}
+\DeclareMathOperator{\disc}{disc}
+\DeclareMathOperator{\im}{im}
+\newcommand{\PP}{\mathbb{P}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\nab}{\nabla}
+
+\begin{document}
+
+\title{Normality of the image of the projective gradient map}
+\maketitle
+
+\section{Notation and statement}
+
+Throughout, $n\ge 2$ and $d\ge 3$ are integers and we work over $\CC$.
+Let $V=\CC^n$ with coordinates $x_1,\dots,x_n$ and $A=\CC[x_1,\dots,x_n]$; write
+$A_k=S^k(V)^{*}$ for the space of homogeneous forms of degree $k$ on $V$, a finite
+dimensional $\CC$--vector space. We use:
+\begin{itemize}
+\item $\mathcal V:=A_d$ and $\mathcal W:=(A_{d-1})^{\,n}$, the two ambient vector spaces.
+\item $X=X_n^d\subset \mathcal V$, the open set of forms with $\disc(f)\neq 0$ (smooth
+hypersurfaces in $\PP^{n-1}$).
+\item $Z=Z_n^{d-1}\subset \mathcal W$, the open set of $n$-tuples forming a regular sequence.
+\item $\nab\colon \mathcal V\to \mathcal W$, $\nab f=(\partial_1 f,\dots,\partial_n f)$,
+$\partial_i=\partial/\partial x_i$. This is a \emph{linear} map of vector spaces; it carries
+$X$ into $Z$.
+\item $\GL_n=\GL(V)$ acting by $(g\cdot h)(v)=h(g^{-1}v)$ on each $A_k$, and on $\mathcal W$
+by \eqref{eq:Zaction} below. We write $G:=\SL_n$.
+\end{itemize}
+
+Projectivizing and taking the GIT quotient by $G$ produces, by hypothesis, a finite
+injective morphism
+\[
+\PP\nab\colon M:=\PP X/G \longrightarrow N:=\PP Z/\!/G .
+\]
+Because $\PP\nab$ is finite, it is proper, so its image is closed; let
+$Y:=\PP\nab(M)\subset N$ be this closed image. We prove:
+
+\begin{theorem}\label{thm:main}
+For all $n\ge 2$, $d\ge 3$ the image $Y=\PP\nab(M)$ is a normal subvariety of $N$.
+\end{theorem}
+
+The proof has three ingredients:
+\begin{enumerate}
+\item[(A)] The source $M$ is a normal variety, indeed a geometric quotient of the
+\emph{stable} locus (Section~\ref{sec:source}).
+\item[(B)] $\PP\nab$ is an isomorphism onto $Y$ (Sections~\ref{sec:euler}--\ref{sec:proj}).
+This is the main content; we prove it by an invariant-theoretic argument resting on the fact
+that $\nab$ is a \emph{split} linear injection (it has a linear left inverse given by Euler's
+identity) together with linear reductivity of $G$.
+\item[(C)] Combining (A) and (B): an isomorphism onto a closed image with normal source has
+normal image. We also note the converse via Zariski's Main Theorem, recovering the remark in
+the problem.
+\end{enumerate}
+
+\section{The source is a normal variety}\label{sec:source}
+
+We first record stability of smooth hypersurfaces; this places $\PP X$ inside the
+\emph{stable} locus of $\PP(\mathcal V)$, which is what makes $M$ a geometric quotient and
+identifies it with an \emph{open subvariety} of the projective GIT quotient $\Proj
+\CC[\mathcal V]^{G}$.
+
+\begin{lemma}\label{lem:stable}
+For every $n\ge 2$ and $d\ge 3$, every $f\in X$ is a properly stable point for the
+$G=\SL_n$--action on $\PP(\mathcal V)$ with respect to the natural linearization
+$\mathcal O_{\PP(\mathcal V)}(1)$. Consequently $\PP X\subseteq \PP(\mathcal V)^{s}$ and the
+$G$--stabilizer of every $[f]\in\PP X$ is finite.
+\end{lemma}
+
+\begin{proof}
+\emph{Finite stabilizers.} If $g\in G$ fixes $[f]\in \PP X$ then $g\cdot f=\lambda f$ for
+some $\lambda\in\CC^{*}$, so $g$ preserves the smooth hypersurface $\{f=0\}\subset\PP^{n-1}$.
+By the theorem of Matsumura--Monsky \cite{MM}, the group of linear automorphisms of
+$\PP^{n-1}$ ($=\PGL_n$) preserving a smooth hypersurface of degree $d\ge 3$ is finite for all
+$n\ge 2$ (for $n=2$ this is the elementary statement that the subgroup of $\PGL_2$ preserving
+a set of $d\ge 3$ distinct points of $\PP^1$ is finite). Hence the image of the
+$G$--stabilizer of $[f]$ in $\PGL_n$ is finite; its kernel is contained in the scalar
+matrices of $G$, the finite group $\mu_n$, so the stabilizer itself is finite.
+
+\emph{Stability.} We invoke the classical fact, due to Mumford, that a \emph{smooth}
+hypersurface of degree $d\ge 3$ in $\PP^{n-1}$ is a stable point for the $\SL_n$--action on
+$\PP(\mathcal V)=\PP\big(S^d(V)^{*}\big)$ \cite[Prop.~4.2 and \S 4.2]{Mumford},
+\cite[Ch.~4, \S 2]{MFK}. We recall the verification via the Hilbert--Mumford numerical
+criterion to make the dependence on $d\ge 3$ explicit. For a one--parameter subgroup
+$\lambda$ of $G$ with weights $r_1\ge\cdots\ge r_n$ ($\sum_i r_i=0$, not all $0$) in a basis
+$e_1,\dots,e_n$ of $V$ diagonalizing $\lambda$, the Hilbert--Mumford weight of a monomial
+$x^{a}=x_1^{a_1}\cdots x_n^{a_n}$ (of total degree $d$) is $-\sum_i a_i r_i$, and $f$ is
+\emph{stable} iff for every nontrivial $\lambda$ there is a monomial $x^a$ appearing in $f$
+(in the $\lambda$--diagonalizing coordinates) with $\sum_i a_i r_i<0$, i.e.\ with positive
+Hilbert--Mumford weight; equivalently the Newton polytope of $f$ contains the barycentric
+point in its interior relative to every codimension condition. Suppose for contradiction some
+nontrivial $\lambda$ makes $f$ unstable or strictly semistable: then every monomial of $f$
+satisfies $\sum_i a_i r_i\ge 0$. Choosing coordinates so that the index set is ordered by the
+weights, the standard argument \cite[Prop.~4.2]{Mumford} shows that $f$ then vanishes to high
+order along the linear subspace $\{x_1=\cdots=x_k=0\}$ for a suitable $k$, in such a way that
+the partial derivatives $\partial_1 f,\dots,\partial_n f$ have a common zero on $\PP^{n-1}$;
+this contradicts smoothness of $\{f=0\}$. The numerical inequality powering this argument is
+strict precisely because $d\ge 3$ (for $d\le 2$ the relevant inequalities degenerate to
+equalities, and indeed quadrics are not stable). The case $n=2$ is the elementary computation
+that a binary form of degree $d$ is stable iff each of its roots has multiplicity $<d/2$; a
+smooth (i.e.\ squarefree) binary form of degree $d\ge 3$ has all root multiplicities equal to
+$1<d/2$, hence is stable.
+
+A stable point with finite stabilizer is properly stable
+\cite[Ch.~1, Def.~1.7 and Amplification~1.11]{MFK}; combined with the finiteness of
+stabilizers above, every $[f]\in\PP X$ is properly stable. In particular
+$\PP X\subseteq\PP(\mathcal V)^{s}$.
+\end{proof}
+
+\begin{proposition}\label{prop:sourcenormal}
+$M=\PP X/G$ is a normal quasi-projective variety, the map $\PP X\to M$ is a geometric
+quotient, and $M$ is canonically an open subvariety of the projective GIT quotient
+$\Proj\CC[\mathcal V]^{G}=\PP(\mathcal V)/\!/G$.
+\end{proposition}
+
+\begin{proof}
+By Lemma~\ref{lem:stable}, $\PP X$ lies in the properly stable locus $\PP(\mathcal V)^{s}$.
+By the fundamental theorem of GIT \cite[Ch.~1, Thm.~1.10 and Converse~1.13]{MFK}, the
+quotient map $\pi_{\mathcal V}\colon \PP(\mathcal V)^{ss}\to \PP(\mathcal V)/\!/G=
+\Proj\CC[\mathcal V]^{G}$ restricts over the open stable locus to a geometric quotient
+$\PP(\mathcal V)^{s}\to \PP(\mathcal V)^{s}/G$ onto an \emph{open} subvariety
+$\PP(\mathcal V)^{s}/G\subseteq\PP(\mathcal V)/\!/G$. Restricting further over the
+$G$--invariant open $\PP X\subseteq\PP(\mathcal V)^{s}$ identifies $M=\PP X/G$ with the open
+subvariety $\pi_{\mathcal V}(\PP X)$ of $\PP(\mathcal V)/\!/G$, and exhibits $\PP X\to M$ as a
+geometric quotient. Finally $\PP X$ is smooth (it is the complement of the discriminant
+hypersurface in the projective space $\PP(\mathcal V)$), hence normal; a geometric quotient of
+a normal variety by a reductive group is normal \cite[Ch.~1, \S 2, Remark~6 and Amp.~1.3]{MFK}
+(equivalently, the quotient map is étale-locally a quotient by a finite group, and quotients
+of normal by finite are normal), so $M$ is normal.
+\end{proof}
+
+\section{Euler's identity splits the gradient}\label{sec:euler}
+
+We record the equivariance of $\nab$ and its splitting. Define the $\GL_n$--action on
+$\mathcal W=(A_{d-1})^n$ by
+\begin{equation}\label{eq:Zaction}
+g\cdot (p_1,\dots,p_n)
+:= \Big(\textstyle\sum_{j}(g^{-T})_{1j}\,(g\cdot p_j),\ \dots,\ \sum_{j}(g^{-T})_{nj}\,(g\cdot p_j)\Big),
+\quad g^{-T}=(g^{-1})^{T},
+\end{equation}
+$g\cdot p_j$ being the form $v\mapsto p_j(g^{-1}v)$. This is the natural action making the
+gradient equivariant and is the one carried by $Z$ and $N$.
+
+\begin{lemma}\label{lem:nabeq}
+$\nab\colon \mathcal V\to\mathcal W$ is $\GL_n$--equivariant: $\nab(g\cdot f)=g\cdot\nab f$
+for all $g\in\GL_n$, $f\in\mathcal V$.
+\end{lemma}
+
+\begin{proof}
+With $g\cdot f=f\circ g^{-1}$, the chain rule gives for each $i$
+\[
+\partial_i(g\cdot f)(v)=\sum_j (g^{-1})_{ji}\,(\partial_j f)(g^{-1}v)
+=\sum_j (g^{-T})_{ij}\,(g\cdot\partial_j f)(v),
+\]
+which is the $i$-th component of $g\cdot\nab f$ in \eqref{eq:Zaction}.
+\end{proof}
+
+\begin{lemma}\label{lem:euler}
+The linear map
+\[
+R\colon \mathcal W\to\mathcal V,\qquad R(p_1,\dots,p_n)=\frac1d\sum_{i=1}^n x_i\,p_i,
+\]
+satisfies:
+\textup{(a)} $R\circ\nab=\mathrm{id}_{\mathcal V}$;
+\textup{(b)} $R$ is $\GL_n$--equivariant for the actions \eqref{eq:Zaction} on $\mathcal W$
+and $g\cdot h=h\circ g^{-1}$ on $\mathcal V$.
+\end{lemma}
+
+\begin{proof}
+(a) Euler's identity for a degree-$d$ form: $\sum_i x_i\partial_i f=d\,f$, so
+$R(\nab f)=\tfrac1d\sum_i x_i\partial_i f=f$.
+
+(b) With $g\cdot p=(q_1,\dots,q_n)$, $q_i=\sum_j(g^{-T})_{ij}(g\cdot p_j)$,
+\[
+d\,R(g\cdot p)=\sum_i x_i q_i=\sum_j (g\cdot p_j)\sum_i (g^{-1})_{ji}x_i
+=\sum_j (g\cdot p_j)\,(g^{-1}x)_j .
+\]
+Evaluating at $v$: $(g\cdot p_j)(v)=p_j(g^{-1}v)$ and $(g^{-1}x)_j(v)=(g^{-1}v)_j$, so the
+right side equals $\big(\sum_j x_j p_j\big)(g^{-1}v)=d\,(g\cdot R(p))(v)$. Hence
+$R(g\cdot p)=g\cdot R(p)$.
+\end{proof}
+
+Thus $\nab$ is a $\GL_n$--equivariant linear injection that is \emph{split} by the
+$\GL_n$--equivariant linear map $R$.
+
+\section{Surjectivity of the pullback on invariant rings}\label{sec:inv}
+
+Let $\mathcal V^{*},\mathcal W^{*}$ be the dual spaces (linear coordinate functions), and let
+\[
+\CC[\mathcal V]=\Sym^{\bullet}(\mathcal V^{*}),\qquad \CC[\mathcal W]=\Sym^{\bullet}(\mathcal W^{*})
+\]
+be the polynomial coordinate rings of the affine spaces $\mathcal V,\mathcal W$. We grade them
+by ordinary polynomial degree (this is the grading by the overall scaling $\CC^{*}$ on
+$\mathcal V$ resp.\ $\mathcal W$). The linear map $\nab\colon \mathcal V\to\mathcal W$ induces
+the graded $\CC$--algebra pullback homomorphism
+\[
+\nab^{\#}\colon \CC[\mathcal W]\to\CC[\mathcal V],\qquad \nab^{\#}(F)=F\circ\nab,
+\]
+which is $G$--equivariant by Lemma~\ref{lem:nabeq} (where $G$ acts on coordinate rings via the
+contragredient of its action on $\mathcal V,\mathcal W$).
+
+\begin{lemma}\label{lem:nabsharp-surj}
+$\nab^{\#}\colon \CC[\mathcal W]\to\CC[\mathcal V]$ is surjective.
+\end{lemma}
+
+\begin{proof}
+It suffices to hit the degree-one part $\mathcal V^{*}$, since $\CC[\mathcal V]$ is generated
+as a $\CC$--algebra by $\mathcal V^{*}$ and $\nab^{\#}$ is a graded ring homomorphism.
+Let $\ell\in\mathcal V^{*}$ be any linear functional on $\mathcal V$. Consider the linear
+functional $F:=\ell\circ R\in\mathcal W^{*}$, where $R\colon\mathcal W\to\mathcal V$ is the
+Euler splitting (Lemma~\ref{lem:euler}). Then $F\in\CC[\mathcal W]$ has degree one and, by
+Lemma~\ref{lem:euler}(a),
+\[
+\nab^{\#}(F)=F\circ\nab=\ell\circ R\circ\nab=\ell\circ\mathrm{id}_{\mathcal V}=\ell .
+\]
+Hence $\mathcal V^{*}\subset\im\nab^{\#}$, and $\nab^{\#}$ is surjective.
+\end{proof}
+
+\begin{lemma}\label{lem:phi-surj}
+The restriction of $\nab^{\#}$ to $G$--invariants,
+\[
+\varphi:=\nab^{\#}|_{\CC[\mathcal W]^{G}}\colon \CC[\mathcal W]^{G}\longrightarrow
+\CC[\mathcal V]^{G},
+\]
+is a well-defined surjective graded $\CC$--algebra homomorphism.
+\end{lemma}
+
+\begin{proof}
+Since $\nab^{\#}$ is $G$--equivariant it maps invariants to invariants, so $\varphi$ is
+well defined; it is a graded algebra homomorphism because $\nab^{\#}$ is. For surjectivity,
+let $K=\ker\nab^{\#}\subset\CC[\mathcal W]$, a $G$--stable graded ideal. By
+Lemma~\ref{lem:nabsharp-surj} there is a short exact sequence of graded
+$G$--representations
+\[
+0\to K\to \CC[\mathcal W]\xrightarrow{\ \nab^{\#}\ }\CC[\mathcal V]\to 0 .
+\]
+Over $\CC$ the group $G=\SL_n$ is linearly reductive, so the functor $(-)^{G}$ of taking
+$G$--invariants is exact on the category of $G$--representations
+\cite[Ch.~1, \S 2]{MFK}. Applying it yields the exact sequence
+\[
+0\to K^{G}\to \CC[\mathcal W]^{G}\xrightarrow{\ \varphi\ }\CC[\mathcal V]^{G}\to 0 ,
+\]
+in particular $\varphi$ is surjective.
+\end{proof}
+
+\section{From surjective invariant pullback to an isomorphism onto the image}\label{sec:proj}
+
+Write $S:=\CC[\mathcal W]^{G}$ and $R^{\bullet}:=\CC[\mathcal V]^{G}$ for the two graded
+invariant rings; both are finitely generated $\CC$--algebras with $S_0=R^{\bullet}_0=\CC$
+(Hilbert--Nagata finiteness for the reductive group $G$ \cite[Ch.~1, \S 2, Thm.~1.1]{MFK}).
+By construction of GIT quotients of projective spaces,
+\[
+\PP(\mathcal V)/\!/G=\Proj R^{\bullet},\qquad \PP(\mathcal W)/\!/G=\Proj S ,
+\]
+with quotient maps $\pi_{\mathcal V}\colon\PP(\mathcal V)^{ss}\to\Proj R^{\bullet}$ and
+$\pi_{\mathcal W}\colon\PP(\mathcal W)^{ss}\to\Proj S$. By Proposition~\ref{prop:sourcenormal},
+$M$ is the open subvariety $\pi_{\mathcal V}(\PP X)$ of $\Proj R^{\bullet}$.
+
+We will need two facts: (i) $\nab$ takes semistable points to semistable points, so that the
+image of $M$ lands in the semistable locus of $\PP(\mathcal W)$; and (ii) $N=\PP Z/\!/G$ is
+naturally an open subscheme of $\Proj S$.
+
+\begin{lemma}\label{lem:ss-to-ss}
+$\nab$ maps the semistable locus of $\PP(\mathcal V)$ into the semistable locus of
+$\PP(\mathcal W)$: if $[f]\in\PP(\mathcal V)^{ss}$ then $[\nab f]\in\PP(\mathcal W)^{ss}$. In
+particular $\nab(\PP X)\subseteq\PP(\mathcal W)^{ss}$, since
+$\PP X\subseteq\PP(\mathcal V)^{s}\subseteq\PP(\mathcal V)^{ss}$.
+\end{lemma}
+
+\begin{proof}
+Recall the numerical characterization: a point $[w]\in\PP(\mathcal W)$ is semistable for the
+linearization $\mathcal O(1)$ iff there is a homogeneous $G$--invariant $F\in S_{+}=
+\big(\CC[\mathcal W]^{G}\big)_{>0}$ with $F(w)\neq 0$ \cite[Ch.~1, \S 4, Thm.~1.10 and
+Def.~1.7]{MFK}; the same characterization holds for $\PP(\mathcal V)$ with invariants in
+$R^{\bullet}_{+}$. Let $[f]\in\PP(\mathcal V)^{ss}$, so there is $H\in R^{\bullet}_{+}$ with
+$H(f)\neq 0$. By Lemma~\ref{lem:phi-surj} the map $\varphi\colon S\to R^{\bullet}$ is
+surjective and graded, so $H=\varphi(F)=F\circ\nab$ for some homogeneous
+$F\in S_{+}$ (we may take $F$ homogeneous of the same degree as $H$, since $\varphi$ is graded
+surjective each graded piece $S_e\to R^\bullet_e$ is surjective). Then
+\[
+F(\nab f)=(F\circ\nab)(f)=H(f)\neq 0 ,
+\]
+so $[\nab f]\in\PP(\mathcal W)^{ss}$.
+\end{proof}
+
+\begin{lemma}\label{lem:Nopen}
+There is a canonical open immersion $j\colon N=\PP Z/\!/G\hookrightarrow \Proj S$, identifying
+$N$ with the open subscheme $\pi_{\mathcal W}\big(\PP Z\cap\PP(\mathcal W)^{ss}\big)$ of
+$\Proj S$. Moreover $\nab(\PP X)\subseteq \PP Z\cap\PP(\mathcal W)^{ss}$, so the given map
+$\PP\nab$ satisfies $j\circ\PP\nab=\pi_{\mathcal W}\circ(\PP\nab)\!\restriction$ in the
+evident sense; concretely, for $[f]\in\PP X$,
+\[
+\big(j\circ\PP\nab\big)\big(\pi_{\mathcal V}[f]\big)=\pi_{\mathcal W}[\nab f]\in\Proj S .
+\]
+\end{lemma}
+
+\begin{proof}
+$\PP Z$ is a $G$--invariant open subvariety of $\PP(\mathcal W)$, equipped with the
+linearization $\mathcal O(1)|_{\PP Z}$ restricted from $\PP(\mathcal W)$; the GIT quotient
+$N=\PP Z/\!/G$ with respect to this restricted linearization is, by the very construction of
+GIT quotients for quasiprojective varieties with a (restricted, hence ample on the affine
+cone) linearization, the categorical/good quotient of the semistable locus
+$(\PP Z)^{ss}=\PP Z\cap\PP(\mathcal W)^{ss}$ \cite[Ch.~1, \S 4, Converse~1.12 and the
+discussion of quotients of invariant opens]{MFK}. The inclusion
+$\PP Z\cap\PP(\mathcal W)^{ss}\hookrightarrow\PP(\mathcal W)^{ss}$ of $G$--invariant
+semistable loci is an open immersion that is saturated for $\pi_{\mathcal W}$ (a semistable
+point is in $\PP Z$ iff its unique closed orbit in its semistable closure is, because $\PP Z$
+is open and $G$--invariant; more directly, $\pi_{\mathcal W}^{-1}\big(\pi_{\mathcal W}(\PP Z\cap
+\PP(\mathcal W)^{ss})\big)=\PP Z\cap\PP(\mathcal W)^{ss}$ as $\PP Z$ is invariant and the good
+quotient separates closed orbits). A good quotient of a saturated invariant open subset maps
+isomorphically onto its image, which is open in the quotient \cite[Ch.~1, \S 2, Thm.~1.10 and
+Property~(iii) of good quotients]{MFK}. Hence $\pi_{\mathcal W}$ restricts to an open immersion
+$j\colon N=\pi_{\mathcal W}(\PP Z\cap\PP(\mathcal W)^{ss})\hookrightarrow\Proj S$.
+
+For the last statement, $\nab(\PP X)\subseteq Z$ holds because gradients of smooth forms form
+regular sequences (this is the very definition of the map $\nab\colon X\to Z$ in the problem),
+hence $\nab(\PP X)\subseteq\PP Z$; and $\nab(\PP X)\subseteq\PP(\mathcal W)^{ss}$ by
+Lemma~\ref{lem:ss-to-ss}. Therefore $\nab(\PP X)\subseteq\PP Z\cap\PP(\mathcal W)^{ss}$.
+The displayed identity is the statement that the induced map on quotients is computed by
+applying $\pi_{\mathcal W}$ to representatives, which holds by functoriality of good quotients
+under the $G$--equivariant morphism $\nab\colon\PP X\to \PP Z\cap\PP(\mathcal W)^{ss}$. Finally,
+the morphism $\pi_{\mathcal V}[f]\mapsto\pi_{\mathcal W}[\nab f]$ is precisely the given finite
+injective morphism $\PP\nab\colon M\to N$ (both are induced by the same $G$--equivariant map
+$\nab$ on quotients of the respective stable/semistable loci, and a good quotient is a
+categorical quotient, so the induced map is unique).
+\end{proof}
+
+\begin{lemma}\label{lem:closedimm}
+The graded surjection $\varphi\colon S\twoheadrightarrow R^{\bullet}$ of
+Lemma~\ref{lem:phi-surj} induces a closed immersion of projective schemes
+\[
+\iota\colon \Proj R^{\bullet}\hookrightarrow \Proj S .
+\]
+\end{lemma}
+
+\begin{proof}
+A surjective homomorphism of finitely generated graded $\CC$--algebras
+$\varphi\colon S\twoheadrightarrow R^{\bullet}$ (preserving the grading, with
+$S_0=R^{\bullet}_0=\CC$) induces a morphism $\iota\colon\Proj R^{\bullet}\to\Proj S$ defined
+on \emph{all} of $\Proj R^{\bullet}$: for a homogeneous prime $\mathfrak p\subset R^{\bullet}$
+not containing the irrelevant ideal $R^{\bullet}_{+}$, the preimage
+$\varphi^{-1}(\mathfrak p)$ is a homogeneous prime of $S$ not containing $S_{+}$, because
+$\varphi(S_{+})=R^{\bullet}_{+}$ by graded surjectivity, so $S_{+}\subseteq
+\varphi^{-1}(\mathfrak p)$ would force $R^{\bullet}_{+}=\varphi(S_+)\subseteq\mathfrak p$, a
+contradiction. Thus $\iota$ is everywhere defined \cite[Ch.~II, Ex.~2.14 and the discussion of
+$\Proj$ functoriality for surjections]{Hartshorne}. On each basic open
+$D_{+}(\varphi(s))\subseteq\Proj R^{\bullet}$, $s\in S_{+}$ homogeneous, $\iota$ is the
+morphism $\Spec(R^{\bullet}_{(\varphi(s))})\to\Spec(S_{(s)})$ dual to the ring map
+$S_{(s)}\to R^{\bullet}_{(\varphi(s))}$ induced by $\varphi$, which is surjective (a
+localization of a surjection at $s\mapsto\varphi(s)$ is surjective). A morphism that is,
+locally on the target $\Proj S$ covered by the $D_{+}(s)$, the $\Spec$ of a surjective ring
+map is a closed immersion; since $\iota^{-1}(D_{+}(s))=D_{+}(\varphi(s))$ and on it $\iota$ is
+$\Spec$ of the surjection $S_{(s)}\twoheadrightarrow R^{\bullet}_{(\varphi(s))}$, we conclude
+$\iota$ is a closed immersion.
+\end{proof}
+
+\begin{proposition}\label{prop:iso-onto-image}
+$\PP\nab\colon M\to N$ is an isomorphism onto its image $Y$; equivalently $\PP\nab$ is a
+locally closed immersion with closed image.
+\end{proposition}
+
+\begin{proof}
+\emph{Step 1: identify the global GIT map.} By Lemma~\ref{lem:nabeq}, $\nab$ is
+$G$--equivariant and homogeneous of degree $1$ for the scalings, and by Lemma~\ref{lem:ss-to-ss}
+it maps $\PP(\mathcal V)^{ss}$ into $\PP(\mathcal W)^{ss}$. Hence it induces a morphism of GIT
+quotients
+\[
+\Phi\colon \Proj R^{\bullet}=\PP(\mathcal V)/\!/G\longrightarrow
+\PP(\mathcal W)/\!/G=\Proj S,\qquad \Phi\big(\pi_{\mathcal V}[f]\big)=\pi_{\mathcal W}[\nab f].
+\]
+By the universal property of the good quotient $\pi_{\mathcal V}$ as a categorical quotient
+\cite[Ch.~1, \S 2, Thm.~1.10]{MFK}, $\Phi$ is the unique morphism with this property, and on
+invariant rings it is induced by $\varphi=\nab^{\#}|_{(-)^G}$ (because pulling a global
+invariant $F\in S$ back along $\Phi$ gives $F\circ\nab|_{\text{inv}}=\varphi(F)$). Therefore
+$\Phi=\Proj(\varphi)=\iota$, the closed immersion of Lemma~\ref{lem:closedimm}.
+
+\emph{Step 2: restrict to the relevant open loci.} By Proposition~\ref{prop:sourcenormal},
+$M=\pi_{\mathcal V}(\PP X)$ is an open subvariety of $\Proj R^{\bullet}$. By
+Lemma~\ref{lem:Nopen}, $N$ is (via the open immersion $j$) the open subvariety
+$\pi_{\mathcal W}(\PP Z\cap\PP(\mathcal W)^{ss})$ of $\Proj S$, and
+\[
+j\circ\PP\nab=\Phi|_{M}=\iota|_{M}.
+\]
+Indeed both sides send $\pi_{\mathcal V}[f]\mapsto\pi_{\mathcal W}[\nab f]$ for
+$[f]\in\PP X$, and these representatives lie in $\PP Z\cap\PP(\mathcal W)^{ss}$ by
+Lemma~\ref{lem:Nopen}. Now $\iota$ is a closed immersion (Lemma~\ref{lem:closedimm}), and the
+restriction of a closed immersion to an open subscheme of the source ($M\subseteq\Proj
+R^{\bullet}$) is a locally closed immersion into $\Proj S$. Since $j$ is an open immersion
+(hence a monomorphism whose image is open) and the image $\iota(M)=j(\PP\nab(M))$ is contained
+in $j(N)$, the map $\PP\nab=j^{-1}\circ(\iota|_M)\colon M\to N$ is itself a locally closed
+immersion. That is, $\PP\nab$ is an isomorphism of $M$ onto a locally closed subvariety
+$\PP\nab(M)$ of $N$.
+
+\emph{Step 3: closed image.} $\PP\nab$ is finite (given), hence proper, hence a closed map;
+so $Y=\PP\nab(M)$ is closed in $N$. A locally closed immersion with closed image is a closed
+immersion. Therefore $\PP\nab\colon M\to Y$ is an isomorphism.
+\end{proof}
+
+\section{Proof of the theorem}\label{sec:conclude}
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}]
+By Proposition~\ref{prop:iso-onto-image}, $\PP\nab\colon M\to Y$ is an isomorphism onto its
+closed image $Y\subset N$. By Proposition~\ref{prop:sourcenormal}, $M$ is normal. Normality
+is preserved under isomorphism, so $Y\cong M$ is normal. This proves Theorem~\ref{thm:main}
+for all $n\ge 2$ and $d\ge 3$.
+\end{proof}
+
+\begin{remark}[No circularity; consistency with the problem's remark]
+The problem notes that normality of $Y$ would, via Zariski's Main Theorem, imply $\PP\nab$ is
+an isomorphism onto its image. We did \emph{not} assume normality of $Y$ to obtain the
+isomorphism. The isomorphism in Proposition~\ref{prop:iso-onto-image} is derived
+independently, from the algebraic fact that $\nab$ admits a $G$--equivariant linear left
+inverse $R$ (Euler's identity, Lemma~\ref{lem:euler}), which forces $\nab^{\#}$ and hence (by
+linear reductivity of $G$) the induced map on invariant rings $\varphi$ to be surjective
+(Lemma~\ref{lem:phi-surj}); surjectivity of $\varphi$ yields the closed immersion of GIT
+quotients $\iota$ (Lemma~\ref{lem:closedimm}), and the additional input
+Lemma~\ref{lem:ss-to-ss} (also a consequence of surjectivity of $\varphi$) shows the image of
+$M$ stays inside the semistable locus and hence inside $N$. Normality of $Y$ is then a
+consequence, not a hypothesis. Conversely, given normality, Zariski's Main Theorem reproves
+the isomorphism: $\PP\nab$ is finite, injective, and birational onto $Y$ (a finite injective
+morphism in characteristic $0$ is birational onto its image), and a finite birational morphism
+onto a normal variety is an isomorphism \cite[Ch.~III, \S 9]{Mumford-RB}.
+\end{remark}
+
+\begin{thebibliography}{9}
+
+\bibitem{MM} H. Matsumura and P. Monsky,
+\emph{On the automorphisms of hypersurfaces}, J. Math. Kyoto Univ. \textbf{3} (1963/64),
+347--361.
+
+\bibitem{Mumford} D. Mumford,
+\emph{Stability of projective varieties}, Enseign. Math. (2) \textbf{23} (1977), 39--110.
+
+\bibitem{MFK} D. Mumford, J. Fogarty, F. Kirwan,
+\emph{Geometric Invariant Theory}, 3rd ed., Ergeb. Math. Grenzgeb. (2) \textbf{34},
+Springer, Berlin, 1994.
+
+\bibitem{Hartshorne} R. Hartshorne,
+\emph{Algebraic Geometry}, Grad. Texts in Math. \textbf{52}, Springer, New York, 1977.
+
+\bibitem{Mumford-RB} D. Mumford,
+\emph{The Red Book of Varieties and Schemes}, 2nd ed., Lecture Notes in Math. \textbf{1358},
+Springer, Berlin, 1999.
+
+\end{thebibliography}
+
+\end{document}

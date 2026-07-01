@@ -1,0 +1,31 @@
+{
+  "id": "rm-02099-6",
+  "problem_id": "rm-02099",
+  "dataset": "researchmath_14k",
+  "title": "No definite protocol-independent I_max identified (part b)",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T11:53:18Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev30bb929c",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T11:53:18Z"
+    },
+    {
+      "id": "c75a6b1b4",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "Part (b) asks for THE maximum entropy reduction $I_{max}$ over ANY feedback protocol. The solution returns $I_{max}=N\\log2$ with $N$ a free design parameter, and concedes $I_A$ is unbounded in the continuous zero-dwell idealisation. Hence no single supremum over all protocols is identified; the stated $I_{max}$ is protocol-class dependent. A complete answer must produce a genuinely protocol-independent invariant (or rigorously justify the per-decision / per-unit-time normalization as the true supremum).",
+      "created_at": "2026-06-27T11:53:18Z"
+    }
+  ]
+}

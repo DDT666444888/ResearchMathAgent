@@ -1,0 +1,31 @@
+{
+  "id": "q5-36",
+  "problem_id": "q5",
+  "dataset": "first_proof_1",
+  "title": "Convergence/exhaustiveness & separatedness of the $\\aO$-slice tower (connective case)",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T09:18:07Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev0e56309a",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T09:18:07Z"
+    },
+    {
+      "id": "c46bb3eb9",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Sub-lemma (NEW): Convergence, exhaustiveness, and separatedness of the $\\aO$-slice tower for connective spectra.**\n\nThe problem asks for a *slice filtration* and a characterization of the $\\aO$-slice connectivity of a **connective** $G$-spectrum. A layer-by-layer characterization is vacuous unless the $\\aO$-slice tower actually converges to $E$. This sub-lemma is logically independent of the *existence* of the tower (tracked in q5-27) and of the question \"where is the connective hypothesis used\" (q5-32); neither states or proves convergence/separatedness.\n\n**To prove.** For bounded-below (connective) $E$:\n$$\\mathrm{holim}_n\\, P^{\\aO}_{\\le n}E \\;\\simeq\\; E,\\qquad\\text{equivalently}\\qquad \\bigcap_{n}\\tau^{\\aO}_{\\ge n}\\big|_{\\text{bdd below}} = 0\\ \\ (\\text{separatedness}),$$\nand the connecting maps assemble to the identity in the limit.\n\n**Why it is genuine and load-bearing.** With an *incomplete* $\\aO$ there are strictly fewer slice generators (only admissible norm cells $G_+\\wedge_H S^{\\mathbb R\\cdot T}$, $T\\in\\aO(H)$), so a priori the slice-coconnective quotients can be \"too large\" and the tower could fail to separate. The multiplier in the connectivity estimate is $r_H=[H:\\chi^{\\aO}(H)]$ rather than $|H|$, and one must verify that $\\min_H$ over the relevant range still $\\to\\infty$ as $n\\to\\infty$ so that the tower exhausts $E$.\n\n**Suggested route.**\n1. Forward estimate: $r_H\\,\\mathrm{gconn}(\\Phi^H P^{\\aO}_{\\ge n}E)\\ge n$ shows the $n$-coconnective cover becomes highly $\\Phi^H$-connected as $n\\to\\infty$ for every relevant $H$.\n2. Apply the connectivity-detection (conservativity) lemma for $\\{\\Phi^H\\}$ on bounded-below spectra (see companion new issue) to the fiber of $E\\to P^{\\aO}_{\\le n}E$ to conclude $\\mathrm{holim}_n P^{\\aO}_{\\le n}E\\simeq E$.\n3. Mirror the HHR / Hill--Yarnall convergence argument with $|H|\\rightsquigarrow r_H$, checking the bounded-below hypothesis is used exactly where geometric fixed points would otherwise fail to be jointly conservative.\n\nReferences: HHR (Ann. of Math. 184, 2016) slice convergence; Hill--Yarnall (PAMS 146, 2018); Hill, *Slice filtration primer* (HHA 14, 2012).",
+      "created_at": "2026-06-27T09:18:07Z"
+    }
+  ]
+}

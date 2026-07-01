@@ -1,0 +1,31 @@
+{
+  "id": "q1-26",
+  "problem_id": "q1",
+  "dataset": "first_proof_1",
+  "title": "prop:decomp: placeholder EW24 citation and invariant-measure uniqueness make 'fixed-time law = mu' not self-contained",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T11:51:02Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "eve8b6402c",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T11:51:02Z"
+    },
+    {
+      "id": "c03b6374d",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Location:** Proposition `prop:decomp`, Step (2)(β) (\"fixed-time law $=\\mu$\" via uniqueness\nof the invariant measure), and the bibliography entry `EW24`.\n\n**Gap (MINOR, citation/self-containedness).** Two items needed to make the decomposition of\n$\\mu$ rigorous are only gestured at:\n\n1. **Placeholder citation.** The reference `\\bibitem{EW24} W. E. / et al.; see also\n   stationary $\\Phi^4_3$ constructions.` is not a real citation. Yet `EW24` is invoked\n   repeatedly for the *existence and stationarity* of the full-line stationary solution\n   (Step (1)), the *time-continuity* of all five fields $\\mathbf l,\\mathbf q,\\mathbf C,v,v^\\sharp$\n   in their Hölder–Besov spaces (Step (3), needed to evaluate the paracontrolled identity at\n   the single time $t=0$), and \"construct the stationary solution started from $\\mu$ at\n   $-\\infty$\". These are load-bearing facts and require a precise reference (e.g.\n   Gubinelli–Hofmanová, or Albeverio–Kusuoka for the measure, or the relevant stationary\n   $\\Phi^4_3$ construction).\n\n2. **Uniqueness of the invariant measure.** Step (2)(β) deduces \"fixed-time law of the\n   stationary solution $=\\mu$\" from the assertion that $\\mu$ is the *unique* invariant\n   probability measure, citing strong Feller + irreducibility (HM18). The uniqueness of the\n   invariant measure for the $\\Phi^4_3$ dynamics on the relevant state space should be cited\n   at the level of a specific theorem, or the alternative route (construct the stationary\n   solution from $\\mu$ at $t=-\\infty$, so its time-$t$ law is $\\mu$ by invariance) made the\n   primary argument so that uniqueness is not needed.\n\nThis is not deep, but the present proof of Proposition `prop:decomp`(a) — the statement\n$\\mathrm{Law}(u(0,\\cdot))=\\mu$ on which the entire singularity argument rests — is not\nself-contained without it. (Note: issue q1-7 covering \"identification of fixed-time law with\n$\\mu$ and descent\" is marked *resolved*, but the placeholder `EW24` citation and the\nexplicit invariant-measure-uniqueness reference remain unaddressed in the current\n`solution.tex`.)",
+      "created_at": "2026-06-28T11:51:02Z"
+    }
+  ]
+}

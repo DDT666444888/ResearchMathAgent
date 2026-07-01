@@ -1,0 +1,31 @@
+{
+  "id": "q10-4",
+  "problem_id": "q10",
+  "dataset": "first_proof_2",
+  "title": "G2 (CORE): Choice of preconditioner and an explicit M/N-free condition-number bound for PCG",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T05:21:20Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "eve72cc19c",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T05:21:20Z"
+    },
+    {
+      "id": "c5ce31cf8",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Location:** PCG convergence claim for ($\\star$).\n\nNatural SPD preconditioner $P_0=\\lambda(I_r\\otimes K)$ with $P_0^{-1}=\\lambda^{-1}(I_r\\otimes K^{-1})$ (one Cholesky of $K$, $O(n^3)$ once; apply $O(n^2r)$). Required proof obligations:\n\n1. **Lower bound:** data term is PSD $\\Rightarrow P_0^{-1}\\mathcal A\\succeq I$, i.e. $\\lambda_{\\min}(P_0^{-1}\\mathcal A)=1$.\n2. **Upper bound (the hard part):** $\\lambda_{\\max}(P_0^{-1}\\mathcal A)\\le 1+\\lambda^{-1}\\eta$ with $\\eta=\\|S^\\top(Z\\otimes K)(I_r\\otimes K^{-1/2})\\|_2^2\\le\\|Z\\|_2^2\\,\\|K\\|_2$ (using $\\|S^\\top\\|\\le1$). Hence $\\kappa\\le 1+\\lambda^{-1}\\|Z\\|_2^2\\|K\\|_2$ and iteration count $t=O(\\sqrt\\kappa\\,\\log(1/\\varepsilon))$ — all independent of $M,N$.\n\nThe attempt must give a genuine spectral-equivalence inequality ($\\alpha P\\preceq\\mathcal A\\preceq\\beta P$) for whatever $P$ it selects, then derive $\\kappa$. Numerics in-session: $\\kappa(P_0^{-1}\\mathcal A)\\approx71$ ($n=5,M=40,r=3$); a mean-field variant $\\tfrac qN(Z^\\top Z\\otimes K^2)+\\lambda(I_r\\otimes K)$ gave $\\kappa\\approx54$. A heuristic preconditioner without a proved bound is insufficient (benchmark commandment 3).",
+      "created_at": "2026-06-28T05:21:20Z"
+    }
+  ]
+}

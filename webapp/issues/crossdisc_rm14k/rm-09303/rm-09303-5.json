@@ -1,0 +1,31 @@
+{
+  "id": "rm-09303-5",
+  "problem_id": "rm-09303",
+  "dataset": "crossdisc_rm14k",
+  "title": "Prop 2(ii)/deflation: (O3) excludes user-indexing, not the deflationist's actual thesis",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T05:22:16Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev94772935",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T05:22:16Z"
+    },
+    {
+      "id": "c2c92f3f7",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "The 𝓕∖𝓞_Φ witness Π_par has output 'depending on the user's community,' violating (O3). But the deflationist does not claim warrant depends on which *individual user* applies Π (a strawman); the claim is that warrant for a *fixed* procedure is constituted by community endorsement of that procedure. A community-endorsed but user-invariant procedure (e.g. 'accept h iff the standard textbook test passes') is NOT excluded by (O3) and could lie in 𝓕∩𝓞_Φ.\n\nSo the four-cell argument shows 𝓞_Φ ≠ 𝓕 as sets of formal objects, but not that objectivity-as-defined is not *constituted by* facts about practice — which (a) and the deflation rebuttal require. The slide from '(O3) excludes user-indexing' to 'objectivity is endorsement-independent' is unjustified.\n\nFix: rebuild the cell with a user-invariant but community-endorsed procedure that fails an *endorsement-independent* 𝓜 (see the endorsement-independence definition needed in the related issue).",
+      "created_at": "2026-06-27T05:22:16Z"
+    }
+  ]
+}

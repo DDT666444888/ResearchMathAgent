@@ -1,0 +1,31 @@
+{
+  "id": "rm-05492-4",
+  "problem_id": "rm-05492",
+  "dataset": "rmac",
+  "title": "L3: Conclude severe (exponential) ill-posedness from the bound",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T19:17:51Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "evc41b44f8",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T19:17:51Z"
+    },
+    {
+      "id": "cba79610c",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Goal.** Convert the upper bound of the crux lemma into the dichotomy answer and the severe/exponential label.\n\n(a) *Disprove moderate ill-posedness.* From $\\sigma_i(A)=o(i^{-\\kappa})$ for every $\\kappa$, conclude there is NO pair $(C,\\kappa)$ with $C\\,i^{-\\kappa}\\le\\sigma_i(A)$ for all $i$ (careful: the moderate definition is a lower bound for ALL $i$; show the $o(i^{-\\kappa})$ decay violates it for every finite $\\kappa$).\n(b) *Justify the severe/exponential label.* Show $\\limsup_{i\\to\\infty}\\tfrac1i\\log\\big(1/\\sigma_i(A)\\big)>0$ (indeed $=+\\infty$ per the numerics), so the decay is at least exponential, placing the problem firmly in the severely ill-posed regime.\n\n**Conclusion to state:** $Ax=y$ is **severely (exponentially, in fact super-exponentially) ill-posed**, not moderately ill-posed.\n\n**Difficulty:** moderate, contingent on the crux lemma.",
+      "created_at": "2026-06-27T19:17:51Z"
+    }
+  ]
+}

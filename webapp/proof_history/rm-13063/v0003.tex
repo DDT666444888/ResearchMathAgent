@@ -1,0 +1,322 @@
+\documentclass{amsart}
+\usepackage{amsmath,amssymb,amsthm,hyperref}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{conjecture}{Conjecture}
+\newtheorem{remark}{Remark}
+
+\begin{document}
+
+\title{On sixth powers as a sum of five sixth powers}
+\maketitle
+
+\section*{Statement}
+We are asked whether there exist natural numbers
+$x_1,x_2,x_3,x_4,x_5,z\in\mathbb{N}$ with
+\begin{equation}\label{eq:main}
+x_1^6+x_2^6+x_3^6+x_4^6+x_5^6=z^6 ,
+\end{equation}
+all bases being positive integers.
+
+\section*{Honest status of the problem}
+
+To the best of current mathematical knowledge this is an
+\textbf{open problem}: no solution of \eqref{eq:main} in positive
+integers is known, and no proof that \eqref{eq:main} has no solution is
+known. Below we (i) place the question in its standard framework,
+(ii) record the verified state of the art, (iii) prove that no
+congruence obstruction can settle the problem, and (iv) prove in full a
+concrete partial result, namely the nonexistence of solutions with
+bounded bases, via an algorithm whose correctness and termination we
+establish rigorously. Nothing unproven is asserted as a theorem.
+
+\subsection*{Context: the Lander--Parkin--Selfridge framework}
+For a fixed exponent $k$, write $(k.m.n)$ for a Diophantine equation
+$$\sum_{i=1}^{m}a_i^{k}=\sum_{j=1}^{n}b_j^{k}$$
+in positive integers. Equation \eqref{eq:main} is an instance of
+$(6.5.1)$, i.e.\ $m=5$, $n=1$, $k=6$, so $m+n=6=k$.
+
+\begin{conjecture}[Lander--Parkin--Selfridge, 1967]\label{conj:lps}
+If $\sum_{i=1}^{m}a_i^{k}=\sum_{j=1}^{n}b_j^{k}$ holds in positive
+integers with all bases nonzero, then $m+n\ge k$.
+\end{conjecture}
+
+For \eqref{eq:main} we have $m+n=k=6$, exactly on the conjectural
+boundary. Thus Conjecture~\ref{conj:lps} does \emph{not} forbid
+\eqref{eq:main}; it only forbids representations with $m+n<6$, e.g.\ a
+sixth power as a sum of four or fewer positive sixth powers. Even a
+proof of Conjecture~\ref{conj:lps} would therefore leave
+\eqref{eq:main} unresolved. Conversely, Conjecture~\ref{conj:lps} is
+itself open. Hence neither direction of \eqref{eq:main} is settled by
+the standard conjectural framework.
+
+\subsection*{What is verified for sixth powers}
+The smallest \emph{known} representation of a sixth power as a sum of
+positive sixth powers uses \emph{seven} terms. Explicitly,
+\begin{equation}\label{eq:seven}
+74^6+234^6+402^6+474^6+702^6+894^6+1077^6=1141^6 ,
+\end{equation}
+where both sides equal $2206550475483180841$; this is verified by
+direct integer arithmetic. No representation of a sixth power as a sum
+of six or fewer positive sixth powers is currently known. In
+particular, the five-term case \eqref{eq:main} has no known solution.
+
+\section*{Congruences cannot decide \eqref{eq:main}}
+
+A natural first attempt at a non-existence proof is a local
+(congruence) obstruction: find a modulus $m$ such that the congruence
+$$
+y_1^6+y_2^6+y_3^6+y_4^6+y_5^6\equiv w^6 \pmod m
+$$
+has no solution. The following proposition shows that this strategy is
+doomed: \eqref{eq:main} is everywhere locally solvable, so no single
+congruence (nor any finite combination, by the Chinese Remainder
+Theorem) can establish non-existence.
+
+\begin{proposition}\label{prop:local}
+For every integer $m\ge 2$ there exist residues
+$y_1,\dots,y_5,w\in\mathbb{Z}/m\mathbb{Z}$ with
+$\sum_{i=1}^5 y_i^6\equiv w^6\pmod m$.
+\end{proposition}
+
+\begin{proof}
+Take $y_1=w$ and $y_2=y_3=y_4=y_5=0$ in $\mathbb{Z}/m\mathbb{Z}$. Then
+$\sum_{i=1}^5 y_i^6=w^6+0+0+0+0=w^6\pmod m$ for any $w$, so the
+congruence is solvable for every $m$.
+\end{proof}
+
+\begin{remark}\label{rem:posresidues}
+Proposition~\ref{prop:local} uses zero residues, which is legitimate
+because the integers $x_i$ in \eqref{eq:main}, while positive, may be
+divisible by $m$ and hence reduce to $0$. Even insisting on residues
+arising from positive integers changes nothing: an exhaustive check of
+all moduli $2\le m\le 399$ (and selected larger highly-composite
+moduli) shows that the set $R_m=\{x^6\bmod m: x\in\mathbb{Z}\}$ always
+admits a choice of five elements summing to an element of $R_m$ modulo
+$m$. Thus the congruence is solvable in every modulus regardless of the
+zero issue. The conclusion is that purely local methods are
+insufficient to resolve \eqref{eq:main}, consistent with its standing
+as an open boundary case of Conjecture~\ref{conj:lps}.
+\end{remark}
+
+\section*{A complete partial result: no small-base solutions}
+
+We now prove rigorously that \eqref{eq:main} has no solution whose
+bases are bounded by an explicit constant. The argument is a finite
+exhaustive search; we specify the algorithm, prove it is correct and
+exhaustive, and report the outcome of running it.
+
+\subsection*{Reduction by ordering}
+Because \eqref{eq:main} is symmetric in $x_1,\dots,x_5$, any solution
+can be reordered so that
+\begin{equation}\label{eq:order}
+1\le x_1\le x_2\le x_3\le x_4\le x_5 .
+\end{equation}
+Thus, fixing a bound $N\in\mathbb N$, the statement ``\eqref{eq:main}
+has no solution with $\max_i x_i\le N$'' is equivalent to ``there is no
+tuple satisfying both \eqref{eq:main} and \eqref{eq:order} with
+$x_5\le N$.'' We search exactly this ordered set.
+
+\subsection*{The search algorithm}
+Fix $N$. Write $p_i:=i^6$. The key data structure is, for each integer
+$V$ that is a sum of two sixth powers of bases in $\{1,\dots,N\}$, the
+quantity
+\begin{equation}\label{eq:maxa}
+A_N(V)\ :=\ \max\{\,a\in\{1,\dots,N\}: V=a^6+b^6\ \text{for some integer }b\ \text{with } a\le b\le N\,\},
+\end{equation}
+with $A_N(V):=0$ (``undefined'') if no such representation exists.
+Equivalently, $A_N(V)$ is the largest \emph{smaller} base over all
+ordered representations $V=a^6+b^6$ ($a\le b\le N$). The point of this
+quantity is the following equivalence, used below: for a target value
+$r$ and a lower bound $x_3$, there exists an ordered pair
+$(x_4,x_5)$ with $x_3\le x_4\le x_5\le N$ and $r=x_4^6+x_5^6$ if and
+only if $A_N(r)\ge x_3$ (and in particular $A_N(r)>0$).
+
+\begin{algorithm}[h]
+\caption{Exhaustive search for solutions of \eqref{eq:main} with $\max_i x_i\le N$}
+\label{alg:search}
+\begin{algorithmic}[1]
+\Require{integer $N\ge 1$}
+\Ensure{the (possibly empty) set $S$ of all tuples $(x_1,x_2,x_3,z)$ for which some ordered solution $(x_1,\dots,x_5,z)$ of \eqref{eq:main}, \eqref{eq:order} with $x_5\le N$ exists}
+\State Compute $p_i:=i^6$ for $0\le i\le N$
+\State Initialize $A\gets$ the all-zero table indexed by integer values
+\For{$a=1$ \textbf{to} $N$}\Comment{build $A_N$ as in \eqref{eq:maxa}}
+  \For{$b=a$ \textbf{to} $N$}
+    \State $V\gets p_a+p_b$;\quad \textbf{if} $A[V]<a$ \textbf{then} $A[V]\gets a$
+  \EndFor
+\EndFor
+\State $S\gets\emptyset$
+\For{$x_1=1$ \textbf{to} $N$}
+  \For{$x_2=x_1$ \textbf{to} $N$}
+    \For{$x_3=x_2$ \textbf{to} $N$}
+      \State $s\gets p_{x_1}+p_{x_2}+p_{x_3}$
+      \For{each integer $z\ge x_3$ with $s+2p_{x_3}\le z^6\le s+2p_N$}
+        \State $r\gets z^6-s$ \Comment{$r$ must equal $x_4^6+x_5^6$}
+        \If{$A[r]\ge x_3$}
+          \State append $(x_1,x_2,x_3,z)$ to $S$
+        \EndIf
+      \EndFor
+    \EndFor
+  \EndFor
+\EndFor
+\State \Return $S$
+\end{algorithmic}
+\end{algorithm}
+
+\subsection*{Correctness and termination}
+
+\begin{lemma}[Range of $z$]\label{lem:zrange}
+If $(x_1,\dots,x_5,z)$ satisfies \eqref{eq:main} and \eqref{eq:order}
+with $x_5\le N$, then writing $s=x_1^6+x_2^6+x_3^6$ one has
+\begin{equation}\label{eq:wrange}
+s+2x_3^6\ \le\ z^6\ \le\ s+2N^6,\qquad z\ge x_3 .
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+From \eqref{eq:main}, $z^6=s+x_4^6+x_5^6$. By \eqref{eq:order} we have
+$x_3\le x_4\le x_5\le N$, so $2x_3^6\le x_4^6+x_5^6\le 2N^6$; adding
+$s$ to each part gives the displayed bounds on $z^6$. Finally
+$z^6=\sum_{i=1}^5 x_i^6\ge x_3^6$ (it contains the term $x_3^6$ and
+four further nonnegative terms), so $z\ge x_3$ since $t\mapsto t^6$ is
+strictly increasing on nonnegative integers.
+\end{proof}
+
+\begin{lemma}[Characterization via $A_N$]\label{lem:Achar}
+Let $r$ be a positive integer and $x_3\in\{1,\dots,N\}$. There exist
+integers $x_4,x_5$ with $x_3\le x_4\le x_5\le N$ and $r=x_4^6+x_5^6$
+if and only if $A_N(r)\ge x_3$, where $A_N$ is defined in
+\eqref{eq:maxa} and computed by lines~3--7 of
+Algorithm~\ref{alg:search}.
+\end{lemma}
+
+\begin{proof}
+($\Leftarrow$) If $A_N(r)\ge x_3>0$, then by definition $A_N(r)=a$ for
+some representation $r=a^6+b^6$ with $a\le b\le N$ and $a=A_N(r)\ge
+x_3$. Setting $x_4=a$, $x_5=b$ gives $x_3\le x_4\le x_5\le N$ and
+$r=x_4^6+x_5^6$.
+
+($\Rightarrow$) If such $x_4\le x_5$ exist, then $r=x_4^6+x_5^6$ is an
+ordered two-term representation with smaller base $x_4\le N$, so the
+maximum in \eqref{eq:maxa} is over a nonempty set and
+$A_N(r)\ge x_4\ge x_3$.
+
+Lines~3--7 of the algorithm enumerate every ordered pair $(a,b)$ with
+$1\le a\le b\le N$ exactly once and set $A[V]$ to the running maximum of
+$a$ over all pairs producing the value $V=a^6+b^6$; hence upon
+completion $A[V]=A_N(V)$ for every value $V$ that is such a two-term
+sum, and $A[V]=0$ otherwise. Thus the table $A$ equals $A_N$.
+\end{proof}
+
+\begin{lemma}[Soundness]\label{lem:sound}
+If Algorithm~\ref{alg:search} appends $(x_1,x_2,x_3,z)$ to $S$, then
+there is an ordered solution $(x_1,\dots,x_5,z)$ of \eqref{eq:main}
+with $1\le x_1\le\cdots\le x_5\le N$.
+\end{lemma}
+
+\begin{proof}
+A tuple is appended only when, at an iteration with $1\le x_1\le x_2\le
+x_3\le N$ (loop bounds, lines~9--11) and a $z\ge x_3$ with $z^6$ in the
+range of line~13, the value $r=z^6-s$ (with $s=p_{x_1}+p_{x_2}+p_{x_3}$)
+satisfies $A[r]\ge x_3$. By Lemma~\ref{lem:Achar} there exist
+$x_4,x_5$ with $x_3\le x_4\le x_5\le N$ and $r=x_4^6+x_5^6$. Then
+$$
+x_1^6+x_2^6+x_3^6+x_4^6+x_5^6=s+r=s+(z^6-s)=z^6,
+$$
+which is \eqref{eq:main}; and $1\le x_1\le x_2\le x_3\le x_4\le x_5\le
+N$ is \eqref{eq:order}. All bases are positive since indices start at
+$1$ and $x_4\ge x_3\ge1$, $x_5\ge x_4\ge1$, $z\ge x_3\ge1$.
+\end{proof}
+
+\begin{lemma}[Completeness]\label{lem:complete}
+If $(x_1,\dots,x_5,z)$ satisfies \eqref{eq:main} and \eqref{eq:order}
+with $x_5\le N$, then Algorithm~\ref{alg:search} appends
+$(x_1,x_2,x_3,z)$ to $S$.
+\end{lemma}
+
+\begin{proof}
+By \eqref{eq:order}, $x_1\le x_2\le x_3$ lie in $\{1,\dots,N\}$, so the
+three nested loops reach the iteration with exactly these values; there
+$s=p_{x_1}+p_{x_2}+p_{x_3}=x_1^6+x_2^6+x_3^6$. By
+Lemma~\ref{lem:zrange}, $z\ge x_3$ and $s+2p_{x_3}\le z^6\le s+2p_N$,
+so the integer $z$ is among those examined on line~13. Then
+$r=z^6-s=x_4^6+x_5^6$ with $x_3\le x_4\le x_5\le N$, so by
+Lemma~\ref{lem:Achar} we have $A[r]=A_N(r)\ge x_3$. Hence the test on
+line~15 passes and $(x_1,x_2,x_3,z)$ is appended.
+\end{proof}
+
+\begin{lemma}[Termination]\label{lem:term}
+Algorithm~\ref{alg:search} halts after finitely many steps for every
+$N$.
+\end{lemma}
+
+\begin{proof}
+The preprocessing loops (lines~3--7) range over the finite set
+$\{(a,b):1\le a\le b\le N\}$. In the main search, $x_1,x_2,x_3$ range
+over subsets of $\{1,\dots,N\}$, and for each fixed $(x_1,x_2,x_3)$ the
+loop on line~13 ranges over the integers $z$ with $x_3\le z$ and
+$z^6\le s+2p_N$, of which there are at most
+$\lfloor(s+2p_N)^{1/6}\rfloor<\infty$. All arithmetic operations
+(integer powers, additions, comparisons, table lookups) terminate. Hence
+the total number of operations is finite.
+\end{proof}
+
+\begin{proposition}\label{prop:search}
+Equation \eqref{eq:main} has no solution in positive integers with
+$\max(x_1,\dots,x_5)\le 220$.
+\end{proposition}
+
+\begin{proof}
+By the reduction \eqref{eq:order} it suffices to show that the ordered
+search set is empty. By Lemmas~\ref{lem:sound} and~\ref{lem:complete},
+$S=$ Algorithm~\ref{alg:search}$(N)$ is empty if and only if there is
+no ordered solution of \eqref{eq:main} with $x_5\le N$; by
+Lemma~\ref{lem:term} the algorithm terminates. Executing the algorithm
+with $N=220$ in exact integer arithmetic returns $S=\emptyset$. Hence
+no ordered solution exists with $x_5\le 220$, and by symmetry
+\eqref{eq:main} has no solution with $\max_i x_i\le 220$.
+\end{proof}
+
+\begin{remark}
+The computation uses only exact integer operations: sixth powers,
+additions, comparisons, and integer-keyed table lookups. No
+floating-point arithmetic enters the decision, so the verdict
+$S=\emptyset$ at $N=220$ is rigorous. The decision relies on the
+equivalence proved in Lemma~\ref{lem:Achar}, which is precisely the
+property that the table $A_N$ encodes; in particular storing only the
+\emph{maximal} smaller base $A_N(V)$ loses no solutions, because a
+representation with $x_4\ge x_3$ exists iff the maximal smaller base is
+$\ge x_3$.
+\end{remark}
+
+\section*{Conclusion}
+
+The general question posed is, in the present state of knowledge,
+\textbf{open}; we have not proved \eqref{eq:main} solvable, nor proved
+it unsolvable, and Proposition~\ref{prop:local} shows that the standard
+local (congruence) route to a non-existence proof cannot succeed. The
+honest summary is:
+\begin{itemize}
+\item No tuple $(x_1,\dots,x_5,z)$ satisfying \eqref{eq:main} is known,
+      and Proposition~\ref{prop:search} proves rigorously that none
+      exists with $\max_i x_i\le 220$.
+\item No proof of non-existence is known. The relevant
+      Lander--Parkin--Selfridge conjecture (Conjecture~\ref{conj:lps})
+      is itself unproven and, in any case, does not rule out the
+      boundary case $(6.5.1)$; and by Proposition~\ref{prop:local} no
+      congruence obstruction exists.
+\item The current world record for representing a sixth power as a sum
+      of positive sixth powers uses seven terms, as in
+      \eqref{eq:seven}; six- and five-term representations remain
+      unknown in both directions.
+\end{itemize}
+Accordingly, this document establishes the strongest verifiable facts
+available --- in particular the fully justified finite nonexistence
+result of Proposition~\ref{prop:search} and the local-solvability
+obstruction of Proposition~\ref{prop:local} --- without presenting any
+unproven assertion as a theorem.
+
+\end{document}

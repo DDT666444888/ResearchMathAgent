@@ -1,0 +1,31 @@
+{
+  "id": "q1-18",
+  "problem_id": "q1",
+  "dataset": "first_proof_1",
+  "title": "CORE: Remark rem:why ('smooth shift is benign, only Wick monomials ≤3') is the precise false step; the cubic resonance log-divergence survives in d=3",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T08:23:08Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "evd7c1794e",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T08:23:08Z"
+    },
+    {
+      "id": "cdb2beb54",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Location:** Remark `rem:why` (and the closing \"Role of the hypotheses; sharpness\" remark), and the definition of $\\Theta_\\epsilon$ in `eq:Reps`.\n\n`rem:why` is the conceptual justification the whole proof leans on. It states that shifting by a *smooth* $\\psi$ \"produces in $R_\\epsilon$ only smeared Wick monomials of order $\\le 3$ ... it never produces a quartic Wick power, the only critical object in $d=3$. This is why a smooth shift is benign although $\\mu\\perp\\nu$.\"\n\n**This is precisely the step that is false in $d=3$.** Power-counting on the *order of the Wick monomial* is not the correct criterion for shift-(quasi-)invariance.\n\n1. The relevant divergence is **not** a top-order ($4$th) Wick power; it is the **resonance/sunset** logarithmic divergence carried by the **cubic** functional $\\int\\psi\\,{:}u^3{:}$ once the renormalization adapted to $u$ is compared to the one adapted to $u+\\psi$. The constant governing it is $c_{N,2}\\sim\\log N$ (a local diagonal self-contraction in the resonance ${:}l^2{:}\\circ C$), **not** the tadpole $a_\\epsilon$.\n2. Smoothness of $\\psi$ does **not** kill this term. Indeed the genuinely smooth/benign regime is $d\\le 2$; the threshold is $d=8/3$ (Hairer–Peroni), and $d=3$ is singular. So \"order $\\le 3$ Wick monomials against smooth weights\" is benign in $d\\le2$ and **fails** in $d=3$.\n3. Concretely, the claim in the verification bullets that $\\Theta_\\epsilon=\\int\\psi_\\epsilon{:}u_\\epsilon^3{:}+a_\\epsilon\\int\\psi_\\epsilon u_\\epsilon$ \"is precisely the renormalized cubic functional that those estimates control\" and that the only divergence is absorbed by the denominator $\\mathbb E_{\\mu_\\epsilon}[e^{R_\\epsilon}]$ is unproven and, in fact, wrong: the $\\log$-divergent deterministic resonance mismatch between $u$- and $(u+\\psi)$-renormalizations is **not** a deterministic additive constant in $u$ and therefore is **not** absorbed by the (constant) normalizing denominator. The proof never computes $\\mathbb E_\\mu[\\langle\\psi_\\epsilon,{:}u_\\epsilon^3{:}\\rangle]$-type resonance contributions.\n\n**Required fix.** Replace the heuristic with an actual computation of the cubic resonance mismatch under the shift, showing it is a deterministic, $\\psi$-dependent, $\\log N$-divergent term that survives — which is exactly what yields a separating event and singularity (the correct answer). See q1-9 (L^2(μ) convergence of the cubic) and q1-13/q1-14 (separating functional).",
+      "created_at": "2026-06-27T08:23:08Z"
+    }
+  ]
+}

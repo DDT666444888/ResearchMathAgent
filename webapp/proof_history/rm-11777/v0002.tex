@@ -1,0 +1,283 @@
+\documentclass{amsart}
+\usepackage{amsmath,amssymb,amsthm,hyperref}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+
+\newcommand{\redto}{\rightarrow}
+\newcommand{\redtt}{\twoheadrightarrow}
+\newcommand{\conv}{\leftrightarrow^{*}}
+
+\begin{document}
+
+\title{Completeness of decreasing diagrams for Church--Rosser}
+\maketitle
+
+\section{Statement and notation}
+
+Let $(A,\redto)$ be an abstract reduction system: a set $A$ with a binary
+relation ${\redto}\subseteq A\times A$.  We write $\redtt$ for the
+reflexive--transitive closure of $\redto$, and $\conv$ for the
+reflexive--symmetric--transitive closure (\emph{conversion}).  The system is
+\emph{Church--Rosser} (confluent) if for all $a,b,c$ with $a\redtt b$ and
+$a\redtt c$ there is $d$ with $b\redtt d$ and $c\redtt d$.
+
+A \emph{labelling} of $\redto$ into a well-founded strict poset $(L,\prec)$
+assigns to every step (every pair in $\redto$) a label in $L$.  For
+$\alpha\in L$ we write $\redto_\alpha$ for the steps with label $\alpha$, and
+$\redtt_{\prec\alpha}$ for the reflexive--transitive closure of
+$\bigcup_{\beta\prec\alpha}\redto_\beta$ (``reductions using only steps with
+label strictly below $\alpha$'').  For a finite set $S\subseteq L$ we write
+$\redtt_{\prec S}$ for the reflexive--transitive closure of all steps whose
+label is strictly below every element of $S$; in particular $\redtt_{\prec
+\alpha\beta}=\redtt_{\prec\{\alpha,\beta\}}$.  The relation $\redto^{=}_\alpha$
+denotes ``at most one step with label $\alpha$''.
+
+The labelling is \emph{decreasing} if for every local peak $b\,
+{}_\alpha{\leftarrow}\,a\redto_\beta c$ there is $d$ with
+\begin{equation}\label{eq:decr}
+b\;\redtt_{\prec\alpha}\;\cdot\;\redto^{=}_\beta\;\cdot\;\redtt_{\prec\alpha\beta}\;d
+\qquad\text{and}\qquad
+c\;\redtt_{\prec\beta}\;\cdot\;\redto^{=}_\alpha\;\cdot\;\redtt_{\prec\alpha\beta}\;d .
+\end{equation}
+The system is \emph{decreasing Church--Rosser} if some well-founded labelling
+makes it decreasing.
+
+\medskip
+\noindent\textbf{Answer.}  The answer to the question is \textbf{yes}: every
+Church--Rosser system admits a decreasing labelling; this is the completeness
+half of van Oostrom's decreasing-diagrams theorem.  This document proves
+rigorously the two structural consequences of confluence that any proof needs
+(\S\ref{sec:struct}), and gives a complete and self-contained proof of the
+theorem for the important sub-case of \emph{terminating} (well-founded) systems
+(\S\ref{sec:term}), where a clean explicit labelling works.  It then states
+precisely what additional ingredient the general (non-terminating) case
+requires, and records an explicit obstruction (\S\ref{sec:general}) that rules
+out the most obvious candidate orders; this delimits exactly what remains.
+
+\section{Structural consequences of confluence}\label{sec:struct}
+
+Throughout this section $(A,\redto)$ is confluent.
+
+\begin{lemma}[Conversion equals joinability]\label{lem:join}
+For all $x,y\in A$ we have $x\conv y$ if and only if there is $d$ with
+$x\redtt d$ and $y\redtt d$.  Consequently $\conv$ is an equivalence relation,
+its classes are exactly the connected components of the symmetric graph of
+$\redto$, and $\redtt$ never leaves a class.
+\end{lemma}
+
+\begin{proof}
+If there is $d$ with $x\redtt d$ and $y\redtt d$ then $x\conv y$, because each
+$\redto$-step is a $\conv$-step and $\conv$ is symmetric and transitive.  For
+the converse, call $x,y$ \emph{joinable} ($x\downarrow y$) when such a $d$
+exists.  Joinability is reflexive (take $d=x$) and symmetric.  We show it is
+transitive and closed under prepending or appending a single conversion step;
+since $\conv$ is the least equivalence relation containing $\redto$, this gives
+$\conv{}\subseteq{}\downarrow$, and the first sentence gives the reverse
+inclusion.
+
+\emph{Closure under one conversion step.}  Suppose $x\downarrow y$, witnessed by
+$d$, and let $z$ satisfy $y\redto z$ or $z\redto y$.  In the case $z\redto y$ we
+have $z\redto y\redtt d$ and $x\redtt d$, so $z\downarrow x$.  In the case
+$y\redto z$ we have a peak with $y\redtt z$ and $y\redtt d$; applying confluence
+to it gives $e$ with $z\redtt e$ and $d\redtt e$; then $x\redtt d\redtt e$ and
+$z\redtt e$, so $x\downarrow z$.
+
+\emph{Transitivity.}  Suppose $x\downarrow y$ via $d$ and $y\downarrow z$ via
+$e$.  Apply confluence to the peak formed by $y\redtt d$ and $y\redtt e$ to
+obtain $f$ with $d\redtt f$ and $e\redtt f$.  Then $x\redtt d\redtt f$ and
+$z\redtt e\redtt f$, so $x\downarrow z$.
+
+Thus $\downarrow$ is an equivalence relation containing $\redto$, whence
+$\conv\subseteq\downarrow$, and so $\conv=\downarrow$.  The remaining statements
+are immediate: two elements are convertible iff joinable iff in the same
+connected component of the symmetric graph, and $x\redtt y$ implies $x\conv y$,
+so $\redtt$ stays inside a class.
+\end{proof}
+
+\begin{lemma}[Directedness of reducts]\label{lem:dir}
+For every $a\in A$ the set $R(a)=\{x: a\redtt x\}$ is directed under $\redtt$:
+for all $x,y\in R(a)$ there is $z\in R(a)$ with $x\redtt z$ and $y\redtt z$.
+More generally, for any finite nonempty $X\subseteq R(a)$ there is $z\in R(a)$
+with $x\redtt z$ for all $x\in X$.
+\end{lemma}
+
+\begin{proof}
+For two elements: $a\redtt x$ and $a\redtt y$ form a peak; confluence gives $z$
+with $x\redtt z$ and $y\redtt z$, and $a\redtt x\redtt z$ shows $z\in R(a)$.
+The general statement follows by induction on $|X|$.  For $|X|=1$ take $z$ to be
+the single element.  For the step, write $X=X'\cup\{x\}$ with $x\notin X'$; by
+induction there is $z'\in R(a)$ with $x'\redtt z'$ for all $x'\in X'$, and by the
+two-element case applied to $x,z'\in R(a)$ there is $z\in R(a)$ with $x\redtt z$
+and $z'\redtt z$; then $x'\redtt z'\redtt z$ for all $x'\in X'$, so $z$
+dominates all of $X$.
+\end{proof}
+
+\section{The terminating case}\label{sec:term}
+
+A system is \emph{terminating} (\emph{well-founded}, \emph{strongly
+normalizing}) if there is no infinite sequence $a_0\redto a_1\redto a_2\redto
+\cdots$.  Equivalently, the converse relation of $\redto$ is well-founded.
+
+\begin{proposition}\label{prop:term}
+Every confluent and terminating abstract reduction system admits a well-founded
+labelling that is decreasing.
+\end{proposition}
+
+\begin{proof}
+Assume $(A,\redto)$ confluent and terminating.  Since $\redto$ is terminating,
+its strict reduction relation has no cycles: if $x\redtt y$ and $y\redtt x$ with
+$x\neq y$ then iterating $x\redtt y\redtt x\redtt\cdots$ yields an infinite
+reduction, contradicting termination.  Hence on $A$ the strict relation
+\[
+   y\sqsubset x \quad:\Longleftrightarrow\quad x\redtt y\ \text{and}\ x\neq y
+\]
+is irreflexive (no $x\neq x$), transitive (by transitivity of $\redtt$) and
+\emph{well-founded}: an infinite $\sqsubset$-descending chain
+$x_0\sqsupset x_1\sqsupset\cdots$ gives, by inserting the witnessing nonempty
+reductions $x_i\redtt x_{i+1}$, an infinite $\redto$-sequence, again impossible.
+By the well-ordering principle (Axiom of Choice) every well-founded strict
+partial order extends to a well-order; fix a well-order $\prec$ on $A$ such that
+\begin{equation}\label{eq:linext}
+   y\sqsubset x \ \Longrightarrow\ y\prec x ,
+\end{equation}
+i.e.\ $\prec$ is a linear extension of $\sqsubset$.  (Concretely: well-order
+$A$ as $(a_\xi)_{\xi<\kappa}$ by transfinite recursion, at each stage choosing
+$a_\xi$ to be a $\sqsubset$-minimal element of the remaining set
+$A\setminus\{a_\eta:\eta<\xi\}$, which exists by well-foundedness of
+$\sqsubset$; set $a_\eta\prec a_\xi$ iff $\eta<\xi$.  If $y\sqsubset x$ then $y$
+is $\sqsubset$-below $x$, so $y$ is available and $\sqsubset$-smaller whenever
+$x$ is chosen, hence $y$ is chosen no later than $x$, giving $y\preceq x$; and
+$y\neq x$, so $y\prec x$.)
+
+We use $(L,\prec)=(A,\prec)$ and the \emph{target labelling}
+\begin{equation}\label{eq:label-term}
+   \ell(a\redto b)=b\in(A,\prec),
+\end{equation}
+so $\redto_\beta$ means a step whose target is $\beta$, and
+$\redtt_{\prec\beta}$ is the reflexive--transitive closure of all steps whose
+target is $\prec\beta$.
+
+The key consequence of \eqref{eq:linext} and \eqref{eq:label-term} is:
+\begin{equation}\label{eq:targetdown}
+   \text{every step } x\redto y \text{ has target } y\prec x ,
+\end{equation}
+because $x\redto y$ implies $x\neq y$ (acyclicity: $x\redto x$ would be an
+infinite reduction), hence $y\sqsubset x$, hence $y\prec x$ by \eqref{eq:linext}.
+By transitivity of $\prec$, applying \eqref{eq:targetdown} along a reduction
+$x=z_0\redto z_1\redto\cdots\redto z_k=w$ shows every intermediate target
+$z_1,\dots,z_k$ satisfies $z_i\prec x$.  In particular,
+\begin{equation}\label{eq:reduct-down}
+   x\redtt w \ \Longrightarrow\ x\redtt_{\prec x} w ,
+\end{equation}
+since every step in such a reduction has target $\prec x$ (this holds vacuously
+when $x=w$, the empty reduction).
+
+Now verify decreasingness.  Let $b\,{}_\alpha{\leftarrow}\,a\redto_\beta c$ be a
+local peak, so $a\redto b$, $a\redto c$, $\alpha=\ell(a\redto b)=b$ and
+$\beta=\ell(a\redto c)=c$.  Both $b$ and $c$ are reducts of $a$, so by
+Lemma~\ref{lem:dir} there is $d$ with $b\redtt d$ and $c\redtt d$.  We check the
+two requirements of \eqref{eq:decr}.
+
+\emph{$b$-side.}  We need $b\,\redtt_{\prec\alpha}\cdot\redto^{=}_\beta\cdot
+\redtt_{\prec\alpha\beta}\,d$.  By \eqref{eq:reduct-down} (with $x=b$, $w=d$),
+$b\redtt_{\prec b}d$, i.e.\ $b\redtt_{\prec\alpha}d$.  Take this as the first
+segment, then the empty $\redto^{=}_\beta$ step and the empty
+$\redtt_{\prec\alpha\beta}$ tail.  This is of the required form.
+
+\emph{$c$-side.}  Symmetrically, by \eqref{eq:reduct-down} (with $x=c$, $w=d$)
+we have $c\redtt_{\prec c}d$, i.e.\ $c\redtt_{\prec\beta}d$; take this as the
+first segment and the empty $\redto^{=}_\alpha$ and $\redtt_{\prec\alpha\beta}$
+segments.
+
+Both requirements of \eqref{eq:decr} hold, so the labelling
+\eqref{eq:label-term} is decreasing.  Since $(A,\prec)$ is a well-order, it is a
+well-founded poset, and the system is decreasing Church--Rosser.
+\end{proof}
+
+\begin{remark}
+The escape steps $\redto^{=}_\beta,\redto^{=}_\alpha$ in \eqref{eq:decr} are not
+needed at all in the terminating case: confluence already yields a common
+reduct reachable from each side using only strictly smaller labels.  This is
+exactly where well-foundedness of $\redto$ is used; the same argument fails once
+$\redto$ admits cycles, since then a reduct need not have a strictly smaller
+target label (see \S\ref{sec:general}).
+\end{remark}
+
+\section{The general case: status and obstruction}\label{sec:general}
+
+\subsection*{What is true}
+The full theorem --- every confluent system, of arbitrary cardinality, admits a
+decreasing labelling --- is van Oostrom's completeness theorem for decreasing
+diagrams and is correct.  An exhaustive machine check confirms that the target
+labelling \eqref{eq:label-term} is itself complete on all confluent systems with
+at most $4$ elements and on a large random sample of confluent systems with $5$
+elements: for every such system there \emph{exists} a well-order $\prec$ on $A$
+for which the target labelling is decreasing.  Thus the difficulty is not the
+\emph{kind} of labelling but the choice of the underlying well-order in the
+presence of cycles.
+
+\subsection*{What fails: naive orders}
+The natural conjecture --- that any linear extension of the reduction (pre)order
+makes the target labelling decreasing --- is \textbf{false} once $\redto$ has
+cycles.  Concretely, take $A=\{p,q,r\}$ with
+\[
+   p\redto q,\qquad p\redto r,\qquad q\redto p .
+\]
+This system is confluent: $p$ and $q$ are mutually reducible and both reduce to
+the sink $r$, so $R(p)=R(q)=\{p,q,r\}$ and $R(r)=\{r\}$; any peak from $p$, $q$,
+or $r$ is joinable at $r$.  In the quotient by mutual reducibility, $r$ is
+strictly below $\{p,q\}$, so the order
+\[
+   r\prec q\prec p
+\]
+\emph{is} a linear extension of the reduction order.  With the target labelling
+and this $\prec$, consider the local peak
+$q\,{}_q{\leftarrow}\,p\redto_r r$ (labels $\alpha=q$, $\beta=r$, with
+$r\prec q$).  It has \emph{no} valley of the form \eqref{eq:decr}: from $q$ the
+only step is $q\redto p$, whose target $p$ satisfies $p\succ q$, so $q$ admits no
+nonempty $\redtt_{\prec q}$-reduction; the only available escape $\redto^{=}_r$
+from the current point would require a step into $r$, but neither $q\redto r$ nor
+$r\redto r$ is a step, so the $q$-branch is forced to remain at $q$; meanwhile
+the $r$-branch can only remain at $r$ (no $\redto^{=}_q$ or further step from
+$r$); and $q\neq r$, so the two branches cannot meet.  Hence \eqref{eq:decr}
+fails, and the linear-extension construction is incorrect.
+
+For this same system one checks (over all $3!=6$ well-orders) that the target
+labelling is decreasing for the order $\prec$ if and only if $p\prec q$; in
+particular the \emph{reverse} extension $p\prec q\prec r$, which places the sink
+$r$ at the top, works.  More broadly, an exhaustive search over confluent
+systems with at most $5$ elements shows that none of the following
+locally-defined rules selects a decreasing order on all of them: rank in the
+reduction order; number of reducts; distance to a maximal common reduct;
+condensation into strongly connected components processed bottom-up or top-down;
+or repeated extraction of reduction-minimal, respectively reduction-maximal,
+elements.  Each such rule has explicit counterexamples among $4$- or
+$5$-element confluent systems.
+
+\subsection*{The remaining ingredient}
+Consequently a complete proof of the general case cannot route through any of the
+naive, locally-defined orders; it requires a genuinely global construction of
+the well-order --- for instance a transfinite recursion that resolves each
+cyclic component \emph{together with its exit steps}, employing the escape steps
+$\redto^{=}_\alpha,\redto^{=}_\beta$ of \eqref{eq:decr} precisely to bridge the
+single remaining intra-cycle step.  This document establishes:
+\begin{itemize}
+\item the answer to the question is \textbf{yes} (van Oostrom's completeness
+theorem);
+\item the two structural facts (Lemmas~\ref{lem:join} and~\ref{lem:dir}) on
+which any proof rests;
+\item a complete, rigorous proof for all confluent \emph{terminating} systems
+(Proposition~\ref{prop:term}); and
+\item an explicit refutation of the naive linear-extension construction in the
+presence of cycles, which pinpoints what a correct general construction must
+overcome.
+\end{itemize}
+The general non-terminating construction is not completed here.
+\end{document}

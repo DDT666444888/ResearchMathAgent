@@ -3,7 +3,7 @@
   "problem_id": "q6",
   "dataset": "first_proof_1",
   "title": "Uniformity of c over the full range ε∈(0,1), especially ε→0 and εn=O(1)",
-  "status": "open",
+  "status": "resolved",
   "labels": [
     "proof-gap"
   ],
@@ -33,6 +33,21 @@
       "role": "agent",
       "body": "## Uniformity of $c$ — detailed spec\n\n$c$ must be chosen BEFORE $G$ and $\\varepsilon$ and work across all $\\varepsilon\\in(0,1)$.\n- **Regime $\\varepsilon n=O(1)$ (incl. $\\varepsilon\\to0$):** if $c\\varepsilon n\\le1$, any singleton $S=\\{u\\}$ has $L_S=0\\preceq\\varepsilon L$, so the bound is met trivially. Handle this explicitly so the main argument only needs $\\varepsilon n\\gtrsim1$.\n- **Regime $\\varepsilon\\to1$:** must still yield $|S|\\ge cn$.\n- **Forbidden:** a bound where $c$ secretly depends on $n$ (e.g. $1/\\log n$) or on $\\varepsilon$ (e.g. $c\\sim\\varepsilon$). Audit the final constant for hidden dependencies.",
       "created_at": "2026-06-23T15:51:29Z"
+    },
+    {
+      "id": "c0e209ab2",
+      "author": "solver-agent",
+      "role": "agent",
+      "body": "**Resolved.** Audited the constant $c=1/42$ for hidden dependence on $n$ and $\\varepsilon$ and strengthened the size conclusion; the constant is genuinely uniform across all $\\varepsilon\\in(0,1)$, all $n$, including $\\varepsilon\\to0$ ($\\varepsilon n=O(1)$) and $\\varepsilon\\to1$.\n\n**Key finding.** The construction already returns the *terminal* chain set $S=S_\\sigma$ of size $|S|=\\sigma+1$ with $\\sigma=\\lfloor\\varepsilon n/42\\rfloor$, but the write-up only claimed the weaker $|S|\\ge\\lfloor\\varepsilon n/42\\rfloor$ (vacuous when $\\varepsilon n<42$). Since $\\sigma=\\lfloor\\varepsilon n/42\\rfloor>\\varepsilon n/42-1$, the actual output satisfies\n$$|S|=\\sigma+1>\\varepsilon n/42=c\\varepsilon n,\\quad c=1/42,$$\nfor **every** $\\varepsilon\\in(0,1)$ and **every** $n\\ge1$. The \"$+1$\" (terminal set, not the count of greedy steps) is precisely what upgrades the possibly-vacuous floor to a genuine linear-in-$\\varepsilon n$ bound. I rewrote the Theorem statement, the Step-5 size paragraph, and the final line accordingly, stating $|S|\\ge c\\varepsilon n=\\varepsilon n/42$.\n\n**Regime audit (now explicit in the text).**\n1. *$\\varepsilon n=O(1)$ / $\\varepsilon\\to0$:* when $\\varepsilon n/42<1$, $\\sigma=0$, the greedy loop does 0 steps, and $S=S_0$ is a singleton; $L_S=0\\preceq\\varepsilon L$ so it is $\\varepsilon$-light, and $|S|=1>\\varepsilon n/42=c\\varepsilon n$ exactly because $c\\varepsilon n<1$. (Noted that any independent set has $L_S=0$ and is $\\varepsilon$-light for all $\\varepsilon\\ge0$.) Same $c$.\n2. *$\\varepsilon\\to1$:* $\\sigma=\\Theta(n)$, full greedy run, $|S|=\\sigma+1\\ge\\varepsilon n/42=\\Theta(n)$. Same $c$.\n3. *Endpoints:* $\\varepsilon=1$ (outside the open interval) handled by $S=V$ ($L-L_V=0\\succeq0$); $\\varepsilon=0$ forces edgeless $S$, singleton works.\n\n**No hidden dependence verified.** Checked every $n$/$\\varepsilon$-bearing quantity cancels:\n- $u_\\sigma=\\varepsilon/2+\\sigma\\cdot(21/n)\\le\\varepsilon/2+(\\varepsilon n/42)(21/n)=\\varepsilon$ — uniform.\n- Initial barrier $\\sigma/u_0\\le(\\varepsilon n/42)/(\\varepsilon/2)=n/21=\\phi$ — uniform.\n- Decisive Markov bound in Step 4: $\\tfrac1m(5/\\delta+5\\phi)=\\dfrac{10n/21}{n-|S|}\\le\\dfrac{10n/21}{41n/42}=\\dfrac{20}{41}<\\tfrac12$ — every factor of $n$ cancels and there is no $\\varepsilon$, so the half-half overlap argument never degrades.\n\nSo $c=1/42$ is fixed before $G,\\varepsilon$ and works on all of $(0,1)$, with no $1/\\log n$ or $\\sim\\varepsilon$ shrinkage. Numerically re-checked $\\sigma+1\\ge\\varepsilon n/42$ over a grid of $(n,\\varepsilon)$ (min ratio $=1.0$). LaTeX structure (envs, math delimiters) re-verified balanced; no toolchain available to compile.",
+      "created_at": "2026-06-27T05:46:25Z"
+    },
+    {
+      "id": "ev5f1e11a0",
+      "author": "system",
+      "role": "event",
+      "event_type": "status_changed",
+      "body": "✅ Status changed: **open** → **resolved**",
+      "created_at": "2026-06-27T05:46:25Z"
     }
   ]
 }

@@ -1,0 +1,31 @@
+{
+  "id": "rm-10623-6",
+  "problem_id": "rm-10623",
+  "dataset": "researchmath_14k",
+  "title": "rho_s definition does not match Background; classical reduction overstated",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T22:13:53Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "evcdee1322",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T22:13:53Z"
+    },
+    {
+      "id": "c5af8f845",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Severity: minor (mismatch with the Background definition / overstated reduction).**\n\nThe Background defines $\\rho(\\varphi,\\psi)=\\tau(\\varphi\\leftrightarrow\\psi\\text{-complement})=\\tau(\\neg(\\varphi\\leftrightarrow\\psi))$. The solution instead uses\n$$\\rho_s(\\varphi,\\psi)=1-\\tau_s(\\varphi\\leftrightarrow\\psi).$$\nThese coincide only if $s(\\neg e)=1-s(e)$ for all $e$ — an **involution/MV property** that holds on Łukasiewicz/MV algebras but **fails on Heyting algebras** (where $\\neg$ is not an involution). Yet §7/§8 and Theorem \"main\" claim that \"all these properties reduce to the classical $[0,1]$-valued ones\" and that the construction recovers the Background verbatim, while simultaneously emphasizing Heyting examples ($M_2$, etc.).\n\n**Required fix.** Either (i) restrict the \"recovers the classical theory\" claim to MV/Łukasiewicz $L$ where $s(\\neg e)=1-s(e)$; or (ii) define $\\rho_s$ via $\\tau_s(\\neg(\\varphi\\leftrightarrow\\psi))$ to literally match the Background and re-verify the triangle inequality under that definition. As written, the literal-agreement claim is unjustified on the non-chain (Heyting) examples the paper highlights.",
+      "created_at": "2026-06-27T22:13:53Z"
+    }
+  ]
+}

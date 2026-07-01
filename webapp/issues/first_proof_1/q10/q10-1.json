@@ -37,6 +37,29 @@
       "event_type": "doc_generated",
       "body": "Document generated: **Critic Analysis**",
       "created_at": "2026-06-23T16:14:14Z"
+    },
+    {
+      "id": "cc4ecc504",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "## Mathematical Review (critic-agent, current solution.tex)\n\nI reviewed the **current** `solution.tex` (explicit-$G$ strategy: store $G=S^T(Z\\otimes K)\\in\\mathbb R^{q\\times nr}$; precondition by $P=\\lambda(I_r\\otimes K)$; finite-termination bound $\\min(q,nr)+1$). All core identities re-verified numerically:\n- Lemma 1 row structure $G_{l,:}=Z_{j_l,:}\\otimes K_{i_l,:}$ — exact for all $(i,j)$.\n- $\\mathcal A=G^TG+\\lambda(I_r\\otimes K)$ — `allclose`.\n- $\\mathrm{spec}(P^{-1}\\mathcal A)$: eigenvalue $1$ with multiplicity $nr-\\rho$, $\\rho=\\mathrm{rank}(G)\\le\\min(q,nr)$ — confirmed.\n- With **singular** psd $K$: $\\mathcal A$ becomes singular ($\\lambda_{\\min}=0$, rank $<nr$) — confirmed (see regression note).\n\n**The algebra and algorithm are correct.** My findings map onto already-tracked open issues; I created **no duplicate issues**. Mapping:\n\n1. **Singular/psd kernel — REGRESSION (covered by resolved q10-4, q10-9).** The current draft's `lem:spd` *assumes* $K\\succ0$ throughout and dismisses the singular case with \"regularize $K\\leftarrow K+\\epsilon I$.\" But the problem states $K$ is only **psd**. The previously-resolved version contained `lem:singular` (a range/consistency argument: $\\ker\\mathcal A=\\ker(I_r\\otimes K)$, $b\\in\\mathrm{range}(\\mathcal A)$, CG from $w_0=0$ stays in the $\\mathcal A$-invariant complement). **That lemma is absent from the current solution.tex** — this is a faithfulness regression relative to the state that resolved q10-4/q10-9. Recommendation: restore the singular-$K$ branch (range/consistency + minimum-norm solution, and note that $P^{-1}=\\tfrac1\\lambda(I_r\\otimes K^{-1})$ requires $K\\succ0$, so the preconditioner must use $K^\\dagger$ on $\\mathrm{range}(K)$ in the singular case), OR *derive* $K\\succ0$ from the RKHS model (strictly positive-definite kernel at distinct nodes ⇒ SPD Gram, Micchelli 1986). I did not re-open the resolved issues per protocol, but flag this regression for the solver.\n\n2. **q10-11 (open) — decoding $j_l\\mapsto Z_{j_l,:}$ is the real residual $O(M)$ risk.** The draft takes $\\tilde Z\\in\\mathbb R^{q\\times r}$ as given and says $j_l$ \"is used only to pick a single row of $Z$,\" but $Z=A_d\\odot\\cdots\\odot A_1$ is $M\\times r$ and must never be materialized. The row $Z_{j_l,:}=\\bigodot_{i\\ne k} (A_i)_{c_i(j_l),:}$ (Hadamard of $d-1$ factor rows) costs $O(dr)$ per observed entry via mixed-radix decoding of $j_l$, i.e. $O(qdr)$ total — this cost and formula are omitted. Concur with q10-11.\n\n3. **q10-8 (open) — RHS $b=\\mathrm{vec}(KB)$, $B=TZ$.** The draft treats $B$ as a \"given MTTKRP.\" The naive $B=TZ$ is $O(nMr)$ (an $O(M)$ object, banned). $T$ has only $q$ nonzeros, so $B=\\sum_\\ell t_\\ell\\,e_{i_\\ell}\\,Z_{j_l,:}$ must be assembled observed-only at $O(q(r+dr))$. Concur with q10-8.\n\n4. **q10-10 (open) — complexity comparison only wins for $q<nr$.** The regime $n,r<q\\ll N$ does **not** imply $q<nr$; when $q\\ge nr$ the bound $O(\\min(q,nr)\\,qnr)=O(qn^2r^2)\\ge O(n^3r^3)$, no improvement. The closing remark's \"factor $n^2r^2/q$ cheaper\" must be qualified to $q\\le nr$. Concur with q10-10.\n\n5. **q10-5 (open) — finite termination is exact-arithmetic only.** Theorem `thm:iters` and the Termination/Complexity props state termination in $\\le\\min(q,nr)+1$ iterations and set $t_{\\max}=\\min(q,nr)+1$ \"to guarantee an exact solve.\" This is exact-arithmetic only (Krylov annihilating polynomial); in finite precision the iteration-to-tolerance count can exceed it. State complexity as $t\\cdot O(qnr)$ with $t$ the actual count, $t\\le\\min(q,nr)+1$ exact-arithmetic worst case. Concur with q10-5.\n\n6. **q10-7 (open) — both algorithm boxes.** Both boxes (`alg:direct`, `alg:pcg`) are present, but inherit the $\\tilde Z$ availability (q10-11) and $B=TZ$ (q10-8) issues; the direct box forms $H=G^TG$ at $O(qn^2r^2)$ which is fine but should be cross-checked against the $O(M)$ ban via the per-row Kronecker assembly. Concur with q10-7.\n\n**Minor (no issue filed):** (i) the Correctness prop should add one line deriving uniqueness from $\\mathcal A\\succ0$; (ii) memory can be reduced from $O(qnr)$ (storing $G$) to $O(q(n+r))$ by storing $\\tilde Z,\\tilde K$ and forming $Gx$ row-wise — the draft's \"memory dominated by storing $G$\" over-claims minimality.\n\nFull analysis written to `analysis.md` (linked).",
+      "created_at": "2026-06-28T10:46:13Z"
+    },
+    {
+      "id": "evec22d1fe",
+      "author": "agent",
+      "role": "event",
+      "event_type": "doc_generated",
+      "body": "Document generated: **Critic Analysis**",
+      "created_at": "2026-06-28T10:46:16Z"
+    },
+    {
+      "id": "evf712b0fe",
+      "author": "agent",
+      "role": "event",
+      "event_type": "doc_generated",
+      "body": "Document generated: **Critic Analysis**",
+      "created_at": "2026-06-28T10:46:26Z"
     }
   ],
   "documents": [
@@ -44,6 +67,18 @@
       "title": "Critic Analysis",
       "path": "questions/q10/analysis.md",
       "created_at": "2026-06-23T16:14:14Z",
+      "created_by": "agent"
+    },
+    {
+      "title": "Critic Analysis",
+      "path": "questions/q10/analysis.md",
+      "created_at": "2026-06-28T10:46:16Z",
+      "created_by": "agent"
+    },
+    {
+      "title": "Critic Analysis",
+      "path": "questions/q10/analysis.md",
+      "created_at": "2026-06-28T10:46:26Z",
       "created_by": "agent"
     }
   ]

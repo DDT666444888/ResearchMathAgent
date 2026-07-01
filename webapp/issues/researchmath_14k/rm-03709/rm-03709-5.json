@@ -1,0 +1,31 @@
+{
+  "id": "rm-03709-5",
+  "problem_id": "rm-03709",
+  "dataset": "researchmath_14k",
+  "title": "Identification of the given map PP∇ with iota|_M is circular w.r.t. the saturation gap",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T18:31:48Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "evdbe513f3",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T18:31:48Z"
+    },
+    {
+      "id": "cdfea89c9",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Location:** Step 1--2 of Proposition `prop:iso-onto-image` (Section \\ref{sec:proj}).\n\n**Gap.** The proof equates the **given** finite injective $\\mathbb{P}\\nabla:M\\to N$ (target $N=\\mathbb{P}Z/\\!\\!/G$, the GIT quotient of the *quasi-projective* $\\mathbb{P}Z$) with $j^{-1}\\circ(\\iota|_M)$ by invoking uniqueness of categorical quotients. But $\\iota=\\operatorname{Proj}(\\varphi)$ lives on the GIT quotients of the **full** projective spaces $\\mathbb{P}(\\mathcal V),\\mathbb{P}(\\mathcal W)$. The asserted compatibility presupposes the open immersion $j:N\\hookrightarrow\\operatorname{Proj}S$, which is exactly the unproved content of `lem:Nopen` (saturation issue). Thus Step 2's identification is **circular** with respect to that gap: it assumes precisely what must be proved.\n\n**What must be supplied.** A genuine compatibility statement: that the good quotient of the quasi-projective $\\mathbb{P}Z$ (with the restricted linearization) maps compatibly to $\\operatorname{Proj}S$ and that the given $\\mathbb{P}\\nabla$ factors as claimed. This becomes legitimate only after the saturation/stability issue (companion issues) is resolved; until then the chain \"$\\mathbb{P}\\nabla$ is a locally closed immersion $\\Rightarrow$ closed image $\\Rightarrow$ $M\\cong Y$\" is not justified.",
+      "created_at": "2026-06-27T18:31:48Z"
+    }
+  ]
+}

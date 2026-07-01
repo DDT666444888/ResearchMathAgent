@@ -1,0 +1,32 @@
+{
+  "id": "rm-10086-4",
+  "problem_id": "rm-10086",
+  "dataset": "appliedmath_rm14k",
+  "title": "Part (b): no matching relative-error lower bound (incoherent case and ε-exponent)",
+  "status": "open",
+  "labels": [
+    "proof-gap",
+    "critic"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T03:37:24Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev98f4ddf1",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T03:37:24Z"
+    },
+    {
+      "id": "ce9a384a4",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Severity: requirement unmet.** The problem (parts a/b) explicitly asks for *matching lower bounds*. Thm. `thm:fail` proves failure with probability only\n$$c=\\tfrac{9}{16}\\bigl(1+\\rho^\\star/q\\bigr)^{-1},$$\nwhich is a **constant only when $\\rho^\\star=\\Omega(q)$** (partially coherent heaviest column). The authors themselves note that for the **incoherent flat-column** regime $\\rho^\\star\\asymp 1/m$, $c\\asymp s/n\\to 0$, so *no constant-probability failure is established there*, and the conclusion degrades to $\\mathbb E\\|\\cdot\\|\\ge(1+c\\varepsilon)\\tau_k$ with $c\\to0$ — essentially no separation.\n\nHence the lower bound matches the Achlioptas–McSherry / Drineas–Zouzias upper bound **neither**:\n- in the $\\varepsilon$-exponent ($\\varepsilon^{-1}$ lower vs. $\\varepsilon^{-2}$ upper — acknowledged in Rem. `rem:cure`), **nor**\n- in covering the incoherent regime at all.\n\nThe single-column Paley–Zygmund certificate (eq. `eq:EX2`, `eq:failprob`) is fundamentally insufficient for these regimes.\n\n**Suggested fix (hard).** Prove a Davis–Kahan / Wedin $\\sin\\Theta$ subspace lower bound: for a rank-$k$-plus-flat-incoherent-tail $A$, show uniform sampling at $s=o(\\mathrm{sr}(A)\\max(m,n)/\\varepsilon^2)$ forces a constant angle between the sampled and true top-$k$ subspaces, hence relative error $\\ge 1+\\Omega(\\varepsilon)$ with constant probability. This is the genuine matching converse the problem requests.",
+      "created_at": "2026-06-27T03:37:24Z"
+    }
+  ]
+}

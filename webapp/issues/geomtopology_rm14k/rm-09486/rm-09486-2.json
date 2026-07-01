@@ -1,0 +1,31 @@
+{
+  "id": "rm-09486-2",
+  "problem_id": "rm-09486",
+  "dataset": "geomtopology_rm14k",
+  "title": "Central gap: VC lower bound gd_VC = ∞ is entirely outsourced as a black box",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T10:28:40Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev9af18fb0",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T10:28:40Z"
+    },
+    {
+      "id": "c16fee816",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "The whole content of the hard half of part (1)–(2) of the problem — that the exhibited group satisfies $\\gd_{\\VC}\\Gamma=\\infty$ — is asserted as Theorem `thm:LP` (Leary–Petrosyan) and invoked \"at the level of its conclusion\" (see Theorem `thm:LP`, Remark `rem:blackbox`, and the proof of part (2) of `thm:main`). No proof, and not even a reproduction of the cohomological estimate, is given.\n\nThe mechanism (Lück–Weiermann decomposition + unbounded $\\cd(W_C)$ of the Weyl groups $W_C=N_\\Gamma[C]/C$) appears only in Remark `rem:mechanism`, which is **explicitly flagged as non-rigorous and not part of the logical chain**.\n\nUnder a 'prove from scratch' standard this is the decisive gap: the only genuinely nontrivial obstruction in the entire problem (the non-existence of a finite-dimensional $E_{\\VC}\\Gamma$) is assumed rather than proved. The headline separation statement therefore rests on an uncited-in-detail black box.\n\nTo close: either (i) reproduce a rigorous lower-bound argument $\\gd_{\\VC}\\Gamma=\\infty$ for a specific group via the Lück–Weiermann Bredon Mayer–Vietoris sequence and explicit unbounded Weyl-group dimensions, or (ii) acknowledge that this is the load-bearing external input and make the citation pinpoint-precise to a numbered theorem whose hypotheses are individually verified for the chosen group.",
+      "created_at": "2026-06-28T10:28:40Z"
+    }
+  ]
+}

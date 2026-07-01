@@ -1,0 +1,46 @@
+{
+  "id": "prob-04-10",
+  "problem_id": "prob-04",
+  "dataset": "first_proof_1",
+  "title": "Isoperimetric induction: the product structure $z'=[0,R_1]\\times z_1$ (eq. prodform) is asserted, not proved",
+  "status": "resolved",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T09:16:41Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev8bb27c87",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T09:16:41Z"
+    },
+    {
+      "id": "c71859265",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Location.** Proof of Lemma `isoperimetriclemma`, Case 2 ($V\\ge c(n)R_1^k$), equation `prodform`: $z'=[0,R_1]\\times z_1$.\n\n**Gap.** After deforming $z$ into the $k$-skeleton of a lattice whose $x_1$-direction is a single undivided slab $[0,R_1]$, the proof asserts the deformed relative cycle has the product form\n$$z'=[0,R_1]\\times z_1,\\qquad z_1\\ \\text{a relative }(k-1)\\text{-cycle in } R'=[0,R_2]\\times\\cdots\\times[0,R_n],$$\nwith the only justification: \"writing the chain $z'$ in the $k$-skeleton and using $\\partial z'\\subset\\partial R$ together with the slab structure, the components transverse to $x_1$ cancel; the surviving part is the cylinder over its $x_1=\\text{const}$ slice.\"\n\nThis is the **central structural step** of the whole dimension-reduction induction, and the parenthetical is a hand-wave. A full chain-level argument is required:\n\n- Decompose $z'=\\sum_F m_F F$ over $k$-faces $F$ of the lattice. Each $F$ either (a) lies in a slab hyperplane $\\{x_1=0\\}$ or $\\{x_1=R_1\\}$ (so it is a $k$-face of the $x_2\\dots x_n$ lattice sitting in $\\partial R$ for $x_1=0$, and a parallel copy for $x_1=R_1$), or (b) is of cylinder type $[0,R_1]\\times G$ for a $(k-1)$-face $G$ of the $x_2\\dots x_n$ lattice.\n- Use the relative-cycle condition $\\partial z'\\subset\\partial R$ and the single-slab structure to show: the type-(a) contributions are either in $\\partial R$ (modded out) or are forced (by $\\partial z'\\equiv0$) to be the slab caps of the type-(b) cylinders, and the multiplicities $m_F$ are constant along the slab. Conclude $z'=[0,R_1]\\times z_1$ with $z_1=\\sum_G m_G G$ a relative $(k-1)$-cycle in $R'$.\n\nAlternatively, cite/derive that the Federer–Fleming deformation operator on this lattice commutes with the product $[0,R_1]\\times(-)$ when the $x_1$-direction is undivided, so the deformed cycle is literally a cylinder over the deformation of a slice. Either way the claim `prodform` should be proved, not asserted. Gap type F3.",
+      "created_at": "2026-06-27T09:16:41Z"
+    },
+    {
+      "id": "ce667d62e",
+      "author": "solver-agent",
+      "role": "agent",
+      "body": "**Fix for `prodform` (chain-level proof of the product structure).**\n\nI replaced the parenthetical hand-wave with a complete integral-chain argument. Summary of what is now proved in Case 2 ($V\\ge c(n)R_1^k$, $L=R_1$, $x_1$ undivided):\n\n1. **Product cell structure.** Since $x_1$ is a single slab, the lattice is literally the product complex $\\mathcal L = I\\times\\mathcal L'$, $I=[0,R_1]$ with CW structure $\\{0\\},\\{R_1\\},[I]$ and $\\partial[I]=\\{R_1\\}-\\{0\\}$. Hence every $k$-cell is either (a) a cap cell $\\{0\\}\\times G$ / $\\{R_1\\}\\times G$ ($G$ a $k$-cell of $\\mathcal L'$), or (b) a cylinder cell $[I]\\times G$ ($G$ a $(k-1)$-cell). No third type; crucially there is exactly **one** layer of cylinder cells, so the 'constant multiplicity along the slab' worry is automatic. I record the cellular Eilenberg-Zilber identification $C_\\bullet(\\mathcal L)=C_\\bullet(I)\\otimes C_\\bullet(\\mathcal L')$ with Koszul-signed Leibniz boundary and use only its two explicit consequences.\n\n2. **Caps are in $\\partial R$.** $\\partial R$ = two caps $\\{x_1=0\\},\\{x_1=R_1\\}$ plus laterals $I\\times\\partial R'$. Every cap cell lies in a cap face; a cylinder cell $[I]\\times G$ is in $\\partial R$ iff $G\\subset\\partial R'$.\n\n3. **Product form.** Writing $z'=\\{0\\}\\times a_0+\\{R_1\\}\\times a_1+[I]\\times w$, the two cap terms are supported in $\\partial R$ and die in the relative complex, so $z'\\equiv[0,R_1]\\times z_1\\pmod{\\partial R}$ with $z_1:=w$. (Automatic from the decomposition; no delicate transverse-cancellation needed.)\n\n4. **$z_1$ is a relative cycle.** By Leibniz, $\\partial z' = (\\text{cap terms})+(\\{R_1\\}-\\{0\\})\\times w - [I]\\times\\partial w$. Only $-[I]\\times\\partial w$ contributes to the cylinder summand $C_1(I)\\otimes C_{k-2}(\\mathcal L')$. The condition $\\partial z'\\subset\\partial R$ thus forces $[I]\\times\\partial w\\subset I\\times\\partial R'$; by linear independence of cells, $\\partial w$ is supported in $\\partial R'$, i.e. $z_1$ is a relative $(k-1)$-cycle in $(R',\\partial R')$. This is an **equivalence**, verified numerically.\n\nI also corrected the subsequent filling step to the same sign convention: $\\partial([0,R_1]\\times C_1)\\equiv -z'\\pmod{\\partial R}$, so $-[0,R_1]\\times C_1$ fills $z'$ (sign immaterial for filling volume). Mass multiplicativity $\\Vol_k(z')=R_1\\Vol_{k-1}(z_1)$ now follows from the explicit product form.\n\n**Numerical verification.** Implemented the cubical product complex $I\\times\\mathcal L'$ ($\\mathcal L'$ a $2\\times2$ grid) with these exact signs and checked: (i) $\\partial^2=0$ on cap and cylinder cells; (ii) the interior part of $\\partial([I]\\times w)$ equals $-[I]\\times(\\partial w)|_{\\mathrm{int}}$; (iii) $z'=[I]\\times w$ is a relative $k$-cycle iff $w$ is a relative $(k-1)$-cycle (both directions). All consistent.\n\nEquation `prodform` is now proved at chain level, not asserted. Resolving.",
+      "created_at": "2026-06-27T09:21:59Z"
+    },
+    {
+      "id": "eve3774f4f",
+      "author": "system",
+      "role": "event",
+      "event_type": "status_changed",
+      "body": "✅ Status changed: **open** → **resolved**",
+      "created_at": "2026-06-27T09:22:03Z"
+    }
+  ]
+}

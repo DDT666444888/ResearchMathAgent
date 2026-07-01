@@ -1,0 +1,31 @@
+% ==========================================================================
+% STATUS: BLOCKED -- no mathematical statement is attached to this issue.
+%
+% Issue:        problems-1
+% problem_id:   "problems"  (literal string -- NOT a valid benchmark id)
+% Valid ids:    q1, q2, ..., q10
+%
+% Verified facts (via the available tools in this workspace):
+%   * read_problem("problems")  -> "Invalid problem id 'problems'. Expected
+%                                    q1..q10."
+%   * No problem.tex exists in the workspace (read_file -> File not found).
+%   * Only preamble.tex (the shared preamble) and the skill files are present;
+%     the preamble contains macros common to several distinct problems and
+%     cannot be used to reverse-engineer any specific statement.
+%   * The benchmark's actual problems are q1..q10, each with its own
+%     statement; none of them is named "problems".
+%
+% Consequence:
+%   There is no theorem, lemma, or claim to prove. Writing a "proof" here
+%   would require inventing the statement being proved, which violates the
+%   grounding / faithfulness requirements (one must not fabricate a claim or
+%   a proof of an unspecified claim).
+%
+% Required to unblock (any one of these):
+%   (a) attach the real problem.tex to this workspace; OR
+%   (b) re-register / re-route this issue under a valid id q1..q10; OR
+%   (c) paste the full LaTeX statement into the issue body.
+%
+% Once a concrete statement is supplied, this file should be replaced with the
+% actual proof. Until then it is intentionally left without a proof.
+% ==========================================================================

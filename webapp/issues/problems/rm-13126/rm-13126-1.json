@@ -1,0 +1,31 @@
+{
+  "id": "rm-13126-1",
+  "problem_id": "rm-13126",
+  "dataset": "problems",
+  "title": "PROBE",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T03:37:12Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "eveb5300a0",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T03:37:12Z"
+    },
+    {
+      "id": "ca54d64fc",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "probe",
+      "created_at": "2026-06-28T03:37:12Z"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "id": "rm-10086-7",
+  "problem_id": "rm-10086",
+  "dataset": "appliedmath_rm14k",
+  "title": "Part (c): unstated gap hypothesis and unspecified constants c1,c2,c3 in Thm thm:precision",
+  "status": "open",
+  "labels": [
+    "proof-gap",
+    "critic"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T03:37:24Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev74afc031",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T03:37:24Z"
+    },
+    {
+      "id": "c56e63afc",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Severity: minor / scope.** Two bookkeeping issues in Thm. `thm:precision`:\n\n1. **Unstated hypothesis.** Step 4 (truncation) needs the gap $g\\ge\\frac12(\\sigma_k-\\sigma_{k+1})$, which is obtained only \"in the well-separated regime $\\sigma_k-\\sigma_{k+1}\\ge 4\\sqrt{1+\\varepsilon}\\,\\tau_k$\". This is *assumed mid-proof* rather than stated as a hypothesis of the theorem, silently restricting its scope. (The identity $\\sigma_j(\\widehat Q^\\top A)=\\sigma_j(P_YA)$ used there is correct — critic verified.)\n\n2. **Unspecified constants.** The bound eq. `eq:fperr` carries constants $c_1,c_2,c_3$ \"of low polynomial degree in $m,n,\\ell$\" that are never pinned. Since they enter the stated precision regime eq. `eq:precregime`, they should be made explicit (e.g. via Higham's $\\gamma_t=tu/(1-tu)$ bookkeeping).\n\n**Suggested fix.** Promote $\\sigma_k-\\sigma_{k+1}\\ge 4\\sqrt{1+\\varepsilon}\\,\\tau_k$ to an explicit hypothesis; write $c_1,c_2,c_3$ as explicit polynomials.",
+      "created_at": "2026-06-27T03:37:24Z"
+    }
+  ]
+}

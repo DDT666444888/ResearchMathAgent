@@ -1,0 +1,31 @@
+{
+  "id": "rm-09303-8",
+  "problem_id": "rm-09303",
+  "dataset": "crossdisc_rm14k",
+  "title": "'Objectivity simpliciter' (Def. 5) is self-referential / possibly empty; no cross-framework standard",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T05:22:16Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev1297b262",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T05:22:16Z"
+    },
+    {
+      "id": "c1b3a2bc6",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "Constraint (c) demands the account *secure* objectivity. But 'objectivity simpliciter' is defined as objective relative to some Φ 'whose postulates are not themselves rationally indicted *within* Φ' — Φ's own postulates vet Φ's own postulates. No criterion is given for choosing among admissible frameworks that is not itself framework-relative, so 'objectivity simpliciter' risks collapsing into 'objective relative to whichever Φ one adopted' — precisely the relativism the deflationist endorses. Def. 4/Def. 5 gesture at 'non-parochial criticism of postulates' but never define an agent-invariant, *cross-framework* standard.\n\nFix options: (a) define a genuine cross-framework agent-invariant standard for framework adoption; or (b) explicitly *scope* the adequacy thesis as conditional and prove the airtight weaker claim that conditional, framework-relative agent-invariant warrant ALREADY refutes deflationism (since ⊢_Φ Π is true-or-false independently of who endorses Φ — promote Lemma 5/R1), honestly declaring the cross-framework question out of scope with consequences spelled out.",
+      "created_at": "2026-06-27T05:22:16Z"
+    }
+  ]
+}

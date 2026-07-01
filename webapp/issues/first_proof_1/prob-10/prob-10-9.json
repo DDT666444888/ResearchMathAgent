@@ -3,7 +3,7 @@
   "problem_id": "prob-10",
   "dataset": "first_proof_1",
   "title": "Theorem 2.6: $\\bigcap_{v\\in\\mathcal V(\\mathcal G)}\\mathrm{link}(v)=\\varnothing$ so $\\Gamma(\\cap_v\\mathrm{link}(v))=\\mathbb C$",
-  "status": "open",
+  "status": "resolved",
   "labels": [
     "proof-gap"
   ],
@@ -26,6 +26,21 @@
       "role": "agent",
       "body": "**Location:** Final line of the proof of Theorem 2.6: \"properly proximal relative to $\\Gamma(\\cap_{v\\in\\mathcal V(\\mathcal G)}\\mathrm{link}(v))=\\mathbb C$\".\n\nTo conclude full proper proximality from Lemma 2.4, one needs $\\bigcap_{v}\\mathrm{link}(v)=\\varnothing$, i.e. no vertex $w$ lies in $\\mathrm{link}(v)$ for **every** $v$.\n\n**Required (graph-theoretic):** prove from irreducibility and $|\\mathcal V(\\mathcal G)|\\ge3$ that no vertex is adjacent to all others. A vertex $w$ adjacent to all others would give the join decomposition $\\mathcal V=\\{w\\}\\sqcup(\\mathcal V\\setminus\\{w\\})$ with every pair across the partition an edge — contradicting irreducibility (here $|\\mathcal V|\\ge3$ ensures $\\mathcal V\\setminus\\{w\\}$ is nonempty and the partition is nontrivial). Conclude $\\bigcap_v\\mathrm{link}(v)=\\varnothing$. (Note $w\\notin\\mathrm{link}(w)$, so the diagonal is already excluded; confirm the intersection is genuinely empty.)",
       "created_at": "2026-06-23T02:27:38Z"
+    },
+    {
+      "id": "c5e346b5e",
+      "author": "solver-agent",
+      "role": "agent",
+      "body": "**Resolution of prob-10-9.**\n\nI addressed the final-line gap in the proof of the main theorem (Theorem 2.6), namely justifying $\\bigcap_{v\\in\\mathcal V(\\mathcal G)}\\mathrm{link}(v)=\\varnothing$ so that $\\Gamma(\\cap_v\\mathrm{link}(v))=\\mathbb C$ and full proper proximality follows from Lemma (Stability of relative proper proximality under intersections).\n\n**Key observation.** With the link defined as $\\mathrm{link}(v)=\\{u:u\\neq v,\\,(u,v)\\in\\mathcal E\\}$, we have $v\\notin\\mathrm{link}(v)$ for every $v$. The intersection $\\bigcap_{v\\in\\mathcal V}\\mathrm{link}(v)$ ranges over *all* vertices, so for any candidate $w\\in\\mathcal V$ the index $v=w$ is admissible; membership of $w$ in the intersection would force $w\\in\\mathrm{link}(w)$, a contradiction. Hence the intersection is empty. This is a complete, rigorous proof and, importantly, it holds for **any** finite graph, requiring neither $|\\mathcal V|\\ge3$ nor irreducibility.\n\nI verified numerically (20000 random irreducible graphs with $|\\mathcal V|\\in\\{3,\\dots,6\\}$, and 20000 arbitrary graphs with $|\\mathcal V|\\in\\{1,\\dots,6\\}$) that $\\bigcap_v\\mathrm{link}(v)$ is empty in every case, consistent with the diagonal argument.\n\n**On the critic's suggested route.** The critic proposed deriving emptiness from irreducibility via the join decomposition $\\mathcal V=\\{w\\}\\sqcup(\\mathcal V\\setminus\\{w\\})$. That argument is valid but proves a *stronger* (and here unnecessary) statement: that no vertex is adjacent to all others. Emptiness of the intersection of links itself follows immediately from the diagonal exclusion $w\\notin\\mathrm{link}(w)$ and does not need irreducibility. I made the diagonal argument fully explicit in the text and added a parenthetical remark recording the join-decomposition fact (with the $|\\mathcal V|\\ge3$ note ensuring the complementary part $\\mathcal V\\setminus\\{w\\}$ is nonempty), while clarifying that the diagonal observation already suffices.\n\n**Edit made to `solution.tex`** (Conclusion paragraph of \"Proof of the main theorem\"): expanded the one-line justification into an explicit contradiction argument, noted nonemptiness of the indexing family, added the irreducibility remark, and stated $\\Gamma(\\varnothing)=\\mathbb C\\,1$ explicitly, concluding proper proximality relative to $\\mathbb C$.\n\n(LaTeX compile attempted; no toolchain available in workspace, so compilation was skipped. The edit is a self-contained text/math replacement using only already-defined macros.)",
+      "created_at": "2026-06-27T10:39:08Z"
+    },
+    {
+      "id": "ev72412997",
+      "author": "system",
+      "role": "event",
+      "event_type": "status_changed",
+      "body": "✅ Status changed: **open** → **resolved**",
+      "created_at": "2026-06-27T10:39:12Z"
     }
   ]
 }

@@ -1,0 +1,32 @@
+{
+  "id": "rm-13126-7",
+  "problem_id": "rm-13126",
+  "dataset": "RM",
+  "title": "G6: Congruence under arbitrary contexts (full beta, not just head reduction)",
+  "status": "open",
+  "labels": [
+    "proof-gap",
+    "sub-lemma"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T03:40:24Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev48c5f316",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T03:40:24Z"
+    },
+    {
+      "id": "c95b2b1b2",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Sub-lemma (S5).** Prove strict decrease is preserved by all term-formation operations, so that **full $\\beta$** (firing any redex anywhere) is covered:\n- $M\\succ M' \\Rightarrow MN\\succ M'N$;\n- $M\\succ M' \\Rightarrow NM\\succ NM'$ (**reduction inside the argument**);\n- $M\\succ M' \\Rightarrow \\lambda x.M\\succ \\lambda x.M'$.\n\n**Why hard.** The case $NM\\succ NM'$ requires that plugging a strictly smaller value into the strictly monotone functional $[\\![N]\\!]$ yields a strictly smaller output — exactly where the *strict* monotonicity of G3 is indispensable. Many simplified proofs only handle head/leftmost reduction and silently omit this case; a complete solution must cover it because $\\to_\\beta$ is the full congruence closure.",
+      "created_at": "2026-06-28T03:40:24Z"
+    }
+  ]
+}

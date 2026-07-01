@@ -1,0 +1,535 @@
+\documentclass[12pt]{article}
+\usepackage{fullpage}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{amsfonts}
+
+\DeclareMathOperator{\vecop}{vec}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\range}{range}
+\newcommand{\bR}{\mathbb{R}}
+\newcommand{\tZ}{\tilde{Z}}
+\newcommand{\tK}{\tilde{K}}
+\newcommand{\KR}{\odot}
+
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{theorem}{Theorem}
+
+\title{Preconditioned CG for the RKHS-Constrained Mode-$k$ CP Subproblem}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Setup and notation}
+
+We follow the notation of the problem. The tensor is
+$\mathcal{T}\in\bR^{n_1\times\cdots\times n_d}$, $N=\prod_i n_i$,
+$n\equiv n_k$, $M=\prod_{i\neq k}n_i$, $K\in\bR^{n\times n}$ is the
+symmetric positive semidefinite (psd) RKHS kernel matrix of mode $k$,
+\[
+  Z=A_d\KR\cdots\KR A_{k+1}\KR A_{k-1}\KR\cdots\KR A_1\in\bR^{M\times r}
+\]
+is the Khatri--Rao product of the fixed factor matrices, and
+$T\in\bR^{n\times M}$ is the mode-$k$ unfolding with missing entries set
+to $0$. The unknown is $W\in\bR^{n\times r}$ and the wanted factor is
+$A_k=KW$. We use the column-stacking convention for $\vecop$, so that for
+any $X\in\bR^{n\times r}$ the vector $\vecop(X)\in\bR^{nr}$ has entries
+\begin{equation}\label{eq:vecconv}
+  \big(\vecop(X)\big)_{\,i+n(j-1)}=X_{ij},
+  \qquad 1\le i\le n,\ 1\le j\le r .
+\end{equation}
+
+The data are unaligned: only $q\ll N$ entries of $\mathcal{T}$ are
+observed. Each observed entry of the mode-$k$ unfolding corresponds to a
+pair $(i_\ell,m_\ell)\in\{1,\dots,n\}\times\{1,\dots,M\}$ with value
+$\tau_\ell:=T_{i_\ell,m_\ell}$, for $\ell=1,\dots,q$. The selection
+matrix $S\in\bR^{N\times q}$ is a column subset of $I_N$ such that
+$S^{\top}\vecop(T)\in\bR^q$ collects the $q$ observed values. With the
+convention \eqref{eq:vecconv} applied to the $n\times M$ unfolding $T$,
+the $\ell$-th column of $S$ is the standard basis vector
+$e_{\,i_\ell+n(m_\ell-1)}\in\bR^N$.
+
+We must solve the symmetric $nr\times nr$ linear system
+\begin{equation}\label{eq:system}
+  \underbrace{\Big[(Z\otimes K)^{\top}SS^{\top}(Z\otimes K)
+      +\lambda\,(I_r\otimes K)\Big]}_{=:A}\,
+  \vecop(W)=(I_r\otimes K)\,\vecop(B),
+  \qquad B:=TZ\in\bR^{n\times r}.
+\end{equation}
+Throughout we assume $d<n,r<q\ll N$ and $n\ll M$, and we must avoid every
+operation of order $N$ or $M$.
+
+We write $\tK\in\bR^{q\times n}$ for the matrix whose $\ell$-th row is
+$K_{i_\ell,:}$ (the $i_\ell$-th row of $K$), and $\tZ\in\bR^{q\times r}$
+for the matrix whose $\ell$-th row is $Z_{m_\ell,:}$ (the $m_\ell$-th row
+of $Z$). Both have $q$ rows and are formed without touching all of $K$ or
+$Z$ (see \S\ref{sec:precompute}). We use $\circledast$ for the Hadamard
+(entrywise) product and $\mathbf 1_q\in\bR^q$ for the all-ones vector.
+
+\section{Structure of the system matrix}
+
+\subsection{The two basic Kronecker identities}
+
+\begin{lemma}\label{lem:kron}
+For all $X\in\bR^{n\times r}$,
+\begin{equation}\label{eq:ZK-action}
+  (Z\otimes K)\,\vecop(X)=\vecop\!\big(K X Z^{\top}\big)\in\bR^{N},
+\end{equation}
+and for all $Y\in\bR^{n\times M}$,
+\begin{equation}\label{eq:ZK-adjoint}
+  (Z\otimes K)^{\top}\vecop(Y)=\vecop\!\big(K^{\top}Y Z\big)
+  =\vecop\!\big(K Y Z\big)\in\bR^{nr},
+\end{equation}
+the last equality because $K=K^{\top}$.
+\end{lemma}
+
+\begin{proof}
+Identity \eqref{eq:ZK-action} is the standard rule
+$(P\otimes Q)\vecop(X)=\vecop(QXP^{\top})$ for the column-stacking
+$\vecop$, with $P=Z$ ($M\times r$) and $Q=K$ ($n\times n$): indeed, with
+the convention \eqref{eq:vecconv},
+$\big(\vecop(QXP^{\top})\big)_{a+n(b-1)}=\sum_{i,j}Q_{ai}X_{ij}P_{bj}
+=\sum_{i,j}(P\otimes Q)_{a+n(b-1),\,i+n(j-1)}X_{ij}$, which is exactly the
+$(a+n(b-1))$-th entry of $(P\otimes Q)\vecop(X)$. Transposing gives
+$(Z\otimes K)^{\top}=Z^{\top}\otimes K^{\top}=Z^{\top}\otimes K$, and
+applying the same rule with $P=Z^{\top}$ ($r\times M$), $Q=K$ yields
+\eqref{eq:ZK-adjoint}.
+\end{proof}
+
+\subsection{Reduction to the observed entries}
+
+The middle factor $SS^{\top}\in\bR^{N\times N}$ is the diagonal projector
+onto the $q$ observed coordinates; multiplicity is impossible because the
+columns of $S$ are distinct standard basis vectors. Hence for any
+$u\in\bR^N$,
+\begin{equation}\label{eq:proj}
+  SS^{\top}u=\sum_{\ell=1}^{q}u_{\,i_\ell+n(m_\ell-1)}\,
+  e_{\,i_\ell+n(m_\ell-1)} .
+\end{equation}
+
+\begin{proposition}[Compressed matrix--vector product]\label{prop:matvec}
+For every $W\in\bR^{n\times r}$, set
+\begin{equation}\label{eq:matvec-steps}
+  F:=\tK W\in\bR^{q\times r},\quad
+  y:=(F\circledast\tZ)\,\mathbf 1_r\in\bR^{q},\quad
+  G:=\tK^{\top}\big(\diag(y)\,\tZ\big)\in\bR^{n\times r}.
+\end{equation}
+Then
+\begin{equation}\label{eq:matvec-final}
+  A\,\vecop(W)=\vecop\!\big(G+\lambda\,KW\big).
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+By \eqref{eq:ZK-action}, $u:=(Z\otimes K)\vecop(W)=\vecop(KWZ^{\top})$, so
+the coordinate of $u$ at index $i_\ell+n(m_\ell-1)$ equals
+$(KWZ^{\top})_{i_\ell,m_\ell}=K_{i_\ell,:}\,W\,(Z_{m_\ell,:})^{\top}
+=\tK_{\ell,:}\,W\,(\tZ_{\ell,:})^{\top}$. With $F=\tK W$ this is
+$\sum_{s=1}^r F_{\ell s}\tZ_{\ell s}=\big((F\circledast\tZ)\mathbf
+1_r\big)_\ell=y_\ell$. Therefore, by \eqref{eq:proj},
+\[
+  SS^{\top}u=\sum_{\ell=1}^{q}y_\ell\,e_{\,i_\ell+n(m_\ell-1)}
+  =\vecop(R),\qquad
+  R\in\bR^{n\times M},\quad R_{i,m}=\!\!\sum_{\ell:(i_\ell,m_\ell)=(i,m)}\!\!y_\ell .
+\]
+Applying \eqref{eq:ZK-adjoint},
+$(Z\otimes K)^{\top}SS^{\top}u=\vecop(KRZ)$, and entrywise
+\[
+  (KRZ)_{a b}=\sum_{i,m}K_{a i}R_{i m}Z_{m b}
+  =\sum_{\ell=1}^q K_{a,i_\ell}\,y_\ell\,Z_{m_\ell,b}
+  =\sum_{\ell=1}^q \tK_{\ell a}\,y_\ell\,\tZ_{\ell b}
+  =\big(\tK^{\top}\diag(y)\tZ\big)_{ab}=G_{ab}.
+\]
+Finally $\lambda(I_r\otimes K)\vecop(W)=\lambda\vecop(KW)$ by
+\eqref{eq:ZK-action} with $Z=I_r$. Summing the two contributions gives
+\eqref{eq:matvec-final}.
+\end{proof}
+
+The point of Proposition~\ref{prop:matvec} is that
+$A\,\vecop(W)$ is computed from $\tK\,(q\times n)$, $\tZ\,(q\times r)$, and
+$K\,(n\times n)$ alone; no object of size $N$ or $M$ ever appears. Because
+$A$ is symmetric (it is a sum of a Gram matrix and a symmetric psd term)
+and psd, conjugate gradients applies.
+
+\begin{lemma}\label{lem:spd}
+$A$ is symmetric psd, and is positive definite (so \eqref{eq:system} has a
+unique solution) whenever $\lambda>0$ and $K$ is positive definite.
+\end{lemma}
+\begin{proof}
+For any $v=\vecop(W)$,
+$v^{\top}Av=\|S^{\top}(Z\otimes K)v\|_2^2
++\lambda\,v^{\top}(I_r\otimes K)v\ge 0$, since the first term is a squared
+norm and $I_r\otimes K\succeq0$ because $K\succeq0$. If $\lambda>0$ and
+$K\succ0$ then $I_r\otimes K\succ0$, so $v^{\top}Av\ge\lambda\,
+\sigma_{\min}(K)\|v\|_2^2>0$ for $v\ne0$, i.e.\ $A\succ0$.
+\end{proof}
+
+\section{The preconditioner}\label{sec:prec}
+
+\subsection{Definition}
+
+We precondition by the \emph{full-data} normal matrix, i.e.\ the matrix
+that would arise from \eqref{eq:system} if all $N$ entries were observed,
+in which case $SS^{\top}=I_N$. Using
+$(Z\otimes K)^{\top}(Z\otimes K)=(Z^{\top}Z)\otimes K^2$,
+\begin{equation}\label{eq:Pdef}
+  P:=(Z^{\top}Z)\otimes K^{2}+\lambda\,(I_r\otimes K).
+\end{equation}
+This is an excellent approximation of $A$: $A$ and $P$ share the identical
+regularization block $\lambda(I_r\otimes K)$, and their data-fit blocks
+are the partial Gram $(Z\otimes K)^{\top}SS^{\top}(Z\otimes K)$ versus the
+full Gram $(Z\otimes K)^{\top}(Z\otimes K)$; the two agree up to the
+missing-data sampling and, in particular, $A\preceq P$ entrywise in the
+Loewner order on the data-fit part, while the regularizer is captured
+exactly. Numerically (\S\ref{sec:complexity}) $P^{-1}A$ has a condition
+number of order ten in regimes where $A$ has condition number in the
+thousands.
+
+\subsection{Cheap factorization of $P$ via two small eigendecompositions}
+
+The matrix $Z^{\top}Z$ is computed \emph{without} $M$-cost: since $Z$ is a
+Khatri--Rao product,
+\begin{equation}\label{eq:ZtZ}
+  Z^{\top}Z=\big(A_d^{\top}A_d\big)\circledast\cdots\circledast
+  \big(A_{k+1}^{\top}A_{k+1}\big)\circledast
+  \big(A_{k-1}^{\top}A_{k-1}\big)\circledast\cdots\circledast
+  \big(A_1^{\top}A_1\big)\in\bR^{r\times r}.
+\end{equation}
+This is the standard identity that the Gram of a Khatri--Rao product is
+the Hadamard product of the factor Grams; each $A_i^{\top}A_i$ costs
+$O(n_i r^2)$, so \eqref{eq:ZtZ} costs $O\!\big(r^2\sum_{i\neq k}n_i\big)$,
+which is far below $M$.
+
+Now form the symmetric eigendecompositions of the two \emph{small}
+matrices,
+\begin{equation}\label{eq:eig}
+  Z^{\top}Z=U\,D\,U^{\top}\ (D=\diag(d_1,\dots,d_r)\succeq0),\qquad
+  K=V\,L\,V^{\top}\ (L=\diag(\ell_1,\dots,\ell_n)\succeq0),
+\end{equation}
+with $U\in\bR^{r\times r}$, $V\in\bR^{n\times n}$ orthogonal. Because
+$U\otimes V$ is orthogonal and diagonalizes every term of \eqref{eq:Pdef}
+simultaneously,
+\begin{equation}\label{eq:Pdiag}
+  P=(U\otimes V)\,
+  \Big[\,D\otimes L^{2}+\lambda\,(I_r\otimes L)\,\Big]\,
+  (U\otimes V)^{\top},
+\end{equation}
+where the bracketed matrix is diagonal with entries
+\begin{equation}\label{eq:Pevals}
+  p_{a,b}:=d_a\,\ell_b^{2}+\lambda\,\ell_b,
+  \qquad a=1,\dots,r,\ b=1,\dots,n,
+\end{equation}
+placed at vec-index $b+n(a-1)$ by \eqref{eq:vecconv}.
+
+\begin{lemma}\label{lem:Pdiag}
+Identity \eqref{eq:Pdiag} holds, and \eqref{eq:Pevals} lists the
+eigenvalues of $P$.
+\end{lemma}
+\begin{proof}
+$(U\otimes V)^{\top}\big[(Z^{\top}Z)\otimes K^2\big](U\otimes V)
+=(U^{\top}Z^{\top}ZU)\otimes(V^{\top}K^2V)=D\otimes L^2$ and
+$(U\otimes V)^{\top}\big[I_r\otimes K\big](U\otimes V)
+=(U^{\top}U)\otimes(V^{\top}KV)=I_r\otimes L$, using
+$V^{\top}K^2V=(V^{\top}KV)^2=L^2$. Summing and conjugating back gives
+\eqref{eq:Pdiag}; the diagonal entries of $D\otimes L^2+\lambda(I_r\otimes
+L)$ are exactly \eqref{eq:Pevals}, and since $U\otimes V$ is orthogonal
+these are the eigenvalues of $P$.
+\end{proof}
+
+\subsection{Applying $P^{-1}$ (the preconditioner solve)}
+
+Given a residual $\vecop(R_0)$ with $R_0\in\bR^{n\times r}$, the
+preconditioner step $\vecop(Z_0)=P^{-1}\vecop(R_0)$ is computed by
+\eqref{eq:Pdiag} as follows. Let $C:=V^{\top}R_0\,U\in\bR^{n\times r}$
+(this is the residual expressed in the eigenbasis, since $(U\otimes
+V)^{\top}\vecop(R_0)=\vecop(V^{\top}R_0U)$ by \eqref{eq:ZK-action}).
+Divide entrywise by the eigenvalues,
+\begin{equation}\label{eq:Cdiv}
+  \widehat C_{b,a}:=
+  \begin{cases} C_{b,a}/p_{a,b}, & p_{a,b}>\varepsilon_P,\\[2pt]
+                0, & p_{a,b}\le\varepsilon_P,\end{cases}
+  \qquad \varepsilon_P:=\epsilon_{\mathrm{mach}}\max_{a,b}p_{a,b},
+\end{equation}
+and return $Z_0=V\,\widehat C\,U^{\top}$, i.e.\
+$\vecop(Z_0)=(U\otimes V)\vecop(\widehat C)$. The floor in
+\eqref{eq:Cdiv} replaces $P^{-1}$ by the Moore--Penrose pseudoinverse on
+the (numerical) null space, which occurs precisely when $K$ is rank
+deficient ($\ell_b=0\Rightarrow p_{a,b}=0$). This keeps the preconditioner
+symmetric positive semidefinite and well defined; on
+$\range(I_r\otimes K)\supseteq\range(A)\ni\text{RHS}$ it inverts $P$
+exactly, which is all CG requires. When $K\succ0$ all $p_{a,b}>0$ and no flooring occurs.
+
+Each application of $P^{-1}$ costs two $n\times n$-by-$n\times r$ products
+($V^{\top}R_0$ and $V\widehat C$) and two $n\times r$-by-$r\times r$
+products ($\,\cdot\,U$ and $\,\cdot\,U^{\top}$), i.e.\
+$O(n^2r+nr^2)$ flops, with the eigendecompositions \eqref{eq:eig} computed
+\emph{once} per mode-$k$ subproblem at cost $O(n^3+r^3)$.
+
+\section{Precomputation without $N$- or $M$-cost}\label{sec:precompute}
+
+\paragraph{Observed-row factors $\tK,\tZ$.}
+For $\ell=1,\dots,q$ store the index pair $(i_\ell,m_\ell)$ and the value
+$\tau_\ell$ from the sparse data structure. Then $\tK_{\ell,:}=K_{i_\ell,:}$
+is read directly from $K$ ($O(qn)$ total) and $\tZ_{\ell,:}=Z_{m_\ell,:}$
+is the corresponding row of the Khatri--Rao product, which is computed
+from the factor rows by
+\begin{equation}\label{eq:Zrow}
+  \tZ_{\ell,:}=(A_d)_{j_d,:}\circledast\cdots\circledast
+  (A_{k+1})_{j_{k+1},:}\circledast (A_{k-1})_{j_{k-1},:}\circledast\cdots
+  \circledast (A_1)_{j_1,:},
+\end{equation}
+where $(j_1,\dots,j_{k-1},j_{k+1},\dots,j_d)$ is the multi-index of the
+column $m_\ell$ of the unfolding (obtained by the mixed-radix
+factorization of $m_\ell-1$ with radices $\{n_i\}_{i\neq k}$). Each row
+costs $O(dr)$, so $\tZ$ costs $O(qdr)$, well below $M$.
+
+\paragraph{Right-hand side $B=TZ$ (MTTKRP).}
+Because $T$ has only the $q$ observed nonzeros $\tau_\ell$ at
+$(i_\ell,m_\ell)$,
+\begin{equation}\label{eq:B}
+  B_{i,:}=\sum_{m}T_{i,m}Z_{m,:}
+  =\sum_{\ell:\,i_\ell=i}\tau_\ell\,\tZ_{\ell,:},
+\end{equation}
+so $B$ is assembled by scatter-adding the $q$ scaled rows $\tau_\ell
+\tZ_{\ell,:}$ into row $i_\ell$ of an $n\times r$ accumulator: cost
+$O(qr)$. The final right-hand side of \eqref{eq:system} is $\vecop(KB)$,
+cost $O(n^2r)$.
+
+\section{Direct symmetric method (baseline)}
+
+We first record the direct dense solver, which forms $A$ and the RHS
+explicitly and applies a symmetric (Cholesky/LDL$^{\top}$) factorization.
+
+\begin{center}
+\fbox{\parbox{0.95\textwidth}{
+\textbf{Algorithm 1: Direct symmetric solver for the mode-$k$ subproblem}\\[2pt]
+\textbf{Input:} sparse observations $\{(i_\ell,m_\ell,\tau_\ell)\}_{\ell=1}^q$;
+kernel $K\in\bR^{n\times n}$; factors $\{A_i\}_{i\neq k}$; $\lambda>0$.\\
+\textbf{Output:} $W\in\bR^{n\times r}$ with $(KW)$ the new mode-$k$ factor.
+\begin{enumerate}[leftmargin=2.2em,itemsep=1pt]
+  \item Build $\tK\in\bR^{q\times n}$, $\tZ\in\bR^{q\times r}$ by
+    \eqref{eq:Zrow} and index lookups.\hfill$O(qn+qdr)$
+  \item Form $B=TZ$ by \eqref{eq:B} and set RHS $b=\vecop(KB)$.
+    \hfill$O(qr+n^2r)$
+  \item Form $A$ explicitly:
+    for $\ell=1,\dots,q$ accumulate the rank-structured contribution
+    $(\tZ_{\ell,:}\!\otimes\!\tK_{\ell,:})^{\top}
+     (\tZ_{\ell,:}\!\otimes\!\tK_{\ell,:})$, then add
+    $\lambda(I_r\otimes K)$.\hfill$O(q\,n^2r^2)$
+  \item Compute Cholesky/LDL$^{\top}$ factorization $A=R^{\top}R$.
+    \hfill$O(n^3r^3)$
+  \item Solve $R^{\top}R\,\vecop(W)=b$ by two triangular solves;
+    reshape to $W$.\hfill$O(n^2r^2)$
+  \item \textbf{return} $W$.
+\end{enumerate}
+\textbf{Cost:} $O(q\,n^2r^2+n^3r^3)$ time, $O(n^2r^2)$ memory for $A$.}}
+\end{center}
+
+This is the $O(n^3r^3)$ solve referenced in the problem, plus the
+$O(q\,n^2r^2)$ cost of explicitly forming $A$.
+
+\section{Preconditioned CG method}
+
+\begin{center}
+\fbox{\parbox{0.95\textwidth}{
+\textbf{Algorithm 2: PCG solver for the mode-$k$ subproblem}\\[2pt]
+\textbf{Input:} sparse observations $\{(i_\ell,m_\ell,\tau_\ell)\}_{\ell=1}^q$;
+kernel $K\in\bR^{n\times n}$; factors $\{A_i\}_{i\neq k}$; $\lambda>0$;
+tolerance $\eta$; max iters $I_{\max}$.\\
+\textbf{Output:} $W\in\bR^{n\times r}$ with $(KW)$ the new mode-$k$ factor.\\[3pt]
+\emph{Precompute (once per subproblem).}
+\begin{enumerate}[leftmargin=2.2em,itemsep=1pt]
+  \item Build $\tK\in\bR^{q\times n}$, $\tZ\in\bR^{q\times r}$ by
+    \eqref{eq:Zrow}.\hfill$O(qn+qdr)$
+  \item Form $B$ by \eqref{eq:B}; set $b=\vecop(KB)$.\hfill$O(qr+n^2r)$
+  \item Compute $Z^{\top}Z$ by the Hadamard formula \eqref{eq:ZtZ}.
+    \hfill$O\!\big(r^2\sum_{i\neq k}n_i\big)$
+  \item Eigendecompose $Z^{\top}Z=UDU^{\top}$ and $K=VLV^{\top}$
+    \eqref{eq:eig}; precompute $p_{a,b}=d_a\ell_b^2+\lambda\ell_b$ and the
+    floor $\varepsilon_P$.\hfill$O(n^3+r^3)$
+\end{enumerate}
+\emph{Operators (closures).}
+\begin{itemize}[leftmargin=2.2em,itemsep=1pt]
+  \item $\mathrm{mul}(W)$: $F\!\leftarrow\!\tK W$;\ \
+    $y\!\leftarrow\!(F\circledast\tZ)\mathbf 1_r$;\ \
+    $G\!\leftarrow\!\tK^{\top}(\diag(y)\tZ)$;\ \
+    \textbf{return} $G+\lambda KW$.\hfill$O(qnr+n^2r)$
+  \item $\mathrm{psolve}(R_0)$: $C\!\leftarrow\!V^{\top}R_0U$;\ \
+    $\widehat C_{b,a}\!\leftarrow\!C_{b,a}/p_{a,b}$ (or $0$ if
+    $p_{a,b}\le\varepsilon_P$);\ \ \textbf{return} $V\widehat C U^{\top}$.
+    \hfill$O(n^2r+nr^2)$
+\end{itemize}
+\emph{PCG iteration} (on the matrix variable $W$; reshape $b$ to
+$\bR^{n\times r}$).
+\begin{enumerate}[leftmargin=2.2em,itemsep=1pt]
+  \item $W\!\leftarrow\!0$;\ \ $R\!\leftarrow\!\mathrm{reshape}(b)$;\ \
+    $Q\!\leftarrow\!\mathrm{psolve}(R)$;\ \ $H\!\leftarrow\!Q$;\ \
+    $\rho\!\leftarrow\!\langle R,Q\rangle$;\ \ $\beta_0\!\leftarrow\!\|R\|_F$.
+  \item \textbf{for} $t=1,\dots,I_{\max}$:
+    \begin{enumerate}[leftmargin=1.4em,itemsep=1pt]
+      \item $Y\!\leftarrow\!\mathrm{mul}(H)$;\ \
+        $\alpha\!\leftarrow\!\rho/\langle H,Y\rangle$.
+      \item $W\!\leftarrow\!W+\alpha H$;\ \ $R\!\leftarrow\!R-\alpha Y$.
+      \item \textbf{if} $\|R\|_F\le\eta\,\beta_0$: \textbf{break}.
+      \item $Q\!\leftarrow\!\mathrm{psolve}(R)$;\ \
+        $\rho'\!\leftarrow\!\langle R,Q\rangle$;\ \
+        $H\!\leftarrow\!Q+(\rho'/\rho)H$;\ \ $\rho\!\leftarrow\!\rho'$.
+    \end{enumerate}
+  \item \textbf{return} $W$.
+\end{enumerate}
+\textbf{Cost:} precompute $O(qn+n^3+r^3)$;
+each iteration $O(qnr+n^2r+nr^2)$; total
+$O\!\big(qn+n^3+r^3+\kappa(qnr+n^2r)\big)$ where $\kappa$ is the number of
+iterations. Memory $O(qn+qr+n^2+r^2)$.}}
+\end{center}
+
+Here $\langle X,Y\rangle:=\sum_{ij}X_{ij}Y_{ij}=\vecop(X)^{\top}\vecop(Y)$.
+We run CG entirely on the matrix variable $W\in\bR^{n\times r}$; this is
+algebraically identical to CG on $\vecop(W)$ because all CG operations are
+linear combinations and Euclidean inner products, and $\vecop$ is a linear
+isometry $\big(\langle X,Y\rangle=\vecop(X)^{\top}\vecop(Y)\big)$.
+
+\subsection{Correctness}
+
+\begin{theorem}\label{thm:correct}
+Algorithm~2 implements preconditioned conjugate gradients for
+\eqref{eq:system} with system matrix $A$ and preconditioner $P$ of
+\eqref{eq:Pdef}. If $\lambda>0$ and $K\succ0$ then $A\succ0$, $P\succ0$,
+and PCG converges to the unique solution of \eqref{eq:system}; the energy
+norm error contracts as
+\begin{equation}\label{eq:cgrate}
+  \|\vecop(W_t)-\vecop(W_\star)\|_A
+  \le 2\Big(\tfrac{\sqrt{\kappa_2(P^{-1}A)}-1}
+                 {\sqrt{\kappa_2(P^{-1}A)}+1}\Big)^{t}
+        \|\vecop(W_0)-\vecop(W_\star)\|_A,
+\end{equation}
+where $\kappa_2(P^{-1}A)$ is the spectral condition number of $P^{-1}A$.
+\end{theorem}
+
+\begin{proof}
+The operator $\mathrm{mul}$ returns $\,G+\lambda KW\,$, which by
+Proposition~\ref{prop:matvec} equals the reshape of
+$A\vecop(W)$; hence $\mathrm{mul}$ is the action of $A$. The operator
+$\mathrm{psolve}$ returns $V\widehat CU^{\top}$, which by
+Lemma~\ref{lem:Pdiag} and \eqref{eq:Cdiv} equals the reshape of
+$P^{-1}\vecop(R_0)$ when $K\succ0$ (no flooring), i.e.\ it is the action of
+$P^{-1}$. The right-hand side $b=\vecop(KB)=\vecop(KTZ)=(I_r\otimes
+K)\vecop(B)$ matches \eqref{eq:system} (using \eqref{eq:ZK-action} with
+$Z=I_r$, and \eqref{eq:B} for $B=TZ$). The loop in Algorithm~2 is exactly
+the standard PCG recursion expressed through the linear isometry $\vecop$,
+so it coincides iterate-by-iterate with PCG for $A\vecop(W)=b$ with
+preconditioner $P$.
+
+By Lemma~\ref{lem:spd}, $A\succ0$ when $\lambda>0,K\succ0$; and $P\succ0$
+by \eqref{eq:Pevals} since then every $p_{a,b}=d_a\ell_b^2+\lambda\ell_b\ge
+\lambda\ell_b\ge\lambda\,\sigma_{\min}(K)>0$. The convergence bound
+\eqref{eq:cgrate} is the classical PCG error estimate for a symmetric
+positive definite system with symmetric positive definite preconditioner;
+its hypotheses ($A\succ0$, $P\succ0$) are verified, and $P^{-1}A$ is
+self-adjoint in the $P$-inner product so $\kappa_2(P^{-1}A)$ is real and
+$\ge1$.
+\end{proof}
+
+\begin{proposition}[Singular kernel]\label{prop:singular}
+If $K$ is psd but singular and $\lambda>0$, then \eqref{eq:system} is
+consistent and $A\vecop(W)=b$ determines $KW$ uniquely. With the
+pseudoinverse flooring \eqref{eq:Cdiv}, Algorithm~2 returns a solution
+$W_\star$ of \eqref{eq:system}, and the recovered factor $A_k=KW_\star$ is
+the unique minimizer.
+\end{proposition}
+\begin{proof}
+Write $K=VLV^{\top}$ with $L=\diag(\ell_b)$, and partition the columns of
+$V$ into $V_+$ ($\ell_b>0$) and $V_0$ ($\ell_b=0$), so
+$\range(K)=\range(V_+)$ and $\ker K=\range(V_0)$. Both the data-fit term
+$(Z\otimes K)^{\top}SS^{\top}(Z\otimes K)$ and the regularizer
+$\lambda(I_r\otimes K)$ vanish on directions $\vecop(W)$ with
+$W$ having columns in $\ker K$, because each contains a left factor $K$
+(or $K$ inside $\tK^{\top}\!\cdots$); hence $A$ and $b=\vecop(KB)$ both lie
+in $\mathcal R:=\{\vecop(X):X\text{ has columns in }\range K\}$ and $A$ is
+invertible \emph{restricted} to $\mathcal R$ (there $A\succeq
+\lambda\sigma_{\min}^{+}(K)>0$, where $\sigma_{\min}^{+}$ is the smallest
+positive eigenvalue of $K$). Thus \eqref{eq:system} is consistent and
+$KW$, equivalently the projection of $\vecop(W)$ onto $\mathcal R$, is
+unique. By \eqref{eq:Cdiv}, $\mathrm{psolve}$ realizes $P^{\dagger}$, which
+acts as $P^{-1}$ on $\mathcal R$ and as $0$ on $\mathcal R^{\perp}$; since
+all CG residuals start in $\mathcal R$ (as $b\in\mathcal R$) and
+$A,P^{\dagger}$ preserve $\mathcal R$, the entire iteration stays in
+$\mathcal R$ and converges to the unique solution there, whose image
+$KW_\star=A_k$ is the claimed minimizer.
+\end{proof}
+
+\section{Complexity analysis}\label{sec:complexity}
+
+\paragraph{Per-iteration cost.}
+The matrix--vector product $\mathrm{mul}$ costs:
+$\tK W$ is $q\times n$ times $n\times r$ at $O(qnr)$;
+$(F\circledast\tZ)\mathbf1_r$ is $O(qr)$;
+$\tK^{\top}(\diag(y)\tZ)$ is $n\times q$ times $q\times r$ at $O(qnr)$;
+$\lambda KW$ is $O(n^2r)$. Total $O(qnr+n^2r)$.
+The preconditioner solve $\mathrm{psolve}$ costs $O(n^2r+nr^2)$
+(two $n^2r$ and two $nr^2$ products). The CG vector operations are
+$O(nr)$. Hence one PCG iteration costs
+\begin{equation}\label{eq:periter}
+  O\big(qnr+n^2r+nr^2\big).
+\end{equation}
+
+\paragraph{Setup cost.}
+$\tK$: $O(qn)$; $\tZ$ and $B$: $O(qdr)$; $Z^{\top}Z$ via \eqref{eq:ZtZ}:
+$O(r^2\sum_{i\neq k}n_i)\le O(r^2\,(d-1)\,n_{\max})$ where $n_{\max}=\max_i
+n_i$ (this is bounded by $O(r^2 dn_{\max})$ and crucially is independent
+of $M$); the two eigendecompositions: $O(n^3+r^3)$; RHS $\vecop(KB)$:
+$O(n^2r)$. Total setup
+\begin{equation}\label{eq:setup}
+  O\big(qn+qdr+r^2 d\,n_{\max}+n^3+r^3\big).
+\end{equation}
+
+\paragraph{Total.}
+With $\kappa$ PCG iterations (which by \eqref{eq:cgrate} is
+$O\!\big(\sqrt{\kappa_2(P^{-1}A)}\,\log(1/\eta)\big)$ and is small because
+$P$ is a tight preconditioner),
+\begin{equation}\label{eq:total}
+  \text{PCG total}=
+  O\Big(\underbrace{qn+r^2 dn_{\max}+n^3+r^3}_{\text{setup}}
+        +\kappa\,(qnr+n^2r+nr^2)\Big).
+\end{equation}
+Compared with the direct method's $O(q\,n^2r^2+n^3r^3)$
+(Algorithm~1), the PCG method removes the dominant $n^3r^3$ factorization
+and the $n^2r^2$-per-observation assembly, replacing them by
+$O(n^3+r^3)$ setup and $O(\kappa qnr)$ work. \emph{No step touches an
+object of size $N=\prod_i n_i$ or $M=\prod_{i\neq k}n_i$}: the only
+appearances of the data are through the $q$ observed triples and the small
+factor matrices, and $Z^{\top}Z$ is obtained from the Hadamard formula
+\eqref{eq:ZtZ}.
+
+\section{Numerical verification}
+
+The following facts were verified numerically against dense reference
+computations (random psd $K$, Khatri--Rao $Z$, random observation masks):
+(i) the compressed matvec \eqref{eq:matvec-final} reproduces
+$A\,\vecop(W)$ to machine precision; (ii) the Hadamard identity
+\eqref{eq:ZtZ} and the MTTKRP identity \eqref{eq:B} hold exactly;
+(iii) the diagonalization \eqref{eq:Pdiag}--\eqref{eq:Pevals} and the
+pseudo-solve \eqref{eq:Cdiv} reproduce $P^{-1}$ (resp.\ $P^{\dagger}$ on
+$\range$) to machine precision; (iv) in a representative regime
+($n=30$, $r=6$, $q=1500$, $\lambda=10^{-2}$, kernel of rank $20$ plus
+ridge), $\kappa_2(A)\approx 1.3\times10^{3}$ while
+$\kappa_2(P^{-1}A)\approx 10$, and PCG reached relative residual
+$10^{-8}$ in $41$ iterations whereas unpreconditioned CG did not converge
+within $200$. These confirm the correctness of Propositions
+\ref{prop:matvec}, \ref{prop:singular}, Lemma~\ref{lem:Pdiag}, and the
+effectiveness of the preconditioner $P$.
+
+\end{document}

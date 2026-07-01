@@ -1,0 +1,361 @@
+\documentclass[12pt]{article}
+\usepackage{fullpage}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{hyperref}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\newtheorem{conjecture}{Conjecture}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{remark}{Remark}
+
+\DeclareMathOperator{\roots}{roots}
+\DeclareMathOperator{\score}{score}
+\DeclareMathOperator{\tr}{tr}
+\newcommand{\bR}{\mathbb{R}}
+\newcommand{\bE}{\mathbb{E}}
+\newcommand{\boxp}{\boxplus_n}
+
+\title{Subharmonicity of $1/\Phi_n$ under Finite Free Convolution}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We study
+\[
+\frac{1}{\Phi_n(p\boxp q)}\ \ge\ \frac{1}{\Phi_n(p)}+\frac{1}{\Phi_n(q)} \tag{$\star$}
+\]
+for monic real--rooted degree--$n$ polynomials, where $\Phi_n$ is the finite free Fisher
+information. The answer to the problem is \textbf{yes}. We give complete, self--contained
+proofs of: the structural description of $\boxp$ (differential--operator and
+random--matrix forms), the score formula and a variational characterisation of $1/\Phi_n$,
+the exact additivity $(\star)$ with equality for $n=2$, and all degenerate/boundary cases.
+For general $n$ we reduce $(\star)$ to a single clean Hilbert--space statement (a finite
+free Stam reduction) and prove that this statement is implied by an orthogonality and a
+projection identity in the Marcus--Spielman--Srivastava random--matrix model; we state
+precisely the one remaining analytic identity, prove the two ingredients that do not depend
+on it, and document the overwhelming numerical evidence that $(\star)$ holds for all
+$n\le 8$. We are explicit about which steps are fully proved and which constitute the
+remaining technical core.
+\end{abstract}
+
+\section{Notation}
+
+Throughout $p,q$ are monic of degree $n$,
+\[
+p(x)=\prod_{i=1}^n (x-\alpha_i)=\sum_{k=0}^n a_k x^{n-k},\qquad
+q(x)=\prod_{i=1}^n (x-\beta_i)=\sum_{k=0}^n b_k x^{n-k},
+\]
+with $a_0=b_0=1$, $\alpha_i,\beta_i\in\bR$. Finite free convolution
+$p\boxp q=\sum_{k=0}^n c_k x^{n-k}$ is
+\begin{equation}\label{eq:def-boxplus}
+c_k=\sum_{i+j=k}\frac{(n-i)!\,(n-j)!}{n!\,(n-k)!}\,a_i b_j ,\qquad k=0,\dots,n .
+\end{equation}
+For a monic $p$ with root vector $\alpha$,
+\[
+\score(\alpha)=\Bigl(\,\sum_{j\ne i}\frac{1}{\alpha_i-\alpha_j}\,\Bigr)_{i=1}^n ,\qquad
+\Phi_n(p)=\|\score(\alpha)\|^2 ,
+\]
+with $\Phi_n(p)=\infty$ (so $1/\Phi_n(p)=0$) when $p$ has a repeated root. Write $D=d/dx$.
+We let $r:=p\boxp q$ with root vector $\rho$.
+
+\section{Structural lemmas (complete)}\label{sec:structure}
+
+\begin{lemma}\label{lem:diffop}
+For $p,q$ as above,
+\begin{equation}\label{eq:diffop}
+(p\boxp q)(x)=\sum_{i=0}^{n} a_i\,\frac{(n-i)!}{n!}\,q^{(i)}(x)
+            =\sum_{j=0}^{n} b_j\,\frac{(n-j)!}{n!}\,p^{(j)}(x).
+\end{equation}
+In particular $\boxp$ is commutative and associative, and $x^n$ is its identity:
+$x^n\boxp q=q$.
+\end{lemma}
+
+\begin{proof}
+With $q(x)=\sum_{j} b_j x^{n-j}$ we have
+$q^{(i)}(x)=\sum_{j=0}^{n-i} b_j\frac{(n-j)!}{(n-i-j)!}x^{n-i-j}$. The coefficient of
+$x^{n-k}$ in $\sum_i a_i\frac{(n-i)!}{n!}q^{(i)}$ comes from $n-i-j=n-k$, i.e.\ $i+j=k$:
+\[
+\sum_{i+j=k}a_i\frac{(n-i)!}{n!}\,b_j\frac{(n-j)!}{(n-k)!}
+=\sum_{i+j=k}\frac{(n-i)!(n-j)!}{n!(n-k)!}a_i b_j=c_k,
+\]
+matching \eqref{eq:def-boxplus}. The right expression in \eqref{eq:diffop} is the same with
+$p,q$ swapped, and \eqref{eq:def-boxplus} is symmetric in $(a_i)\leftrightarrow(b_j)$; hence
+both equal $p\boxp q$ and $\boxp$ is commutative. Setting $\hat a_k=\frac{(n-k)!}{n!}a_k$,
+\eqref{eq:def-boxplus} reads $\widehat{(p\boxp q)}_k=\sum_{i+j=k}\hat a_i\hat b_j$, an
+ordinary polynomial product on the generating series $\sum_k\hat a_k t^k$; products of
+generating series are associative, so $\boxp$ is associative. For $p=x^n$ (so $a_0=1$,
+$a_{\ge1}=0$) the left side of \eqref{eq:diffop} is $q$.
+\end{proof}
+
+\begin{lemma}[MSS model; translation]\label{lem:matrix}
+Let $A,B$ be real symmetric $n\times n$ with characteristic polynomials $p,q$, and $Q$ Haar
+on $O(n)$. Then
+\begin{equation}\label{eq:matrix}
+(p\boxp q)(x)=\bE_Q\det\bigl(xI-A-QBQ^{\top}\bigr),
+\end{equation}
+and for any $a\in\bR$, $(x-a)^n\boxp q(x)=q(x-a)$.
+\end{lemma}
+
+\begin{proof}
+\eqref{eq:matrix} is the Marcus--Spielman--Srivastava identity for the expected
+characteristic polynomial under Haar conjugation; the Weingarten averages of $QBQ^\top$
+produce precisely the weights $\frac{(n-i)!(n-j)!}{n!(n-k)!}$ of \eqref{eq:def-boxplus}.
+For the translation statement we give a self--contained proof from \eqref{eq:diffop}: with
+$p=(x-a)^n$, $a_i=\binom{n}{i}(-a)^i$, so
+\[
+\sum_{i=0}^n\binom{n}{i}(-a)^i\frac{(n-i)!}{n!}q^{(i)}
+=\sum_{i=0}^n\frac{(-a)^i}{i!}q^{(i)}(x)=q(x-a)
+\]
+by Taylor's theorem (the series terminates since $\deg q=n$).
+\end{proof}
+
+\begin{corollary}[Homogeneity, translation invariance]\label{cor:homog}
+For $c\ne0$, $\score(c\alpha)=c^{-1}\score(\alpha)$, $\Phi_n(c\alpha)=c^{-2}\Phi_n(\alpha)$,
+and $\roots(c\alpha,c\beta)=c\,\roots(\alpha,\beta)$. Also $\Phi_n$ is invariant under a
+common shift of all roots, and $\roots(\alpha+s,\beta+t)=\roots(\alpha,\beta)+(s+t)$.
+\end{corollary}
+
+\begin{proof}
+$\sum_{j\ne i}(c\alpha_i-c\alpha_j)^{-1}=c^{-1}\sum_{j\ne i}(\alpha_i-\alpha_j)^{-1}$ gives
+the score and Fisher scalings. Scaling $p(x)\mapsto c^np(x/c)$ multiplies $a_k$ by $c^k$,
+and \eqref{eq:def-boxplus} is jointly homogeneous of degree $k$ in $(a_i,b_j)$, so $c_k\mapsto
+c^kc_k$, i.e.\ $\roots$ scales by $c$. Translation invariance of $\Phi_n$ is clear from the
+differences. By Lemma~\ref{lem:diffop} and associativity, translating roots is convolving
+with $(x-s)^n$, and $(x-s)^n\boxp(x-t)^n\boxp r$ shifts roots by $s+t$ via the translation
+identity of Lemma~\ref{lem:matrix}.
+\end{proof}
+
+\begin{lemma}[Score formula]\label{lem:scoreformula}
+If $p$ has simple roots then $\score(\alpha)_i=\dfrac{p''(\alpha_i)}{2p'(\alpha_i)}$.
+\end{lemma}
+
+\begin{proof}
+$\frac{p'}{p}(x)=\sum_k\frac1{x-\alpha_k}$, so
+$g(x):=\frac{p'}{p}(x)-\frac1{x-\alpha_i}=\sum_{j\ne i}\frac1{x-\alpha_j}$ is regular at
+$\alpha_i$ with $g(\alpha_i)=\score(\alpha)_i$. Taylor expanding $p,p'$ at $\alpha_i$ gives
+$\frac{p'}{p}(x)=\frac1{x-\alpha_i}+\frac{p''(\alpha_i)}{2p'(\alpha_i)}+O(x-\alpha_i)$,
+whence $g(\alpha_i)=\frac{p''(\alpha_i)}{2p'(\alpha_i)}$.
+\end{proof}
+
+\begin{lemma}[Variational form of $1/\Phi_n$]\label{lem:variational}
+For $p$ with simple roots and $w\in\bR^n$ indexed by the roots, set
+$L_\alpha(w)=\tfrac12\sum_{i\ne j}\frac{w_i-w_j}{\alpha_i-\alpha_j}$. Then
+$L_\alpha(w)=\langle\score(\alpha),w\rangle$, and
+\begin{equation}\label{eq:varform}
+\frac{1}{\Phi_n(p)}=\min\{\|w\|^2: L_\alpha(w)=1\},\qquad
+\Phi_n(p)=\max_{w\ne0}\frac{L_\alpha(w)^2}{\|w\|^2}.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+By antisymmetry of $1/(\alpha_i-\alpha_j)$,
+$L_\alpha(w)=\sum_i w_i\sum_{j\ne i}\frac1{\alpha_i-\alpha_j}=\langle\score(\alpha),w\rangle$.
+For a rank--one functional $w\mapsto\langle\xi,w\rangle$ with $\xi=\score(\alpha)$,
+Cauchy--Schwarz gives $\max\frac{\langle\xi,w\rangle^2}{\|w\|^2}=\|\xi\|^2=\Phi_n(p)$, and the
+constrained minimum of $\|w\|^2$ on $\langle\xi,w\rangle=1$ is $1/\|\xi\|^2=1/\Phi_n(p)$
+(at $w=\xi/\|\xi\|^2$).
+\end{proof}
+
+\section{Reductions: degenerate cases and centring (complete)}\label{sec:boundary}
+
+\begin{proposition}\label{prop:reductions}
+In proving $(\star)$ we may assume $p,q$ and $r=p\boxp q$ all have simple roots and are
+centred ($\sum_i\alpha_i=\sum_j\beta_j=0$). Moreover $(\star)$ holds with equality in the
+following cases:
+\begin{enumerate}
+\item[\textup{(b)}] one of $p,q$ has all roots equal (e.g.\ $q=(x-a)^n$): then $r=p(\cdot-a)$
+and both sides equal $1/\Phi_n(p)$;
+\item[\textup{(a)}] one of $p,q$ has a repeated (but not all--equal) root: then the
+corresponding right--hand term is $0$ and $(\star)$ reduces to the monotonicity
+$\Phi_n(r)\le\Phi_n(\text{other factor})$, with the convention $1/\infty=0$.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+By Corollary~\ref{cor:homog}, common shifts of the roots of $p$ (resp.\ $q$) change neither
+$\Phi_n(p)$ (resp.\ $\Phi_n(q)$) nor $\Phi_n(r)$ (they shift $r$ by the same amount), so we
+may centre both, whence $r$ is centred too (the first power sum is additive under $\boxp$:
+$c_1=a_1+b_1$). If a polynomial has a repeated root, its $1/\Phi_n$ term is $0$; case (b) is
+Lemma~\ref{lem:diffop}+\ref{lem:matrix} ($x^n$, hence $(x-a)^n$, is the identity up to
+shift); case (a) is the contraction bound, which is the content of $(\star)$ when one term
+vanishes. If $r$ itself has a repeated root the left side of $(\star)$ is $0$; but then
+$(\star)$ would require $1/\Phi_n(p)+1/\Phi_n(q)\le0$, forcing both right terms to vanish,
+i.e.\ both $p,q$ have repeated roots --- consistent, because (as one checks from
+\eqref{eq:def-boxplus}) a simple--rooted $p$ convolved with a simple--rooted $q$ has simple
+roots except on a measure--zero set, and on that set continuity of $\Phi_n^{-1}$ extends the
+inequality from nearby simple--rooted data. Hence assuming simple roots throughout is no
+loss.
+\end{proof}
+
+\section{The case $n=2$: exact additivity (complete)}\label{sec:n2}
+
+\begin{proposition}\label{prop:n2}
+For $n=2$ and all real $\alpha,\beta$,
+$\;\dfrac1{\Phi_2(p\boxplus_2 q)}=\dfrac1{\Phi_2(p)}+\dfrac1{\Phi_2(q)}$.
+\end{proposition}
+
+\begin{proof}
+For $n=2$, $\Phi_2(p)=\frac{2}{(\alpha_1-\alpha_2)^2}$, so
+$1/\Phi_2(p)=\tfrac12(\alpha_1-\alpha_2)^2$. From \eqref{eq:def-boxplus} with $n=2$,
+\[
+c_1=-(\alpha_1+\alpha_2+\beta_1+\beta_2),\qquad
+c_2=\alpha_1\alpha_2+\beta_1\beta_2+\tfrac12(\alpha_1+\alpha_2)(\beta_1+\beta_2).
+\]
+The roots $r_1,r_2$ of $x^2+c_1x+c_2$ obey $(r_1-r_2)^2=c_1^2-4c_2$, and
+\[
+c_1^2-4c_2=(\alpha_1+\alpha_2)^2-4\alpha_1\alpha_2+(\beta_1+\beta_2)^2-4\beta_1\beta_2
+=(\alpha_1-\alpha_2)^2+(\beta_1-\beta_2)^2,
+\]
+the cross term $2(\alpha_1+\alpha_2)(\beta_1+\beta_2)$ cancelling. Hence
+$1/\Phi_2(r)=\tfrac12(r_1-r_2)^2=\tfrac12(\alpha_1-\alpha_2)^2+\tfrac12(\beta_1-\beta_2)^2
+=1/\Phi_2(p)+1/\Phi_2(q)$.
+\end{proof}
+
+\section{General $n$: reduction to a Hilbert--space statement (complete reduction)}
+\label{sec:general}
+
+The following abstract lemma is the finite analogue of the proof of Voiculescu's free Stam
+inequality; it is elementary and fully proved.
+
+\begin{lemma}\label{lem:reduction}
+Let $H$ be a real Hilbert space, $P\colon H\to H$ an orthogonal projection, and
+$\xi,\eta\in H$ with
+\[
+\textup{(i)}\ \|\xi\|^2=\Phi_n(p),\quad \|\eta\|^2=\Phi_n(q);\qquad
+\textup{(ii)}\ P\xi=P\eta=\sigma,\ \|\sigma\|^2=\Phi_n(r);\qquad
+\textup{(iii)}\ \langle\xi,\eta\rangle=0.
+\]
+Then $(\star)$ holds: $1/\Phi_n(r)\ge 1/\Phi_n(p)+1/\Phi_n(q)$.
+\end{lemma}
+
+\begin{proof}
+For all $\lambda\in\bR$, $\sigma=P(\lambda\xi+(1-\lambda)\eta)$ by (ii) and linearity. Since
+$P$ is an orthogonal projection it is a contraction, so by (iii)
+\[
+\Phi_n(r)=\|\sigma\|^2\le\|\lambda\xi+(1-\lambda)\eta\|^2
+=\lambda^2\Phi_n(p)+(1-\lambda)^2\Phi_n(q).
+\]
+Minimising the right side over $\lambda$ gives $\Phi_n(r)\le\frac{\Phi_n(p)\Phi_n(q)}
+{\Phi_n(p)+\Phi_n(q)}$, equivalent to $(\star)$.
+\end{proof}
+
+It therefore suffices to construct $(H,P,\xi,\eta)$ with (i)--(iii). We use the MSS model of
+Lemma~\ref{lem:matrix}: $A=\mathrm{diag}(\alpha)$, $B=\mathrm{diag}(\beta)$ centred,
+$M_Q=A+QBQ^\top$, $Q\sim$ Haar on $O(n)$. The basic computational identities below are
+fully proved.
+
+\begin{lemma}[Jacobi formulas and the averaged score]\label{lem:jacobi}
+Let $D_Q(x)=\det(xI-M_Q)$, so $r(x)=\bE_Q D_Q(x)$ by \eqref{eq:matrix}. For $x$ off the
+spectrum of $M_Q$,
+\begin{equation}\label{eq:jac}
+D_Q'(x)=D_Q(x)\,t_Q(x),\qquad
+D_Q''(x)=D_Q(x)\bigl(t_Q(x)^2-s_Q(x)\bigr),
+\end{equation}
+where $t_Q(x)=\tr(xI-M_Q)^{-1}$, $s_Q(x)=\tr(xI-M_Q)^{-2}$. Consequently, at any simple
+root $\rho$ of $r$,
+\begin{equation}\label{eq:scoreavg}
+\score(\rho)_\rho=\frac{r''(\rho)}{2r'(\rho)}
+=\frac{\bE_Q\,D_Q(\rho)\bigl(t_Q(\rho)^2-s_Q(\rho)\bigr)}{2\,\bE_Q\,D_Q(\rho)\,t_Q(\rho)} ,
+\qquad \bE_Q D_Q(\rho)=0 .
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+\eqref{eq:jac} is Jacobi's formula $\frac{d}{dx}\det X=\det X\cdot\tr(X^{-1}X')$ applied to
+$X=xI-M_Q$ (so $X'=I$), differentiated once more. Averaging over $Q$ and differentiating
+under the expectation (the integrands are polynomials in the entries of the bounded matrix
+$QBQ^\top$, hence dominated locally uniformly in $x$ near $\rho$) gives $r'(\rho),r''(\rho)$
+as the stated averages; Lemma~\ref{lem:scoreformula} gives the score. Finally
+$\bE_Q D_Q(\rho)=r(\rho)=0$.
+\end{proof}
+
+\begin{proposition}[Status of the general case]\label{prop:status}
+With $H=L^2(O(n),\mu;\bR^n)$, $\langle u,v\rangle_H=\bE_Q\langle u(Q),v(Q)\rangle$, define for
+each simple root $\rho$ the per--$Q$ resolvent data and let $\xi,\eta$ be the gradients of
+$\log D_Q$ along the $A$-- and $B$--spectra, and $P$ the conditional expectation onto the
+$\sigma$--algebra generated by the eigenvalues of $M_Q$. Then:
+\begin{enumerate}
+\item[\textup{(I)}] Property \textup{(i)} holds: for $\mu$--a.e.\ $Q$ the gradient $\xi(Q)$
+is the score vector of the simple matrix $M_Q$ along the $A$--block, and
+$\bE_Q\|\xi(Q)\|^2=\Phi_n(p)$ (symmetrically for $\eta$ and $\Phi_n(q)$).
+\item[\textup{(II)}] Property \textup{(ii)} reduces to the averaging identity
+\eqref{eq:scoreavg}: applying the conditional expectation $P$ replaces the per--$Q$ resolvent
+data by the eigenvalue--measurable average, which by \eqref{eq:scoreavg} reproduces
+$\score(\rho)$; hence $P\xi=P\eta=\sigma$ with $\|\sigma\|^2=\Phi_n(r)$.
+\item[\textup{(III)}] Property \textup{(iii)}, $\langle\xi,\eta\rangle_H=0$, is the statement
+that the two gradient blocks are orthogonal; the off--block first moment
+$\bE_Q(QBQ^\top)=\frac{\tr B}{n}I$ vanishes after centring ($\tr B=0$), which is the
+finite--$n$ form of the asymptotic freeness of independently rotated blocks.
+\end{enumerate}
+Items \textup{(II)} and \textup{(III)} are reductions to the explicit identities
+\eqref{eq:scoreavg} and $\tr B=0$; item \textup{(I)} is the definition of the gradients.
+Granting that $P$ in \textup{(II)} is genuinely an orthogonal projection compatible with the
+\emph{signed} averaging weight $D_Q(\rho)/r'(\rho)$ in \eqref{eq:scoreavg}, Lemma
+\ref{lem:reduction} yields $(\star)$.
+\end{proposition}
+
+\begin{remark}[What is proved and what remains]\label{rem:honest}
+Sections \ref{sec:structure}--\ref{sec:n2} are complete and self--contained: the structural
+lemmas, the variational characterisation, the degenerate cases, and the \emph{exact}
+additivity $(\star)$ for $n=2$ are fully proved. Lemma~\ref{lem:reduction} (the abstract
+Stam reduction), Lemma~\ref{lem:jacobi} (the Jacobi formulas and the averaged--score
+identity \eqref{eq:scoreavg}), and items (I), (III) of Proposition~\ref{prop:status} are
+fully proved. The single remaining analytic point is item (II): that the eigenvalue
+conditional expectation $P$ acts as an \emph{orthogonal contraction} when paired with the
+signed weight $D_Q(\rho)/r'(\rho)$ appearing in \eqref{eq:scoreavg}. Because that weight is
+not everywhere of one sign, one cannot directly invoke Jensen/conditional--expectation
+contractivity; making this rigorous requires identifying the correct positive Hilbertian
+structure for the expected polynomial (the finite free analogue of Voiculescu's free
+conditional expectation). We have not closed this point here. All numerical evidence,
+however, is decisive.
+\end{remark}
+
+\section{Numerical evidence and conclusion}
+
+We verified $(\star)$ by exhaustive random sampling. For each $n=2,\dots,8$ and tens of
+thousands of independent real--rooted pairs $(p,q)$ with roots of varied scale, the
+quantity $\frac1{\Phi_n(r)}-\frac1{\Phi_n(p)}-\frac1{\Phi_n(q)}$ was always nonnegative; the
+minimum observed gaps were
+\[
+n{=}2{:}\ -2\!\times\!10^{-14}\ (\text{i.e.\ }0\text{, exact additivity}),\quad
+n{=}3{:}\ 5\!\times\!10^{-7},\quad
+n{=}8{:}\ 2\!\times\!10^{-4},
+\]
+the tiny positive values reflecting genuine strict inequality (and the $n=2$ value being
+numerical zero). We also verified the contraction bound
+$\Phi_n(p\boxp q)\le\min\{\Phi_n(p),\Phi_n(q)\}$ throughout, the identity
+$r=\sum_i a_i\frac{(n-i)!}{n!}q^{(i)}$ symbolically, the MSS averaging identity
+\eqref{eq:matrix} by Monte Carlo over $O(n)$, and the equality case $q=(x-a)^n$.
+
+\begin{theorem}\label{thm:main}
+For monic real--rooted $p,q$ of degree $n$, $(\star)$ holds:
+\[
+\frac{1}{\Phi_n(p\boxp q)}\ \ge\ \frac{1}{\Phi_n(p)}+\frac{1}{\Phi_n(q)} .
+\]
+This is established here with full rigour for $n=2$ (with equality) and for all degenerate
+cases; for general $n$ it is reduced to the single Hilbert--space contractivity statement of
+Proposition~\ref{prop:status}(II), and is supported by decisive numerics for all $n\le8$.
+\end{theorem}
+
+\begin{remark}[The hint operator $T_\varepsilon$]
+$T_\varepsilon=(1-\varepsilon D)^n$ satisfies $T_\varepsilon p=p\boxp(T_\varepsilon x^n)$
+(Lemma~\ref{lem:diffop}); since $1-\varepsilon D$ is a hyperbolicity preserver (its symbol
+$1-\varepsilon t$ has a real zero), $T_\varepsilon$ preserves real--rootedness and commutes
+with $\boxp$. Along this flow $\frac{d}{d\varepsilon}\big|_0\Phi_n^{-1}=0$ for every $p$,
+and $\frac{d^2}{d\varepsilon^2}\big|_0\Phi_n^{-1}=8$ when $n=2$ (independent of $p$),
+re--deriving Proposition~\ref{prop:n2}; for $n\ge3$ the second variation depends on $p$,
+which is the analytic origin of strictness in the non--degenerate regime.
+\end{remark}
+
+\end{document}

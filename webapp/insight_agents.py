@@ -241,6 +241,7 @@ def _gather_dataset_context(repo_root: Path, slug: str) -> str:
 
 def _gather_question_context(repo_root: Path, qid: str, dataset: str) -> str:
     lines: list[str] = [f"# Question Context: {qid} (dataset={dataset})\n"]
+    issues: list[dict] = []
 
     # Problem statement — search problems/<qid>.tex then the dataset store
     # (fp2 / RM14k problems have no problems/<qid>.tex; without this every
@@ -269,13 +270,25 @@ def _gather_question_context(repo_root: Path, qid: str, dataset: str) -> str:
     except Exception:
         pass
 
-    # Best proof status (dataset-aware — fp2/RM14k live under their own dataset)
+    # Best proof status (dataset-aware). Use the LIVE open-issue count from the
+    # issues list — NOT the proof record's stale `issue_count` field, which can
+    # hold a bogus placeholder (e.g. 100) and previously made the model report
+    # "100 open issues" and conclude there was no real proof.
     try:
         from .proofs import get_best_proof
         best = get_best_proof(qid, dataset)
         if best:
-            vflag = "verified ✓" if best.get("verification_passed") else f"{best.get('issue_count','?')} open issues"
-            lines.append(f"\n## Best Proof\nStatus: {vflag}\nModel: {best.get('model','?')}\nExperiment: {best.get('experiment','?')}")
+            open_n = sum(1 for i in issues if i.get("status") in ("open", "in_progress"))
+            sol = best.get("solution_tex") or ""
+            if best.get("verification_passed"):
+                status = f"verified ✓ ({open_n} open issue(s))"
+            elif best.get("has_solution") and len(sol) > 200:
+                status = (f"proof draft on record ({len(sol):,} chars), "
+                          f"not yet verified, {open_n} open issue(s)")
+            else:
+                status = f"no substantive proof yet, {open_n} open issue(s)"
+            lines.append(f"\n## Best Proof\nStatus: {status}\nModel: {best.get('model','?')}\n"
+                         f"Experiment: {best.get('experiment','?')}")
     except Exception:
         pass
 
@@ -288,7 +301,7 @@ def _gather_question_context(repo_root: Path, qid: str, dataset: str) -> str:
             lc = pe.get("logical_correctness")
             pc = pe.get("proof_completeness")
             cl = pe.get("proof_clarity")
-            scores = f"Answer={aa}, Logic={lc}/5, Completeness={pc}/5, Clarity={cl}/5"
+            scores = f"Answer={aa}, Logic={lc}/10, Completeness={pc}/10, Clarity={cl}/10"
             lines.append(f"\n## Proof Evaluation Rubric\nScores: {scores}")
             if pe.get("verdict"):
                 lines.append(f"Verdict: {pe['verdict'][:300]}")

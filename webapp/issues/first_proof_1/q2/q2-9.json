@@ -3,7 +3,7 @@
   "problem_id": "q2",
   "dataset": "first_proof_1",
   "title": "Sub-lemma: $W$ genuinely lies in $\\mathcal W(\\Pi,\\psi^{-1})$ and the off-mirabolic translation identities",
-  "status": "open",
+  "status": "resolved",
   "labels": [
     "proof-gap"
   ],
@@ -26,6 +26,21 @@
       "role": "agent",
       "body": "**Claim needed.** Two bookkeeping-but-load-bearing facts:\n\n1. **Realizability in the Whittaker model.** The test datum used (often specified by its values on the mirabolic / in the Kirillov model) must arise from a genuine $W\\in\\mathcal W(\\Pi,\\psi^{-1})$ on all of $\\mathrm{GL}_{n+1}(F)$, not merely a function on the mirabolic $P_{n+1}$. Justify via the Bernstein–Zelevinsky filtration / density of mirabolic restrictions and the injectivity of restriction to $P_{n+1}$.\n\n2. **Translation identity.** The identities relating $W(\\operatorname{diag}(g,1)u_Q)$ to mirabolic Whittaker values — e.g. the off-mirabolic right-translation identity of the form\n$$W(\\operatorname{diag}(g,1)\\,t_Q)=\\psi(-g_{nn})\\,W(\\operatorname{diag}(g,1)\\,d_Q^{-1})$$\n(right-translating by the relevant element of $N_{n+1}$) — must be **proved**, using the left $N_{n+1}$-equivariance $W(ux)=\\psi^{-1}(u)W(x)$ and the explicit form of $u_Q=I_{n+1}+QE_{n,n+1}$. In a previous attempt these were asserted without proof.\n\n**To prove.** State precisely which translates of $W$ appear and verify each identity from the Whittaker equivariance and the matrix algebra of $u_Q$, $\\operatorname{diag}(g,1)$.",
       "created_at": "2026-06-23T16:18:07Z"
+    },
+    {
+      "id": "c4153b023",
+      "author": "solver-agent",
+      "role": "agent",
+      "body": "I rewrote the two load-bearing sub-lemmas (`lem:extend` and `lem:u1translate`) so that both facts the issue flags are now **proved**, not asserted.\n\n**1. Realizability in the Whittaker model (Lemma, \"Realizability via the Kirillov model\").** The lemma now has two explicit parts:\n- **(a) Injectivity of mirabolic restriction** — newly stated and justified: $W\\mapsto W|_{P_{n+1}}$ is injective on $\\mathcal W(\\Pi,\\psi^{-1})$ (Bernstein–Zelevinsky: $\\Pi|_{P_{n+1}}$ is the Kirillov model, a faithful $P_{n+1}$-module). This guarantees the \"$W_0$\" produced is unambiguous (the issue title explicitly asked for injectivity).\n- **(b) Surjectivity onto compactly supported data** — the Bernstein–Zelevinsky/Kirillov theorem (K1): every $f\\in\\mathcal S(N_n\\backslash G_n;\\psi^{-1})$ (compact support mod $N_n$) is the restriction to $\\operatorname{diag}(G_n,1)$ of a genuine $W\\in\\mathcal W(\\Pi,\\psi^{-1})$ on all of $G_{n+1}$. I added the mechanism (top BZ derivative one-dimensional for generic $\\Pi$; bottom filtration layer $\\cong\\operatorname{ind}_{N_{n+1}}^{P_{n+1}}\\psi^{-1}$, whose function space is exactly $\\mathcal S(N_n\\backslash G_n;\\psi^{-1})$), and the identification $P_{n+1}=\\operatorname{diag}(G_n,1)\\ltimes U$ with $\\psi^{-1}|_U$ given by the $(n,n+1)$ superdiagonal entry.\n- I then **verified in full** that $W_0$ from (eq:W0) qualifies: left $(N_n,\\psi^{-1})$-equivariance (explicit Haar substitution), smoothness (right $K_n$-invariance), and compact support mod $N_n$ (support $=N_nK_n$, image $(N_n\\cap K_n)\\backslash K_n$ compact).\n\n**2. Off-mirabolic translation identity (Lemma).** Now a 3-step proof from scratch:\n- **Step 1 (matrix algebra):** with $M=\\operatorname{diag}(g,1)$ and $E_{n,n+1}=e_n e_{n+1}^{\\mathsf T}$, the conjugate $n_g=M u_1 M^{-1}=I+(Me_n)(e_{n+1}^{\\mathsf T}M^{-1})=I+\\sum_{i=1}^n g_{in}E_{i,n+1}\\in N_{n+1}$, using $Me_n=\\sum g_{in}e_i$ and $e_{n+1}^{\\mathsf T}M^{-1}=e_{n+1}^{\\mathsf T}$.\n- **Step 2 (generic character):** among entries $(n_g)_{i,n+1}=g_{in}$, only $i=n$ is on the superdiagonal, so $\\psi^{-1}(n_g)=\\psi(-g_{nn})$.\n- **Step 3 (left equivariance):** $\\operatorname{diag}(g,1)u_1=n_g\\operatorname{diag}(g,1)$ and $W(ux)=\\psi^{-1}(u)W(x)$ give $W(\\operatorname{diag}(g,1)u_1 h)=\\psi(-g_{nn})W(\\operatorname{diag}(g,1)h)$ for **all** $h\\in G_{n+1}$.\n- The consequence $W_0(g\\,t_Q)=\\psi(-g_{nn})W_0(g\\,d_Q^{-1})$ is then derived with $h=d_Q^{-1}$, after verifying $t_Q=u_1 d_Q^{-1}=d_Q^{-1}u_Q$ entrywise (unique nonzero off-diagonal entry $1$ at $(n,n+1)$).\n\n**Numerical verification.** I confirmed by direct matrix computation (n=3) that $n_g=\\operatorname{diag}(g,1)u_1\\operatorname{diag}(g,1)^{-1}=I+\\sum_i g_{in}E_{i,n+1}$ with superdiagonal entry $g_{nn}$, and that $u_1 d_Q^{-1}=d_Q^{-1}u_Q$ with $(n,n+1)$-entry $1$.\n\nEnvironment/brace balance checked; LaTeX toolchain not installed so no compile, but `enumitem` (used for the (a)/(b) list) is in the shared preamble.\n\nBoth items requested are now proved with explicit matrix algebra and Whittaker-equivariance; resolving.",
+      "created_at": "2026-06-27T04:16:20Z"
+    },
+    {
+      "id": "ev4f03ffe6",
+      "author": "system",
+      "role": "event",
+      "event_type": "status_changed",
+      "body": "✅ Status changed: **open** → **resolved**",
+      "created_at": "2026-06-27T04:16:24Z"
     }
   ]
 }

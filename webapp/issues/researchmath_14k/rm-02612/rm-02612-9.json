@@ -1,0 +1,31 @@
+{
+  "id": "rm-02612-9",
+  "problem_id": "rm-02612",
+  "dataset": "researchmath_14k",
+  "title": "Theorem A's KPZ regime $n^{3/2}\\eps_n\\to0$ is exactly the TV-trivial regime (degenerate w.r.t. the problem's intent)",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T17:44:55Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "evd1624272",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T17:44:55Z"
+    },
+    {
+      "id": "c80358861",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**New structural finding linking Thm A and Thm B.**\n\nThe attempt's Theorem A establishes $(L-2\\sqrt n)/n^{1/6}\\to F_{\\mathrm{TW}_2}$ ONLY under $n^{3/2}\\eps_n\\to0$ (with $\\eps_n=1-q_n$). But the attempt's OWN Theorem B / Corollary 1 proves that\n$$\\TV(\\mu_{n,q_n},U_n)\\to0\\iff n^{3/2}\\eps_n\\to0.$$\nHence Theorem A's hypothesis is *equivalent* to the Mallows measure being asymptotically indistinguishable from uniform in total variation, and the limit law is obtained by literally transferring BDJ across a vanishing TV distance via $|\\PP_{\\mu}(A)-\\PP_U(A)|\\le\\TV$.\n\n**Why this is a gap relative to the problem (and to G1/G2/G5/G7).** The problem asks for *natural NON-uniform* families exhibiting KPZ behavior. A family that is TV-equivalent to uniform is a degenerate witness: every statistic of $\\pi$ with a uniform limit inherits the same limit, so no Mallows-specific probabilistic phenomenon is demonstrated, and the central exact-solvability obstruction G2 ($q^{\\mathrm{inv}}$ not Plancherel on RSK shapes) is *evaded*, not resolved — in this regime no transfer beyond TV-coupling is needed.\n\n**Consequence.** Theorem A, as a contribution to the problem, is essentially vacuous: it does not produce a genuinely non-uniform KPZ family. It should be reframed as 'the TV-transfer regime, the maximal regime reachable by coupling to uniform', with the genuine regimes ($\\eps_n\\gtrsim n^{-3/2}$, $\\TV\\not\\to0$) explicitly flagged as open. By Theorem B, NO TV-transfer argument can ever reach those regimes (there $\\TV\\to1$), so a fundamentally different tool (Schur/Hall--Littlewood process, LPP coupling, RH steepest descent) is required — exactly G2/G5/G7.\n\nVerified numerically: at $\\eps_n=n^{-1}$ ($n^{3/2}\\eps_n=n^{1/2}\\to\\infty$, so $\\TV\\to1$), $L/\\sqrt n\\approx1.96$ for $n=1000$, still $\\asymp\\sqrt n$ — the regime where KPZ is genuinely at stake and the attempt is silent.",
+      "created_at": "2026-06-27T17:44:55Z"
+    }
+  ]
+}

@@ -3,7 +3,7 @@
   "problem_id": "prob-10",
   "dataset": "first_proof_1",
   "title": "Lemma 2.4: extend Cor. 2.2/2.3 to $s$ subgraphs ($q_{\\cap_i\\mathcal G_i}=\\bigwedge_i q_{\\mathcal G_i}$)",
-  "status": "open",
+  "status": "resolved",
   "labels": [
     "proof-gap"
   ],
@@ -26,6 +26,21 @@
       "role": "agent",
       "body": "**Location:** Proof of Lemma 2.4, the step \"as $q^\\perp_{\\Gamma(\\cap_i\\mathcal G_i)}=\\bigvee_i q^\\perp_{\\Gamma(\\mathcal G_i)}$ (by Corollary 2.3)\".\n\nCorollary 2.2 ($[q_1,q_2]=0$, $q_1q_2=q$) and Corollary 2.3 are proved only for **two** subgraphs. The application to a family $\\{\\mathcal G_i\\}_{i=1}^s$ requires:\n- pairwise commutation of all $q_{\\mathcal G_i}$;\n- $\\prod_i q_{\\mathcal G_i}=\\bigwedge_i q_{\\mathcal G_i}=q_{\\cap_i\\mathcal G_i}$;\n- hence by de Morgan $q^\\perp_{\\cap_i\\mathcal G_i}=\\bigvee_i q^\\perp_{\\mathcal G_i}$.\n\nThis is an induction that uses the fact that $N=\\Gamma(\\mathcal G_1\\cap\\mathcal G_2)$ is **itself a graph product**, so Cor. 2.2 reapplies to $(\\mathcal G_1\\cap\\mathcal G_2)$ vs $\\mathcal G_3$, etc. Associativity of $\\cap$ on the projection side must also be checked. None of this induction is carried out in the text.",
       "created_at": "2026-06-23T02:27:38Z"
+    },
+    {
+      "id": "c2d830773",
+      "author": "solver-agent",
+      "role": "agent",
+      "body": "I addressed the gap that Cor. 2.2/2.3 (`cor:commute`) were only proved for **two** subgraphs while Lemma 2.4 (`lem:intersect-pp`) used the $s$-fold de Morgan identity $q^\\perp_{\\cap_i\\mathcal G_i}=\\bigvee_i q^\\perp_{\\mathcal G_i}$.\n\n**What was established.** Corollary `cor:intersection` now contains an explicit induction on $s$ proving, for any finite family $\\mathcal G_1,\\dots,\\mathcal G_s\\subseteq\\mathcal G$:\n- the support projections $q_{\\mathcal G_i}$ commute pairwise;\n- $\\bigwedge_{i=1}^s q_{\\mathcal G_i}=q_{\\cap_i\\mathcal G_i}$ (equivalently $\\prod_i q_{\\mathcal G_i}=q_{\\cap_i\\mathcal G_i}$ for the commuting family);\n- the de Morgan form $\\big(\\bigwedge_i q_{\\mathcal G_i}\\big)^\\perp=\\bigvee_i q_{\\mathcal G_i}^\\perp$.\n\n**Key points the critic flagged, now handled.**\n1. *Base/step.* $s=1$ trivial; $s=2$ is `cor:commute` (meet of two commuting projections = product). For the step, set $\\mathcal G'=\\bigcap_{i=2}^s\\mathcal G_i$.\n2. *$N=\\Gamma(\\cap)$ is itself a graph product.* The proof notes $\\mathcal G'$ is again a subgraph of $\\mathcal G$, so $M'=\\Gamma(\\mathcal G')$ is a graph-product subalgebra and `cor:commute` -- proved for an *arbitrary pair* of subgraphs -- applies verbatim to the pair $(\\mathcal G_1,\\mathcal G')$, giving $[q_{M_1},q_{M'}]=0$ and $q_{M_1}\\wedge q_{M'}=q_{\\Gamma(\\mathcal G_1\\cap\\mathcal G')}$.\n3. *Associativity of $\\cap$.* Checked on both sides: set-theoretically $\\mathcal G_1\\cap\\mathcal G'=\\bigcap_{i=1}^s\\mathcal G_i$ (intersection of vertex/edge sets), and on the projection side via associativity of the lattice meet, $\\bigwedge_{i=1}^s q_{\\mathcal G_i}=q_{M_1}\\wedge\\big(\\bigwedge_{i=2}^s q_{\\mathcal G_i}\\big)$.\n4. *Pairwise commutation of the whole family* follows since $q_{M_1}$ commutes with each $q_{\\mathcal G_i}$ ($i\\ge2$) by `cor:commute` and the rest commute by the induction hypothesis.\n\n`lem:intersect-pp` (old Lemma 2.4) now cites `cor:intersection`/`eq:demorgan` for the $s$-fold identity, with the Case-2 argument using $q_\\cap^\\perp=\\bigvee_i q_i^\\perp\\le\\sum_i q_i^\\perp$ to extract an index $i_0$ with $\\psi(q_{i_0}^\\perp)\\neq0$.\n\nI numerically sanity-checked the projection-lattice facts used (for commuting projections: meet = product, de Morgan, and $\\bigvee_i p_i^\\perp\\le\\sum_i p_i^\\perp$). The induction is now carried out explicitly in the text.",
+      "created_at": "2026-06-27T03:20:03Z"
+    },
+    {
+      "id": "evc65d5676",
+      "author": "system",
+      "role": "event",
+      "event_type": "status_changed",
+      "body": "✅ Status changed: **open** → **resolved**",
+      "created_at": "2026-06-27T03:20:06Z"
     }
   ]
 }

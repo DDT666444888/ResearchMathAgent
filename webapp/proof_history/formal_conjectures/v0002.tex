@@ -1,0 +1,73 @@
+% =====================================================================
+% BLOCKER REPORT for issue formal_conjectures-1 ("Proof: (untitled)")
+%
+% This file documents why no rigorous proof can be produced for this
+% issue: there is no mathematical statement associated with it.
+%
+% Verified facts (re-checked on this pass):
+%   1. problem_id = "formal_conjectures" is NOT a valid benchmark problem.
+%      The environment exposes only q1..q10; read_problem("formal_conjectures")
+%      returns: "Invalid problem id 'formal_conjectures'. Expected q1..q10."
+%   2. There is no problem.tex in the workspace. The only files present are
+%      preamble.tex, solution.tex (this file), issue.json, and SKILL.md.
+%   3. The issue (title "Proof: (untitled)", Area "(unspecified)") and all of
+%      its comments contain NO theorem, conjecture, definition, or claim.
+%   4. The issue-tracker API (http://localhost:8000/...) is unreachable in this
+%      environment (connection refused / empty response), so no statement can
+%      be retrieved that way either.
+%
+% Because no target statement exists, writing a "proof" would require inventing
+% the theorem to be proved. That would violate the Faithfulness commandment
+% (adhere to the original problem statement) and the Grounding commandment
+% (every claim must be supported), since there is no original statement to be
+% faithful to and nothing to ground against. The honest outcome is therefore a
+% documented blocker, not a fabricated proof.
+%
+% To unblock: supply the actual statement to be proved (with all non-standard
+% definitions), or correct problem_id to one of q1..q10.
+% =====================================================================
+\documentclass[12pt]{article}
+\input{preamble.tex}
+\begin{document}
+
+\section*{Status: Blocked --- no problem statement available}
+
+\textbf{Issue:} \texttt{formal\_conjectures-1} (title: ``Proof: (untitled)'';
+Area: unspecified).
+
+\medskip
+
+No mathematical statement is associated with this issue, so no proof can be
+written. Specifically:
+
+\begin{enumerate}[label=(\arabic*)]
+  \item The identifier \texttt{problem\_id = "formal\_conjectures"} is not a
+        valid benchmark problem. The available problems are \texttt{q1}--\texttt{q10},
+        and querying \texttt{formal\_conjectures} returns the error
+        \emph{``Invalid problem id `formal\_conjectures'. Expected q1..q10.''}
+  \item There is no \texttt{problem.tex} in the workspace; the only files are
+        \texttt{preamble.tex}, \texttt{solution.tex} (this file),
+        \texttt{issue.json}, and \texttt{SKILL.md}.
+  \item The issue body and all of its comments contain no theorem, conjecture,
+        definition, or claim to be proved.
+  \item The issue-tracker API endpoints are unreachable in this environment, so
+        no statement can be recovered through the tracker either.
+\end{enumerate}
+
+\medskip
+
+\noindent\textbf{Why no proof is provided.}
+Producing a ``proof'' here would require fabricating the theorem to be proved.
+This would violate the \emph{Faithfulness} requirement (a proof must adhere to
+the stated problem --- but there is none) and the \emph{Grounding} requirement
+(every claim must be justified against a given statement). Inventing a target
+and then ``proving'' it would be dishonest, so this report records the blocker
+instead.
+
+\medskip
+
+\noindent\textbf{To unblock:} supply the actual statement to be proved, together
+with all non-standard definitions, or correct \texttt{problem\_id} to one of
+\texttt{q1}--\texttt{q10}.
+
+\end{document}

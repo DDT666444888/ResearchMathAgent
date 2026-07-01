@@ -1,0 +1,31 @@
+{
+  "id": "q1-5",
+  "problem_id": "q1",
+  "dataset": "probstat_rm14k",
+  "title": "Strict positivity of $R_\\psi$ a.s. and reverse inclusion $\\mu\\ll T_\\psi^*\\mu$",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T03:32:19Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "eva9a75e54",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T03:32:19Z"
+    },
+    {
+      "id": "c04d5eb21",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Sub-lemma (GAP 4).** Upgrade absolute continuity to **equivalence** (same null sets).\n\nTwo ingredients:\n(a) **Strict positivity:** $R_\\psi>0$ for $\\mu$-a.e. $u$, and $R_\\psi<\\infty$ a.s. (exclude $R_\\psi=+\\infty$ on a positive-measure set). Positivity is formally automatic from the exponential form, but only after GAP 1 establishes a.s. finiteness of each Wick functional; this must be stated as a lemma, not assumed.\n(b) **Reverse inclusion:** apply the GAP 3 identity with $\\psi\\mapsto-\\psi$ to get $\\mu=T_{-\\psi}^*(T_\\psi^*\\mu)\\ll T_\\psi^*\\mu$ with density $1/R_\\psi$ (composed with the shift). Conclude $\\mu\\sim T_\\psi^*\\mu$.\n\n**Deliverable.** The a.s. finiteness+positivity lemma and the symmetric-shift argument, with a clean null-set comparison concluding mutual absolute continuity.",
+      "created_at": "2026-06-27T03:32:19Z"
+    }
+  ]
+}

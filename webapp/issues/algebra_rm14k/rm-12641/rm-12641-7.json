@@ -1,0 +1,31 @@
+{
+  "id": "rm-12641-7",
+  "problem_id": "rm-12641",
+  "dataset": "algebra_rm14k",
+  "title": "Generic injectivity of the invariant map (reduction of PGL2 to finite G-bar) asserted, not proved (G7)",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T10:45:48Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "evb8766102",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T10:45:48Z"
+    },
+    {
+      "id": "ce0a79ca6",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "Lemma 2.3 / Cor 7.x state the invariant map is 'generically one-to-one' on isomorphism classes, which is needed for $\\Spec R$ to be the coordinate ring of the stratum image. This requires that the (positive-dimensional) admissible coordinate-change group $\\Gamma\\le\\mathrm{PGL}_2$ reduces, after normalization, exactly to the finite $\\bar G$ — i.e. the normalization removes the continuous part of $\\Gamma$. That reduction is asserted but not proved, and it inherits the non-$\\bar G$-stable-slice problem of the linearity gap. Without it the identification 'coordinate ring of the stratum image $= k[U]/I$' is unjustified.",
+      "created_at": "2026-06-28T10:45:48Z"
+    }
+  ]
+}

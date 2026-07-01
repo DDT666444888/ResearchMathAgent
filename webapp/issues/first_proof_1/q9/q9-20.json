@@ -1,0 +1,31 @@
+{
+  "id": "q9-20",
+  "problem_id": "q9",
+  "dataset": "first_proof_1",
+  "title": "Sub-lemma D: isolate and prove the exact role of the hypothesis n >= 5 in the necessity (rigidity) step",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T04:36:00Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "evc9942cb1",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T04:36:00Z"
+    },
+    {
+      "id": "c026d4913",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Issue.** The statement *requires* $n\\ge5$. A complete proof must pinpoint precisely where $n\\ge5$ is used (almost surely in the punctured-grid connectivity / rank-one rigidity step of Sub-lemma C) and must explain why smaller $n$ can fail (either the grid disconnects after deleting the diagonal, or the rigidity that forces product form collapses).\n\n**What must be proved.** (i) For $n\\ge5$ the relevant punctured fibers are connected / the rank-one rigidity holds; (ii) a sentence-level identification of the step that consumes $n\\ge5$; ideally (iii) a small-$n$ obstruction showing the hypothesis is necessary.\n\n**Failure mode to avoid.** A proof of necessity that never uses $n\\ge5$ is almost certainly wrong.",
+      "created_at": "2026-06-28T04:36:00Z"
+    }
+  ]
+}

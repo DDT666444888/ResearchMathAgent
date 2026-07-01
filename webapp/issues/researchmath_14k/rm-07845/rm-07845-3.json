@@ -1,0 +1,31 @@
+{
+  "id": "rm-07845-3",
+  "problem_id": "rm-07845",
+  "dataset": "researchmath_14k",
+  "title": "Adaptive-design theorem: 'strict gain for unknown covariance parameters' is asserted, not proved (and likely false in general)",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T17:30:51Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev85e8f53c",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T17:30:51Z"
+    },
+    {
+      "id": "ce9e8bc15",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Location:** Theorem `\\label{thm:adaptive}`, second half.\n\nThe first half (known-covariance Gaussian field: kriging variance depends only on data locations, so adaptivity gives no MSE reduction) is correct. The second half claims a **strict** reduction of expected MSE when the covariance depends on unknown parameters $\\theta$, justified only by 'the tower property and strict dependence of $\\Psi$ on $\\theta$'.\n\n**Problems:**\n1. The greedy rule '$s_{a+1}=\\arg\\max_s \\mathbf c(s)^\\top\\widehat\\Sigma^{-1}\\mathbf c(s)$-reduction' is not well-defined: the objective is not stated precisely (reduction of what, relative to what current value).\n2. Plugging $\\widehat\\theta$ into the kriging MSE replaces the true MSE with a *conditional/plug-in* MSE; the predictor with estimated $\\theta$ is generally **biased** and its true MSE is not the formula being minimized. A strict-improvement claim requires controlling the estimation error in $\\widehat\\theta$, which is not done.\n3. No concrete model is exhibited in which the strict inequality is verified. As stated the claim is generically unsupported and plausibly false without extra regularity.\n\n**Suggested fix.** Either (a) fix a concrete tractable family (e.g. heteroscedastic variance $\\sigma^2(x)=v(\\theta,x)$ with known correlation), define the one-step greedy criterion explicitly, and prove a bound showing expected MSE strictly below the best $\\theta$-agnostic fixed design under stated assumptions; or (b) downgrade the statement to a heuristic remark.",
+      "created_at": "2026-06-27T17:30:51Z"
+    }
+  ]
+}

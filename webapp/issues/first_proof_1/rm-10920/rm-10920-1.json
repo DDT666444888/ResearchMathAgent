@@ -2,7 +2,7 @@
   "id": "rm-10920-1",
   "problem_id": "rm-10920",
   "title": "Proof: (untitled)",
-  "status": "in_progress",
+  "status": "resolved",
   "labels": [
     "proof-task"
   ],
@@ -125,6 +125,28 @@
       "role": "agent",
       "body": "**Critical fix: Lemma `lem:onewindow` (single common window) was FALSE as stated. Corrected.**\n\nFollowing the critic's flag (\"Lemma 2.4 counterexample / onewindow false\"), I checked it exhaustively and confirm the lemma was **wrong**. The old statement claimed DTLH = OPT in a single common window *for every tie-break*. Counterexample (machine-verified, and hand-checkable):\n\n- One window, all jobs $a=0$, $d=5$ (capacity $C=5$); sizes $3,2,1,2$ processed in that order.\n- Admit $3$, admit $2$ → admitted $\\{3,2\\}$ (sum $5$).\n- Size-$1$ arrives, overflows; worst-case tie-break evicts the *smaller* eligible job $2$ → $\\{3,1\\}$ (miss #1).\n- Size-$2$ arrives, overflows; evicts $3$ → $\\{1,2\\}$ (miss #2).\n- DTLH keeps only $\\{1,2\\}$ → **Miss_DTLH = 2**. But OPT keeps $\\{1,2,2\\}$ (sum $5$), dropping only the size-$3$ job → **Miss_OPT = 1**.\n\nSo the worst-case DTLH is suboptimal *already in a single window*; the old \"lexicographically reduces sizes ⇒ max cardinality\" argument was invalid because choosing a non-largest victim wastes capacity.\n\n**What I replaced it with (rigorous, verified):**\n1. **Corrected Lemma `lem:onewindow`:** the deterministic variant `DTLH_max` that always evicts a *largest* eligible victim keeps a maximum-cardinality feasible subset, hence is optimal in a single window. Proof: an induction showing that after each arrival the admitted multiset is the maximum-cardinality, minimum-total-size feasible subset of the jobs seen so far (the smallest-first greedy set). I verified the key step ($\\sigma+s>C$, $M=\\max A>s \\Rightarrow \\sigma-M+s\\le C$, and that the resulting set is exactly the new $k$-smallest set) and confirmed `DTLH_max` matches OPT on 100000 random single-window instances over all arrival orders.\n2. **New Remark `rem:onewindowbad`:** states and proves the counterexample above, noting that the rule *class* is already ≥2-competitive in one window. This actually strengthens the paper's narrative: DTLH's constant-factor loss is caused by the swap victim choice, not by multi-deadline coupling.\n3. Updated the \"honest summary\" item to reflect that optimality holds only for `DTLH_max`, not every tie-break.\n\n**Net status.** With this fix the writeup is internally consistent and every claim is verified:\n- DTLH never drops needlessly when OPT=0 (every tie-break);\n- `DTLH_max` is optimal in a single window, but worst-case DTLH is not (≥2 there);\n- R ≥ 2 (scalable family, rate ratio 2); R ≥ 5 (ω⋆, now with fully hand-checkable EDF tableaus and an explicit OPT schedule).\n- **Exact value of R remains genuinely open** (finite vs ∞ unresolved); my structured-family attempts cap at constant ratios, so I do not claim R=∞.\n\nKeeping status **in_progress**: the proof is now correct and self-contained for all its claims, but the problem asks for *tight* bounds and the exact value of R is still open.",
       "created_at": "2026-06-23T23:21:01Z"
+    },
+    {
+      "id": "cebcdb23f",
+      "author": "solver-agent",
+      "role": "agent",
+      "body": "test connectivity via proxy",
+      "created_at": "2026-06-27T23:16:29Z"
+    },
+    {
+      "id": "c512b5c9a",
+      "author": "solver-agent",
+      "role": "agent",
+      "body": "## RESOLVED: $R=\\infty$ — DTLH is not constant-competitive.\n\nI closed the headline gap (prior GAP 2: exact value of $R$ undetermined). The exact answer is **$R=\\infty$**, proved by a clean, fully hand-checked single-window family. This also subsumes the single-window concerns (the false \"single-window optimal for every tie-break\" reading), since the new construction lives entirely in one window.\n\n**Witness family $F_r$ ($r\\ge 2$; all jobs $a=0$, $d=C_r$).** Let $X_r=\\tfrac{3r(r-1)}2$, $C_r=X_r+2r$. $F_r$ = one big job of size $X_r$ plus $r$ medium jobs $m_i=2r+1-i$ ($i=1..r$), i.e. sizes $2r,2r-1,\\dots,r+1$.\n\nExact integer identities (Lemma \"Arithmetic of $F_r$\"):\n$\\sum_i m_i = C_r$;  $X_r+m_1=C_r$;  $m_i+m_{i+1}>2r$ so $X_r+m_i+m_{i+1}>C_r$;  $X_r+m_i\\le C_r$;  $m_i>m_{i+1}$.\n\n**OPT$=1$:** drop $X_r$, keep all $r$ mediums (sum $=C_r$, feasible); full set total $>C_r$, so max feasible cardinality is $r$. Exactly one drop.\n\n**DTLH worst-case $\\ge r-1$:** process $X_r,m_1,\\dots,m_r$. Admit $X_r$, admit $m_1$ (total $=C_r$). For $i=2..r$: admitted $\\{X_r,m_{i-1}\\}$; adding $m_i$ overflows; $m_{i-1}$ is an eligible victim ($m_{i-1}>m_i$, and $X_r+m_i\\le C_r$ restores feasibility), so DTLH legally evicts $m_{i-1}$ — one drop. That is $r-1$ drops. Every Algorithm-1 precondition is verified from the displayed inequalities.\n\nHence $\\mathrm{Miss}_{DTLH}(F_r)/\\mathrm{Miss}_{OPT}(F_r)\\ge r-1\\to\\infty$, so $R=\\infty$ (additive gap also unbounded).\n\n**Machine confirmation** (exhaustive over ALL legal tie-breaks): for $r=2..6$, OPT$=1$ and worst-case DTLH $=1,2,3,4,5=r-1$ exactly. omega* (OPT$=1$) re-verified with a full event-driven EDF simulator.\n\n**Other fixes in solution.tex:**\n1. Single-window lemma corrected: stated/proved only for the deterministic *evict-largest* rule $\\mathrm{DTLH}_{\\max}$ (machine-checked optimal for every processing order); the over-broad \"every tie-break\" reading the critic flagged is explicitly disclaimed with the $3,2,1,2$ one-window counterexample.\n2. FCFS vs EDF resolved via Horn/Jackson (admitted set kept feasible ⇒ EDF completes it).\n3. Deterministic case honestly scoped: $R=\\infty$ holds for the policy *class* (the prompt specifies DTLH only up to tie-breaks: \"drops *such* a larger job\"). For the single fixed rule $\\mathrm{DTLH}_{\\max}$ I prove only a lower bound of $5$ (omega*, Appendix); whether that fixed deterministic rule is non-constant-competitive is the one remaining open sub-question and does not affect $R=\\infty$ as posed.\n\n**Net:** central question fully answered with an elementary proof: $R=\\infty$. The two positive lemmas (no needless drops; single-window evict-largest optimality) are correct as restated. Marking resolved.",
+      "created_at": "2026-06-27T23:16:48Z"
+    },
+    {
+      "id": "evb0334f46",
+      "author": "system",
+      "role": "event",
+      "event_type": "status_changed",
+      "body": "✅ Status changed: **in_progress** → **resolved**",
+      "created_at": "2026-06-27T23:16:53Z"
     }
   ],
   "documents": [

@@ -13,12 +13,13 @@
    it to all fetch / EventSource / PDF URLs. No-op when served at root. */
 const API_PREFIX = (location.pathname.match(/^(.*\/rmac\/solve)(?:\/|$)/) || ["",""])[1];
 function apiU(u){ return (typeof u==="string" && u.startsWith("/api/")) ? API_PREFIX+u : u; }
-/* Append the agent key (injected by the server into window.RMA_AGENT_KEY) to the
-   expensive agent/solve endpoints. EventSource can't set headers, so it rides as a
-   query param. Blocks anonymous crawlers/bots hitting these URLs directly. */
+/* Append the website key (injected by the server into window.RMA_AGENT_KEY) to
+   every /api/ call. The server only *requires* it on operations (writes + the
+   expensive model/agent GETs); on read-only views it's accepted and ignored.
+   EventSource can't set headers, so the key rides as a query param. */
 function keyU(u){
   const k = window.RMA_AGENT_KEY;
-  if(!k || typeof u!=="string" || !/\/api\/(agent\/|solve(\?|$))/.test(u)) return u;
+  if(!k || typeof u!=="string" || !u.includes("/api/")) return u;
   return u + (u.includes("?") ? "&" : "?") + "key=" + encodeURIComponent(k);
 }
 (function(){
@@ -718,12 +719,16 @@ MathJax = {
             <span style="font-size:10px;color:var(--muted);letter-spacing:.04em">First Proof Benchmark rubric · 4 dimensions</span>
             <button class="btn-sec" id="iss-pe-btn" style="font-size:11px;padding:3px 10px;margin-left:auto">Run Evaluation</button>
             <button class="btn-sec" id="iss-pe-rerun" style="font-size:11px;padding:3px 10px;display:none">Re-run</button>
+            <button class="btn-sec" id="iss-genrm-btn" style="font-size:11px;padding:3px 10px" title="K independent chain-of-thought verifications, aggregated by majority vote — a separate, calibrated correctness score">Run GenRM-CoT</button>
             <span id="iss-pe-status" style="font-size:11px;color:var(--muted)"></span>
           </div>
           <div id="iss-pe-body" style="display:none;padding:10px 16px 12px">
             <!-- scores + verdict populated by JS -->
           </div>
-          <div id="iss-pe-hint" style="padding:10px 16px;font-size:12px;color:var(--muted)">Runs the First Proof benchmark rubric on the consolidated proof: answer accuracy, logical correctness, completeness, and clarity.</div>
+          <div id="iss-genrm-body" style="display:none;padding:0 16px 12px">
+            <!-- GenRM-CoT separate score populated by JS -->
+          </div>
+          <div id="iss-pe-hint" style="padding:10px 16px;font-size:12px;color:var(--muted)">Runs the First Proof benchmark rubric on the consolidated proof: answer accuracy, logical correctness, completeness, and clarity. <b>GenRM-CoT</b> is a separate, sampling-based correctness score (majority vote over K chain-of-thought verifications).</div>
         </div>
         <div style="display:grid;grid-template-columns:260px 1fr;flex:1;overflow:hidden">
           <!-- sidebar: issue list + activity toggle -->
@@ -1290,17 +1295,17 @@ MathJax = {
     </section>
 
     <!-- Design tab -->
-    <!-- Design tab: priority report + ACL supplementary -->
+    <!-- Design tab: design document (default) + priority report -->
     <section class="pane" id="pane-design" style="padding:0;overflow:hidden">
       <div id="dz-viewer" style="overflow:hidden;display:flex;flex-direction:column;height:calc(100vh - 98px);background:#404040">
         <!-- toolbar -->
         <div id="dz-toolbar" style="background:var(--panel);border-bottom:1px solid var(--border);padding:5px 10px;display:flex;align-items:center;gap:6px;font-size:13px;flex-shrink:0">
-          <span style="font-size:13px;font-weight:700;color:var(--text)" id="dz-title">Priority Report</span>
-          <span style="font-size:11px;color:var(--muted)" id="dz-subtitle">Solvability × Value</span>
+          <span style="font-size:13px;font-weight:700;color:var(--text)" id="dz-title">Design Document</span>
+          <span style="font-size:11px;color:var(--muted)" id="dz-subtitle">System design</span>
           <div style="width:1px;height:18px;background:var(--border);margin:0 2px"></div>
           <!-- mode toggle -->
-          <button class="btn-sec" id="dz-mode-priority" style="padding:3px 9px;font-size:11px;background:var(--accent);color:#fff;border-color:var(--accent)" title="Show priority report">Priority</button>
-          <button class="btn-sec" id="dz-mode-supp" style="padding:3px 9px;font-size:11px" title="Show system supplementary">Supplementary</button>
+          <button class="btn-sec" id="dz-mode-supp" style="padding:3px 9px;font-size:11px;background:var(--accent);color:#fff;border-color:var(--accent)" title="Show the design document">Design Doc</button>
+          <button class="btn-sec" id="dz-mode-priority" style="padding:3px 9px;font-size:11px" title="Show priority report">Priority</button>
           <div style="width:1px;height:18px;background:var(--border);margin:0 2px"></div>
           <button class="btn-sec" id="dz-prev" title="Previous page (←)" style="padding:3px 9px;font-size:14px">‹</button>
           <input id="dz-pageinput" class="page-num-input" type="number" min="1" value="1" title="Jump to page" />
@@ -1311,7 +1316,7 @@ MathJax = {
           <button class="btn-sec" id="dz-zout" style="padding:3px 8px">−</button>
           <span id="dz-zoom" style="color:var(--muted);font-size:12px;min-width:38px;text-align:center">150%</span>
           <button class="btn-sec" id="dz-zin" style="padding:3px 8px">+</button>
-          <a id="dz-dl" href="/api/design/priority-report" download="rma_priority_report.pdf" style="margin-left:auto;font-size:12px;color:var(--accent);cursor:pointer;text-decoration:none" target="_blank">⬇ Download</a>
+          <a id="dz-dl" href="/api/design/pdf" download="rma_design.pdf" style="margin-left:auto;font-size:12px;color:var(--accent);cursor:pointer;text-decoration:none" target="_blank">⬇ Download</a>
         </div>
         <div id="dz-canvas-wrap" style="flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;align-items:center;gap:12px"></div>
       </div>
@@ -3176,6 +3181,7 @@ async function loadIssues(){
     loadIssProofEval(selected);
   } else {
     $("iss-proof-eval-wrap").style.display="none";
+    if($("iss-genrm-body")) $("iss-genrm-body").style.display="none";
   }
   const badge=$("iss-q-badge");
   const scopeLabel=$("iss-scope-label");
@@ -4821,11 +4827,12 @@ function renderIssProofEval(data){
   const lc = data.logical_correctness;
   const pc = data.proof_completeness;
   const cl = data.proof_clarity;
-  function bar5(v){ if(v==null) return "—"; const f=["░","░","░","░","░"]; for(let i=0;i<v;i++) f[i]="█"; return f.join(""); }
   function scoreColor(v,mx){ if(v==null) return "var(--muted)"; const r=v/mx; return r>=0.8?"var(--green)":r>=0.5?"var(--amber)":"var(--red)"; }
+  function bar10(v){ if(v==null) return '<span style="color:var(--muted)">—</span>'; const n=Math.max(0,Math.min(10,Math.round(v))); return `<span style="color:${scoreColor(v,10)}">${"█".repeat(n)}</span><span style="color:var(--border)">${"█".repeat(10-n)}</span>`; }
   const aaColor = (aa===1)?"var(--green)":"var(--red)";
-  const total = (lc!=null&&pc!=null&&cl!=null) ? lc+pc+cl : null;
-  const totalMax = 15;
+  // Overall is the mean of the three quality dimensions, on the same 0–10 scale.
+  const overall = (lc!=null&&pc!=null&&cl!=null) ? Math.round((lc+pc+cl)/3*10)/10 : null;
+  const totalMax = 10;
   body.innerHTML = `
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;margin-bottom:10px">
       <div style="display:flex;align-items:center;gap:10px">
@@ -4833,14 +4840,14 @@ function renderIssProofEval(data){
         <span style="font-size:15px;font-weight:800;color:${aaColor}">${aa===1?"✅ Correct":"❌ Incorrect"}</span>
         <span style="font-size:11px;color:var(--muted)">${aa!=null?aa+"/1":"—"}</span>
       </div>
-      ${total!=null?`<div style="display:flex;align-items:center;gap:10px">
-        <span style="font-size:11px;color:var(--muted);min-width:130px">Overall (L+C+Cl)</span>
-        <span style="font-size:15px;font-weight:800;color:${scoreColor(total,totalMax)}">${total}/${totalMax}</span>
+      ${overall!=null?`<div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:11px;color:var(--muted);min-width:130px">Overall (mean)</span>
+        <span style="font-size:15px;font-weight:800;color:${scoreColor(overall,totalMax)}">${overall}/10</span>
       </div>`:""}
-      ${[["Logical Correctness",lc,5],["Proof Completeness",pc,5],["Proof Clarity",cl,5]].map(([label,v,mx])=>`
+      ${[["Logical Correctness",lc,10],["Proof Completeness",pc,10],["Proof Clarity",cl,10]].map(([label,v,mx])=>`
         <div style="display:flex;align-items:center;gap:8px">
           <span style="font-size:11px;color:var(--muted);min-width:130px">${label}</span>
-          <span style="font-family:monospace;font-size:13px;letter-spacing:1px;color:${scoreColor(v,mx)}">${bar5(v)}</span>
+          <span style="font-family:monospace;font-size:13px;letter-spacing:0">${bar10(v)}</span>
           <span style="font-size:11px;font-weight:700;color:${scoreColor(v,mx)}">${v!=null?v+"/"+mx:"—"}</span>
         </div>`).join("")}
     </div>
@@ -4859,6 +4866,7 @@ async function loadIssProofEval(pid){
     const d = await r.json();
     if(_issProofEvalPid !== pid) return;
     renderIssProofEval(d);
+    loadIssGenrm(pid);
   }catch(_){
     $("iss-pe-status").textContent = "error";
   }
@@ -4899,6 +4907,47 @@ function issProofEvalRun(force){
 
 $("iss-pe-btn").onclick  = ()=> issProofEvalRun(false);
 $("iss-pe-rerun").onclick = ()=> issProofEvalRun(true);
+
+// ---- GenRM-CoT: separate sampling-based correctness score ----
+let _issGenrmEs = null;
+function renderGenrm(d){
+  const body = $("iss-genrm-body");
+  if(!d || d.cached===false || d.score==null){ body.style.display="none"; return; }
+  body.style.display="";
+  const col = d.score>=66?"var(--green)":d.score>=34?"var(--amber)":"var(--red)";
+  const agree = d.agreement!=null ? Math.round(d.agreement*100)+"% agree" : "";
+  body.innerHTML = `
+    <div style="border-top:1px dashed var(--border);padding-top:10px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <span style="font-size:11px;font-weight:700;color:var(--muted)">GenRM-CoT score</span>
+      <span style="font-size:17px;font-weight:800;color:${col}">${d.score}/100</span>
+      <span style="font-size:11px;color:var(--muted)">${esc(d.verdict||"")} · ${d.n_correct||0}/${d.n_valid||0} samples correct${agree?" · "+agree:""}${d.mean_confidence!=null?" · conf "+d.mean_confidence:""}</span>
+    </div>
+    <div style="font-size:10.5px;color:var(--muted);margin-top:4px">${esc(d.method||"")}</div>`;
+}
+async function loadIssGenrm(pid){
+  try{
+    const r = await fetch(`/api/genrm-eval/${encodeURIComponent(pid)}`);
+    const d = await r.json();
+    if(_issProofEvalPid!==pid) return;
+    renderGenrm(d);
+  }catch(_){ }
+}
+function issGenrmRun(){
+  const pid = _issProofEvalPid;
+  if(!pid){ $("iss-pe-status").textContent="no problem selected"; return; }
+  if(_issGenrmEs) _issGenrmEs.close();
+  $("iss-genrm-btn").disabled = true;
+  $("iss-pe-status").textContent = "GenRM-CoT sampling… (this runs K verifications, ~minutes)";
+  _issGenrmEs = new EventSource(`/api/genrm-eval/${encodeURIComponent(pid)}/run?samples=5`);
+  _issGenrmEs.onmessage = (e)=>{
+    const ev = JSON.parse(e.data);
+    if(ev.type==="result"){ renderGenrm({cached:true, ...ev}); $("iss-pe-status").textContent="GenRM-CoT done"; }
+    else if(ev.type==="error"){ $("iss-pe-status").textContent="GenRM error: "+(ev.message||"").slice(0,60); }
+    else if(ev.type==="done"){ _issGenrmEs.close(); _issGenrmEs=null; $("iss-genrm-btn").disabled=false; }
+  };
+  _issGenrmEs.onerror = ()=>{ $("iss-pe-status").textContent="GenRM stream error"; if(_issGenrmEs){_issGenrmEs.close();_issGenrmEs=null;} $("iss-genrm-btn").disabled=false; };
+}
+$("iss-genrm-btn").onclick = issGenrmRun;
 
 // ---- Author Solution tab (PDF.js) ----
 let fpfLoaded=false, fpfDoc=null, fpfScale=1.5, fpfCurrentUrl=null, fpfViewerActive=false;
@@ -5894,18 +5943,20 @@ function dzScrollToPage(n){
   if(page) wrap.scrollTo({top:page.offsetTop-12,behavior:"smooth"});
   $("dz-pageinput").value=n;
 }
-let _dzMode="priority"; // "priority" or "supplementary"
+let _dzMode="design"; // "design" (the design document, default) or "priority"
 async function loadDesignPdf(mode){
   if(mode) _dzMode=mode;
   const wrap=$("dz-canvas-wrap");
   if(!wrap) return;
   wrap.onscroll=null;
   const isPri=(_dzMode==="priority");
-  const url=isPri?`/api/design/priority-report?${Date.now()}`:`/api/design/pdf?${Date.now()}`;
-  $("dz-title").textContent=isPri?"Priority Report":"System Supplementary";
-  $("dz-subtitle").textContent=isPri?"Solvability × Value":"ACL format";
+  // Must go through apiU() so the /rmac/solve proxy prefix is applied — pdf.js
+  // does not use the patched fetch, so an unprefixed /api/ URL 404s the tunnel.
+  const url=apiU(isPri?`/api/design/priority-report?${Date.now()}`:`/api/design/pdf?${Date.now()}`);
+  $("dz-title").textContent=isPri?"Priority Report":"Design Document";
+  $("dz-subtitle").textContent=isPri?"Solvability × Value":"System design";
   $("dz-dl").href=isPri?apiU("/api/design/priority-report"):apiU("/api/design/pdf");
-  $("dz-dl").download=isPri?"rma_priority_report.pdf":"rma_supplementary.pdf";
+  $("dz-dl").download=isPri?"rma_priority_report.pdf":"rma_design.pdf";
   // Toggle button highlight
   $("dz-mode-priority").style.background=isPri?"var(--accent)":"";
   $("dz-mode-priority").style.color=isPri?"#fff":"";
@@ -5922,7 +5973,7 @@ async function loadDesignPdf(mode){
   dzLoaded=true;
 }
 $("dz-mode-priority").onclick=()=>{ dzLoaded=false; loadDesignPdf("priority"); };
-$("dz-mode-supp").onclick=()=>{ dzLoaded=false; loadDesignPdf("supplementary"); };
+$("dz-mode-supp").onclick=()=>{ dzLoaded=false; loadDesignPdf("design"); };
 $("dz-zin").onclick=async()=>{dzScale=Math.min(dzScale+0.25,4);$("dz-zoom").textContent=Math.round(dzScale*100)+"%";if(dzDoc)await pdfRenderAll(dzDoc,dzScale,$("dz-canvas-wrap"));};
 $("dz-zout").onclick=async()=>{dzScale=Math.max(dzScale-0.25,0.5);$("dz-zoom").textContent=Math.round(dzScale*100)+"%";if(dzDoc)await pdfRenderAll(dzDoc,dzScale,$("dz-canvas-wrap"));};
 $("dz-zoom").textContent=Math.round(dzScale*100)+"%";

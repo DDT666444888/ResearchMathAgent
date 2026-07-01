@@ -1,0 +1,322 @@
+\documentclass{amsart}
+\usepackage{amsmath,amssymb,amsthm,hyperref}
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\theoremstyle{definition}
+\newtheorem{remark}{Remark}
+\begin{document}
+
+\title{On the existence of a second Hamiltonian cycle in $4$-regular Hamiltonian graphs}
+\maketitle
+
+\section{Statement and status of the problem}
+
+We are asked to prove or disprove the following.
+
+\begin{quote}
+\emph{For every finite simple $4$-regular graph $G$ that contains a Hamiltonian
+cycle, and for every Hamiltonian cycle $C$ of $G$, there is a Hamiltonian cycle
+$C'\neq C$ of $G$; equivalently, every $4$-regular Hamiltonian graph has at
+least two distinct Hamiltonian cycles.}
+\end{quote}
+
+This statement is precisely \emph{Sheehan's Conjecture} (J.~Sheehan, 1975),
+which asserts that every Hamiltonian $4$-regular simple graph contains a second
+Hamiltonian cycle.  Despite intensive work it remains \textbf{open} in general:
+no proof and no counterexample is known.  Consequently we cannot present a
+complete unconditional proof of the displayed statement, nor can we disprove it.
+We are honest about this throughout.
+
+What we \emph{can} do, and do rigorously and completely below, is:
+\begin{enumerate}
+\item[(i)] Prove the underlying parity theorem of Thomason from first principles
+(the ``lollipop'' argument), Theorem~\ref{thm:thomason}.  This is the tool that
+settles the odd-degree analogue of the problem completely.
+\item[(ii)] Deduce from it a clean, broad \emph{sufficient condition}
+(Theorem~\ref{thm:main}) under which a $4$-regular Hamiltonian graph provably has
+a second Hamiltonian cycle.  In particular this proves the conjecture for every
+$4$-regular Hamiltonian graph $G$ that has a Hamiltonian cycle $C$ whose
+complementary $2$-factor $G-E(C)$ is bipartite (equivalently, has no odd cycle):
+Corollary~\ref{cor:bipartite}.
+\item[(iii)] Explain precisely why the parity method, which resolves all
+odd-degree cases, fails for the even-regular case, thereby locating exactly the
+obstruction that makes the full conjecture hard
+(Remark~\ref{rem:obstruction}).
+\end{enumerate}
+
+Throughout, ``graph'' means finite, and Hamiltonian cycles are counted as
+\emph{edge sets} (unoriented, no distinguished starting point); two Hamiltonian
+cycles are the same iff they have the same edge set.
+
+\section{Thomason's lollipop theorem}
+
+\begin{theorem}[Thomason]\label{thm:thomason}
+Let $H$ be a finite graph and let $e=xy$ be an edge of $H$ such that every vertex
+of $H$ other than $x$ and $y$ has odd degree.  Then the number of Hamiltonian
+cycles of $H$ that contain $e$ is even.
+\end{theorem}
+
+\begin{proof}
+We may assume $H$ has at least three vertices (otherwise there are no
+Hamiltonian cycles and the statement holds vacuously).
+
+\medskip
+\noindent\textbf{Configurations.}
+Call a sequence $P=(x,y,u_3,u_4,\dots,u_m)$ a \emph{configuration} if it is a
+Hamiltonian path of $H$ (so $m=|V(H)|$, the $u_i$ are pairwise distinct, they
+exhaust $V(H)$, consecutive vertices are adjacent in $H$) whose first two
+vertices are $x,y$ in this order.  Thus a configuration is a Hamiltonian path
+with the fixed first edge $e=xy$ traversed from $x$ to $y$; its \emph{free end}
+is its last vertex $w:=u_m$, and its \emph{root edge} is $e$.  Let $\mathcal P$
+be the (finite) set of all configurations.
+
+A configuration $P$ with free end $w$ is called \emph{closing} if $w$ is adjacent
+to $x$ in $H$ (note $w\neq x$ since $x$ is the first vertex, and $w\neq y$ unless
+$m=2$, which we excluded).  We record:
+
+\medskip
+\noindent\textbf{Claim 1: Closing configurations biject with Hamiltonian cycles
+through $e$.}
+Indeed, if $C$ is a Hamiltonian cycle containing $e=xy$, delete $e$ from $C$ to
+obtain a Hamiltonian path with endpoints $x$ and $y$; orienting it from $x$
+gives a unique sequence $(x,y,\dots,w)$ where $w$ is the neighbour of $x$ on $C$
+other than $y$.  This is a configuration, and it is closing because $w\sim x$.
+Conversely, a closing configuration $(x,y,\dots,w)$ yields the Hamiltonian cycle
+obtained by adding the edge $wx$; this contains $e$.  The two maps are mutually
+inverse: starting from a Hamiltonian cycle through $e$, the construction returns
+the same cycle, and starting from a closing configuration we recover it.  (Each
+Hamiltonian cycle through $e$ has exactly two edges at $x$, namely $e$ and one
+other; only the traversal starting $x\to y$ produces a configuration whose root
+edge is $e$, so the correspondence is one-to-one.)  This proves Claim~1.
+
+\medskip
+\noindent\textbf{The lollipop graph $L$.}
+We define a graph $L$ on vertex set $\mathcal P$.  Let $P=(x,y,\dots,t,w)\in
+\mathcal P$ have free end $w$ and let $t$ be the vertex preceding $w$ in $P$.
+For each neighbour $u$ of $w$ in $H$ with
+\[
+u\neq t \quad\text{and}\quad u\neq x,
+\]
+the vertex $u$ occurs somewhere in $P$, say $P=(x,y,\dots,u,s,\dots,w)$ where $s$
+is the successor of $u$ in $P$ (such $s$ exists because $u\neq w$).  Define the
+\emph{rotation of $P$ at $u$} to be the sequence
+\[
+\rho_u(P)=(x,y,\dots,u,\,w,\dots,s),
+\]
+obtained by reversing the segment of $P$ strictly after $u$.  Concretely,
+$\rho_u(P)$ deletes the edge $us$ and adds the edge $uw$; it is again a
+Hamiltonian path with the same first two vertices $x,y$ (the prefix up to and
+including $u$ is unchanged, in particular the root edge $e$ is preserved because
+$u\neq x$), hence $\rho_u(P)\in\mathcal P$, and its new free end is $s$.
+
+Put an (undirected) edge of $L$ between $P$ and $\rho_u(P)$ for each admissible
+$u$.  This is well defined as an undirected graph: if $Q=\rho_u(P)$ has free end
+$s$ and predecessor (the vertex before $s$ in $Q$) equal to $w$, then $u$ is a
+neighbour of $s$ in $Q$ with $u\neq w$ and $u\neq x$, and applying the rotation
+of $Q$ at $u$ deletes $uw$ and adds $us$, recovering $P$.  Thus the relation
+``$Q=\rho_u(P)$ for some admissible $u$'' is symmetric, and $L$ is a genuine
+(simple) graph; distinct admissible $u$ give distinct neighbours $\rho_u(P)$
+because they have distinct free ends $s$ (the successor of $u$ along $P$ is
+determined by $u$).
+
+\medskip
+\noindent\textbf{Claim 2: The degree of $P$ in $L$.}
+With $w,t$ as above,
+\[
+\deg_L(P)=\#\{\,u\in N_H(w): u\neq t,\ u\neq x\,\}
+=\deg_H(w)-1-[\,w\sim x\,],
+\]
+where $[\,\cdot\,]$ is the Iverson bracket: we subtract $1$ for the predecessor
+$t$ (which is always a neighbour of $w$ and is never equal to $x$ because, for
+$m\ge 3$, $t$ is the vertex before the last and $x$ is the first), and we
+subtract one more exactly when $x$ itself is a neighbour of $w$ (then $u=x$ is
+excluded as it is not allowed to use the root vertex for a rotation).  This is
+Claim~2.
+
+\medskip
+\noindent\textbf{Parity of degrees.}
+Recall the hypothesis: every vertex of $H$ other than $x,y$ has odd degree.
+
+\emph{If $P$ is not closing}, then $w\not\sim x$, so by Claim~2
+$\deg_L(P)=\deg_H(w)-1$.  Here the free end $w$ satisfies $w\neq x$ and $w\neq y$
+(if $w=y$ then $m=2$, excluded).  Hence $w$ is one of the ``other'' vertices, so
+$\deg_H(w)$ is odd, and $\deg_L(P)=\deg_H(w)-1$ is \textbf{even}.
+
+\emph{If $P$ is closing}, then $w\sim x$, so $\deg_L(P)=\deg_H(w)-2$.  Again
+$w\notin\{x,y\}$ (a closing configuration has $w\sim x$, and $w=y$ is impossible
+for $m\ge3$), so $\deg_H(w)$ is odd and $\deg_L(P)=\deg_H(w)-2$ is \textbf{odd}.
+
+Therefore the vertices of $L$ of \emph{odd} degree are \emph{exactly} the closing
+configurations.
+
+\medskip
+\noindent\textbf{Conclusion.}
+In any finite graph the number of vertices of odd degree is even (handshake
+lemma).  Applied to $L$, this says the number of closing configurations is even.
+By Claim~1 the number of closing configurations equals the number of Hamiltonian
+cycles of $H$ that contain $e$.  Hence that number is even.
+\end{proof}
+
+\begin{corollary}[Thomason's second–Hamiltonian–cycle theorem]\label{cor:odd}
+Let $H$ be a Hamiltonian graph in which every vertex has odd degree.  Then $H$
+has at least two distinct Hamiltonian cycles.  In particular every cubic
+($3$-regular) Hamiltonian graph has at least two Hamiltonian cycles.
+\end{corollary}
+
+\begin{proof}
+Let $C$ be a Hamiltonian cycle of $H$ and let $e\in C$ be any edge.  Apply
+Theorem~\ref{thm:thomason} with this $e=xy$: the hypothesis ``all vertices other
+than $x,y$ have odd degree'' holds because \emph{all} vertices of $H$ have odd
+degree.  Thus the number of Hamiltonian cycles through $e$ is even.  It is at
+least $1$ because $C$ is one of them; being even, it is at least $2$.  Hence
+there is a Hamiltonian cycle $C'\neq C$ containing $e$.  Cubic graphs have all
+degrees equal to $3$, which is odd, so the last sentence follows.
+\end{proof}
+
+\section{A sufficient condition for $4$-regular graphs}
+
+We now use Theorem~\ref{thm:thomason} to handle a large class of $4$-regular
+Hamiltonian graphs.  The point is that, although a $4$-regular graph has all
+degrees even (so Theorem~\ref{thm:thomason} does not apply to $G$ itself), we may
+sometimes \emph{delete a matching} from the complementary $2$-factor to reach a
+graph whose degrees are all odd except at the two endpoints of one cycle edge,
+to which Theorem~\ref{thm:thomason} then applies.
+
+\begin{lemma}\label{lem:2factor}
+Let $G$ be a $4$-regular graph and $C$ a Hamiltonian cycle of $G$.  Then
+$F:=G-E(C)$ (the graph on $V(G)$ whose edges are the edges of $G$ not in $C$) is
+$2$-regular; hence $F$ is a vertex-disjoint union of cycles spanning $V(G)$.
+\end{lemma}
+
+\begin{proof}
+Every vertex $v$ has degree $4$ in $G$ and degree exactly $2$ in $C$ (a cycle
+uses two edges at each vertex), so $v$ has degree $4-2=2$ in $F$.  A finite graph
+in which every vertex has degree $2$ is a vertex-disjoint union of cycles
+covering all vertices.
+\end{proof}
+
+\begin{theorem}\label{thm:main}
+Let $G$ be a $4$-regular graph and $C$ a Hamiltonian cycle of $G$, with
+complementary $2$-factor $F=G-E(C)$.  Suppose there exist two vertices $x,y$ with
+$xy\in E(C)$ and a matching $M\subseteq E(F)$ that saturates every vertex of $G$
+except $x$ and $y$ (i.e.\ the set of vertices not covered by $M$ is exactly
+$\{x,y\}$).  Then $G$ has a Hamiltonian cycle $C'\neq C$.
+\end{theorem}
+
+\begin{proof}
+Define $H:=G-M$, the graph obtained from $G$ by deleting the edges of $M$.
+We verify the hypotheses of Theorem~\ref{thm:thomason} for $H$ and the edge
+$e=xy$.
+
+\emph{$H$ is a simple graph and $e\in E(H)$.}  Deleting edges from a simple graph
+keeps it simple.  Since $M\subseteq E(F)$ and $E(F)$ is disjoint from $E(C)$, the
+edge $e=xy\in E(C)$ is not in $M$, hence $e\in E(H)$.
+
+\emph{$C$ is a Hamiltonian cycle of $H$.}  All edges of $C$ lie in $E(G)\setminus
+E(F)\supseteq E(G)\setminus M$, so none of them is deleted; thus
+$E(C)\subseteq E(H)$ and $C$ is a Hamiltonian cycle of $H$.
+
+\emph{Degree parities in $H$.}  Each vertex $v$ has $\deg_G(v)=4$.  Deleting $M$
+lowers $\deg(v)$ by the number of edges of $M$ at $v$.  Since $M$ is a matching,
+this number is $0$ or $1$.  By hypothesis $M$ covers every vertex except $x,y$;
+so for $v\notin\{x,y\}$ exactly one edge of $M$ is at $v$, giving
+$\deg_H(v)=4-1=3$, which is odd; and for $v\in\{x,y\}$ no edge of $M$ is at $v$,
+giving $\deg_H(v)=4$.  Hence every vertex of $H$ other than $x,y$ has odd degree.
+
+By Theorem~\ref{thm:thomason} applied to $H$ and $e=xy$, the number of
+Hamiltonian cycles of $H$ containing $e$ is even.  The cycle $C$ is one such
+(it is a Hamiltonian cycle of $H$ and $e\in E(C)$), so this even number is at
+least $2$; hence there is a Hamiltonian cycle $C'$ of $H$ with $e\in E(C')$ and
+$C'\neq C$.
+
+Finally, $H$ is a subgraph of $G$ on the same vertex set, so every Hamiltonian
+cycle of $H$ is also a Hamiltonian cycle of $G$.  Thus $C'$ is a Hamiltonian
+cycle of $G$ different from $C$.
+\end{proof}
+
+\begin{corollary}\label{cor:bipartite}
+Let $G$ be a $4$-regular graph having a Hamiltonian cycle $C$ such that the
+complementary $2$-factor $F=G-E(C)$ is bipartite (equivalently, contains no odd
+cycle).  Then $G$ has at least two distinct Hamiltonian cycles.
+\end{corollary}
+
+\begin{proof}
+By Lemma~\ref{lem:2factor}, $F$ is a disjoint union of cycles.  Bipartite means
+all these cycles have even length.  An even cycle $C_{2k}$ has a perfect matching
+(take alternate edges); taking the union of one perfect matching from each cycle
+of $F$ yields a perfect matching $M_0\subseteq E(F)$ of $G$, i.e.\ $M_0$ saturates
+\emph{every} vertex.
+
+Set $H:=G-M_0$.  Then, exactly as in the proof of Theorem~\ref{thm:main}, every
+edge of $C$ survives in $H$ (since $M_0\subseteq E(F)$ is disjoint from $E(C)$),
+so $C$ is a Hamiltonian cycle of $H$; and each vertex $v$ now has
+$\deg_H(v)=4-1=3$, so $H$ is a cubic graph.  Cubic graphs have all degrees odd,
+so by Corollary~\ref{cor:odd}, $H$ has at least two Hamiltonian cycles.  Since
+$H\subseteq G$ on the same vertex set, $G$ has at least two distinct Hamiltonian
+cycles.
+
+(Alternatively, $M_0$ saturates everyone; pick any edge $e=xy\in E(C)$ and let
+$M=M_0\setminus\{$the two $M_0$-edges at $x$ and at $y\}$ to reduce to
+Theorem~\ref{thm:main}; but the direct cubic argument above is cleaner.)
+\end{proof}
+
+\begin{remark}
+Theorem~\ref{thm:main} is strictly more general than
+Corollary~\ref{cor:bipartite}: it also covers some graphs whose complementary
+$2$-factor $F$ has odd cycles, namely whenever $F$ admits a matching whose two
+uncovered vertices are joined by an edge of $C$.  For instance this happens if
+$F$ has exactly two odd cycles, one through $x$ and one through $y$ for some edge
+$xy\in C$, and all other cycles of $F$ are even.
+\end{remark}
+
+\section{Where the method stops, and the open core}
+
+\begin{remark}[The obstruction to a full proof]\label{rem:obstruction}
+The parity argument of Theorem~\ref{thm:thomason} is the standard route to
+``second Hamiltonian cycle'' results, and it settles \emph{every} graph in which
+all relevant vertices have odd degree (Corollary~\ref{cor:odd}).  For a genuinely
+$4$-regular graph $G$ \emph{all} degrees are even ($=4$), so the theorem does not
+apply to $G$ directly.  The repair used above is to delete a matching to create
+odd degrees while keeping $C$ intact; this requires the complementary
+$2$-factor $F=G-E(C)$ to contain a matching missing only the two endpoints of
+some edge of $C$.  Such a matching need not exist: if $F$ has an odd cycle, that
+cycle cannot be perfectly matched, and the parities of the cycles of $F$ may
+forbid leaving uncovered exactly a pair of $C$-adjacent vertices.  Concretely,
+one cannot always reduce a $4$-regular Hamiltonian graph to a cubic (or
+all-odd-degree) Hamiltonian graph by deleting a matching while preserving the
+given cycle $C$.
+
+More fundamentally, run the lollipop construction of
+Theorem~\ref{thm:thomason} directly on $G$ (which has $\deg_G(w)=4$ for the free
+end $w$ of any configuration).  By Claim~2 of that proof, a closing
+configuration then has $L$-degree $\deg_G(w)-2=2$ and a non-closing one has
+$L$-degree $\deg_G(w)-1=3$.  Thus the \emph{odd}-degree vertices of the lollipop
+graph $L$ are the \emph{non}-closing configurations, and the handshake lemma
+gives no information about the number of closing configurations (= Hamiltonian
+cycles through $e$).  Indeed one checks on examples that for $4$-regular graphs
+the number of Hamiltonian cycles through a fixed edge can be odd, so no
+edge-parity statement of Thomason type can hold.  This is exactly why the
+even-regular case escapes the parity method.
+\end{remark}
+
+\begin{remark}[Status of the full statement]
+The displayed problem is Sheehan's Conjecture and is open.  It is known to hold
+for $r$-regular Hamiltonian graphs once $r$ is large enough (Thomassen; with the
+best current bounds due to subsequent work of Haxell--Seamone--Verstra\"ete and
+Girão--Kittipassorn--Narayanan), and trivially for all \emph{odd} $r$ by
+Corollary~\ref{cor:odd}; but for the specific value $r=4$ no complete proof is
+known.  Accordingly, the results above
+(Theorems~\ref{thm:thomason},~\ref{thm:main} and
+Corollaries~\ref{cor:odd},~\ref{cor:bipartite}) constitute the strongest
+unconditional statements we can establish: a complete proof of the underlying
+parity theorem, and a proof of the conjecture for the broad family of
+$4$-regular Hamiltonian graphs possessing a Hamiltonian cycle whose
+complementary $2$-factor is bipartite (and slightly beyond).  We make no claim
+to have resolved the conjecture in full, and we have exhibited no counterexample
+(none is known); hence the problem can be neither proved nor disproved here.
+\end{remark}
+
+\end{document}

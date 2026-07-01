@@ -1,0 +1,31 @@
+{
+  "id": "rm-10623-5",
+  "problem_id": "rm-10623",
+  "dataset": "researchmath_14k",
+  "title": "'Sharpness' of (S3)+(S4) is asserted but the converse is not proved",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T22:13:53Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev2dca53b3",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T22:13:53Z"
+    },
+    {
+      "id": "c5cd4f9fa",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Severity: moderate (an over-claimed \"sharpness\").**\n\nProposition \"An arbitrary monotone collapse breaks the triangle inequality\" exhibits ONE monotone $v$ on $M_2$ ($v(a)=v(b)=2/3$, triangle $(a,\\top,b)$ giving $1>2/3$) that violates the triangle inequality. The critic confirmed this example numerically. From it, the Abstract, Remark \"precise dichotomy\", and Theorem \"main\" conclude that the state law is **sharp** and \"(S3) together with $\\&$-subadditivity (S4) is exactly the additional structure required.\"\n\nThis is an over-reading. A single counterexample shows (S3) **cannot simply be dropped**; it does NOT establish that (S3)+(S4) are **necessary** — i.e. that any monotone collapse yielding the integral pseudometric for all formulas must satisfy (S3) and (S4). The words \"sharp\" and \"exact additional ingredient\" assert a converse that is not proved.\n\n**Required fix.** Prove the converse, e.g.: assume the integral pseudometric holds for all theories over $L$ with a fixed full-support product measure; by specializing to constant formulas ($\\bar\\varphi(a)\\equiv x$, etc.) deduce the pointwise triangle inequality for all $x,y,z\\in L$, and from it derive (S3) (accessing $\\vee,\\wedge$ via $\\leftrightarrow$ with $\\top$) and (S4) (via $\\odot$). Absent such a derivation, downgrade \"sharp/exact\" to \"cannot be dropped\".",
+      "created_at": "2026-06-27T22:13:53Z"
+    }
+  ]
+}

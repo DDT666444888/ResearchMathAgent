@@ -1,0 +1,32 @@
+{
+  "id": "rm-10838-6",
+  "problem_id": "rm-10838",
+  "dataset": "researchmath_14k",
+  "title": "Compression generalization bound: conditioning/exchangeability stated loosely",
+  "status": "open",
+  "labels": [
+    "proof-gap",
+    "minor"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T23:49:00Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev307e0360",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T23:49:00Z"
+    },
+    {
+      "id": "c9cad3f43",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "The compression theorem writes: 'conditioned on the compression occupying exactly positions $I$ ... the remaining $n-\\ell$ examples are i.i.d. $\\mathcal D$.' This conflates conditioning on the DATA-DEPENDENT event $\\{\\mathcal A$ selects $I\\}$ (depends on all $n$ points) with conditioning on the POINTS at positions $I$.\n\n**Gap.** The conditional law of held-out points need not be i.i.d. $\\mathcal D$ under the selection event. The displayed Hoeffding+union-bound is correct but must be derived in the standard Littlestone–Warmuth form: for each FIXED $I$ ($|I|=\\ell\\le k$), held-out indicators are i.i.d. given the $\\ell$ compression points; then union-bound over the $\\binom{n}{\\le k}\\le n^k$ index sets, applied to the realized $I=\\mathcal A(T)$.\n\n**Severity.** Minor — rephrasing only.",
+      "created_at": "2026-06-27T23:49:00Z"
+    }
+  ]
+}

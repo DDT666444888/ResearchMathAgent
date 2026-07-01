@@ -1,0 +1,31 @@
+{
+  "id": "rm-08134-3",
+  "problem_id": "rm-08134",
+  "dataset": "researchmath_14k",
+  "title": "\"ρ bounded away from 1\" for odd n is overclaimed/unproven (internal inconsistency)",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T21:09:40Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev72a7fb68",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T21:09:40Z"
+    },
+    {
+      "id": "c30c419a0",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "The abstract, Theorem `thm:asy`(2), and Prop `prop:oddbounds` assert $\\rho(n)$ is bounded away from 1 for odd $n$. The only quantitative lower bound proved is $1-\\rho(n)\\ge\\big(\\tfrac{N/2-w_0}{N}\\big)^{w_0}$. This $\\to0$ super-exponentially: $1.5\\times10^{-5}$ ($n=5$), $1.5\\times10^{-7}$ ($n=7$), $8.7\\times10^{-22}$ ($n=11$); and equals exactly $0$ for $n=3$ (since $N/2=w_0=4$). So it does NOT keep $1-\\rho(n)$ bounded away from $0$. The solution even contradicts itself at the end of Prop `prop:oddbounds`: \"the bound is uniform in $n$ in the weaker sense that $1-\\rho(n)$ stays positive, which is all that is claimed.\" The strong claim in Thm `thm:asy`(2)/abstract is unsupported. Fix: prove a uniform constant $c>0$ with $1-\\rho(n)\\ge c$, e.g. via a second-moment (Paley-Zygmund) bound over the $A_{w_0}$ minimum-weight codewords vanishing on $S$, not a single union term.",
+      "created_at": "2026-06-27T21:09:40Z"
+    }
+  ]
+}

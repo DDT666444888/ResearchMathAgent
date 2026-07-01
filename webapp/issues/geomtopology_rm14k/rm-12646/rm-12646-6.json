@@ -1,0 +1,31 @@
+{
+  "id": "rm-12646-6",
+  "problem_id": "rm-12646",
+  "dataset": "geomtopology_rm14k",
+  "title": "Stage B: P_2=h^0(2K) identified with module degree-0 piece, not saturated cohomology",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T11:04:29Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev7582bd9a",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T11:04:29Z"
+    },
+    {
+      "id": "ca257b974",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Stage B (Lemma `lem:cohomology`): $P_2=h^0(2K_S)$ is identified with the degree-0 piece of a presenting module, not with sheaf cohomology.**\n\nThe proof computes $P_2(S)=\\dim_k(\\Omega^{(2)})_{\\deg 0}$ \"in the sheafified sense\". For a coherent sheaf $\\mathcal{F}$ on $\\mathrm{Proj}\\,R$, $h^0(\\mathcal{F})$ equals the degree-0 part of the **saturated** module (equivalently read off the BGG/Tate resolution), which in general differs from the degree-0 piece of an arbitrary presenting module $\\Omega^{(2)}$ by the submodule $H^0_{\\mathfrak{m}}$ (saturation). The text does not specify that saturation / the Tate output is used.\n\nAlso, the \"double-dual / reflexive hull of $\\Omega\\otimes_R\\Omega$\" language is unnecessary and slightly misleading: on a *smooth* surface $\\omega_S$ is invertible, so $\\omega_S^{\\otimes 2}$ is already locally free and its module is computed directly.\n\nThis is the mildest of the gaps (borderline between a genuine gap and a citable standard fact), but the identification $P_2=(\\text{module})_{\\deg 0}$ should be replaced by an explicit \"$=$ degree-0 part of the saturated module / Tate resolution of $\\omega_S^{\\otimes 2}$\" to be rigorous.",
+      "created_at": "2026-06-28T11:04:29Z"
+    }
+  ]
+}

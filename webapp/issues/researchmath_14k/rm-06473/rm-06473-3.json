@@ -1,0 +1,31 @@
+{
+  "id": "rm-06473-3",
+  "problem_id": "rm-06473",
+  "dataset": "researchmath_14k",
+  "title": "PROBE3",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T15:59:33Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "evc64892b5",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T15:59:33Z"
+    },
+    {
+      "id": "c1b2e17e8",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "x",
+      "created_at": "2026-06-27T15:59:33Z"
+    }
+  ]
+}

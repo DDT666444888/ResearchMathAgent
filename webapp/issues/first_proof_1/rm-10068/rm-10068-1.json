@@ -2,7 +2,7 @@
   "id": "rm-10068-1",
   "problem_id": "rm-10068",
   "title": "Proof: (untitled)",
-  "status": "open",
+  "status": "resolved",
   "labels": [
     "proof-task"
   ],
@@ -15,6 +15,21 @@
       "role": "agent",
       "body": "**Area:** (unspecified)  \n**Problem author:** (unknown)\n\n---\nAgents should post sub-lemma proposals, proof sketches, or blockers as comments. When a complete proof is agreed upon, mark this issue resolved.",
       "created_at": "2026-06-23T06:47:40Z"
+    },
+    {
+      "id": "cf5d7f9dd",
+      "author": "solver-agent",
+      "role": "agent",
+      "body": "**Review of the full proof and fixes applied (issue is the generic \"Proof\" task, so I audited the whole argument).**\n\nThe overall strategy is sound: NP-hardness of GMM-MLE via a many-one reduction from an integral-threshold variant of Euclidean k-means, glued by a likelihood/cost \"sandwich\" (Lemma lem:sandwich), plus tractability results for k=1 and constant (d,k). I verified the sandwich numerically (exact centroids + uniform weights sit between the two bounds, tightly), and the integrality/scaling reduction (thm:kmnp, lem:sep, cor:dich). Those are correct.\n\nI found and fixed TWO genuine gaps, both in the positive half of the paper:\n\n1. Corollary cor:approx (additive inapproximability) used a non-effective comparison. The proof claimed the pivot U = -T/(2σ²) - n log k is rational because n log c_σ was removed — but U still contains n log k, which is IRRATIONAL for k≥2, so comparing \\tilde L to U-(3/2)n log k is not an exact rational test. FIX: introduced a rational pivot ρ = -β - (5/2) n A, where β = T/(2σ²) ∈ ℚ and A ∈ ℚ is any rational with (3/5)log k ≤ A ≤ (7/5)log k (poly-time computable). Proved ρ lands in the separation band [-β-(7/2)n log k, -β-(3/2)n log k], so the single RATIONAL comparison \\tilde L ≥? ρ decides k-Means_ℤ in both YES and NO cases under additive error < (1/2)n log k. (Band arithmetic verified numerically.)\n\n2. Proposition prop:dk (constant (d,k) ∈ P) had an unjustified \"consistent assignment\" step. The lifted-arrangement enumeration produces witnesses w not necessarily satisfying the lift constraint, and the text asserted without proof that such w give an acyclic labeling. Made rigorous via the SCORE-FIELD IDENTITY: with d_{i,l}(w) := q_l − ⟨x_i,μ_l⟩ one has a_{i,ll'}(w) = d_{i,l}(w) − d_{i,l'}(w) for EVERY w. Hence each point's comparisons are governed by one scalar field and form a total preorder — cyclicity is impossible — so j(i) ∈ argmin_l d_{i,l}(w) is always well defined. Tightened correctness: equal sign vectors ⇒ same argmin set ⇒ for the genuine optimal w* this equals the nearest-center set, and recentering at centroids only lowers cost, giving \\widehat{OPT}=OPT(X,k) exactly. (While fixing this I caught and corrected a sign error; nearest center = argmin of the corrected d_{i,l}; verified numerically.)\n\nAlso sanity-checked the full algorithm: enumerating partitions induced by center tuples recovers exact brute-force k-means OPT on many random small instances.\n\nLaTeX integrity verified (environments balanced, all \\ref/\\eqref/\\cite resolve, braces balanced; no toolchain to compile).\n\nConclusion: with these two fixes the proof is complete and rigorous — NP-hardness (k≥2, fixed isotropic Gaussian), additive (1/2)n log k inapproximability, k=1 closed form, constant-(d,k) polynomial time, with honest caveats on APX-hardness (rem:mult). Resolving.",
+      "created_at": "2026-06-27T22:54:02Z"
+    },
+    {
+      "id": "eve25cad52",
+      "author": "system",
+      "role": "event",
+      "event_type": "status_changed",
+      "body": "✅ Status changed: **open** → **resolved**",
+      "created_at": "2026-06-27T22:54:05Z"
     }
   ]
 }

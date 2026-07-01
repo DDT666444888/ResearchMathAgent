@@ -45,6 +45,21 @@
       "event_type": "status_changed",
       "body": "✅ Status changed: **open** → **resolved**",
       "created_at": "2026-06-23T00:59:50Z"
+    },
+    {
+      "id": "c7137dcef",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "## Mathematical Review (independent critic pass over current solution.tex)\n\nI re-read `problem.tex` and the full `solution.tex` and re-derived the mathematics from scratch. No `docs_*.md` files were present in the workspace; I worked from the sources and the open tracker issues (prob-06-2 … prob-06-8).\n\n### Overall assessment\nThe submitted `solution.tex` is a faithful, fully rigorized expansion of the authors' own proof skeleton in `problem.tex`. I find the argument **fundamentally sound and, to my analysis, correct**. The remaining items are rigor/exposition, all already tracked. **No new genuine gap was found, so I opened no new issue.**\n\n### Independent verification (numpy)\n- Sharpness example (star center w=2,d=3, leaves 1,2,3): det L=1 (~Z^4), bad vertex reducible, weight-1 leaf irreducible — confirmed.\n- `||v*||^2 = tau_e/tau = (M^{-1})_{vv}` on 200 random apex multigraphs — matched.\n- Projection length formula `||x_C||^2 = (1/tau) sum F_{A,B}` on 60 random apex multigraphs (incl. parallel-edge 2-cycles), random integral x — exact match.\n- Apex inequality `||a||^2 >= ||v*||^2` for a.v != 0 on 150 configs — no violation.\n- **Main theorem, exhaustive:** all trees on 1<=n<=5 vertices, weights in {1,..,4}, exactly one bad vertex, L(T) positive definite — **35,113 configurations, 0 failures** (some vertex always irreducible).\n\n### Mapping to open issues (no duplicates opened)\n- **prob-06-3 (apex injection phi / left inverse psi)** — the linchpin. Step 3 is essentially complete via a canonical ell and explicit psi. One exposition point: psi is defined ONLY on im(phi), and Case 1's uniqueness/connectivity of the far part (unique T-edge f) relies on eq:phistruct (that {A,B}=phi(R) came from deleting one v-incident edge). The text briefly blurs 'data available to psi' vs 'data produced by phi'. One sentence closes it.\n- **prob-06-8 (edge-subgraph vs vertex-bipartition reading of {A,B})** — genuine clarity gap: F_{A,B} depends only on the bipartition, but tau, tau_e, bijections (a),(b),(c) and phi are all at the edge-subgraph level. Correct under the intended reading; should be stated. (Apex T=0-1-2 w=(2,4,3): 19 edge forests vs 6 bipartitions.)\n- **prob-06-2 (sign identity / cross-term cancellation)** — now derived via pairing d(omega_R)=0 with 1_B; add a note that bijection (c) and the identity hold for parallel-edge 2-cycles (which occur in apex multigraphs); verified numerically.\n- **prob-06-4 (||v*||^2 = tau_e/tau, e_C = v*)** — now fully proved; surjectivity C_1 ->> Cut* supplied by lem:primitive.\n- **prob-06-5 (primitivity / orthogonal summands; lem:irred)** — spelled out. Minor: lem:irred has a garbled fragment and writes s+t=±1; since pi(v) is the generator it should be s+t=1. Typo-level.\n- **prob-06-6 (badness/degree monotonicity under deleting v; Cor 2.7 hypotheses on T_i)** — handled in the Finale.\n\n### Bottom line\nThe proof is complete and correct under the intended (edge-subgraph) reading. Recommend acceptance once the open exposition points (especially prob-06-3 and prob-06-8) are tightened with the explicit one-line statements indicated. See the attached 'Critic Analysis' (analysis.md) for full background, proof structure, gap analysis, difficulty, suggested fixes, references, and the numerical verification log.",
+      "created_at": "2026-06-28T06:18:54Z"
+    },
+    {
+      "id": "evff35ca7e",
+      "author": "agent",
+      "role": "event",
+      "event_type": "doc_generated",
+      "body": "Document generated: **Critic Analysis**",
+      "created_at": "2026-06-28T06:18:59Z"
     }
   ],
   "documents": [
@@ -52,6 +67,12 @@
       "title": "Critic Analysis",
       "path": "questions/prob-06/analysis.md",
       "created_at": "2026-06-23T00:53:13Z",
+      "created_by": "agent"
+    },
+    {
+      "title": "Critic Analysis",
+      "path": "questions/prob-06/analysis.md",
+      "created_at": "2026-06-28T06:18:59Z",
       "created_by": "agent"
     }
   ]

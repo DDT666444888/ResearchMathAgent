@@ -1,0 +1,52 @@
+{
+  "id": "q10-10",
+  "problem_id": "q10",
+  "dataset": "first_proof_1",
+  "title": "Complexity comparison: worst-case claim contradicts n,r<q regime; false q<n^2r^2 step",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T04:00:23Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "evb4926523",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T04:00:23Z"
+    },
+    {
+      "id": "cfc00cd6f",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Gap (Lemma `lem:complexity`(iv), `solution.tex`).** Two distinct errors in the PCG-vs-direct complexity comparison.\n\n**(a) Worst-case comparison contradicts the stated regime.** The worst-case bound takes $m\\le nr$, giving $C_{\\mathrm{PCG}}=O(qn^2r^2)$ and claims an improvement over direct $O(n^3r^3)$ \"by the factor $\\Theta(q/(nr))$ ... precisely when $q=o(nr)$.\" But the problem's standing regime is $n,r<q$, which does **not** imply $q<nr$ (it fails whenever $q\\gtrsim nr$, which is possible since $q$ may be as large as $\\sim N=nM$ with $M$ huge). Hence the *worst-case* PCG bound does **not** beat the direct solve across the stated regime. The honest claim must rest on the *realized* iteration count $m\\ll nr$ (practical), not the worst case — and that in turn rests on the unproven conditioning bound (issue q10-5).\n\n**(b) False inequality in the subdominance argument.** The proof asserts \"$q<n^2r^2$ in any regime with $q<N$ and $n^2\\le N$.\" This implication is false: $q<N=nM$ does not give $q<n^2r^2$, because $M$ can vastly exceed $nr^2$. Consequently the term $qd/(n^3r^2)=o(1)$ is not guaranteed by the stated reasoning. (The dominant-term ratio $mq/(n^2r^2)$ still governs the comparison, so the *conclusion* is salvageable, but the cited justification is wrong and must be repaired.)\n\n**Fix.** State the comparison as: practical cost $O(m\\,qnr)$ with realized $m$ beats direct $O(n^3r^3)$ iff $m\\,q=o(n^2r^2)$; drop the false \"always wins in worst case\" framing and the incorrect $q<n^2r^2$ implication; keep the honest headline ratio $mq/(n^2r^2)$.\n\nVerified: under $n,r<q$ one can have $q>nr$ (e.g. $n=r=3$, $q$ up to $N$), so worst-case improvement is not guaranteed.",
+      "created_at": "2026-06-27T04:00:23Z"
+    },
+    {
+      "id": "cfcc29bad",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "## Critic re-review against current `solution.tex` (G2/G3 — complexity comparison)\n\nLemma `lem:complexity` correctly derives per-iteration cost $O(qnr+n^2r)=O(qnr)$,\npreconditioner apply $O(n^2r+nr^2)$, and setup $O(n^3+r^3+qdr)$. Two statements in part (iv)\nand (ii) are **unjustified / false reasoning** and must be repaired.\n\n**G2 (part iv).** The proof states: *\"the one-time terms are already $o(n^3r^3)$ because\n$n,r\\ge2$, $d<n$ and $q<n^2r^2$ in any regime with $q<N$ and $n^2\\le N$.\"* The step\n**$q<n^2r^2$ is NOT implied by $q<N$ and $n^2\\le N$**. Counterexample: $n=r=2\\Rightarrow\nn^2r^2=16$, while $q$ may be far larger under $q\\ll N$ (e.g. $N=10^{10}$, $q=10^4$). Hence\nthe term $qd/(n^3r^2)$ in the ratio need not be $o(1)$. The correct statement is the\n*conditional* one already present: PCG beats the direct solve **iff $m\\,q=o(n^2r^2)$** — this\ncondition is genuine, not automatic. Remove the \"in any regime ...\" justification and\npresent (iv) as a conditional comparison.\n\n**G3 (part ii).** The proof writes *\"more simply $n^2r<n^3$ as $r<q$\"* — a non-sequitur:\n$r<q$ does not imply $r<n$, so $n^2r<n^3$ is unjustified. The $n^2r$ term should instead be\nfolded into the **iteration** total via $n^2r\\le qnr=O(C_{\\mathrm{iter}})$; the one-time bound\n$O(n^3+r^3+qdr)$ should cover only the eig/Gram/RHS-assembly steps.\n\n**G4 (framing).** The worst-case claim \"$m\\le nr\\Rightarrow C_{\\mathrm{PCG}}=O(qn^2r^2)$,\nimprovement when $q=o(nr)$\" is correct but describes *small* $q$, whereas the practical\nmotivation is moderate $q$ with realized $m\\ll nr$. The headline advantage rests on $m\\ll nr$,\ni.e. on the conditioning claim of issue q10-5 — which is currently unproven (see that issue).\nThe two issues are coupled: the complexity win is only real if the iteration count is small.",
+      "created_at": "2026-06-27T11:24:38Z"
+    },
+    {
+      "id": "cb8c332d8",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "## Critic re-review against current (rewritten) `solution.tex`\n\nStill applicable in modified form. The current draft’s worst-case bound is $O(\\min(q,nr)\\,q\\,nr)$ with finite termination in $\\min(q,nr)+1$ iterations.\n\n**(a) Comparison only wins for $q<nr$.** When $q\\ge nr$ (allowed by $n,r<q\\ll N$, since $q$ may be $\\sim N=nM$), the bound is $O(nr\\cdot q\\cdot nr)=O(q\\,n^2r^2)\\ge O(n^3r^3)$ — **no improvement** over the direct solve. The closing Remark’s factor $\\approx n^2r^2/q$ holds only for $q\\ll nr$; the Remark does condition on this, but the Summary frames the cost as a universal win. State the comparison as conditional: PCG beats direct **iff $q=o(nr)$** in the worst case (and typically the realized iteration count is $\\ll\\min(q,nr)$).\n\n**(b) Memory penalty for $q>nr$.** Storing $G\\in\\mathbb R^{q\\times nr}$ costs $O(qnr)$, which **exceeds** the direct method’s $O(n^2r^2)$ when $q>nr$. The \"$O(qnr)$ memory\" claim is honest but should be contrasted with the direct footprint; for large $q$ the explicit-$G$ approach is memory-disadvantaged. An implicit matvec $\\mathcal A\\,\\mathrm{vec}(X)=\\mathrm{vec}(\\tilde K^T\\mathrm{diag}(c)\\tilde Z+\\lambda KX)$, $c_l=(\\tilde K_{l,:}X)\\tilde Z_{l,:}^T$, removes this penalty ($O(nr)$ extra memory).",
+      "created_at": "2026-06-28T10:34:29Z"
+    },
+    {
+      "id": "cceca2803",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "## Critic re-review (2026-06-28) against the workspace `solution.tex`\n\nConfirming **both errors are still present** in the spectral-sandwich / √κ version currently in the workspace (Lemma `lem:complexity`).\n\n**G2 (part iv, ~line 724).** Still states the one-time terms are $o(n^3r^3)$ \"because $n,r\\ge2$, $d<n$ and $q<n^2r^2$ in any regime with $q<N$ and $n^2\\le N$.\" The step **$q<n^2r^2$ is not implied by $q<N$, $n^2\\le N$** (counterexample $n=r=2\\Rightarrow n^2r^2=16$, while $q$ may be $\\sim10^4\\ll N=nM$). Delete this; present (iv) as the conditional: realized cost $O(m\\,qnr)$ beats direct $O(n^3r^3)$ **iff $m\\,q=o(n^2r^2)$**.\n\n**G3 (part ii, ~line 749).** \"more simply $n^2r<n^3$ as $r<q$\" is still a non-sequitur — $r<q$ does not give $r<n$. Absorb $n^2r$ via $n^2r\\le qnr=O(C_\\mathrm{iter})$ into the iteration total instead; keep one-time $O(n^3+r^3+qdr)$ for eig/Gram/RHS only.\n\n**G4 (framing, ~lines 726–728).** Worst-case improvement region \"$q=o(nr)$\" is *small* $q$; under $n,r<q$, $q\\gtrsim nr$ is allowed (since $q$ may be $\\sim N=nM$), so the worst-case PCG bound does not universally beat the direct solve. The genuine advantage rests on realized $m\\ll nr$ (depends on conditioning gap q10-5), not the worst case.\n\nRemains **open**. Full analysis in `analysis.md` (linked on q10-5).",
+      "created_at": "2026-06-28T22:29:46Z"
+    }
+  ]
+}

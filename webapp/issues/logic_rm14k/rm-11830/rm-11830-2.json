@@ -1,0 +1,31 @@
+{
+  "id": "rm-11830-2",
+  "problem_id": "rm-11830",
+  "dataset": "logic_rm14k",
+  "title": "G1: Define DP_rel(R,S) and relative chains (well-posedness)",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T01:39:46Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "eve5ce5404",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T01:39:46Z"
+    },
+    {
+      "id": "c505b9376",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Central design gap.** No definition of relative dependency pairs or relative chains exists yet; the entire framework hinges on choosing the *right* one.\n\n**Required:** define $\\mathrm{DP}_{\\mathrm{rel}}(R,S)$ and a *relative chain* so that task (1) holds:\n$$\\mathrm{SN}(R/S)\\iff\\text{no infinite relative chain over }\\mathrm{DP}_{\\mathrm{rel}}(R,S).$$\n\n**Candidate to test first.** Let $\\mathcal D$ = defined symbols of $R$. For $t=f(t_1,\\dots,t_n)$ with $f\\in\\mathcal D$, $t^\\#=f^\\#(t_1,\\dots,t_n)$.\n- $\\mathrm{DP}_{\\mathrm{rel}}(R,S)=\\{\\ell^\\#\\to t^\\# \\mid \\ell\\to r\\in R,\\ t\\trianglelefteq r,\\ \\mathrm{root}(t)\\in\\mathcal D\\}$ (pairs from $R$ only).\n- A **relative chain**: infinite sequence $s_i^\\#\\to t_i^\\#$ of pair instances + substitution $\\sigma$ with $t_i^\\#\\sigma \\to_{R\\cup S}^{*} s_{i+1}^\\#\\sigma$, plus minimality w.r.t. $R/S$.\n\n**Open design questions:**\n1. Mark $\\mathcal D(R)$ or $\\mathcal D(R\\cup S)$? Collapsing/duplicating $S$-rules may force the latter.\n2. Does $S$ generate pairs, or only contribute to the connection relation?\n3. Correct minimality: is it \"$t_i^\\#\\sigma$ is $R/S$-terminating\"?\n\n**Sanity constraint:** on $R=\\{a\\to b\\}$, $S=\\{b\\to b\\}$, $\\mathrm{SN}(R/S)$ holds ($S$ loops but only one $R$-step is ever possible), so the criterion *must* yield no infinite relative chain. This is a creative/design gap, the prerequisite for all others.",
+      "created_at": "2026-06-28T01:39:46Z"
+    }
+  ]
+}

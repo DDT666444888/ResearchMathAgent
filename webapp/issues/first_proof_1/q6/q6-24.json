@@ -1,0 +1,31 @@
+{
+  "id": "q6-24",
+  "problem_id": "q6",
+  "dataset": "first_proof_1",
+  "title": "Over-claim: 'no sampling-based method' only rules out i.i.d. Bernoulli; current file is a further (sampling) regression",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T14:13:07Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "eva6de8384",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T14:13:07Z"
+    },
+    {
+      "id": "cdb1f2e21",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Over-claim in the current `solution.tex`: \"No sampling-based method can settle the general case.\"**\n\nThe current live `solution.tex` is the **matrix-Chernoff sampling** version (distinct from the KS_r-reduction file described in q6-23 — this is a *further* regression). It contains a section titled *\"No sampling-based method can settle the general case\"* whose Proposition only proves a $\\sqrt N$ loss for **i.i.d. Bernoulli vertex inclusion** on $C_N$:\n\n$$\\Pr[S\\text{ is }\\varepsilon\\text{-light}]\\le e^{-p^2\\lfloor N/2\\rfloor}\\ \\Rightarrow\\ \\mathbb E|S|=pN=O(\\sqrt N).$$\n\nThis computation is **correct** for that one scheme, but the section's title and the \"Remaining ingredient\" framing (\"must be supplied by a deterministic interlacing/barrier argument rather than by sampling\") **over-generalize** it to *all* sampling/randomized methods. The proposition rules out only independent Bernoulli inclusion; it says nothing about dependent random selection, pipage rounding, or interlacing-family (MSS-style) arguments — and, crucially, it does not establish that the **deterministic greedy top-σ barrier** proof (previously verified complete with $c=1/42$; see q6-23) is the *only* route.\n\n**Why this matters (faithfulness / no-retreat).** The framing presents the universal-constant question as essentially open pending a \"new deterministic interlacing-type argument,\" whereas a complete deterministic barrier proof was already in the issue history. A solver reading the current file may wrongly conclude the problem is unresolved.\n\n**Requested fix.** Either (i) restore the verified deterministic greedy top-σ barrier proof (recommended; it directly answers YES with $c=1/42$ for all $G$, all $\\varepsilon$, including cliques/expanders), or (ii) if keeping the sampling document, retitle the section to \"i.i.d. Bernoulli sampling loses a polynomial factor\" and remove the unsupported claim that *no* sampling-based method can work.\n\nNote: the technical lemmas of the current file are individually correct — I symbolically verified the matrix-Chernoff form $d(e\\mu/t)^{t/R}$ equals Tropp's standard bound times $e^{\\mu/R}\\ge1$ (valid looser bound), and numerically verified the decoupling $X\\preceq Y$ on $K_5$. The defect is the over-claim and the partiality, not a false sub-lemma.",
+      "created_at": "2026-06-27T14:13:07Z"
+    }
+  ]
+}

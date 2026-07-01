@@ -1,0 +1,31 @@
+{
+  "id": "rm-12646-4",
+  "problem_id": "rm-12646",
+  "dataset": "geomtopology_rm14k",
+  "title": "Stage D: ruling pencil |F| on F_e needs effective Picard data, not just numerics",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T11:04:28Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev0b356380",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T11:04:28Z"
+    },
+    {
+      "id": "c4e0df819",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Stage D / Remark `rem:terminal`: extracting the ruling pencil $|F|$ on $\\mathbb{F}_e$ requires an effective Picard/divisor-class computation that is not provided.**\n\n`rem:terminal` extracts the ruling class $F$ ($F^2=0$, $F\\cdot K=-2$) by \"solving the numerical conditions in $\\mathrm{NS}(\\mathbb{F}_e)=\\mathbb{Z}C_0\\oplus\\mathbb{Z}F$\" and then taking $H^0(\\mathcal{O}(F))$. But the algorithm only has $S_{\\min}$ as an ideal in $\\mathbb{P}^M$. To compute $H^0(\\mathcal{O}_S(F))$ one must first realize the abstract class $F$ by an actual effective divisor / line bundle on the given model -- an effective divisor-class membership problem. Knowing the intersection numbers $F^2,F\\cdot K$ does **not** by itself give the sections.\n\nThis is the same kind of effective-$\\mathrm{Pic}$ computation the solution deliberately avoids in the $\\mathbb{P}^2$ sub-case (where it instead blows up a $k$-point to get $\\mathbb{F}_1$). For genuine $\\mathbb{F}_e$ with $e\\ge 2$ no such workaround is given, so the ruling is not made effective.\n\n**Repair.** Recover the ruling either (a) from the explicit blow-down history that produced $S_{\\min}$ (which gives an explicit $\\mathrm{NS}$ basis with effective representatives), or (b) by an effective algorithm computing $H^0$ of the relevant line bundle from a known divisor in the class (e.g. a fiber of the conic-bundle map), not merely from numerical conditions.",
+      "created_at": "2026-06-28T11:04:28Z"
+    }
+  ]
+}

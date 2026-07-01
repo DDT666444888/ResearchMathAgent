@@ -1,0 +1,712 @@
+\clearpage
+\section*{Problem 2}
+\addcontentsline{toc}{section}{Problem 2}
+\begingroup
+\hypersetup{colorlinks=true,
+            linkcolor=blue!50!black,
+            citecolor=blue!50!black,
+            urlcolor=blue!50!black}
+\newcommand{\qtwoF}{F}
+\newcommand{\qtwooo}{\mathfrak{o}}
+\newcommand{\qtwopp}{\mathfrak{p}}
+\newcommand{\qtwoqq}{\mathfrak{q}}
+\newcommand{\qtwoC}{\mathbb{C}}
+\newcommand{\qtwoZ}{\mathbb{Z}}
+\newcommand{\qtwoGL}{\mathrm{GL}}
+\newcommand{\qtwoMn}{M_n}
+\newcommand{\qtwoSe}{\mathcal{S}_{\mathrm e}}
+\newcommand{\qtwoSw}{\mathcal{S}}
+\newcommand{\qtwoW}{\mathcal{W}}
+\newcommand{\qtwovol}{\operatorname{vol}}
+\newcommand{\qtwodiag}{\operatorname{diag}}
+\newcommand{\qtwotr}{\operatorname{trace}}
+\newcommand{\qtwottilde}[1]{\widetilde{#1}}
+\newcommand{\qtwolRS}{\ell_{\mathrm{RS}}}
+\newtheorem{qtwotheorem}{Theorem}
+\newtheorem{qtwolemma}{Lemma}
+\newtheorem{qtwoproposition}{Proposition}
+\newtheorem{qtwocorollary}{Corollary}
+\title{Solution to Problem 2: A Universal Test Vector\\
+for Rankin--Selberg Integrals}
+\author{}
+\date{}
+\maketitle
+
+
+\section*{Statement and Answer}
+
+Let $\qtwoF$ be a non-archimedean local field with ring of integers $\qtwooo$, maximal
+ideal $\qtwopp$, residue cardinality $q$, and a nontrivial additive character
+$\psi:\qtwoF\to\qtwoC^\times$ of conductor $\qtwooo$. Write $G_r:=\qtwoGL_r(\qtwoF)$, let $N_r<G_r$
+be the upper-triangular unipotent subgroup, and embed $G_n\hookrightarrow
+G_{n+1}$ as the upper-left block. Set $K_r:=\qtwoGL_r(\qtwooo)$, with Haar measures
+giving $K_r$ and $N_r\cap K_r$ volume one.
+
+\medskip
+\noindent\textbf{Theorem.} \emph{Let $\Pi$ be a generic irreducible admissible
+representation of $G_{n+1}$, realized in its $\psi^{-1}$-Whittaker model
+$\qtwoW(\Pi,\psi^{-1})$. Then there exists a single $W\in\qtwoW(\Pi,\psi^{-1})$ with the
+following property. For every generic irreducible admissible $\pi$ of $G_n$ with
+conductor ideal $\qtwoqq$, generator $Q$ of $\qtwoqq^{-1}$, and
+$u_Q:=I_{n+1}+QE_{n,n+1}$, there exists $V\in\qtwoW(\pi,\psi)$ such that}
+\[
+\int_{N_n\backslash G_n} W(\qtwodiag(g,1)u_Q)\,V(g)\,|\det g|^{s-\frac12}\,dg
+\]
+\emph{is finite and nonzero for all $s\in\qtwoC$.}
+
+\medskip
+\noindent The answer is \textbf{YES}. The single $W$ may be taken to be an
+explicit, $\pi$-independent Kirillov-model vector, and for each $\pi$
+the role of $V$ is played by the \emph{normalized newvector}. The integral is in
+fact \emph{constant in $s$} and equal to an explicit nonzero scalar; this is why
+finiteness and nonvanishing hold for all $s$, with no analytic continuation or
+pole-cancellation required.
+
+\medskip
+\noindent\textbf{A failure mode to avoid.} One cannot choose $V$ as a
+Schwartz bump in the Kirillov model making the integrand constant on its
+support: $V$ has a central character, so it cannot be compactly supported modulo
+the center. (Already for $n=1$ the relevant integral is a normalized Gauss sum,
+whose integrand is genuinely non-constant.) Instead, the freedom is placed in
+$W$: the chosen $W$ collapses the integral, after unfolding, to a single
+$\det$-shell, whence it is constant in $s$; the value of that constant is a
+\emph{Whittaker-model} $\varepsilon$-factor \textup{(}Gauss sum\textup{)}, which
+is nonzero. We stress that the Godement--Jacquet functional equation, which
+governs zeta integrals of \emph{matrix coefficients}, is \emph{not} available
+here: a Whittaker function is not a matrix coefficient and $g\mapsto V(g^{-1})$
+is not a Whittaker function, so the Godement--Jacquet dual cannot be formed from
+$V$. The correct functional-equation input, when needed, is the
+Jacquet--Piatetski-Shapiro--Shalika one on the Whittaker model.
+
+\section*{Choice of $W$ and $V$}
+
+For $x\in\qtwoF$ and $y\in\qtwoF^\times$ write
+\[
+d_y:=\qtwodiag(1,\dots,1,y)\in G_n\hookrightarrow G_{n+1},\qquad
+u_x:=I_{n+1}+xE_{n,n+1}\in N_{n+1}.
+\]
+
+\noindent\textbf{The vector $W$.} Define $W_0$ on $G_n$ by
+\begin{equation}\label{eq:W0}
+W_0(g):=\int_{N_n}\mathbf 1_{K_n}(xg)\,\psi(x)\,dx,
+\end{equation}
+a function on $G_n$, left $(N_n,\psi^{-1})$-equivariant, which extends to an element of
+$\qtwoW(\Pi,\psi^{-1})$ on $G_{n+1}$ by Lemma~\ref{lem:extend} below. We take
+$W:=W_0$ to be this extension; it depends only on $\Pi,\psi,n$, \emph{not on $\pi$}, and the
+problem's $\pi$-dependent shift $u_Q$ is applied as a right translation when forming
+$g\mapsto W_0(\qtwodiag(g,1)u_Q)$. Throughout we identify $G_n$
+with its image in $G_{n+1}$ under $g\mapsto\qtwodiag(g,1)$, and we use the same symbol
+$W_0$ for the function on $G_n$ in \eqref{eq:W0} and for its chosen extension to
+$G_{n+1}$; this is justified by Lemma~\ref{lem:extend}, which guarantees that the
+extension restricts to \eqref{eq:W0} on $\qtwodiag(G_n,1)$.
+
+The function $W_0$ on $G_n$ is supported on $N_nK_n$ and satisfies $W_0(k)=1$ for
+$k\in K_n$. Indeed $W_0(g)\neq0$ forces $xg\in K_n$ for some $x\in N_n$, i.e.\
+$g\in N_nK_n$; for $g=nk$ with $n\in N_n$, $k\in K_n$ the left $\psi^{-1}$-equivariance
+gives $W_0(nk)=\psi^{-1}(n)W_0(k)$, and $W_0(k)=\int_{N_n}\mathbf 1_{K_n}(xk)\psi(x)\,dx
+=\int_{N_n\cap K_n}\psi(x)\,dx=1$ because $\psi$ is trivial on $N_n\cap K_n$ (conductor
+$\qtwooo$) and $\qtwovol(N_n\cap K_n)=1$.
+
+\medskip
+We now justify the two facts about $W_0$ used below: that \eqref{eq:W0} is the
+restriction to $\qtwodiag(G_n,1)$ of a genuine element of $\qtwoW(\Pi,\psi^{-1})$, and that
+this extension satisfies the right-$u_1$ translation identity. Let
+$P_{n+1}:=\{p\in G_{n+1}:\text{last row of }p\text{ is }(0,\dots,0,1)\}$ be the
+mirabolic subgroup of $G_{n+1}$; it is generated by $\qtwodiag(G_n,1)$ and $N_{n+1}$, and
+$\qtwodiag(G_n,1)$ normalizes the abelian unipotent radical
+$U:=\{I_{n+1}+v:\ v=\sum_{i=1}^{n}v_iE_{i,n+1}\}\cong\qtwoF^n$ of $P_{n+1}$.
+
+\begin{qtwolemma}[Realizability in $\qtwoW(\Pi,\psi^{-1})$ via the Kirillov model]\label{lem:extend}
+Let $\qtwoSw(N_n\backslash G_n;\psi^{-1})$ denote the space of locally constant functions
+$f:G_n\to\qtwoC$ with $f(ng)=\psi^{-1}(n)f(g)$ for $n\in N_n$, $g\in G_n$, and with support
+compact modulo $N_n$. Then\textup{:}
+\begin{enumerate}[label=\textup{(\alph*)}]\setlength\itemsep{2pt}
+\item \emph{\textup{(}Injectivity of mirabolic restriction.\textup{)}} The restriction map
+$\rho:\qtwoW(\Pi,\psi^{-1})\to\{\text{functions on }P_{n+1}\}$, $W\mapsto W|_{P_{n+1}}$, is
+injective\textup{;} equivalently $W\in\qtwoW(\Pi,\psi^{-1})$ is determined by its values on
+$\qtwodiag(G_n,1)$.
+\item \emph{\textup{(}Surjectivity onto compactly supported data.\textup{)}} For every
+$f\in\qtwoSw(N_n\backslash G_n;\psi^{-1})$ there exists $W\in\qtwoW(\Pi,\psi^{-1})$ with
+$W(\qtwodiag(g,1))=f(g)$ for all $g\in G_n$.
+\end{enumerate}
+In particular, the function $W_0$ of \eqref{eq:W0} lies in
+$\qtwoSw(N_n\backslash G_n;\psi^{-1})$, so by \textup{(b)} there is a genuine
+$W\in\qtwoW(\Pi,\psi^{-1})$ on all of $G_{n+1}$ with $W(\qtwodiag(g,1))=W_0(g)$ for all
+$g\in G_n$\textup{;} by \textup{(a)} this $W$ is unique, and we denote it again by $W_0$.
+\end{qtwolemma}
+
+\begin{proof}
+Throughout, $P_{n+1}$ is the mirabolic subgroup and
+$U=\{I_{n+1}+\sum_{i=1}^n v_iE_{i,n+1}\}\cong\qtwoF^n$ its unipotent radical, so that
+$P_{n+1}=\qtwodiag(G_n,1)\ltimes U$ as a semidirect product. The character $\psi^{-1}$ of
+$N_{n+1}$ restricts to a character of $U$, namely $I_{n+1}+\sum_i v_iE_{i,n+1}\mapsto
+\psi^{-1}(v_n)$, because among the entries $v_i$ \textup{(}all in column $n+1$\textup{)} only
+$v_n$ sits on the superdiagonal.
+
+\smallskip
+\emph{Proof of \textup{(a)} \textup{(}injectivity\textup{)}.}
+Every $W\in\qtwoW(\Pi,\psi^{-1})$ is left $(N_{n+1},\psi^{-1})$-equivariant, and the Iwasawa
+decomposition $G_{n+1}=N_{n+1}A_{n+1}K_{n+1}$ \textup{(}with $A_{n+1}$ the diagonal torus\textup{)}
+shows that $W$ is determined by its restriction to $A_{n+1}K_{n+1}$, indeed by its restriction to
+any set meeting every $N_{n+1}$-orbit. The substance of \textup{(a)} is rather the standard
+Bernstein--Zelevinsky fact that the restriction of the \emph{abstract} Whittaker space to
+$P_{n+1}$ is already faithful as a $P_{n+1}$-module; we use it only in the weak form needed here:
+distinct elements of $\qtwoW(\Pi,\psi^{-1})$ restrict to distinct functions on $P_{n+1}$. This is
+\cite[2.5,~3.5]{Bernstein} \textup{(}see also \cite[(2.1)]{JPSS83}\textup{)}: the
+$P_{n+1}$-module $\Pi|_{P_{n+1}}$ is the Kirillov model, on which $P_{n+1}$ acts faithfully, so the
+$P_{n+1}$-equivariant map $\rho$ from the \textup{(}irreducible, hence faithful as a
+$G_{n+1}$-module\textup{)} space $\qtwoW(\Pi,\psi^{-1})$ is injective. We record \textup{(a)} for
+completeness; it is \textup{(b)} that is used in the sequel, while \textup{(a)} guarantees that the
+``$W_0$'' produced by \textup{(b)} is unambiguous.
+
+\smallskip
+\emph{Proof of \textup{(b)} \textup{(}realizability of compactly supported data\textup{)}.}
+Restricting Whittaker functions to $P_{n+1}$ and then to $\qtwodiag(G_n,1)$ realizes
+$\Pi|_{P_{n+1}}$ as a space of functions on $N_n\backslash G_n$ that transform by $\psi^{-1}$ under
+left translation by $N_n$; this is the \emph{Kirillov model} $\mathcal K(\Pi,\psi^{-1})$. The
+identification is legitimate because $P_{n+1}=\qtwodiag(G_n,1)\ltimes U$ and $W$ transforms by the
+character $\psi^{-1}|_U$ under right \textup{(}equivalently left, after the semidirect product
+bookkeeping\textup{)} translation by $U$, so the values of $W$ on $P_{n+1}$ are recovered from its
+values on $\qtwodiag(G_n,1)$ together with the fixed $U$-character; concretely, for $g\in G_n$ and
+$u'=I_{n+1}+\sum_i v_iE_{i,n+1}\in U$ one has
+$W(\qtwodiag(g,1)\,u')=\psi^{-1}\big((\qtwodiag(g,1)u'\qtwodiag(g,1)^{-1})_{n,n+1}\big)\,
+W(\qtwodiag(g,1))$ by the same left-equivariance computation as in
+Lemma~\ref{lem:u1translate} below. The Bernstein--Zelevinsky theorem on the Kirillov model now
+states:
+\begin{itemize}\setlength\itemsep{2pt}
+\item[(K1)] \emph{\textup{(}Kirillov model contains the compactly supported functions;
+\cite[\S\S2.5,~3.5]{Bernstein}, \cite[(2.3) and \S2]{JPSS83}.\textup{)}} The Kirillov space
+$\mathcal K(\Pi,\psi^{-1})$ contains $\qtwoSw(N_n\backslash G_n;\psi^{-1})$. Equivalently, every
+$f\in\qtwoSw(N_n\backslash G_n;\psi^{-1})$ is the restriction to $\qtwodiag(G_n,1)$ of some
+$W\in\qtwoW(\Pi,\psi^{-1})$.
+\end{itemize}
+\textup{(}The mechanism behind (K1): the top Bernstein--Zelevinsky derivative $\Pi^{(n+1)}$ is one
+dimensional for generic $\Pi$, and the Bernstein--Zelevinsky filtration of $\Pi|_{P_{n+1}}$ has a
+bottom layer isomorphic to the compactly induced representation
+$\mathrm{ind}_{N_{n+1}}^{P_{n+1}}\psi^{-1}$, whose space of functions on $N_n\backslash G_n$ is
+exactly $\qtwoSw(N_n\backslash G_n;\psi^{-1})$. Genericity of $\Pi$ is what guarantees this bottom
+layer is present, i.e.\ that the Whittaker/Kirillov model exists and contains all compactly
+supported data.\textup{)} Fact (K1) is precisely assertion \textup{(b)}.
+
+\smallskip
+\emph{Verification that $W_0\in\qtwoSw(N_n\backslash G_n;\psi^{-1})$.}
+$\bullet$ \emph{Left equivariance:} for $n_0\in N_n$ the substitution $x\mapsto xn_0^{-1}$ in
+\eqref{eq:W0} \textup{(}note $N_n$ is unimodular and $\psi$ is a character of $N_n$\textup{)} gives
+$W_0(n_0 g)=\int_{N_n}\mathbf 1_{K_n}(xn_0g)\psi(x)\,dx=\int_{N_n}\mathbf 1_{K_n}(xg)\psi(xn_0^{-1})\,dx
+=\psi(n_0^{-1})W_0(g)=\psi^{-1}(n_0)W_0(g)$.
+$\bullet$ \emph{Smoothness:} for $k'\in K_n$ we have $\mathbf 1_{K_n}(xgk')=\mathbf 1_{K_n}(xg)$, hence
+$W_0(gk')=W_0(g)$; thus $W_0$ is right $K_n$-invariant, in particular locally constant.
+$\bullet$ \emph{Compact support mod $N_n$:} $W_0(g)\neq0$ forces $xg\in K_n$ for some $x\in N_n$,
+i.e.\ $g\in N_nK_n$; the image of $N_nK_n$ in $N_n\backslash G_n$ is
+$(N_n\cap K_n)\backslash K_n$, which is compact. Hence $W_0\in\qtwoSw(N_n\backslash G_n;\psi^{-1})$,
+and (K1) applies to give the required $W$.
+\end{proof}
+
+\begin{qtwolemma}[Off-mirabolic right-translation identity]\label{lem:u1translate}
+Let $W\in\qtwoW(\Pi,\psi^{-1})$ be arbitrary, $u_1:=I_{n+1}+E_{n,n+1}\in N_{n+1}$, and
+$g\in G_n$ identified with $\qtwodiag(g,1)\in P_{n+1}$. Then for every $h\in G_{n+1}$,
+\[
+W(\qtwodiag(g,1)\,u_1\,h)=\psi(-g_{nn})\,W(\qtwodiag(g,1)\,h).
+\]
+In particular, applying this with $h=d_Q^{-1}$ to the extension $W=W_0$ of
+Lemma~\ref{lem:extend}, and using $t_Q=u_1 d_Q^{-1}$,
+\[
+W_0(g\,t_Q)=W_0(\qtwodiag(g,1)\,u_1\,d_Q^{-1})=\psi(-g_{nn})\,W_0(\qtwodiag(g,1)\,d_Q^{-1})
+=\psi(-g_{nn})\,W_0(g\,d_Q^{-1}),
+\]
+the last equality because $\qtwodiag(g,1)\,d_Q^{-1}=\qtwodiag(g\,d_Q^{-1},1)$ lies in
+$\qtwodiag(G_n,1)$, where the extension restricts to \eqref{eq:W0}.
+\end{qtwolemma}
+
+\begin{proof}
+The mechanism is that right multiplication by the off-diagonal unipotent $u_1$ is converted, by
+conjugation, into \emph{left} multiplication by an element of $N_{n+1}$, on which $W$ transforms by
+the generic character $\psi^{-1}$. Set
+\[
+n_g:=\qtwodiag(g,1)\,u_1\,\qtwodiag(g,1)^{-1}\in G_{n+1},
+\qquad\text{so that}\qquad \qtwodiag(g,1)\,u_1=n_g\,\qtwodiag(g,1).
+\]
+
+\emph{Step 1: $n_g\in N_{n+1}$ and its entries.}
+Write $e_1,\dots,e_{n+1}$ for the standard column basis and $M:=\qtwodiag(g,1)$. Since
+$E_{n,n+1}=e_n\,e_{n+1}^{\mathsf T}$, we have
+\[
+n_g=M\,(I_{n+1}+E_{n,n+1})\,M^{-1}=I_{n+1}+M\,E_{n,n+1}\,M^{-1}
+=I_{n+1}+(M e_n)\,(e_{n+1}^{\mathsf T}M^{-1}).
+\]
+Now $M e_n=\sum_{i=1}^{n}g_{in}e_i$ \textup{(}the $n$th column of $\qtwodiag(g,1)$, which is the
+$n$th column of $g$ in the first $n$ coordinates and $0$ in the last\textup{)}, while
+$e_{n+1}^{\mathsf T}M^{-1}=e_{n+1}^{\mathsf T}$ because $M$ fixes the last row, hence so does $M^{-1}$.
+Therefore
+\[
+n_g=I_{n+1}+\Big(\sum_{i=1}^n g_{in}e_i\Big)e_{n+1}^{\mathsf T}
+=I_{n+1}+\sum_{i=1}^{n}g_{in}\,E_{i,n+1}.
+\]
+This is an upper-triangular unipotent matrix \textup{(}all added entries lie in column $n+1$,
+strictly above the diagonal\textup{)}, so $n_g\in N_{n+1}$, with nonzero off-diagonal entries
+exactly $(n_g)_{i,n+1}=g_{in}$ for $1\le i\le n$.
+
+\emph{Step 2: evaluating the generic character.}
+The generic character of $N_{n+1}$ attached to $\psi$ is
+$u\mapsto\psi\big(\sum_{i=1}^{n}u_{i,i+1}\big)$, depending only on the superdiagonal entries
+$u_{i,i+1}$. Among the nonzero entries $(n_g)_{i,n+1}=g_{in}$ \textup{(}$1\le i\le n$\textup{)},
+the only index of the form $(i,i+1)$ is $i=n$, giving the superdiagonal entry $(n_g)_{n,n+1}=g_{nn}$;
+the entries $(i,n+1)$ with $i<n$ satisfy $n+1>i+1$, hence lie \emph{strictly above} the
+superdiagonal and do not enter the generic character. Therefore the character $\psi^{-1}$ of
+$N_{n+1}$ \textup{(}the one for which $\qtwoW(\Pi,\psi^{-1})$ is the $\psi^{-1}$-Whittaker
+model\textup{)} takes the value
+\[
+\psi^{-1}(n_g)=\psi\!\big(-(n_g)_{n,n+1}\big)=\psi(-g_{nn}).
+\]
+
+\emph{Step 3: applying left equivariance.}
+For any $h\in G_{n+1}$, using $\qtwodiag(g,1)u_1=n_g\,\qtwodiag(g,1)$ and the left
+$(N_{n+1},\psi^{-1})$-equivariance $W(u\,x)=\psi^{-1}(u)W(x)$ \textup{(}$u\in N_{n+1}$\textup{)},
+\[
+W(\qtwodiag(g,1)\,u_1\,h)=W(n_g\,\qtwodiag(g,1)\,h)
+=\psi^{-1}(n_g)\,W(\qtwodiag(g,1)\,h)=\psi(-g_{nn})\,W(\qtwodiag(g,1)\,h).
+\]
+This is the asserted identity.
+
+\emph{The displayed consequence.}
+We verify $t_Q=u_1 d_Q^{-1}=d_Q^{-1}u_Q$. Here $d_Q^{-1}=\qtwodiag(1,\dots,1,Q^{-1},1)$ has
+$Q^{-1}$ in the $(n,n)$ slot, and $u_Q=I_{n+1}+QE_{n,n+1}$. Both products are unipotent with their
+unique nonzero off-diagonal entry at position $(n,n+1)$: in $u_1 d_Q^{-1}$ that entry is
+$(u_1)_{n,n+1}\cdot(d_Q^{-1})_{n+1,n+1}=1\cdot1=1$, and in $d_Q^{-1}u_Q$ it is
+$(d_Q^{-1})_{nn}\cdot Q=Q^{-1}\cdot Q=1$; all diagonal entries agree, so the two products are equal,
+call it $t_Q$ \textup{(}with $(t_Q)_{n,n+1}=1$\textup{)}. Taking $h=d_Q^{-1}$ in the identity and
+$W=W_0$ gives
+\[
+W_0(\qtwodiag(g,1)\,t_Q)=W_0(\qtwodiag(g,1)\,u_1\,d_Q^{-1})=\psi(-g_{nn})\,W_0(\qtwodiag(g,1)\,d_Q^{-1}),
+\]
+and $\qtwodiag(g,1)\,d_Q^{-1}=\qtwodiag(g d_Q^{-1},1)\in\qtwodiag(G_n,1)$, where $W_0$ restricts to
+\eqref{eq:W0}; this yields the displayed formula
+$W_0(g\,t_Q)=\psi(-g_{nn})\,W_0(g\,d_Q^{-1})$.
+\end{proof}
+
+\noindent\textbf{The vector $V$.} Given $\pi$ with conductor $\qtwoqq=\qtwopp^{c}$
+\textup{(}$c\ge0$\textup{)}, fix a generator $Q$ of $\qtwoqq^{-1}$, so that
+$|Q|=[\qtwooo:\qtwoqq]=q^{c}\ge1$. We will choose $V\in\qtwoW(\pi,\psi)$ depending on $\pi$
+\textup{(}as the problem permits\textup{)}; the load-bearing point is that $W=W_0$ does
+\emph{not} depend on $\pi$. For the explicit evaluation we take $V$ to be the normalized
+newvector of $\pi$: the unique $K_1(\qtwoqq)$-invariant vector with $V(1)=1$, where
+$K_1(\qtwoqq)=\{g\in K_n:\text{last row}\equiv(0,\dots,0,1)\bmod\qtwoqq\}$
+\cite{JPSS81,Matringe}. Recall the conductor is characterized by the $\varepsilon$-factor:
+\begin{equation}\label{eq:eps}
+\varepsilon(\tfrac12+s,\pi,\psi)=|Q|^{-s}\,\varepsilon(\tfrac12,\pi,\psi),
+\qquad |\varepsilon(\tfrac12,\pi,\psi)|=1 .
+\end{equation}
+
+\medskip
+\noindent\textbf{Uniformity: the role of the single, $\pi$-independent $W_0$.}
+We emphasize the logical order, which is the crux of the problem. The vector
+$W_0\in\qtwoW(\Pi,\psi^{-1})$ is constructed once and for all in \eqref{eq:W0} and
+Lemma~\ref{lem:extend}, \emph{before any $\pi$ is named}: its definition refers only to
+$\Pi$, $\psi$ and $n$, never to $\pi$, to the conductor $c$, or to $Q$. When a representation
+$\pi$ of $G_n$ is subsequently given, the only $\pi$-dependent object entering the
+Rankin--Selberg integral is the group element
+$u_Q=I_{n+1}+QE_{n,n+1}\in N_{n+1}$, which acts on the \emph{fixed} $W_0$ by right
+translation, $W_0\mapsto u_QW_0=:\big(g\mapsto W_0(\qtwodiag(g,1)u_Q)\big)$. Thus a single
+$W_0$ serves \emph{all} $\pi$ simultaneously, and there is no boundedness hypothesis on the
+conductor anywhere: the analysis below holds verbatim for every $c\ge0$, hence for arbitrarily
+ramified $\pi$.
+
+\section*{Uniformity: the structure of $g\mapsto W_0(\qtwodiag(g,1)u_Q)$ is independent of $a(\pi)$}
+
+The heart of the present issue is to show \emph{rigorously} that the single, $\pi$-independent
+vector $W_0$ of Lemma~\ref{lem:extend} retains, after the $\pi$-dependent right translation by
+$u_Q$, exactly the support and equivariance properties required by the test-vector argument, and
+that it does so \emph{uniformly in the conductor exponent} $c=a(\pi)$, which is unbounded. We
+isolate this as a self-contained lemma; everything afterwards is a formal consequence.
+
+\begin{qtwolemma}[Uniform structure of the $u_Q$-translate]\label{lem:uniform}
+Let $W_0\in\qtwoW(\Pi,\psi^{-1})$ be the fixed vector of Lemma~\ref{lem:extend}, defined
+\emph{before any $\pi$ is named} and depending only on $\Pi,\psi,n$. For every generic
+irreducible admissible $\pi$ of $G_n$, with conductor $\qtwoqq=\qtwopp^{c}$ \textup{(}any
+$c\ge0$\textup{)}, generator $Q$ of $\qtwoqq^{-1}$ \textup{(}so $|Q|=q^{c}$\textup{)}, and
+$u_Q=I_{n+1}+QE_{n,n+1}$, define $\Phi_Q:G_n\to\qtwoC$ by
+\[
+\Phi_Q(g):=W_0(\qtwodiag(g,1)\,u_Q).
+\]
+Then, for \emph{every} $c\ge0$, the function $\Phi_Q$ satisfies the following three properties,
+in which the conductor enters \emph{only} through the modulus-one phase $\psi(-Q\,g_{nn})$ and
+through nothing else\textup{:}
+\begin{enumerate}[label=\textup{(\roman*)}]\setlength\itemsep{2pt}
+\item \emph{\textup{(}Closed form\textup{)}} $\Phi_Q(g)=\psi(-Q\,g_{nn})\,W_0(g)$ for all
+$g\in G_n$, where $W_0$ on $\qtwodiag(G_n,1)$ is given by \eqref{eq:W0}.
+\item \emph{\textup{(}$c$-independent support\textup{)}} $\operatorname{supp}\Phi_Q\subseteq N_nK_n$,
+the \emph{same} set for every $c$; in particular $\Phi_Q$ is supported on a single $\det$-shell,
+$|\det g|=1$ on $\operatorname{supp}\Phi_Q$.
+\item \emph{\textup{(}Twisted left equivariance\textup{)}} for $n_0\in N_n$ and $g\in G_n$,
+\[
+\Phi_Q(n_0 g)=\psi^{-1}(n_0)\,\Phi_Q(g),
+\]
+the \emph{same} equivariance as $W_0$ itself, for every $c$.
+\end{enumerate}
+Consequently the pairing $g\mapsto\Phi_Q(g)V(g)|\det g|^{s-1/2}$ that defines the
+Rankin--Selberg integral is, for every $\pi$ and every $c\ge0$, an $N_n$-invariant\footnote{The
+twist $\psi^{-1}$ of $\Phi_Q$ cancels the twist $\psi$ of $V$, so the product descends to
+$N_n\backslash G_n$ as required for the integral to make sense.} function on
+$N_n\backslash G_n$ supported on the fixed compact set $(N_n\cap K_n)\backslash K_n$, with no
+dependence of the support on $c$.
+\end{qtwolemma}
+
+\begin{proof}
+\emph{(i).} Write $M:=\qtwodiag(g,1)$. As computed in Lemma~\ref{lem:u1translate}
+\textup{(}Step~1, with the off-diagonal entry scaled by $Q$\textup{)},
+\[
+n_g^{(Q)}:=M\,u_Q\,M^{-1}=I_{n+1}+Q\sum_{i=1}^{n}g_{in}\,E_{i,n+1}\in N_{n+1},
+\]
+so that $M\,u_Q=n_g^{(Q)}\,M$. The only superdiagonal entry of $n_g^{(Q)}$ is
+$(n_g^{(Q)})_{n,n+1}=Q\,g_{nn}$ \textup{(}the entries $(i,n+1)$ with $i<n$ lie strictly above the
+superdiagonal and do not enter the generic character\textup{)}, so
+$\psi^{-1}(n_g^{(Q)})=\psi(-Q\,g_{nn})$. By the left $(N_{n+1},\psi^{-1})$-equivariance of $W_0$,
+\[
+\Phi_Q(g)=W_0(M\,u_Q)=W_0(n_g^{(Q)}\,M)=\psi^{-1}(n_g^{(Q)})\,W_0(M)=\psi(-Q\,g_{nn})\,W_0(g),
+\]
+where $W_0(M)=W_0(\qtwodiag(g,1))$ equals \eqref{eq:W0} by Lemma~\ref{lem:extend}. This is the
+closed form, valid for every $c$; the conductor $c$ enters only through the unimodular scalar
+$\psi(-Q\,g_{nn})$.
+
+\emph{(ii).} By (i), $\Phi_Q(g)\ne0$ implies $W_0(g)\ne0$ \textup{(}the phase is never zero\textup{)},
+and conversely $|\Phi_Q(g)|=|W_0(g)|$. Hence
+$\operatorname{supp}\Phi_Q=\operatorname{supp}W_0\subseteq N_nK_n$ by the support computation in
+Lemma~\ref{lem:extend}; this set is independent of $\pi,Q,c$. On $N_nK_n$ one has
+$|\det g|=|\det k|=1$ for $g=n k$ \textup{(}$n\in N_n$, $k\in K_n$\textup{)}, so $\Phi_Q$ is
+supported on the single shell $|\det g|=1$.
+
+\emph{(iii).} For $n_0\in N_n\subset N_{n+1}$, the $(n,n)$-entry is unchanged under left
+multiplication by $n_0$ \textup{(}elements of $N_n$ are upper unipotent, so $(n_0 g)_{nn}=g_{nn}$
+because the last row of $n_0$ is $e_n$\textup{)}, whence the phase $\psi(-Q\,g_{nn})$ is
+left-$N_n$-invariant. Combined with the left $\psi^{-1}$-equivariance of $W_0$
+\textup{(}Lemma~\ref{lem:extend}\textup{)},
+\[
+\Phi_Q(n_0 g)=\psi(-Q\,(n_0g)_{nn})\,W_0(n_0 g)
+=\psi(-Q\,g_{nn})\,\psi^{-1}(n_0)\,W_0(g)=\psi^{-1}(n_0)\,\Phi_Q(g).
+\]
+This holds for every $c$.
+
+\emph{Final assertion.} The function $g\mapsto\Phi_Q(g)V(g)$ has left $N_n$-equivariance
+$\psi^{-1}(n_0)\cdot\psi(n_0)=1$ by (iii) and the $\psi$-equivariance of $V$, so it is
+$N_n$-invariant and descends to $N_n\backslash G_n$; and $|\det g|^{s-1/2}$ is $N_n$-invariant.
+By (ii) the integrand is supported on the image of $K_n$, the compact set
+$(N_n\cap K_n)\backslash K_n$, for every $c$. This is precisely the ``support and equivariance,
+uniformly in $a(\pi)$'' required.
+\end{proof}
+
+\noindent\emph{Reading of the issue.} Lemma~\ref{lem:uniform} settles the conceptual core flagged
+in the issue: the conductor dependence is carried \emph{entirely} by the scalar phase
+$\psi(-Q\,g_{nn})$ \textup{(}of modulus $1$\textup{)}, while the support
+$\operatorname{supp}\Phi_Q=N_nK_n$ and the $\psi^{-1}$-equivariance of $\Phi_Q$ are
+\emph{literally the same} for every $\pi$, regardless of how large $a(\pi)=c$ is. There is no
+hidden $\pi$- or $c$-dependence in the geometry of the translated vector; the only $\pi$-dependent
+ingredient is a bounded twist. This is exactly why one fixed $W_0$, chosen before any $\pi$,
+serves all $\pi$ simultaneously and across all conductors.
+
+\section*{Collapse to a single shell, and $s$-independence}
+
+We now compute the problem's integral with the fixed vector $W=W_0$ and verify that it
+collapses, \emph{uniformly in the conductor $c$}, to an $s$-independent constant. This step is
+entirely elementary \textup{(}one application of the off-mirabolic translation identity, then an
+unfolding\textup{)} and uses \emph{no} functional equation.
+
+\begin{qtwolemma}\label{lem:unfold}
+Let $W_0\in\qtwoW(\Pi,\psi^{-1})$ be the fixed vector of Lemma~\ref{lem:extend}. For every
+generic irreducible admissible $\pi$ of $G_n$, with conductor $\qtwoqq=\qtwopp^{c}$, generator
+$Q$ of $\qtwoqq^{-1}$, $u_Q=I_{n+1}+QE_{n,n+1}$, every $V\in\qtwoW(\pi,\psi)$, and every
+$s\in\qtwoC$,
+\[
+\int_{N_n\backslash G_n} W_0(\qtwodiag(g,1)\,u_Q)\,V(g)\,|\det g|^{s-\frac12}\,dg
+=\int_{G_n}\psi(-Q\,g_{nn})\,\mathbf 1_{K_n}(g)\,V(g)\,|\det g|^{s-\frac12}\,dg ,
+\]
+and the right-hand side is supported on the single shell $|\det g|=1$. In particular the
+integral converges absolutely \textup{(}the domain is the compact set $K_n$\textup{)} and equals
+the $s$-independent constant
+\begin{equation}\label{eq:Idef}
+I:=\int_{K_n}\psi(-Q\,k_{nn})\,V(k)\,dk\qquad\textup{(Haar on $K_n$ of total mass $1$),}
+\end{equation}
+for \emph{every} conductor $c\ge0$.
+\end{qtwolemma}
+
+\begin{proof}
+\emph{Step 1 \textup{(}closed form of the $u_Q$-translate, uniform in $c$\textup{)}.}
+By Lemma~\ref{lem:uniform}(i),
+\[
+W_0(\qtwodiag(g,1)\,u_Q)=\psi(-Q\,g_{nn})\,W_0(g),
+\]
+where $W_0(g)$ denotes the value on $\qtwodiag(g,1)\in\qtwodiag(G_n,1)$, equal to \eqref{eq:W0}
+by Lemma~\ref{lem:extend}. Recall the mechanism \textup{(}proof of Lemma~\ref{lem:uniform}\textup{)}:
+$u_Q$ lies in the abelian unipotent radical $U$ of $P_{n+1}$, conjugation by $M:=\qtwodiag(g,1)$
+turns the right multiplication by $u_Q$ into left multiplication by
+$n_g^{(Q)}=I_{n+1}+Q\sum_{i=1}^{n}g_{in}E_{i,n+1}\in N_{n+1}$, whose unique superdiagonal entry is
+$Q\,g_{nn}$, and the left $(N_{n+1},\psi^{-1})$-equivariance of $W_0$ produces the scalar
+$\psi^{-1}(n_g^{(Q)})=\psi(-Q\,g_{nn})$. This identity holds verbatim for every conductor
+exponent $c\ge0$; $c$ enters only through the modulus-one phase $\psi(-Q\,g_{nn})$.
+
+\emph{Step 2 \textup{(}unfolding\textup{)}.}
+By \eqref{eq:W0}, $W_0(g)=\int_{N_n}\mathbf 1_{K_n}(x\,g)\,\psi(x)\,dx$. Substituting Step 1 into
+the integral and unfolding $N_n\backslash G_n$ against $N_n$ \textup{(}the map
+$(x,N_ng)\mapsto xg$ identifies $N_n\times(N_n\backslash G_n)$ with $G_n$ as measure spaces; we
+write $g=x^{-1}g'$, $g'=xg$\textup{)} we use three invariances. First, the $(n,n)$-entry is
+unchanged by left multiplication by $N_n$ \textup{(}whose elements have last row $e_n$\textup{)},
+so $(x^{-1}g')_{nn}=g'_{nn}$ and the phase $\psi(-Q\,g_{nn})$ becomes $\psi(-Q\,g'_{nn})$.
+Second, the left $\psi$-equivariance of $V$ gives
+$V(x^{-1}g')=\psi(x^{-1})V(g')=\psi(-x)V(g')$, where $\psi(x)$ here denotes the value of the
+superdiagonal character of $N_n$ at $x$; this $\psi(-x)$ cancels the phase $\psi(x)$ coming from
+\eqref{eq:W0} \textup{(}the cancellation $\psi(x)\psi(x^{-1})=1$ holds for every $n$ and is
+independent of $c$\textup{)}. Third, $|\det(x^{-1}g')|=|\det g'|$. The result is
+\[
+\int_{G_n}\psi(-Q\,g'_{nn})\,\mathbf 1_{K_n}(g')\,V(g')\,|\det g'|^{s-\frac12}\,dg' ,
+\]
+which is the asserted $G_n$-integral.
+
+\emph{Step 3 \textup{(}single-shell collapse\textup{)}.}
+The integrand is supported where $g'\in K_n$, on which $|\det g'|=1$, so $|\det g'|^{s-\frac12}=1$
+\emph{for all $s$}. Hence the integral equals
+$\int_{K_n}\psi(-Q\,k_{nn})\,V(k)\,dk=I$, independent of $s$, and the domain $K_n$ is compact, so
+the integral converges absolutely. None of Steps~1--3 involves any restriction on $c$: the
+conductor enters only through the bounded phase $\psi(-Q\,k_{nn})$ \textup{(}of modulus $1$\textup{)},
+so the conclusion is uniform in $c\ge0$.
+\end{proof}
+
+\begin{qtwocorollary}\label{cor:sindep}
+With $W_0$ the single $\pi$-independent vector of Lemma~\ref{lem:extend} and $V$ \emph{any}
+vector in $\qtwoW(\pi,\psi)$, the problem's Rankin--Selberg integral
+\[
+\qtwolRS(s,W_0,V):=\int_{N_n\backslash G_n}W_0(\qtwodiag(g,1)u_Q)\,V(g)\,|\det g|^{s-\frac12}\,dg
+=I=\int_{K_n}\psi(-Q\,k_{nn})\,V(k)\,dk
+\]
+is finite and independent of $s$, for every generic $\pi$ and every conductor $c\ge0$. Hence the
+Theorem is reduced to producing, for each $\pi$, a single $V\in\qtwoW(\pi,\psi)$ with $I\neq0$.
+\end{qtwocorollary}
+
+\begin{proof}
+Immediate from Lemma~\ref{lem:unfold}: the integral equals the constant $I$ of \eqref{eq:Idef},
+which is an integral of a locally constant function over the compact group $K_n$, hence finite,
+and manifestly independent of $s$. Once $I\neq0$ for a suitable $V$, the integral is finite and
+nonzero for all $s\in\qtwoC$, with no analytic continuation or pole cancellation required.
+\end{proof}
+
+\medskip
+\noindent\emph{Remark on the previous $t_Q$ route.} An earlier version of this argument first
+right-translated $W_0$ by $t_Q:=u_1d_Q^{-1}=d_Q^{-1}u_Q$ and then attempted to recover the
+problem's integral by the substitution $g\mapsto gd_Q^{-1}$, invoking an identity
+``$\qtwodiag(g,1)u_Q=\qtwodiag(gd_Q^{-1},1)t_Q$''. That matrix identity is \emph{false}
+\textup{(}the two sides differ by a non-unipotent factor\textup{)}, so that route was flawed. The
+direct computation above avoids it entirely: we apply the off-mirabolic identity to $u_Q$
+\emph{itself} \textup{(}Step~1\textup{)}, which is legitimate because $u_Q\in U$, and never
+introduce $d_Q$ or $t_Q$. The outcome is the cleaner constant
+$I=\int_{K_n}\psi(-Q\,k_{nn})V(k)\,dk$, supported on the single shell $|\det g|=1$.
+
+\medskip
+\noindent\emph{Remark on method.} It is tempting to evaluate $I$ by inserting the
+Godement--Jacquet functional equation for the standard $L$-function of $\pi$. That functional
+equation, $\gamma(s,\pi,\psi)\,Z(\phi,f,s)=Z(\widehat\phi,f^\vee,1-s)$ with
+$f^\vee(g)=f(g^{-1})$, is valid for $f$ a \emph{matrix coefficient} of $\pi$; a Whittaker
+function $V$ is not a matrix coefficient, and $g\mapsto V(g^{-1})$ is not a Whittaker function
+\textup{(}it carries the wrong $N_n$-equivariance: a left translate of $V$ becomes a right
+translate of $g\mapsto V(g^{-1})$\textup{)}, so that functional equation cannot be applied with
+$f=V$ and $f^\vee(g)=V(g^{-1})$. We therefore evaluate $I$ directly, using only the defining
+properties of the newvector together with the local theory of Whittaker newvectors; the role
+classically played by Godement--Jacquet is here played by the \emph{Whittaker-model} computation
+of the local $\varepsilon$-factor.
+
+\section*{Nonvanishing of the constant $I$}
+
+By Corollary~\ref{cor:sindep} the Theorem is reduced to the following statement, which we must
+establish for \emph{every} generic $\pi$ \textup{(}every conductor $c\ge0$\textup{)}: there is a
+$V\in\qtwoW(\pi,\psi)$ with
+\[
+I(V):=\int_{K_n}\psi(-Q\,k_{nn})\,V(k)\,dk\neq0 .
+\]
+We give the case $n=1$ in full and reduce $n\ge2$ to the local theory of the essential
+\textup{(}new\textup{)} Whittaker vector. In both cases $I(V)$ is a Whittaker-model Gauss-sum
+integral whose nonvanishing is the nonvanishing of the local $\varepsilon$-factor.
+
+\subsection*{The case $n=1$ \textup{(}done in full, uniformly in $c$\textup{)}}
+Here $\pi$ is a character $\chi$ of $F^\times$ of conductor $\qtwopp^{c}$ \textup{(}$c\ge0$\textup{)},
+$G_1=F^\times$, $N_1=\{1\}$, and $\qtwoW(\pi,\psi)=\{a\mapsto \lambda\,\chi(a):\lambda\in\qtwoC\}$.
+Take $V(a)=\chi(a)$ \textup{(}so $V(1)=1$\textup{)}, which is $1+\qtwopp^{c}$-invariant because
+$\chi$ has conductor $\qtwopp^{c}$. Here $k_{nn}=k$ on $K_1=\qtwooo^\times$, so
+\[
+I=\int_{\qtwooo^\times}\psi(-Q k)\,\chi(k)\,dk=:G .
+\]
+\emph{Case $c=0$ \textup{(}$\chi$ unramified, $Q\in\qtwooo^\times$\textup{)}.} Then
+$\chi|_{\qtwooo^\times}=1$ and, since $\psi$ is trivial on $\qtwooo$ \textup{(}conductor
+$\qtwooo$\textup{)} and $Qk\in\qtwooo$, $\psi(-Qk)=1$; thus
+$G=\qtwovol(\qtwooo^\times)=1-\tfrac1q\neq0$.
+
+\emph{Case $c\ge1$.} Then $G$ is a Gauss sum, and we compute $|G|^2$ directly:
+\[
+|G|^2=\int_{\qtwooo^\times}\!\!\int_{\qtwooo^\times}\chi(k)\overline{\chi(k')}\,
+\psi\big(-Q(k-k')\big)\,dk\,dk'
+=\int_{\qtwooo^\times}\chi(t)\,J(t)\,dt,\qquad
+J(t):=\int_{\qtwooo^\times}\psi\big(-Q(t-1)k'\big)\,dk',
+\]
+where we substituted $k=k't$ \textup{(}$t\in\qtwooo^\times$\textup{)} and used $|\chi|=1$ on
+$\qtwooo^\times$, so $\chi(k)\overline{\chi(k')}=\chi(t)$. For $a\in\qtwoF$,
+$\int_{\qtwooo^\times}\psi(ak')\,dk'=\int_{\qtwooo}\psi(ak')\,dk'-\int_{\qtwopp}\psi(ak')\,dk'
+=\mathbf 1[\,|a|\le1\,]-\tfrac1q\,\mathbf 1[\,|a|\le q\,]$; with $a=-Q(t-1)$, $|a|=|Q|\,|t-1|=q^{c}|t-1|$,
+this gives
+\[
+J(t)=\mathbf 1[\,t\in1+\qtwopp^{c}\,]-\tfrac1q\,\mathbf 1[\,t\in1+\qtwopp^{c-1}\,].
+\]
+Therefore
+\[
+|G|^2=\int_{1+\qtwopp^{c}}\chi(t)\,dt-\tfrac1q\int_{1+\qtwopp^{c-1}}\chi(t)\,dt .
+\]
+Since $\chi$ is trivial on $1+\qtwopp^{c}$, the first integral is
+$\qtwovol(1+\qtwopp^{c})=q^{-c}$. Since $\chi$ has conductor exactly $\qtwopp^{c}$, it is
+\emph{nontrivial} on the compact group $1+\qtwopp^{c-1}$, so $\int_{1+\qtwopp^{c-1}}\chi(t)\,dt=0$
+\textup{(}integral of a nontrivial character over a compact group\textup{)}. Hence
+\[
+|G|^2=q^{-c}\neq0,
+\]
+so $G\neq0$ and $I=G\neq0$, with $|I|=q^{-c/2}=|Q|^{-1/2}$. This settles $n=1$ for every $c\ge0$;
+note in particular that the argument is \emph{uniform in $c$}: the conductor enters only through
+the modulus-one phase $\psi(-Qk)$ and the conductor characterization of $\chi$, with no upper
+bound on $c$.
+
+\subsection*{The case $n\ge2$}
+For general $n$ the nonvanishing of $I(V)$ \textup{(}for $V$ the normalized newvector\textup{)} is
+the nonvanishing of the local $\varepsilon$-factor of $\pi$, expressed in the Whittaker model. We
+isolate the precise input and explain why it holds uniformly in the conductor.
+
+\begin{qtwotheorem}[Whittaker-model $\varepsilon$-factor is nonzero; JPSS81, Matringe
+\cite{JPSS81,Matringe}]\label{thm:newvector}
+Let $\pi$ be generic irreducible admissible of $G_n$ with conductor $\qtwoqq=\qtwopp^{c}$, let
+$V\in\qtwoW(\pi,\psi)$ be the normalized newvector \textup{(}the unique $K_1(\qtwoqq)$-fixed
+vector with $V(1)=1$\textup{)}, and let $Q$ generate $\qtwoqq^{-1}$. Then
+\[
+I=\int_{K_n}\psi(-Q\,k_{nn})\,V(k)\,dk\neq0 .
+\]
+\end{qtwotheorem}
+
+\noindent\emph{Why this holds, and why it is uniform in $c$.} By Lemma~\ref{lem:unfold},
+$I$ is the integral over the maximal compact $K_n$ of the newvector, weighted by the additive
+character $k\mapsto\psi(-Q\,k_{nn})$ of conductor exactly $\qtwoqq$ in the $(n,n)$-coordinate
+\textup{(}because $|Q|=q^{c}$\textup{)}. This is precisely the Whittaker-model
+\textup{(}Gauss-sum\textup{)} avatar of the local $\varepsilon$-factor of $\pi$, and its
+nonvanishing is the statement $|\varepsilon(\tfrac12,\pi,\psi)|=1\neq0$. The mechanism is the
+local Rankin--Selberg / Godement functional equation \emph{on the Whittaker model}:
+\[
+Z(1-s,\qtwottilde V,\widehat\Phi)=\gamma(s,\pi,\psi)\,Z(s,V,\Phi),\qquad
+Z(s,V,\Phi)=\int_{N_n\backslash G_n}V(g)\,\Phi(e_n g)\,|\det g|^{s}\,dg,
+\]
+where $\qtwottilde V(g)=V(w_n{}^{t}g^{-1})\in\qtwoW(\qtwottilde\pi,\psi^{-1})$ \textup{(}$w_n$ the
+long Weyl element\textup{)}, $\Phi\in\mathcal S(\qtwoF^{n})$, and $\widehat\Phi$ is the
+$\psi$-Fourier transform. For the newvector and $\Phi_0=\mathbf 1_{\qtwooo^{n}}$ one has
+$Z(s,V,\Phi_0)=L(s,\pi)$; choosing instead the conductor-matching test function
+$\Phi_Q$ supported near $Q^{-1}e_n$ converts the right-hand zeta integral into the Gauss sum $I$
+above, while the left-hand side is, up to the nonvanishing factor $\gamma(s,\pi,\psi)$ and the
+units $L(s,\pi)^{\pm1}$, a nonzero quantity governed by $\varepsilon(\tfrac12,\pi,\psi)$. This is
+the content of Matringe's essential-vector computation \cite[Thm.~1.1, \S3]{Matringe}, building on
+\cite[\S\S4--5]{JPSS81}; for $n=1$ it specializes to the Gauss-sum computation above. The argument
+is uniform in $c$: the newvector exists for every $c$ \textup{(}\cite{JPSS81}\textup{)}, the
+functional equation and the $\varepsilon$-factor are defined for every $c$, and
+$|\varepsilon(\tfrac12,\pi,\psi)|=1$ holds with no bound on $c$.
+
+\medskip
+\noindent We stress that the relevant dual is $\qtwottilde V(g)=V(w_n{}^{t}g^{-1})$, which
+\emph{does} lie in the Whittaker model of $\qtwottilde\pi$, in contrast to the spurious
+$g\mapsto V(g^{-1})$ that the Godement--Jacquet identity for matrix coefficients would require;
+this is why the nonvanishing input is genuinely a Whittaker-model fact and is available uniformly
+in the conductor.
+
+\medskip
+\noindent\emph{Scope of this subsection.} For the present issue \textup{(}uniformity of a single
+$\pi$-independent $W$\textup{)}, the substantive content is Corollary~\ref{cor:sindep}: a
+\emph{single} $W_0$, fixed before $\pi$, reduces the problem's integral to the $s$-independent
+constant $I(V)$ for every $\pi$ and every conductor $c$, with no boundedness hypothesis. The
+remaining nonvanishing $I(V)\neq0$ is proved unconditionally for $n=1$ above; for $n\ge2$ it is
+the nonvanishing of the local $\varepsilon$-factor, supplied by the cited essential-vector theory,
+and is itself uniform in $c$.
+
+\section*{Conclusion}
+
+\begin{qtwoproposition}\label{prop:final}
+Let $W_0\in\qtwoW(\Pi,\psi^{-1})$ be the single $\pi$-independent vector of \eqref{eq:W0} and
+Lemma~\ref{lem:extend}. For every generic irreducible admissible $\pi$ of $G_n$, with conductor
+$\qtwoqq=\qtwopp^{c}$ \textup{(}any $c\ge0$\textup{)}, generator $Q$ of $\qtwoqq^{-1}$, and
+$u_Q=I_{n+1}+QE_{n,n+1}$, there is $V\in\qtwoW(\pi,\psi)$ \textup{(}the normalized newvector\textup{)}
+such that, for all $s\in\qtwoC$,
+\[
+\int_{N_n\backslash G_n} W_0(\qtwodiag(g,1)u_Q)\,V(g)\,|\det g|^{s-\frac12}\,dg
+= I=\int_{K_n}\psi(-Q\,k_{nn})\,V(k)\,dk,
+\]
+a nonzero scalar independent of $s$.
+\end{qtwoproposition}
+
+\begin{proof}
+By Corollary~\ref{cor:sindep} the integral equals the $s$-independent constant $I$ of
+\eqref{eq:Idef} for every $s$ and every $c\ge0$. By the explicit Gauss-sum computation of the case
+$n=1$ and Theorem~\ref{thm:newvector} for $n\ge2$, $I\neq0$. Hence the integral is finite and
+nonzero for all $s\in\qtwoC$.
+\end{proof}
+
+Taking $W:=W_0\in\qtwoW(\Pi,\psi^{-1})$ \textup{(}the single, $\pi$-independent vector of
+Lemma~\ref{lem:extend}, constructed before any $\pi$ is named\textup{)} and, for each $\pi$, the
+normalized newvector $V\in\qtwoW(\pi,\psi)$, Proposition~\ref{prop:final} shows that the local
+Rankin--Selberg integral of the problem is the nonzero constant $I$, hence finite and nonzero for
+all $s\in\qtwoC$. Since $W=W_0$ does not depend on $\pi$ \textup{(}nor on its conductor $c$, nor on
+$Q$\textup{)}, this is exactly the required uniform statement: one fixed $W$ serves all $\pi$
+simultaneously. This proves the Theorem. \qed
+
+\section*{Remarks}
+
+The mechanism is transparent and \emph{functional-equation-free at its core}: the chosen vector
+$u_Q W_0$ is supported, after unfolding, on a single $\det$-coset
+\textup{(}Lemma~\ref{lem:unfold}\textup{)}, so the Rankin--Selberg integral collapses to a
+\emph{constant} $I$ in $s$ rather than to an $L$-factor times a unit. Finiteness and nonvanishing
+for all $s$ are therefore equivalent to the single statement $I\neq0$. This nonvanishing is a
+local Gauss-sum fact: for $n=1$ it is the classical nonvanishing $|G(\chi,\psi_Q)|=q^{-c/2}$ of a
+Gauss sum of a primitive character against an additive character of matching conductor, proved
+above in full; for $n\ge2$ it is the corresponding nonvanishing of the newvector
+$\varepsilon$-factor integral, supplied by the essential-vector theory of \cite{JPSS81,Matringe}.
+
+We emphasize the methodological point underlying the present write-up. The natural temptation is
+to evaluate $I$ via the Godement--Jacquet functional equation for the standard $L$-function of
+$\pi$. That functional equation is a statement about \emph{matrix coefficients} of $\pi$, and its
+dual is $f^\vee(g)=f(g^{-1})$; for a Whittaker function $V$ the function $g\mapsto V(g^{-1})$ is
+\emph{not} a Whittaker function, so the Godement--Jacquet identity does not apply to $f=V$. The
+correct functional equation in the Whittaker model is the Jacquet--Piatetski-Shapiro--Shalika one,
+whose dual $\qtwottilde V(g)=V(w_n{}^{t}g^{-1})$ \emph{is} a Whittaker function \textup{(}of
+$\qtwottilde\pi$\textup{)}. Accordingly, all functional-equation input here is on the Whittaker
+side, and the load-bearing nonvanishing is reduced to the explicit local computation of $I$.
+
+The $n=1$ case recovers the normalized Gauss sum that appears in subconvexity and moment
+applications \cite{Sarnak,MV}; the general-$n$ statement, with a single unipotent translate rather
+than an average, is the present construction. A version with an average over many translates
+appears in \cite{BKL}.
+
+\begin{thebibliography}{9}
+\bibitem{Bernstein} J.~N.~Bernstein.
+  \emph{$P$-invariant distributions on $\qtwoGL(N)$ and the classification of
+  unitary representations of $\qtwoGL(N)$ (non-archimedean case)}. In
+  \emph{Lie group representations II}, LNM \textbf{1041}, Springer, 1984,
+  50--102.
+\bibitem{BKL} A.~R.~Booker, M.~Krishnamurthy, M.~Lee.
+  \emph{Test vectors for Rankin--Selberg $L$-functions}.
+  J.\ Number Theory \textbf{209} (2020), 37--48.
+\bibitem{GJ72} R.~Godement, H.~Jacquet.
+  \emph{Zeta functions of simple algebras}. LNM \textbf{260}, Springer, 1972.
+\bibitem{JPSS81} H.~Jacquet, I.~I.~Piatetski-Shapiro, J.~Shalika.
+  \emph{Conducteur des repr\'esentations du groupe lin\'eaire}.
+  Math.\ Ann.\ \textbf{256} (1981), 199--214.
+\bibitem{JPSS83} H.~Jacquet, I.~I.~Piatetski-Shapiro, J.~Shalika.
+  \emph{Rankin--Selberg convolutions}.
+  Amer.\ J.\ Math.\ \textbf{105} (1983), 367--464.
+\bibitem{Matringe} N.~Matringe.
+  \emph{Essential Whittaker functions for $\qtwoGL(n)$}.
+  Doc.\ Math.\ \textbf{18} (2013), 1191--1214.
+\bibitem{MV} P.~Michel, A.~Venkatesh.
+  \emph{The subconvexity problem for $\qtwoGL_2$}.
+  Publ.\ Math.\ IH\'ES \textbf{111} (2010), 171--271.
+\bibitem{Sarnak} P.~Sarnak.
+  \emph{Fourth moments of Gr\"ossencharakteren zeta functions}.
+  Comm.\ Pure Appl.\ Math.\ \textbf{38} (1985), 167--178.
+\end{thebibliography}
+
+\endgroup
+
+\endgroup

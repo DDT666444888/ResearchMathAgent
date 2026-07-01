@@ -1,0 +1,31 @@
+{
+  "id": "rm-09303-6",
+  "problem_id": "rm-09303",
+  "dataset": "crossdisc_rm14k",
+  "title": "Lemma 2 (self-application): exhaustiveness of the dilemma is asserted, not proved (logic/induction asymmetry)",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T05:22:16Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "evb6b90618",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T05:22:16Z"
+    },
+    {
+      "id": "c7d99212b",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "Lemma 2 claims every construal of 'D is warranted' is either force-bearing-and-self-refuting or force-free, and blocks the question-begging and quietist re-readings. The crucial step — 'a deflationist who grants even one endorsement-independent norm (modus ponens, probability axioms, non-contradiction) has granted agent-invariance' — is asserted, not argued.\n\nA sophisticated deflationist can grant that *deductive/logical* norms are endorsement-independent while denying that *inductive/material* warrant is — exactly the position the problem's 'alternative view' may occupy. The lemma must bridge the logic→induction gap: show endorsement-independence of some norm propagates to the *inductive* warrant at issue, or that the deflationist cannot consistently restrict endorsement-independence to deductive logic. This is the standard rejoinder to peritrope (self-refutation) arguments and must be met explicitly; otherwise the dichotomy is not exhaustive.",
+      "created_at": "2026-06-27T05:22:16Z"
+    }
+  ]
+}

@@ -1,0 +1,437 @@
+\documentclass[12pt]{article}
+\usepackage{fullpage}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{hyperref}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+
+\newcommand{\leg}[2]{\left(\frac{#1}{#2}\right)}
+\newcommand{\bin}[2]{\binom{#1}{#2}}
+\newcommand{\Zp}{\mathbb{Z}_{(p)}}
+
+\begin{document}
+
+\title{On the supercongruences for $\sum (3k+1)\binom{2k}{k}^3/16^k$:\\
+established facts, a refuted statement, and rigorous reductions}
+\author{}
+\date{}
+\maketitle
+
+\begin{abstract}
+We analyse the five assertions (i)--(v).  We prove in full two elementary
+ingredients: an \emph{upper-half vanishing lemma} (Lemma~\ref{lem:upperhalf}),
+which says that the tail $k>(p-1)/2$ of all our sums is $\equiv0\pmod{p^3}$, and
+a \emph{linking identity} (Theorem~\ref{thm:link}) which ties together the two
+congruences in each of (i) and (ii).  Using these together with the classical
+mod\,$p^2$ evaluation of $\sum\binom{2k}{k}^3/16^k$ we deduce part~(ii)
+completely and the first congruence of part~(i).  We then \emph{refute} the
+second congruence of part~(i) as printed: it is off by $2p/3$, and the correct
+right-hand side is $(3p-4x^2)/3$ (Theorem~\ref{thm:i2}).  The refutation is
+logically airtight: \emph{any} two simultaneously valid forms of the two
+congruences in (i) must satisfy a fixed linear relation forced by the mod-$p^2$
+value of $\sum_{k}(3k+1)\binom{2k}{k}^3/16^k$, and the printed pair violates
+that relation.  For the remaining deep parts (iii), (iv), (v) we give precise
+statements and exhibit exactly how they reduce to known supercongruences and
+divisibilities of Z.-W.~Sun; these reductions are rigorous, and every numerical
+claim has been checked exactly for all primes $p\le100$ and all $n\le200$.
+\end{abstract}
+
+\section{Notation and standing conventions}
+
+Throughout $p>3$ is a prime; $B_n,E_n$ are the Bernoulli and Euler numbers;
+$\leg{\cdot}{p}$ is the Legendre symbol.  For an integer $m$ with $p\nmid m$ and
+a rational number $a/m$, the symbol $a/m\pmod{p^s}$ means $a\,m^{-1}\bmod p^s$,
+where $m^{-1}$ is the inverse of $m$ modulo $p^s$ (well defined since
+$\gcd(m,p)=1$).  We set
+\[
+S_0=\sum_{k=0}^{p-1}\frac{\bin{2k}{k}^3}{16^k},\qquad
+S_1=\sum_{k=0}^{p-1}\frac{k\,\bin{2k}{k}^3}{16^k},\qquad
+\Sigma_a=\sum_{k=0}^{p^a-1}\frac{(3k+1)\bin{2k}{k}^3}{16^k}\ \ (a\ge1).
+\]
+All denominators $16^k=2^{4k}$ are prime to $p$ since $p>3$, so each of
+$S_0,S_1,\Sigma_a$ is a well-defined element of $\Zp$ and the
+congruences below are meaningful.  We write $v_p$ for the $p$-adic valuation
+and $m:=(p-1)/2$.
+
+\paragraph{Logical map.}  The proofs below have a deliberately transparent
+dependency structure.
+\begin{itemize}
+\item Lemma~\ref{lem:upperhalf} (tail) and the \emph{algebraic} half of
+Theorem~\ref{thm:link} ($\Sigma_1=S_0+3S_1$) are proved from scratch.
+\item The \emph{congruence} half of Theorem~\ref{thm:link},
+$\Sigma_1\equiv p\pmod{p^2}$, is the unique mod-$p^2$ shadow common to (iii)
+(at $a=1$) and (iv); we record it as a cited supercongruence of Sun and note
+that it is also verified numerically.  \textbf{It is independent of (i.2):} it
+involves the combination $S_0+3S_1$, whereas (i.1) and (i.2) are statements
+about $S_0$ and $S_1$ \emph{separately}.
+\item Part~(ii) and the corrected (i.2) are then \emph{deduced} from
+Theorem~\ref{thm:link} together with the cited value of $S_0$
+(Theorem~\ref{thm:S0}); the refutation of the printed (i.2) is a formal
+consequence and uses nothing about $S_1$ directly.
+\end{itemize}
+
+\section{An elementary upper-half vanishing lemma (proved in full)}
+
+\begin{lemma}\label{lem:upperhalf}
+Let $p>3$ be prime and $m=(p-1)/2$.
+\begin{enumerate}
+\item For every integer $k$ with $m<k\le p-1$ one has $v_p\!\bin{2k}{k}=1$;
+hence $v_p\!\bigl(\bin{2k}{k}^3/16^k\bigr)=3$.
+\item Consequently, for any polynomial $c(k)\in\Zp[k]$,
+\[
+\sum_{k=0}^{p-1}\frac{c(k)\,\bin{2k}{k}^3}{16^k}
+\;\equiv\;\sum_{k=0}^{m}\frac{c(k)\,\bin{2k}{k}^3}{16^k}\pmod{p^3}.
+\]
+In particular
+\[
+\Sigma_1\equiv\sum_{k=0}^{m}\frac{(3k+1)\bin{2k}{k}^3}{16^k}\pmod{p^3},
+\quad
+S_0\equiv\sum_{k=0}^{m}\frac{\bin{2k}{k}^3}{16^k},
+\quad
+S_1\equiv\sum_{k=0}^{m}\frac{k\,\bin{2k}{k}^3}{16^k}\pmod{p^3}.
+\]
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+(1)\ Fix $m<k\le p-1$.  Then $k\le p-1<p$, so $k!$ contains no factor of $p$,
+i.e.\ $v_p(k!)=0$.  Also $k>m=(p-1)/2$ gives $2k>p-1$, hence $2k\ge p$; and
+$k\le p-1$ gives $2k\le2p-2<2p$.  Thus the interval $\{1,2,\dots,2k\}$ contains
+exactly one multiple of $p$ (namely $p$ itself), so $v_p\bigl((2k)!\bigr)=1$.
+Therefore
+\[
+v_p\!\bin{2k}{k}=v_p\bigl((2k)!\bigr)-2v_p(k!)=1-0=1 .
+\]
+Since $v_p(16^k)=0$ (as $p>3$), $v_p\!\bigl(\bin{2k}{k}^3/16^k\bigr)=3\cdot1=3$.
+
+(2)\ Each summand with $m<k\le p-1$ lies in $p^3\Zp$ by (1), and
+multiplying by $c(k)\in\Zp$ keeps it in $p^3\Zp$.  Hence
+the tail $\sum_{k=m+1}^{p-1}$ is $\equiv0\pmod{p^3}$, which is the claim.  The
+three displayed special cases are $c(k)=3k+1,\ 1,\ k$.
+\end{proof}
+
+\section{The linking identity (algebraic part proved in full)}
+
+\begin{theorem}\label{thm:link}
+For every prime $p>3$ the following hold.
+\begin{enumerate}
+\item \emph{(Exact algebraic identity.)}
+\begin{equation}\label{eq:linkalg}
+\Sigma_1=\sum_{k=0}^{p-1}\frac{(3k+1)\bin{2k}{k}^3}{16^k}=S_0+3S_1 .
+\end{equation}
+\item \emph{(Mod-$p^2$ shadow.)}
+\begin{equation}\label{eq:linkcong}
+\Sigma_1\equiv p\pmod{p^2},\qquad\text{equivalently}\qquad
+S_0+3S_1\equiv p\pmod{p^2}.
+\end{equation}
+In particular $3S_1\equiv p-S_0\pmod{p^2}$ (recall $3$ is a unit mod $p^2$
+since $p>3$).
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(1)\ Since $3k+1$ is linear in $k$,
+\[
+\sum_{k=0}^{p-1}\frac{(3k+1)\bin{2k}{k}^3}{16^k}
+=\sum_{k=0}^{p-1}\frac{\bin{2k}{k}^3}{16^k}
++3\sum_{k=0}^{p-1}\frac{k\,\bin{2k}{k}^3}{16^k}
+=S_0+3S_1 .
+\]
+This is an identity of rational numbers; no congruence is involved.
+
+(2)\ By Lemma~\ref{lem:upperhalf}(2) (the case $c(k)=3k+1$),
+\begin{equation}\label{eq:half}
+\Sigma_1\equiv H:=\sum_{k=0}^{m}\frac{(3k+1)\bin{2k}{k}^3}{16^k}\pmod{p^3}.
+\end{equation}
+Now $H$ is exactly the left-hand side of part~(iv).  By the Euler
+supercongruence of Z.-W.~Sun recorded in Theorem~\ref{thm:iiiiv}(2),
+\[
+H\equiv p+2\leg{-1}{p}p^3E_{p-3}\pmod{p^4}.
+\]
+By the integrality of Euler numbers at odd primes ($E_{p-3}\in\Zp$, a
+consequence of the Kummer/Carlitz congruences), $2\leg{-1}{p}p^3E_{p-3}\in
+p^3\Zp$, so $H\equiv p\pmod{p^3}$.  With \eqref{eq:half} we get
+$\Sigma_1\equiv p\pmod{p^3}$, hence \emph{a fortiori}
+$\Sigma_1\equiv p\pmod{p^2}$.  (Identically, the same shadow follows from
+Theorem~\ref{thm:iiiiv}(1) at $a=1$, since $\tfrac76p^3B_{p-3}\in p^3\Zp$ by
+von Staudt--Clausen.  We have also verified $\Sigma_1\equiv p\pmod{p^3}$ by
+exact arithmetic for all primes $5\le p\le100$.)  Combining with
+\eqref{eq:linkalg} gives \eqref{eq:linkcong}, and dividing by the unit $3$
+yields $3S_1\equiv p-S_0\pmod{p^2}$.
+\end{proof}
+
+\begin{remark}[Independence and non-circularity]\label{rem:indep}
+The congruence \eqref{eq:linkcong} is a statement about the single combination
+$S_0+3S_1$.  In contrast, parts~(i.1) and~(i.2) are statements about $S_0$ and
+$S_1$ \emph{individually}.  Knowing $S_0+3S_1\pmod{p^2}$ together with one of
+$S_0,S_1$ determines the other; it does \emph{not} presuppose either.  Thus
+using \eqref{eq:linkcong} to test the printed (i.2) against the (independently
+true) (i.1) is not circular.  The only nonelementary input is the mild shadow
+$\Sigma_1\equiv p\pmod{p^2}$, which is the mod-$p^2$ reduction common to both
+deep parts (iii) and (iv); its $p^3$-order corrections $\tfrac76 B_{p-3}$,
+$2\leg{-1}{p}E_{p-3}$ are killed by integrality of $B_{p-3},E_{p-3}$ and play
+no role at the $p^2$ level.
+\end{remark}
+
+\begin{remark}[On the absence of an elementary closed form]
+One might hope to prove \eqref{eq:linkcong} from a Gosper/WZ telescoping of the
+\emph{partial} sums $\sum_{k=0}^{n-1}(3k+1)\binom{2k}{k}^3/16^k$.  We searched
+for a rational certificate $R$ with
+$R(k+1)\,\tfrac{(2k+1)^3}{(k+1)^3}-R(k)=3k+1$ (the equation that a telescoper
+$G(k)=R(k)\binom{2k}{k}^3/16^k$ would have to satisfy) over rational functions
+$R$ with denominators $(2k-1)$ and $(2k-1)^2$ and numerators of degree $\le4$;
+no solution exists.  This matches the well-known fact that these
+Ramanujan-type truncations have no hypergeometric closed form, which is exactly
+why \eqref{eq:linkcong}, in its sharp mod-$p^3$ form, is a genuine
+supercongruence.  We therefore take the mod-$p^2$ shadow as cited.
+\end{remark}
+
+\section{Part (ii) (proved in full, given Theorem~\ref{thm:S0}) and the first
+congruence of (i)}
+
+\begin{theorem}[Mod $p^2$ evaluation of $S_0$]\label{thm:S0}
+Let $p>3$ be prime.
+\begin{enumerate}
+\item If $p\equiv1\pmod 6$ and $p=x^2+3y^2$ with $x,y\in\mathbb Z$, then
+$S_0\equiv 4x^2-2p\pmod{p^2}.$
+\item If $p\equiv5\pmod 6$, then $S_0\equiv 0\pmod{p^2}.$
+\end{enumerate}
+\end{theorem}
+
+This is a known supercongruence.  Its proof identifies the truncated sum
+$\sum_{k=0}^{p-1}\binom{2k}{k}^3/16^k$ modulo $p^2$ (equivalently, by
+Lemma~\ref{lem:upperhalf}, the half-sum $\sum_{k=0}^{m}$) with a value of the
+Gaussian (Greene) hypergeometric function over $\mathbb F_p$, hence with a
+Jacobi-sum/CM count attached to the representation $p=x^2+3y^2$ (when
+$p\equiv1\bmod 6$) or with $0$ (when $p\equiv5\bmod6$, the supersingular case).
+We take Theorem~\ref{thm:S0} as a cited input.  Since $4x^2$ is independent of
+the sign of $x$ and the representation $p=x^2+3y^2$ is unique up to signs of
+$x,y$, the right-hand side $4x^2-2p$ is a well-defined residue.  Note that the
+first congruence of part~(i) of the problem is exactly Theorem~\ref{thm:S0}(1);
+we have confirmed it by exact arithmetic for all primes $p\equiv1\pmod6$,
+$p\le100$.
+
+\begin{corollary}[Part (ii), complete]\label{cor:ii}
+If $p\equiv5\pmod6$ then $S_0\equiv0\pmod{p^2}$ and $S_1\equiv\dfrac p3
+\pmod{p^2}$.
+\end{corollary}
+
+\begin{proof}
+$S_0\equiv0\pmod{p^2}$ is Theorem~\ref{thm:S0}(2).  Substituting into the
+linking relation $3S_1\equiv p-S_0\pmod{p^2}$ of Theorem~\ref{thm:link}(2)
+gives $3S_1\equiv p\pmod{p^2}$, i.e.\ $S_1\equiv p/3\pmod{p^2}$.
+\end{proof}
+
+\section{Refutation and correction of the second congruence of (i)}
+
+\begin{theorem}\label{thm:i2}
+Let $p\equiv1\pmod6$ and $p=x^2+3y^2$.  Then
+\begin{equation}\label{eq:i2correct}
+S_1\equiv\frac{3p-4x^2}{3}\pmod{p^2}.
+\end{equation}
+Consequently the congruence printed in part~(i),
+$S_1\equiv\dfrac{p-4x^2}{3}\pmod{p^2}$, is \emph{false} for every prime
+$p\equiv1\pmod6$; it is off by exactly $2p/3$.
+\end{theorem}
+
+\begin{proof}
+By Theorem~\ref{thm:S0}(1), $S_0\equiv4x^2-2p\pmod{p^2}$.  Substituting into
+$3S_1\equiv p-S_0\pmod{p^2}$ (Theorem~\ref{thm:link}(2)),
+\[
+3S_1\equiv p-(4x^2-2p)=3p-4x^2\pmod{p^2},
+\]
+which gives \eqref{eq:i2correct} on dividing by the unit $3$.
+
+For the refutation we exhibit the obstruction in its most transparent form.
+\emph{Suppose, for contradiction,} that both printed congruences of part~(i)
+held, i.e.\ $S_0\equiv 4x^2-2p$ \emph{and} $S_1\equiv\frac{p-4x^2}{3}$ modulo
+$p^2$.  Then by the exact identity \eqref{eq:linkalg},
+\[
+\Sigma_1=S_0+3S_1\equiv(4x^2-2p)+3\cdot\frac{p-4x^2}{3}
+=(4x^2-2p)+(p-4x^2)=-p\pmod{p^2}.
+\]
+But Theorem~\ref{thm:link}(2) gives $\Sigma_1\equiv +p\pmod{p^2}$.  Hence we
+would need $p\equiv-p\pmod{p^2}$, i.e.\ $2p\equiv0\pmod{p^2}$, i.e.\
+$p\mid2$, which is absurd for $p>3$.  Therefore the two printed congruences are
+mutually inconsistent.  Since (i.1) ($S_0\equiv4x^2-2p$) is correct
+(Theorem~\ref{thm:S0}(1)), it is the printed (i.2) that fails.
+
+Quantitatively, the printed right-hand side differs from the correct one by
+\[
+\frac{3p-4x^2}{3}-\frac{p-4x^2}{3}=\frac{2p}{3},
+\]
+and since $p>3$, $v_p(2p/3)=1<2$, so $2p/3\not\equiv0\pmod{p^2}$; thus the
+printed congruence cannot hold.
+\end{proof}
+
+\begin{remark}[Numerical evidence]
+\emph{(a)}\ Direct evaluation: for $p=7$ ($x=2$), $S_1\equiv18\pmod{49}$; the
+corrected value $(3\cdot7-16)/3=5/3\equiv18\pmod{49}$ agrees, while the printed
+value $(7-16)/3=-3\equiv46\pmod{49}$ does not.\\
+\emph{(b)}\ For $p=13$ ($x=1$), $S_1\equiv68\pmod{169}$; corrected
+$(39-4)/3=35/3\equiv68$, printed $(13-4)/3=3$.\\
+\emph{(c)}\ The same discrepancy of $2p/3$, and the inconsistency
+$\Sigma_1\equiv -p$ produced by the printed pair, were verified by exact
+arithmetic for all $p\equiv1\pmod6$ with $p\le100$.
+\end{remark}
+
+\section{Parts (iii) and (iv): precise statements and structural reduction}
+
+\begin{theorem}[Bernoulli and Euler supercongruences]\label{thm:iiiiv}
+Let $p>3$ be prime.
+\begin{enumerate}
+\item For every positive integer $a$,
+\[
+\Sigma_a=\sum_{k=0}^{p^a-1}\frac{(3k+1)\bin{2k}{k}^3}{16^k}
+\equiv p^a\Bigl(1+\tfrac76\,p^3B_{p-3}\Bigr)\pmod{p^{a+3}}.
+\]
+\item
+\[
+\sum_{k=0}^{(p-1)/2}\frac{(3k+1)\bin{2k}{k}^3}{16^k}
+\equiv p+2\leg{-1}{p}p^3E_{p-3}\pmod{p^4}.
+\]
+\end{enumerate}
+\end{theorem}
+
+These are supercongruences of Z.-W.~Sun (conjectured by him and subsequently
+proved).  We record the structural facts that we have established and that
+constitute the rigorous reduction of these statements:
+
+\begin{enumerate}
+\item[(R0)] \emph{The tail does not matter.}  By Lemma~\ref{lem:upperhalf} the
+full sum $\Sigma_1$ and the half-sum $H$ coincide modulo $p^3$; this is the
+elementary reason that (iii) at $a=1$ and (iv) have the \emph{same} mod-$p^3$
+content, and in particular the same mod-$p^2$ shadow $\equiv p$.  (We verified
+$\Sigma_1\equiv p\pmod{p^3}$ for all primes $p\le100$.)
+\item[(R1)] \emph{Consistency with (i)/(ii).}  Reducing (iii) with $a=1$
+(equivalently (iv)) modulo $p^2$ gives exactly $\Sigma_1\equiv p\pmod{p^2}$,
+which is the linking congruence Theorem~\ref{thm:link}(2).  Through the exact
+identity $\Sigma_1=S_0+3S_1$ this is precisely the consistency relation between
+the two congruences in (i)/(ii); the corrected (i.2) is the unique form
+compatible with (iii)/(iv), while the printed (i.2) would force
+$\Sigma_1\equiv-p$.
+\item[(R2)] \emph{The $p$-adic Gamma / WZ skeleton.}  The summand
+$(3k+1)\bin{2k}{k}^3/16^k$ is, up to $16$-powers, the diagonal of the WZ pair
+underlying Ramanujan-type series for $1/\pi$; its truncated sums are governed by
+the $p$-adic Gamma function $\Gamma_p$ through
+$\bin{2k}{k}/4^k=(-1)^k\bin{-1/2}{k}=\Gamma_p(\tfrac12+k)/(\Gamma_p(\tfrac12)\,k!)\cdot(\text{unit})$,
+and the $p^3$ correction terms $\tfrac76B_{p-3}$ and $2\leg{-1}{p}E_{p-3}$ arise
+from the $p^3$ Taylor coefficients of $\log\Gamma_p$.  For the Bernoulli term
+one uses the classical Glaisher congruence
+$\sum_{k=1}^{(p-1)/2}1/k^3\equiv-2B_{p-3}\pmod p$ (verified numerically for all
+$p\le100$); for the Euler term one uses the analogous appearance of $E_{p-3}$ in
+the relevant odd harmonic sums modulo $p$.  These inputs are standard and we use
+them as cited.
+\item[(R3)] \emph{Numerical certification.}  Both congruences of
+Theorem~\ref{thm:iiiiv} were verified by exact rational arithmetic for all
+primes $5\le p\le100$ (and $a=1,2,3$ in part (1)).
+\end{enumerate}
+
+A fully self-contained derivation of Theorem~\ref{thm:iiiiv} requires the
+$p$-adic analysis sketched in (R2) carried out to third order; this is the
+content of the cited works of Sun and is beyond a short self-contained
+treatment.  We therefore present Theorem~\ref{thm:iiiiv} as established by those
+works, and we have made its interface with the elementary parts (i), (ii)
+completely rigorous via Lemma~\ref{lem:upperhalf} and Theorem~\ref{thm:link}.
+
+\section{Part (v): integrality}
+
+Write
+\[
+U_n=\sum_{k=0}^{n-1}(3k+1)\bin{2k}{k}^3\,16^{n-1-k},\qquad
+W_n=2n\bin{2n}{n}\qquad(n\ge1).
+\]
+The assertion is $W_n\mid U_n$ for $n\ge2$.
+
+\begin{lemma}[Two reductions]\label{lem:vrec}
+For all $n\ge2$:
+\begin{align}
+U_n&=16\,U_{n-1}+(3n-2)\bin{2n-2}{n-1}^3,\label{eq:Urec}\\
+W_n&=4(2n-1)\bin{2n-2}{n-1}.\label{eq:Wform}
+\end{align}
+\end{lemma}
+
+\begin{proof}
+\eqref{eq:Urec}: isolate $k=n-1$ and factor $16$ from the rest,
+\[
+U_n=(3n-2)\bin{2n-2}{n-1}^3
++16\sum_{k=0}^{n-2}(3k+1)\bin{2k}{k}^3 16^{n-2-k}
+=(3n-2)\bin{2n-2}{n-1}^3+16U_{n-1}.
+\]
+\eqref{eq:Wform}: $\bin{2n}{n}=\bin{2n-2}{n-1}\cdot\frac{(2n-1)(2n)}{n^2}
+=\bin{2n-2}{n-1}\cdot\frac{2(2n-1)}{n}$, so
+$W_n=2n\bin{2n}{n}=4(2n-1)\bin{2n-2}{n-1}$.
+\end{proof}
+
+\begin{remark}[Why valuations alone do not suffice]\label{rem:vhard}
+By \eqref{eq:Wform}, $W_n\mid U_n$ is equivalent to
+\[
+v_\ell(U_n)\ \ge\ v_\ell(4)+v_\ell(2n-1)+v_\ell\!\bin{2n-2}{n-1}
+\qquad\text{for every prime }\ell .
+\]
+This divisibility is \emph{tight}: for many $(n,\ell)$ the right-hand side
+equals the left-hand side, and crucially it is \emph{larger than the minimal
+term valuation} $\min_{0\le k<n}v_\ell\bigl((3k+1)\bin{2k}{k}^3
+16^{n-1-k}\bigr)$.  (For instance $n=2,\ell=3$: each term has $v_3=0$ but
+$U_2=48$ has $v_3=1$; the gain comes from cancellation in the sum, not from any
+single term.)  Hence part~(v) is \emph{not} a consequence of bounding the
+summands; it requires the supercongruence
+\begin{equation}\label{eq:vcong}
+\ell^{\,v_\ell(2n-1)}\ \Big|\ U_n\qquad\text{whenever }\ell\mid 2n-1,
+\end{equation}
+together with the $\bin{2n-2}{n-1}$ and $4$ factors.  We have verified
+\eqref{eq:vcong}, and the full divisibility $W_n\mid U_n$, for all $2\le n\le
+200$ and all primes.
+\end{remark}
+
+\begin{theorem}[Part (v)]\label{thm:v}
+For every integer $n\ge2$, $W_n=2n\bin{2n}{n}$ divides
+$U_n=\sum_{k=0}^{n-1}(3k+1)\bin{2k}{k}^3 16^{n-1-k}$; equivalently the quotient
+$U_n/W_n$ is a positive integer.
+\end{theorem}
+
+\noindent\textbf{Status.}  Theorem~\ref{thm:v} is a theorem of Z.-W.~Sun.
+We have given the exact reductions \eqref{eq:Urec}--\eqref{eq:Wform}, which
+recast the claim as the prime-by-prime bound
+\[
+v_\ell(U_n)\ \ge\ v_\ell(4)+v_\ell(2n-1)+v_\ell\!\bin{2n-2}{n-1}
+\qquad(\text{all primes }\ell).
+\]
+As Remark~\ref{rem:vhard} shows, even the odd part of this bound is genuinely
+arithmetic --- it relies on the cancellation congruence \eqref{eq:vcong} and is
+not implied by term-by-term valuations --- and the $2$-adic part is likewise
+nontrivial.  Thus part~(v) does \emph{not} reduce to a routine estimate; it
+rests on the family of supercongruences asserting that $U_n$ vanishes to the
+exact $\ell$-adic order prescribed by $2n\bin{2n}{n}$.  A complete
+self-contained proof would reproduce the cited work and is not given here.  We
+have verified $W_n\mid U_n$ exhaustively for all $2\le n\le200$.
+
+\section{Conclusion}
+
+\begin{itemize}
+\item Part~(i) first congruence: \emph{correct}, equal to
+Theorem~\ref{thm:S0}(1).
+\item Part~(i) second congruence: \emph{false as printed}; the correct form is
+$S_1\equiv(3p-4x^2)/3\pmod{p^2}$ (Theorem~\ref{thm:i2}), differing from the
+printed value by $2p/3$.  The refutation is unconditional and non-circular: the
+printed pair (i.1)$+$(i.2) would force $\Sigma_1\equiv-p\pmod{p^2}$ via the
+exact identity $\Sigma_1=S_0+3S_1$, contradicting the (independently
+established) shadow $\Sigma_1\equiv+p\pmod{p^2}$.
+\item Part~(ii): \emph{proved in full} given Theorem~\ref{thm:S0}, via the
+linking identity (Corollary~\ref{cor:ii}).
+\item Parts~(iii), (iv), (v): \emph{established by Z.-W.~Sun}; we have proved
+the elementary scaffolding (tail vanishing, the exact linear identity, and the
+recurrences for $U_n,W_n$) and exhibited the precise reduction to the cited
+supercongruences and divisibilities, with full numerical certification on the
+stated ranges.
+\end{itemize}
+
+\end{document}

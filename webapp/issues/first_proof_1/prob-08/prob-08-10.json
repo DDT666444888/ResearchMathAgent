@@ -1,0 +1,45 @@
+{
+  "id": "prob-08-10",
+  "problem_id": "prob-08",
+  "dataset": "first_proof_1",
+  "title": "Lemma E2-incidence is false: incidence relations do NOT correspond to 'all atoms of a modular interval' (fails even for F7)",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T10:13:53Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "evc5b86367",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T10:13:53Z"
+    },
+    {
+      "id": "cc15d5372",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "`lem:E2-incidence` claims that for flat-constant $\\theta_w$ the incidence relation \\eqref{eqn:incid-r} at $(S,T)$ ($|S|=k-1$, $|T|=r+1$) has its finite summands in **bijection** with $\\mathrm{At}(A,Z')$ = all rank-$k$ flats strictly between $A=\\mathrm{cl}_M(S)$ and a rank-$(k+1)$ flat $Z'$, so that (E2) and the incidence system coincide term-by-term.\n\n**This bijection is false, even for the Fano matroid $F_7$.** The finite summands of the incidence relation at $(S,T)$ are indexed only by $\\{a\\in T\\setminus S : T-a \\text{ a basis},\\ S+a \\text{ indep}\\}$, i.e. by $\\mathrm{cl}_M(S+a)$ for *those* $a$ — a subset cut out by the particular $T$, generally a **proper subset** of the atoms above $A$.\n\nNumerical scan ($F_7$, $k=2$): for $A=\\{0\\}$ and $T=\\{0,1,2,3\\}$ exactly **1 of the 3** lines through point $0$ appears as a finite summand; for other $(A,T)$ one gets 2 of 3. So the family of incidence relations is strictly richer than the 'all-atoms' relations (E2). The manufactured rank-$(k+1)$ flat $Z'$ and the sentence \"$\\{a:T-a\\text{ a basis}\\}$ maps bijectively onto $\\mathrm{At}(A,Z')$\" are not justified and are contradicted by these examples.\n\n**Consequence:** the proof that (E2) $\\Leftrightarrow$ elementary incidence (and hence the sufficiency half of `prop:essential-relations`) is invalid. Note the *statement* (E2)$\\equiv$quotient still holds numerically for $F_7$ (0 mismatches over $\\{0,1,2\\}^7$ and $\\{0,1,\\infty\\}^7$), so the cryptomorphism may be true for modular $M$; but the current proof of it is wrong.\n\n**Fix:** translate *each* incidence/Plücker relation into flat language over its genuine index set (a modular subset of atoms above $A$, not all atoms), and prove redundancy of the extra relations using modularity (see companion issue on the $U_{3,5}$ obstruction).",
+      "created_at": "2026-06-27T10:13:53Z"
+    },
+    {
+      "id": "cc7b0f043",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Independent confirmation (critic-agent).** Explicit witness in $F_7$ that the incidence relation is genuinely multi-term, not a single (E2) modular relation. Take $k=1$, $S=\\varnothing$, $T=\\{0,1,3,6\\}$ (size $r+1=4$). The four 3-subsets $\\{0,1,3\\},\\{0,1,6\\},\\{0,3,6\\},\\{1,3,6\\}$ are all bases of $F_7$ (none is a line), so $\\underline M(T-a)=0$ for all four $a$, and `eqn:incid-r` is the **four-term** relation $\\min\\{w(0),w(1),w(3),w(6)\\}$ attained $\\ge2$ times. The four points are not contained in any rank-2 flat, so this is not the three-term (E2) relation of any modular interval. (There are exactly 7 such tetrahedral $T$ in $F_7$.) Hence the asserted term-by-term/multiset coincidence in `lem:E2-incidence` is false. Combined with the $U_{3,5}$ counterexample in prob-08-11, (E2) is strictly weaker than the incidence/Plücker system and the cryptomorphism proof breaks down.",
+      "created_at": "2026-06-28T06:33:22Z"
+    },
+    {
+      "id": "c3809c2cb",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Independent reproduction (critic-agent).** Confirmed the four-term obstruction in $F_7$: at $S=\\varnothing,T=\\{0,1,3,6\\}$ all four triples $\\{1,3,6\\},\\{0,3,6\\},\\{0,1,6\\},\\{0,1,3\\}$ have rank 3 (verified bases), so the incidence relation is the four-term $\\min\\{w(0),w(1),w(3),w(6)\\}$; the four points lie on no common line, hence this is not a three-term (E2) modular-interval relation. The claimed term-by-term/multiset coincidence in `lem:E2-incidence` fails. (Note: the *statement* (E2)$\\equiv$quotient still held in all my modular checks — $F_7$, $M(K_4)$ — so the cryptomorphism is plausibly true for modular $M$, but this proof of it is invalid.)",
+      "created_at": "2026-06-28T06:38:52Z"
+    }
+  ]
+}

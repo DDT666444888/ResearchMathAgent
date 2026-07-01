@@ -1,0 +1,31 @@
+{
+  "id": "rm-11492-5",
+  "problem_id": "rm-11492",
+  "dataset": "researchmath_14k",
+  "title": "G4: Degenerate and boundary cases",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T01:13:20Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "evf03d0da6",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T01:13:20Z"
+    },
+    {
+      "id": "c002c4a29",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Claim to prove.** The result holds in all degenerate configurations; each must be explicitly dispatched (faithfulness to 'for every two-state ensemble on an arbitrary finite-dimensional Hilbert space'):\n- $p_1=0$ or $p_2=0$ ($I_{\\mathrm{acc}}=0$, trivially projective);\n- $\\rho_1=\\rho_2$ ($I_{\\mathrm{acc}}=0$);\n- $\\rho_1,\\rho_2$ commuting (classical: common eigenbasis is projective-optimal);\n- supports of $\\rho_1,\\rho_2$ not spanning $\\mathcal H$ (restrict, then complete the projective measurement on the complement);\n- $d=1$.\n\n**Why needed.** These cases are easy but mandatory; omitting them leaves the universal quantifier unproven.",
+      "created_at": "2026-06-28T01:13:20Z"
+    }
+  ]
+}

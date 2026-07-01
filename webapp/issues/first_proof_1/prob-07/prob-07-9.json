@@ -1,0 +1,31 @@
+{
+  "id": "prob-07-9",
+  "problem_id": "prob-07",
+  "dataset": "first_proof_1",
+  "title": "G3: innermost-bigon descent in Lemma bigon(ii) is imprecise (use innermost arc-bounded region)",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T10:00:20Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "evcb862c34",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T10:00:20Z"
+    },
+    {
+      "id": "c484495b3",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Gap (G3): the innermost-bigon descent in Lemma `lem:bigon`(ii) conflates \"innermost $\\alpha\\beta$-bigon\" with \"region with arc-only boundary\".**\n\nIn the proof of Lemma `lem:bigon`(ii) (no two arcs cross more than once), the argument is:\n\n> \"Among all sub-bigons cut out by $\\alpha\\cup\\beta$, choose one, $B$, that is innermost, i.e. whose interior contains no crossing point of $M$; such a bigon exists because any crossing inside a bigon subdivides it into smaller bigons, and we descend to a minimal one.\"\n\nThe descent is imprecise. A **third** arc $\\eta$ passing through the bigon $B$ does *not* subdivide $B$ into smaller $\\alpha\\beta$-bigons: the resulting sub-regions can have boundary using three different arcs ($\\alpha$, $\\beta$, $\\eta$). So \"descend to a minimal $\\alpha\\beta$-bigon free of crossings\" is not automatic, and one must also verify (Jordan curve / proper embedding) that any strand entering $B$ must exit it.\n\nThe **conclusion** is correct, but the clean phrasing is: among all bounded complementary regions of $M$ whose entire frontier consists of arc-segments (no axis), choose one of **minimal area** (it exists since $M$ is a finite arc system, hence a finite planar graph with finitely many faces). That innermost arc-bounded region contradicts Lemma `lem:bigon`(i) (which forbids region-boundary components with crossing-point endpoints / no axis ends).\n\nThis also tightens the related step in §enum (\"Inadmissibility of $N$\" and the dimension cap), where the triangular region of three pairwise-interleaving arcs must be argued to be a *genuine* complementary region with arc-only boundary.",
+      "created_at": "2026-06-27T10:00:20Z"
+    }
+  ]
+}

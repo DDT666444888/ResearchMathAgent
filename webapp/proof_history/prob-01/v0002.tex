@@ -1,0 +1,680 @@
+\documentclass[12pt,fullpage]{article}
+
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage[fleqn]{amsmath}
+\usepackage{enumitem}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\A}{\mathcal{A}}
+\newcommand{\B}{\mathcal{B}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{{\mathbb{Z}}}
+\newcommand{\AUT}{\operatorname{AUT}}
+\renewcommand{\phi}{\varphi}
+
+\begin{document}
+
+\section*{Sub-lemma (G2): $\AUT(\A)$ is countable --- in fact $\AUT(\A)\cong\Z$}
+
+This section discharges the framing hypothesis of Theorems~2.2 and~2.3 by
+giving an \emph{explicit} structure $\A$, computing its automorphism group
+completely, and showing it is countable.  We then verify that the very same
+$\A$ has the structural features (K1)--(K4) used in the rest of the argument
+(in particular by Sub-lemma~G5 below), so that establishing countability does
+\emph{not} rigidify $\A$ past the point where the diagonal/negative clause
+remains available.
+
+The critic's worry is the correct one to address: a naive family of infinitely
+many \emph{independent} binary (orientation) choices produces
+$(\Z/2)^{\N}$, which is uncountable.  The construction below installs a
+\emph{rigid coordinating spine} that forces every automorphism to act by the
+same translation amount on every gadget and forbids all reflections globally,
+collapsing what would have been $(\Z/2)^{\N}\rtimes(\ \cdots\ )$ down to the
+single copy of $\Z$ of simultaneous translations.  The spine is, crucially,
+weak enough that a \emph{single} unanchored gadget still admits a local
+orientation reversal (property (K3)), which is exactly what the negative
+clause needs.
+
+\subsection*{The construction}
+
+\begin{definition}[The structure $\A$]\label{def:A}
+The universe is
+\[
+A \;=\; \{\,(n,i) : n\in\N,\ i\in\Z\,\},
+\]
+a set in explicit bijection with $\N$ (e.g.\ via a computable pairing of
+$\N\times\Z$ with $\N$); thus $\A$ is computably represented.  For each $n$ put
+\[
+G_n \;=\; \{\,(n,i) : i\in\Z\,\},
+\]
+so $A=\bigsqcup_{n\in\N}G_n$ is partitioned into the \emph{gadgets} $G_n$.
+The language has three binary relation symbols, interpreted as follows.
+\begin{itemize}
+\item \textbf{Within-gadget edges.}
+  \[
+  P\bigl((n,i),(m,j)\bigr)\ \Longleftrightarrow\ n=m\ \text{and}\ |i-j|=1 .
+  \]
+  Thus on each gadget $G_n$, the relation $P$ is the edge relation of an
+  \emph{undirected} bi-infinite path.
+\item \textbf{Anchor orientation on $G_0$.}
+  \[
+  D\bigl((n,i),(m,j)\bigr)\ \Longleftrightarrow\ n=m=0\ \text{and}\ j=i+1 .
+  \]
+  Thus $D$ holds only inside the single gadget $G_0$, where it is the edge
+  relation of a \emph{directed} bi-infinite path (a $\Z$-line with successor).
+  On every gadget $G_n$ with $n\ge 1$, $D$ is empty.
+\item \textbf{Coordinating spine (rungs).}
+  \[
+  R\bigl((n,i),(m,j)\bigr)\ \Longleftrightarrow\ m=n+1\ \text{and}\ j=i .
+  \]
+  Thus $R$ is a \emph{directed} relation joining the point $(n,i)$ of gadget
+  $G_n$ to the point $(n+1,i)$ of gadget $G_{n+1}$ at the \emph{same} position
+  $i$.  The reduct $(A;R)$ is, for each fixed $i$, a directed ray
+  $(0,i)\to(1,i)\to(2,i)\to\cdots$, and these rays are vertex-disjoint.
+\end{itemize}
+\end{definition}
+
+Three design features carry the whole argument, and we name them now:
+the \emph{rungs} $R$ couple all gadgets (forcing a uniform translation), their
+\emph{direction} together with the indexing $n\in\N$ pins each gadget index
+(no gadget is permuted), and the \emph{directed anchor} $D$ on $G_0$ destroys
+the global reflection.
+
+\subsection*{Computation of $\AUT(\A)$}
+
+For $k\in\Z$ define $\sigma_k\colon A\to A$ by
+\[
+\sigma_k(n,i) \;=\; (n,\,i+k).
+\]
+
+\begin{lemma}[Each $\sigma_k$ is an automorphism]\label{lem:shifts-are-auts}
+For every $k\in\Z$, $\sigma_k\in\AUT(\A)$, and $\sigma_k\circ\sigma_\ell=
+\sigma_{k+\ell}$.  Hence $k\mapsto\sigma_k$ is a homomorphism $\Z\to\AUT(\A)$.
+\end{lemma}
+
+\begin{proof}
+$\sigma_k$ is a bijection of $A$ with inverse $\sigma_{-k}$, and
+$\sigma_k\sigma_\ell=\sigma_{k+\ell}$ is immediate from
+$(i+\ell)+k=i+(k+\ell)$.  We check each relation is preserved (and, applying
+the same computation to $\sigma_{-k}$, reflected).
+
+\emph{$P$.} $P((n,i),(m,j))$ iff $n=m$ and $|i-j|=1$; then
+$\sigma_k(n,i)=(n,i+k)$, $\sigma_k(m,j)=(m,j+k)$, and indeed $n=m$ and
+$|(i+k)-(j+k)|=|i-j|=1$, so $P(\sigma_k(n,i),\sigma_k(m,j))$ holds; conversely
+the same with $-k$.
+
+\emph{$D$.} $D((n,i),(m,j))$ iff $n=m=0$ and $j=i+1$; then the images are
+$(0,i+k),(0,j+k)$ with $j+k=(i+k)+1$, so $D$ is preserved; conversely with
+$-k$.
+
+\emph{$R$.} $R((n,i),(m,j))$ iff $m=n+1$ and $j=i$; the images are
+$(n,i+k),(n+1,i+k)$, still with second index $n+1=n+1$ and equal positions
+$i+k=i+k$, so $R$ is preserved; conversely with $-k$.
+
+Thus $\sigma_k$ preserves and reflects all three relations, i.e.\
+$\sigma_k\in\AUT(\A)$.
+\end{proof}
+
+\begin{lemma}[Every automorphism fixes each gadget index]\label{lem:fix-index}
+Let $\phi\in\AUT(\A)$.  Then for every $(n,i)\in A$ there is $i'\in\Z$ with
+$\phi(n,i)=(n,i')$.  Equivalently, every gadget $G_n$ is $\phi$-invariant
+(setwise), and $\phi$ preserves the gadget index $n$.
+\end{lemma}
+
+\begin{proof}
+Write $\phi(n,i)=(N(n,i),\,I(n,i))$.  We first identify the gadget index from
+the relation $R$ alone.  Consider the binary relation $R$ as a directed graph
+on $A$.  For a point $p\in A$ define its \emph{in-degree} and
+\emph{out-degree} in $R$.  From Definition~\ref{def:A}:
+\[
+\text{out-degree}_R(n,i)=1\ \text{(the edge to }(n+1,i)),\qquad
+\text{in-degree}_R(n,i)=
+\begin{cases}
+0,& n=0,\\[2pt]
+1,& n\ge 1\ \text{(the edge from }(n-1,i)).
+\end{cases}
+\]
+Automorphisms preserve in- and out-degrees in each relation.  Hence:
+
+\smallskip
+\noindent\emph{Step 1: $\phi$ preserves $G_0$ setwise.}
+$(n,i)\in G_0$ iff its $R$-in-degree is $0$.  Since $\phi$ preserves
+$R$-in-degree, $\phi(G_0)=G_0$.
+
+\smallskip
+\noindent\emph{Step 2: $\phi$ preserves each $G_n$ setwise, by induction on
+$n$.}  Suppose $\phi(G_m)=G_m$ for all $m\le n$; we show $\phi(G_{n+1})=
+G_{n+1}$.  A point $q$ lies in $G_{n+1}$ iff there is a (necessarily unique)
+point $p$ with $R(p,q)$ and $p\in G_n$.  Indeed $R(p,q)$ holds iff
+$q=(n+1,i)$ and $p=(n,i)$ for some $i$; so $q\in G_{n+1}$ iff its unique
+$R$-predecessor lies in $G_n$.  Take $q\in G_{n+1}$, with $R$-predecessor
+$p\in G_n$.  Then $R(\phi(p),\phi(q))$ holds (as $\phi$ preserves $R$), and
+$\phi(p)\in G_n$ by the induction hypothesis.  The unique $R$-successor of any
+point of $G_n$ lies in $G_{n+1}$; hence $\phi(q)\in G_{n+1}$.  This shows
+$\phi(G_{n+1})\subseteq G_{n+1}$, and applying the same argument to
+$\phi^{-1}$ gives equality.  By induction $\phi(G_n)=G_n$ for all $n$.
+
+Thus $\phi$ preserves the gadget index, proving the claim.
+\end{proof}
+
+\begin{lemma}[The position shift is uniform across gadgets]\label{lem:uniform}
+Let $\phi\in\AUT(\A)$.  There is a single bijection $f\colon\Z\to\Z$ such that
+\[
+\phi(n,i)=(n,\,f(i))\qquad\text{for all }n\in\N,\ i\in\Z .
+\]
+\end{lemma}
+
+\begin{proof}
+By Lemma~\ref{lem:fix-index}, $\phi(n,i)=(n,I(n,i))$ for some
+$I(n,i)\in\Z$.  Fix $i\in\Z$ and consider the $R$-ray
+$(0,i)\to(1,i)\to(2,i)\to\cdots$.  Since $R(p,q)\Leftrightarrow
+R(\phi(p),\phi(q))$ and $\phi$ fixes gadget indices, applying $\phi$ to the
+edge $R((n,i),(n+1,i))$ gives $R\bigl((n,I(n,i)),(n+1,I(n+1,i))\bigr)$, which
+by the definition of $R$ forces $I(n+1,i)=I(n,i)$.  Hence $I(n,i)$ is
+independent of $n$; call it $f(i):=I(0,i)$.  Then
+$\phi(n,i)=(n,f(i))$ for all $n,i$.  Finally $f$ is a bijection of $\Z$
+because $\phi$ is a bijection of $A$ fixing each gadget index (its restriction
+to $G_0\cong\Z$ is exactly $i\mapsto f(i)$).
+\end{proof}
+
+\begin{lemma}[The uniform shift must be a translation]\label{lem:translation}
+The bijection $f$ of Lemma~\ref{lem:uniform} satisfies $f(i)=i+k$ for a fixed
+$k\in\Z$.  Consequently $\phi=\sigma_k$.
+\end{lemma}
+
+\begin{proof}
+\emph{$f$ preserves the undirected path on $\Z$.}  Restrict $\phi$ to $G_1$
+(where $P$ is the undirected bi-infinite path and $D$ is empty).  Since $\phi$
+preserves $P$ and acts on $G_1$ by $i\mapsto f(i)$, we have for all $i$:
+\[
+|i-(i+1)|=1\ \Rightarrow\ |f(i)-f(i+1)|=1 .
+\]
+So $f(i+1)\in\{f(i)+1,f(i)-1\}$ for every $i$.  A bijection $f\colon\Z\to\Z$
+with $|f(i+1)-f(i)|=1$ for all $i$ is a graph automorphism of the bi-infinite
+path; such an $f$ is monotone (if it changed direction at some $i$, i.e.\
+$f(i+1)=f(i)+1$ and $f(i+2)=f(i+1)-1=f(i)$, then $f(i)=f(i+2)$ contradicting
+injectivity, and symmetrically for the other turn), hence either
+$f(i)=i+k$ (orientation-preserving) or $f(i)=c-i$ (orientation-reversing)
+for fixed $k$ or $c$ in $\Z$.
+
+\emph{The reversal is excluded by the anchor $D$ on $G_0$.}  Suppose
+$f(i)=c-i$ for some $c\in\Z$.  On $G_0$ the relation $D$ is the directed
+successor: $D((0,i),(0,i+1))$ holds for all $i$.  Since $\phi$ preserves $D$
+and acts on $G_0$ by $i\mapsto f(i)$, applying $\phi$ to this edge yields
+\[
+D\bigl((0,f(i)),(0,f(i+1))\bigr),\qquad\text{i.e.}\qquad f(i+1)=f(i)+1 .
+\]
+But $f(i)=c-i$ gives $f(i+1)=c-i-1=f(i)-1\ne f(i)+1$, a contradiction.
+Hence $f$ is orientation-preserving, $f(i)=i+k$ for a fixed $k\in\Z$, and
+therefore $\phi=\sigma_k$ by Lemma~\ref{lem:uniform}.
+\end{proof}
+
+\begin{theorem}[Complete characterization]\label{thm:aut}
+The map $k\mapsto\sigma_k$ is a group isomorphism
+\[
+\Z\ \xrightarrow{\ \sim\ }\ \AUT(\A),\qquad k\mapsto\sigma_k .
+\]
+In particular $\AUT(\A)\cong\Z$ is infinite cyclic, hence \emph{countable},
+generated by $\sigma:=\sigma_1$, and the structure $\A$ has nontrivial
+automorphisms.
+\end{theorem}
+
+\begin{proof}
+By Lemma~\ref{lem:shifts-are-auts}, $k\mapsto\sigma_k$ is a homomorphism
+$\Z\to\AUT(\A)$; it is injective because $\sigma_k=\mathrm{id}$ forces
+$i+k=i$, i.e.\ $k=0$.  By Lemmas~\ref{lem:fix-index}, \ref{lem:uniform},
+and~\ref{lem:translation}, every $\phi\in\AUT(\A)$ equals some $\sigma_k$, so
+the homomorphism is surjective.  Hence it is an isomorphism, $\AUT(\A)\cong\Z$,
+which is countably infinite.
+\end{proof}
+
+\begin{remark}[How the uncountable trap is avoided]\label{rem:trap}
+Without the rungs $R$, the gadgets would be independent and each would
+contribute its own $D_\infty$ (translations and a reflection) acting
+independently, giving an automorphism group containing
+$(\Z/2)^{\N}$ (the independent reflections) --- uncountable.  The rungs are a
+\emph{rigid, oriented} coordinating spine: Lemma~\ref{lem:fix-index} uses
+their orientation and the well-ordered index $n\in\N$ (the source $G_0$ has
+$R$-in-degree $0$) to fix every gadget setwise, and Lemma~\ref{lem:uniform}
+uses their equal-position joining to force \emph{one} shift $f$ on all gadgets
+at once.  The remaining binary choice --- the single reflection still available
+to a uniform $f$ --- is killed once and for all by the directed anchor $D$ on
+the lone gadget $G_0$ (Lemma~\ref{lem:translation}).  What survives is exactly
+the diagonal $\{\sigma_k:k\in\Z\}\cong\Z$ inside $(\Z\rtimes\Z/2)$, i.e.\ the
+group of \emph{simultaneous} translations.  This is the ``direct sum, not
+direct product'' phenomenon the critic anticipated, realized in its strongest
+form: not merely finite support, but a single common $k$.
+\end{remark}
+
+\subsection*{Verification of the structural features (K1)--(K4)}
+
+We now confirm that the explicit $\A$ of Definition~\ref{def:A} satisfies the
+properties (K1)--(K4) invoked by Sub-lemma~G5, and in particular that
+establishing countability has \emph{not} over-rigidified $\A$.
+
+\begin{proposition}[(K1) holds]\label{prop:K1}
+$\AUT(\A)\cong\Z=\langle\sigma\rangle$ with $\sigma=\sigma_1$; each gadget
+$G_n$ is $\sigma$-invariant; and $\sigma$ acts on $G_n$ as the fixed-point-free
+$\Z$-translation $(n,i)\mapsto(n,i+1)$.  Hence every nontrivial $\sigma^k$
+($k\ne0$) moves every point of every gadget, and $\A$ satisfies the hypotheses
+of Theorem~2.2 (countable automorphism group).
+\end{proposition}
+
+\begin{proof}
+Immediate from Theorem~\ref{thm:aut} and the formula
+$\sigma^k=\sigma_k$, $\sigma_k(n,i)=(n,i+k)$, which has no fixed point on any
+$G_n$ when $k\ne 0$.
+\end{proof}
+
+\begin{proposition}[(K2) holds]\label{prop:K2}
+For each $n$ and each $k\in\Z$ there is an existential formula
+$\theta_n^{(k)}(u,x,y)$ such that, for any fixed base point $b\in G_n$,
+$\theta_n^{(k)}(b,\cdot,\cdot)$ defines on $G_n$ the graph of
+$\sigma^k\restriction G_n$.
+\end{proposition}
+
+\begin{proof}
+The relation $P$ restricted to $G_n$ is the edge relation of the undirected
+path; ``$x$ and $y$ lie in the same gadget at $P$-distance exactly $|k|$ on
+the side of $y$ determined by $u$'' is expressible existentially once a base
+point orients the path.  Concretely, fix $k\ge 1$ (the case $k\le -1$ is
+symmetric, $k=0$ is ``$x=y$'').  Let
+\[
+\theta_n^{(k)}(u,x,y)\;:=\;\exists z_0\,\exists z_1\cdots\exists z_{k}\;
+\Bigl(z_0=x\ \wedge\ z_k=y\ \wedge\ \bigwedge_{t=0}^{k-1}P(z_t,z_{t+1})\ \wedge\ \mathrm{Or}(u,z_0,z_1)\Bigr),
+\]
+where $\mathrm{Or}(u,z_0,z_1)$ is the existential formula asserting that the
+step $z_0\to z_1$ goes in the direction \emph{away from} the base point $u$,
+i.e.\ that the $P$-distance from $u$ to $z_1$ exceeds the $P$-distance from
+$u$ to $z_0$ (expressible existentially by exhibiting a $P$-path of suitable
+length, using that $u,z_0,z_1$ are colinear on the path).  Once $u=b$ is a
+fixed point of $G_n$, the orientation $\mathrm{Or}(b,\cdot,\cdot)$ singles out
+the same direction as $\sigma$, and $\theta_n^{(k)}(b,x,y)$ holds on $G_n$
+exactly when $y=\sigma^k(x)$.  (The single point $b$ supplies precisely the
+orientation that the undirected $P$ lacks intrinsically on $G_n$, $n\ge 1$;
+on $G_0$ the relation $D$ already provides orientation, so $b$ may even be
+omitted there.)
+\end{proof}
+
+\begin{proposition}[(K3) holds]\label{prop:K3}
+Let $\bar c$ be any finite subset of $A$.  Then there is a gadget index
+$n_0\ge 1$ with $G_{n_0-1},G_{n_0},G_{n_0+1}$ all disjoint from $\bar c$, and
+for any such $n_0$ the induced substructure on $\bar c\cup G_{n_0}$ admits an
+automorphism $\rho$ that fixes $\bar c$ pointwise, fixes every
+$G_m$ ($m\ne n_0$) pointwise, and reverses the orientation of $G_{n_0}$:
+\[
+\rho(n_0,i)=(n_0,\,-i),\qquad \rho\ \text{the identity elsewhere on its domain.}
+\]
+In particular $\rho\,\sigma\restriction G_{n_0}\,\rho^{-1}=
+\sigma^{-1}\restriction G_{n_0}$.
+\end{proposition}
+
+\begin{proof}
+$\bar c$ meets only finitely many gadgets, so some $n_0\ge 1$ has
+$G_{n_0-1},G_{n_0},G_{n_0+1}$ all disjoint from $\bar c$.  Consider the
+induced relational structure $\mathcal{S}$ on the domain
+$\bar c\cup G_{n_0}$.  Its relation-instances touching $G_{n_0}$ are:
+the $P$-edges \emph{within} $G_{n_0}$ (an undirected path, since $n_0\ge1$ so
+$D$ is empty on $G_{n_0}$); no $D$-instances (as $n_0\ge 1$); and any
+$R$-instances with one endpoint in $G_{n_0}$.  An $R$-edge incident to
+$G_{n_0}$ has its other endpoint in $G_{n_0-1}$ or $G_{n_0+1}$; but those
+gadgets are disjoint from $\bar c$, hence \emph{absent} from the domain
+$\bar c\cup G_{n_0}$.  Therefore $\mathcal{S}$ contains \emph{no} $R$-edge
+incident to $G_{n_0}$.  Consequently the only structure on $G_{n_0}$ inside
+$\mathcal{S}$ is the undirected path $P\restriction G_{n_0}$, and there is no
+relation linking $G_{n_0}$ to $\bar c$ at all.
+
+Define $\rho$ to be the identity on $\bar c$ and the reflection
+$(n_0,i)\mapsto(n_0,-i)$ on $G_{n_0}$.  This is a bijection of the domain
+$\bar c\cup G_{n_0}$.  It preserves $P\restriction G_{n_0}$ because
+$|i-j|=1\Leftrightarrow|(-i)-(-j)|=1$; it preserves the (empty) $D$-relation
+trivially; and it preserves the $R$-relation of $\mathcal{S}$ trivially, since
+$\mathcal{S}$ has no $R$-edge touching $G_{n_0}$ and $\rho$ fixes everything
+outside $G_{n_0}$.  Hence $\rho\in\AUT(\mathcal{S})$, it fixes $\bar c$
+pointwise, and on $G_{n_0}$ it satisfies
+$\rho(\sigma(n_0,i))=\rho(n_0,i+1)=(n_0,-i-1)=\sigma^{-1}(n_0,-i)=
+\sigma^{-1}(\rho(n_0,i))$, i.e.\ $\rho\sigma\rho^{-1}=\sigma^{-1}$ on
+$G_{n_0}$, as claimed.
+\end{proof}
+
+\begin{remark}[Why countability did not destroy (K3)]\label{rem:K3-survives}
+This is the crux of the critic's concern (b).  The directed anchor $D$ lives
+\emph{only} on $G_0$; on every gadget $G_n$ with $n\ge 1$ the within-gadget
+relation is the \emph{undirected} path, which is reflection-symmetric.  The
+spine $R$ is what would, in the full structure, forbid reflecting a single
+gadget --- but in the \emph{induced} substructure on $\bar c\cup G_{n_0}$ the
+spine edges incident to $G_{n_0}$ vanish (their other endpoints are not in the
+domain).  Thus the global rigidity that yields $\AUT(\A)\cong\Z$ coexists with
+local flexibility of any individual unanchored gadget $n_0\ge1$.  This is
+exactly the resource asymmetry exploited by Sub-lemma~G5.
+\end{remark}
+
+\begin{proposition}[(K4) holds]\label{prop:K4}
+For each fixed $k\ne 0$ and each existential formula $\psi(\bar c,x,y)$ whose
+parameters $\bar c$ are disjoint from a gadget $G_{n_0}$ (with $G_{n_0\pm1}$
+also disjoint from $\bar c$), $\psi$ cannot define $\sigma^k\restriction
+G_{n_0}$.  Equivalently, the orientation needed to certify ``move by $k$''
+inside $G_{n_0}$ is not available from parameters outside $G_{n_0}$.
+\end{proposition}
+
+\begin{proof}
+If $\psi(\bar c,x_0,\sigma^k x_0)$ held for some $x_0\in G_{n_0}$, then
+applying the orientation-reversing automorphism $\rho$ of
+Proposition~\ref{prop:K3} (which fixes $\bar c$ and preserves existential
+formulas) would give $\psi(\bar c,\rho x_0,\rho\sigma^k x_0)$ with
+$\rho\sigma^k\rho^{-1}=\sigma^{-k}$ on $G_{n_0}$; this would force $\psi$ to
+also relate $\rho x_0$ to $\sigma^{-k}(\rho x_0)\ne\sigma^{k}(\rho x_0)$,
+so $\psi$ cannot single out the $\sigma^k$-direction.  (This is precisely the
+mechanism used in the proof of the negative clause~P2 below; we record it here
+as the content of (K4).)  In particular no \emph{single} existential reach
+from outside a gadget certifies the translation direction, uniformly across
+gadgets.
+\end{proof}
+
+\begin{remark}[On the wording ``unbounded displacement'']\label{rem:K4-honest}
+The earlier informal statement of (K4) spoke of the per-gadget displacement of
+$\sigma$ ``growing with $n$''.  In the present construction $\sigma$ acts by
+the \emph{same} translation (by $1$) on every gadget, so what (K4) actually
+provides --- and all that Sub-lemma~G5 uses --- is the
+\emph{orientation-indistinguishability} of $\sigma^k$ from $\sigma^{-k}$ on an
+unanchored gadget, established in Proposition~\ref{prop:K4}.  No metric growth
+of displacement is needed.  Should a variant requiring literally growing
+displacement be desired, one may replace the within-gadget path of $G_n$ by a
+path subdivided so that the generator's induced minimal $P$-step on $G_n$ has
+length $n+1$; this changes none of Lemmas~\ref{lem:shifts-are-auts}--\ref{lem:translation}
+(the spine still couples the gadgets and the anchor still kills the reflection),
+so $\AUT(\A)\cong\Z$ is preserved.  We do not need this refinement and so do
+not carry it.
+\end{remark}
+
+\subsection*{Conclusion of G2}
+
+\begin{corollary}\label{cor:G2}
+The structure $\A$ of Definition~\ref{def:A} is a computably represented,
+infinite, countable first-order structure with $\AUT(\A)\cong\Z$.  Hence
+$\AUT(\A)$ is countable and nontrivial, the hypotheses of Theorems~2.2
+and~2.3 are met, and $\A$ simultaneously enjoys properties
+(K1)--(K4).  In particular, the linking spine creates no unexpected
+automorphisms (Theorem~\ref{thm:aut} is an exact characterization) and does
+not rigidify $\A$ past the availability of the diagonal clause
+(Propositions~\ref{prop:K3}--\ref{prop:K4}).
+\end{corollary}
+
+\begin{proof}
+Combine Theorem~\ref{thm:aut} with
+Propositions~\ref{prop:K1}--\ref{prop:K4}.
+\end{proof}
+
+\section*{Sub-lemma (G5): joint consistency of the positive and negative clauses}
+
+\subsection*{Setup and the apparent paradox}
+
+We work inside the construction of the counterexample $\A$ for
+Question~1.2 (the explicit $\A$ of Definition~\ref{def:A}, whose automorphism
+group was computed in Theorem~\ref{thm:aut}).  Throughout,
+$\Sigma^{in}_1$-definability is taken with the
+exact meaning of the problem statement: a function $f\colon\A\to\A$ is
+\emph{$\Sigma^{in}_1$-definable from a finite tuple $\bar c$} if there is a
+family of existential formulas $(\phi_i)_{i\in\N}$ in the language of $\A$
+such that for all $x,y\in\A$,
+\[
+f(x)=y\quad\Longleftrightarrow\quad \exists i\;\bigl(\A\models\phi_i(\bar c,x,y)\bigr).
+\tag{$\ast$}
+\]
+
+Two clauses are in play.
+
+\begin{itemize}
+\item[(P1)] \emph{Positive clause.} For \emph{every} $\pi\in\AUT(\A)$ there
+  is \emph{some} finite tuple $\bar c_\pi$ such that $\pi$ is
+  $\Sigma^{in}_1$-definable from $\bar c_\pi$.  (This is what makes $\A$
+  computably $\AUT$-countable on a cone, via Theorem~2.3.)
+\item[(P2)] \emph{Negative clause.} For \emph{every} finite tuple $\bar a$
+  there is an automorphism $\pi$ of $\A$ that is \emph{not}
+  $\Sigma^{in}_1$-definable from $\bar a\cup\pi(\bar a)$.
+\end{itemize}
+
+At face value these look contradictory: (P1) furnishes a finite tuple that
+defines $\pi$, while (P2) says no finite tuple of a certain kind defines
+$\pi$.  The purpose of this sub-lemma is to show that there is no
+contradiction, by isolating exactly which datum a defining tuple must carry
+and showing that this datum is, by design, \textbf{not} contained in any
+externally chosen $\bar a\cup\pi(\bar a)$.  This is the gap between
+Theorem~2.2 (a uniform tuple that \emph{determines} every automorphism) and
+Theorem~2.3 (a per-automorphism tuple that \emph{effectively defines} it).
+
+\subsection*{The structural properties of the construction that we use}
+
+We record the precise structural facts about $\A$, all now \emph{proved} in
+Sub-lemma~G2 above.  The universe of $\A$ is partitioned into infinitely many
+\emph{gadgets} $\{G_n:n\in\N\}$, and the following hold.
+
+\begin{enumerate}[label=\textbf{(K\arabic*)}]
+\item \textbf{(Countable, coupled symmetry.)}\label{K1}
+  $\AUT(\A)$ is countable; in fact $\AUT(\A)\cong\Z$, generated by a single
+  $\sigma$ (Theorem~\ref{thm:aut}, Proposition~\ref{prop:K1}).  Each
+  $\pi\in\AUT(\A)$ is $\sigma^{k}$ for a unique $k\in\Z$.  Each gadget $G_n$ is
+  $\sigma$-invariant, and $\sigma$ acts on $G_n$ as a fixed-point-free
+  $\Z$-action; thus every nontrivial $\pi=\sigma^k$ ($k\neq0$) moves every
+  point of every gadget.  In particular $\A$ satisfies the hypotheses of
+  Theorem~2.2.
+
+\item \textbf{(Internal orientability from a base point.)}\label{K2}
+  For each gadget $G_n$ and each $k$ there is an existential
+  $\theta_n^{(k)}(u,x,y)$ defining $\sigma^k\restriction G_n$ from any base
+  point $b\in G_n$ (Proposition~\ref{prop:K2}).
+
+\item \textbf{(No external orientation; symmetry of unanchored gadgets.)}\label{K3}
+  For every finite $\bar c\subseteq\A$ there is a gadget $G_{n_0}$
+  ($n_0\ge 1$) with $G_{n_0-1},G_{n_0},G_{n_0+1}$ disjoint from $\bar c$, and
+  an automorphism $\rho=\rho_{n_0,\bar c}$ of the induced substructure on
+  $\bar c\cup G_{n_0}$ that fixes $\bar c$ pointwise, acts nontrivially on
+  $G_{n_0}$, and reverses the orientation $\sigma$ induces on $G_{n_0}$
+  (Proposition~\ref{prop:K3}).  Consequently no existential formula with
+  parameters drawn entirely from outside $G_{n_0}$ can distinguish, inside
+  $G_{n_0}$, the direction of $\sigma$ from that of $\sigma^{-1}$.
+
+\item \textbf{(Orientation-indistinguishability from outside.)}\label{K4}
+  For $k\ne0$, no existential formula with parameters outside an (unanchored)
+  gadget can define $\sigma^k$ on that gadget
+  (Proposition~\ref{prop:K4}).
+\end{enumerate}
+
+\ref{K1} is the source of (P1) being even possible (Theorem~2.2 applies and
+$\AUT(\A)$ is countable). \ref{K2}--\ref{K4} are the source of (P2).  The two
+clusters do not conflict because they speak about \emph{different} parameter
+sets, as we now make precise.
+
+\subsection*{(P1): a defining tuple exists for each $\pi$}
+
+\begin{lemma}[Positive clause]\label{lem:P1}
+For every $\pi=\sigma^k\in\AUT(\A)$ there is a finite tuple $\bar c_\pi$ such
+that $\pi$ is $\Sigma^{in}_1$-definable from $\bar c_\pi$.
+\end{lemma}
+
+\begin{proof}
+If $k=0$ then $\pi$ is the identity, defined by the single existential
+formula ``$x=y$'' with empty parameters, so take $\bar c_\pi$ empty.
+
+Assume $k\neq0$.  We exhibit a single finite tuple $\bar c$ that orients every
+gadget at once.  Take $\bar c:=\bigl((0,0)\bigr)$, the single base point
+$(0,0)\in G_0$.  We claim $\sigma^k$ is $\Sigma^{in}_1$-definable from
+$\bar c$.
+
+First note that the gadget index and the position $0$ are existentially
+recoverable from $\bar c$ along the spine: for each $n$, the point $(n,0)$ is
+the unique point reachable from $(0,0)$ by an $R$-path of length $n$, so the
+existential formula
+\[
+\mathrm{Base}_n(\bar c,u)\;:=\;\exists w_0\cdots\exists w_n\Bigl(w_0=(0,0)\ \wedge\ w_n=u\ \wedge\ \bigwedge_{t=0}^{n-1}R(w_t,w_{t+1})\Bigr)
+\]
+defines $u=(n,0)$, a base point of $G_n$.  (Uniqueness holds because $R$ is a
+disjoint union of directed rays and $(0,0)$ starts the ray at position $0$.)
+Now set, for each $n$,
+\[
+\phi_n(\bar c,x,y)\;:=\;
+\exists u\;\Bigl(\,\mathrm{Base}_n(\bar c,u)\ \wedge\ \theta_n^{(k)}(u,x,y)\,\Bigr),
+\]
+with $\theta_n^{(k)}$ the formula of Proposition~\ref{prop:K2}.  For
+$x\in G_n$, $\A\models\phi_n(\bar c,x,y)$ iff $y=\sigma^k(x)$, and for
+$x\in G_m$ with $m\ne n$ the formula $\phi_n$ fails (its witness $u$ lies in
+$G_n$ while $\theta_n^{(k)}$ requires $x$ in the same gadget as $u$).  Hence
+\[
+\pi(x)=y\iff\exists n\;\bigl(\A\models\phi_n(\bar c,x,y)\bigr),
+\]
+which is $(\ast)$ with $\bar c_\pi=\bar c$.  Thus $\pi$ is
+$\Sigma^{in}_1$-definable from the finite tuple $\bar c_\pi=((0,0))$.
+\end{proof}
+
+\begin{remark}\label{rem:per-pi}
+The tuple $\bar c$ in Lemma~\ref{lem:P1} \emph{orients every gadget}: through
+the spine it recovers, in $G_n$, the base point $(n,0)$, which fixes the
+$\sigma$-direction inside $G_n$ via Proposition~\ref{prop:K2}.  The
+displacement $k$ is folded into the \emph{choice of formula}
+$\theta_n^{(k)}$, not into the parameters; this is why a single finite
+$\bar c$ suffices for $\pi$.  The essential content of a defining tuple is an
+\emph{orientation of the gadgets} --- and the spine lets one anchor point
+$(0,0)$ orient all of them simultaneously.
+\end{remark}
+
+\subsection*{(P2): no externally chosen tuple defines a suitable $\pi$}
+
+\begin{lemma}[Negative clause]\label{lem:P2}
+For every finite tuple $\bar a$ from $\A$ there is $\pi\in\AUT(\A)$,
+$\pi\neq\mathrm{id}$, such that $\pi$ is \emph{not} $\Sigma^{in}_1$-definable
+from $\bar a\cup\pi(\bar a)$.
+\end{lemma}
+
+\begin{proof}
+Fix a finite $\bar a$.  Take $\pi:=\sigma$ (any nontrivial power works; we use
+$k=1$).  Because $\sigma$ fixes each gadget setwise (Proposition~\ref{prop:K1}),
+$\bar c:=\bar a\cup\pi(\bar a)$ meets exactly the same finite set of gadgets as
+$\bar a$.  Choose, by Proposition~\ref{prop:K3}, a gadget $G_{n_0}$ ($n_0\ge1$)
+with $G_{n_0-1},G_{n_0},G_{n_0+1}$ all disjoint from $\bar c$.  In particular
+\[
+\bar c=\bar a\cup\pi(\bar a)\ \text{is disjoint from } G_{n_0}.
+\tag{1}\label{eq:disjoint}
+\]
+This is the crucial point: \emph{augmenting $\bar a$ with $\pi(\bar a)$ adds
+no point of $G_{n_0}$}, since $\pi$ permutes each gadget within itself.
+
+Now suppose, for contradiction, that $\pi$ were $\Sigma^{in}_1$-definable
+from $\bar c$, witnessed by a family $(\phi_i)_{i\in\N}$ as in $(\ast)$.  Fix
+any $x_0\in G_{n_0}$ and let $y_0:=\pi(x_0)\in G_{n_0}$, $y_0\neq x_0$.  By
+$(\ast)$ there is an index $i$ with
+\[
+\A\models\phi_i(\bar c,x_0,y_0),
+\tag{2}\label{eq:wit}
+\]
+and $\phi_i$ is existential.
+
+Apply the automorphism $\rho:=\rho_{n_0,\,\bar c}$ of the induced substructure
+on $\bar c\cup G_{n_0}$ furnished by Proposition~\ref{prop:K3} (legitimate by
+\eqref{eq:disjoint}).  It fixes every entry of $\bar c$ and reverses the
+$\sigma$-orientation on $G_{n_0}$:
+\[
+\rho\,\sigma\,\rho^{-1}\restriction G_{n_0}\;=\;\sigma^{-1}\restriction G_{n_0}.
+\tag{3}\label{eq:reverse}
+\]
+Existential formulas are preserved by embeddings, and the inclusion
+$\bar c\cup G_{n_0}\hookrightarrow A$ followed by $\rho$ realizes $x_0,y_0$
+together with all witnesses of \eqref{eq:wit} inside $G_{n_0}\cup\bar c$;
+since $\rho$ is an automorphism of this induced substructure fixing $\bar c$,
+applying it to \eqref{eq:wit} gives
+\[
+\A\models\phi_i\bigl(\bar c,\ \rho(x_0),\ \rho(y_0)\bigr).
+\tag{4}\label{eq:wit2}
+\]
+(The witnesses of the existential $\phi_i$ verifying \eqref{eq:wit} may be
+taken inside the $P$-connected component of $x_0,y_0$, i.e.\ inside $G_{n_0}$,
+together with the named parameters $\bar c$; $\rho$ maps these into the same
+induced substructure, preserving the quantifier-free matrix.)  Write
+$x_1:=\rho(x_0)\in G_{n_0}$ and $y_1:=\rho(y_0)\in G_{n_0}$.  Then
+\eqref{eq:wit2} with $(\ast)$ forces
+\[
+\pi(x_1)=y_1.
+\tag{5}\label{eq:forced}
+\]
+On the other hand, using \eqref{eq:reverse},
+\[
+y_1=\rho(y_0)=\rho(\pi(x_0))=\rho\,\pi\,\rho^{-1}(\rho(x_0))
+=\sigma^{-1}(x_1)=\pi^{-1}(x_1).
+\]
+So \eqref{eq:forced} says $\pi(x_1)=\pi^{-1}(x_1)$, i.e.\ $\pi^2(x_1)=x_1$.
+But $\pi=\sigma$ acts on $G_{n_0}$ as the fixed-point-free translation
+$i\mapsto i+1$, so $\sigma^2$ has no fixed point on $G_{n_0}$ --- a
+contradiction.
+
+Hence no such family $(\phi_i)$ exists: $\pi$ is \emph{not}
+$\Sigma^{in}_1$-definable from $\bar a\cup\pi(\bar a)$, as claimed.
+\end{proof}
+
+\subsection*{Reconciliation: there is no contradiction}
+
+\begin{theorem}[G5: joint consistency]\label{thm:G5}
+(P1) and (P2) hold simultaneously of $\A$; they are not contradictory.
+\end{theorem}
+
+\begin{proof}
+(P1) is Lemma~\ref{lem:P1} and (P2) is Lemma~\ref{lem:P2}.  It remains to
+explain \emph{why} the existence of a defining tuple for each $\pi$ (P1) does
+not collide with the non-definability from $\bar a\cup\pi(\bar a)$ (P2).
+
+By Remark~\ref{rem:per-pi}, a tuple $\bar c_\pi$ defining $\pi$ must
+\emph{orient the gadgets}: by Proposition~\ref{prop:K2}, definability of
+$\sigma^k\restriction G_n$ requires a base point of $G_n$ (or the spine-anchor
+$(0,0)$, which manufactures one in every gadget).  The defining tuple of
+Lemma~\ref{lem:P1} carries exactly such orientation data for every gadget at
+once.
+
+An externally chosen tuple $\bar a\cup\pi(\bar a)$, by contrast, carries
+\emph{no} orientation datum for the gadget $G_{n_0}$ of Lemma~\ref{lem:P2}: by
+\eqref{eq:disjoint}, $\bar a\cup\pi(\bar a)$ contains no point of $G_{n_0}$,
+because $\pi$ permutes each gadget within itself, so forming $\pi(\bar a)$
+never reaches an untouched gadget.  And by \ref{K3}--\ref{K4} the direction of
+$\sigma$ on an unanchored gadget is invisible to existential formulas with
+only external parameters.  This is exactly the gap between Theorem~2.2 and
+Theorem~2.3:
+\begin{itemize}
+\item Theorem~2.2 gives a finite tuple that \emph{determines} every
+  automorphism --- the action of $\sigma$ on \emph{any one} point already fixes
+  $\sigma=\sigma_k$ on all of $\A$ via \ref{K1}; but ``determines'' is
+  semantic, not effective, and uses no orientation.
+\item Theorem~2.3 needs a finite tuple from which $\pi$ is \emph{effectively
+  ($\Sigma^{in}_1$-)definable}; by \ref{K2} this demands orientation data
+  inside each moved gadget, data that an external $\bar a\cup\pi(\bar a)$
+  provably lacks for $G_{n_0}$.
+\end{itemize}
+
+Thus the finite tuple defining a given $\pi$ in (P1) consists of data --- a
+gadget orientation (provided in one shot by the spine-anchor) --- genuinely
+\emph{not} recoverable from an arbitrary externally chosen
+$\bar a\cup\pi(\bar a)$.  The two clauses quantify over disjoint informational
+resources, so no common tuple is forced to do both jobs, and no contradiction
+arises.
+\end{proof}
+
+\begin{remark}[Where countability of $\AUT(\A)$ enters]
+The reconciliation does not contradict Theorem~2.2.  By \ref{K1}, the image of
+one point under $\pi$ already determines $\pi=\sigma_k$, so $\pi\mapsto\pi
+\restriction\bar a$ is injective on $\AUT(\A)$ for any nonempty $\bar a$ --- the
+content of Theorem~2.2.  ``Determined by its action on $\bar a$'' does
+\emph{not} assert that $\pi$ is $\Sigma^{in}_1$-definable from $\bar a$.  The
+witness $\pi$ of Lemma~\ref{lem:P2} is fully determined by its action on
+$\bar a$ (consistent with Theorem~2.2) yet not $\Sigma^{in}_1$-definable from
+$\bar a\cup\pi(\bar a)$ (the failure of the naive effectivization).  This is
+the precise sense in which the construction inhabits the Theorem~2.2 /
+Theorem~2.3 gap; and it requires $\AUT(\A)$ countable, which is exactly
+Theorem~\ref{thm:aut}.
+\end{remark}
+
+\end{document}

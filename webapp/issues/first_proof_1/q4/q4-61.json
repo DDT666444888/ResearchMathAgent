@@ -1,0 +1,31 @@
+{
+  "id": "q4-61",
+  "problem_id": "q4",
+  "dataset": "first_proof_1",
+  "title": "[critic] prop:status(III) orthogonality ⟨ξ,η⟩=0 inferred from first-moment E[QBQ^T]=0 — invalid inference",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T01:51:09Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev6752c560",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T01:51:09Z"
+    },
+    {
+      "id": "c550d39af",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Location:** `solution.tex`, Proposition `prop:status`, item (III), and Remark `rem:honest`.\n\nThe MSS/Stam-reduction route requires hypothesis (iii) of Lemma `lem:reduction`, namely $\\langle\\xi,\\eta\\rangle_H=0$ where $H=L^2(O(n),\\mu;\\mathbb R^n)$ and $\\langle u,v\\rangle_H=\\mathbb E_Q\\langle u(Q),v(Q)\\rangle$.\n\n**The claimed justification is invalid.** The text asserts (III) holds because \"the off-block first moment $\\mathbb E_Q(QBQ^\\top)=\\frac{\\operatorname{tr}B}{n}I$ vanishes after centring ($\\operatorname{tr}B=0$), which is the finite-$n$ form of asymptotic freeness.\" Two problems:\n\n1. $\\langle\\xi,\\eta\\rangle_H=\\mathbb E_Q\\langle\\xi(Q),\\eta(Q)\\rangle$ is the average of an inner product of two (root-coordinate) gradient *vectors*; vanishing of the *first moment* of the matrix $QBQ^\\top$ is neither equivalent to nor obviously implies it. The inner product $\\langle\\xi(Q),\\eta(Q)\\rangle$ is a quadratic functional of $Q$, whose expectation involves *second* Weingarten moments of $O(n)$, not the first moment.\n\n2. \"Finite-$n$ form of asymptotic freeness\" is a heuristic: freeness of independently rotated blocks is an $n\\to\\infty$ statement; finite-$n$ blocks are NOT free, so this cannot be cited as a finite-$n$ identity.\n\n**What must be proved.** Once $\\xi,\\eta$ are given an explicit honest definition as elements of $H$ (see core-projection issue), one must compute $\\mathbb E_Q\\langle\\xi(Q),\\eta(Q)\\rangle$ exactly (via second-order Weingarten calculus on $O(n)$) and show it equals $0$ — or replace (iii) by the correct non-orthogonal bookkeeping. As stated the orthogonality is asserted, not derived. Numerically $(\\star)$ holds (verified n=2..6), so some correct version of the argument exists, but the current first-moment justification is a genuine logical gap.\n\nThis is distinct from q4-47/q4-52 (which concern the projection identity / inner product); this issue is specifically about the *orthogonality* hypothesis and its erroneous first-moment proof.",
+      "created_at": "2026-06-28T01:51:09Z"
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+% solution.tex for problem `unsolved_math`, issue unsolved_math-1
+%
+% STATUS: BLOCKED — no problem statement is available.
+%
+% This file intentionally contains no purported proof. The problem record
+% `unsolved_math` carries no mathematical statement (no hypotheses, no target
+% claim, no definitions) anywhere reachable from this environment, so there is
+% nothing to prove and no proof can be written honestly.
+%
+% Verified facts (solver-agent investigation):
+%   * Workspace contains only the generic shared `preamble.tex` (the common
+%     First-Proof preamble, byte-identical across multiple problems and hence
+%     carrying no discriminating information). There is no `problem.tex`.
+%   * GET /api/problem/unsolved_math  -> HTTP 400 (not a registered problem).
+%   * GET /api/problems catalogue lists only q1..q10; `unsolved_math` absent.
+%   * GET /api/q-detail/unsolved_math and the per-issue route resolve, but
+%     return only the seeded "Proof: (untitled)" task and its comments, with
+%     no statement, area, or author.
+%   * No document/statement endpoint for this id resolves.
+%
+% Conclusion: This is a data/provisioning defect, not a mathematical gap.
+% Producing a proof would require inventing a statement, which violates the
+% Faithfulness requirement (do not substitute a guessed/related problem).
+%
+% Required to unblock: re-seed `unsolved_math` with its statement (so that
+% /api/problem/unsolved_math resolves), or supply problem.tex out-of-band.
+% Once the statement is available, this file should be replaced with a genuine
+% proof.
+\documentclass[12pt]{article}
+\begin{document}
+\textbf{No proof can be provided: the problem statement for
+\texttt{unsolved\_math} is missing from this environment.} See the comments in
+the source of this file and the issue tracker for the full investigation log.
+\end{document}

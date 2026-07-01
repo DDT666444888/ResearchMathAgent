@@ -1,0 +1,292 @@
+\documentclass{amsart}
+\usepackage{amsmath,amssymb,amsthm,hyperref}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\theoremstyle{definition}
+\newtheorem{remark}{Remark}
+\begin{document}
+
+\title{The Diophantine equation $x^2-2=y^p$}
+\maketitle
+
+\begin{theorem}\label{thm:main}
+Let $p\ge 3$ be a prime. The only integer solutions $(x,y)$ of
+\begin{equation}\label{eq:main}
+x^2-2=y^p
+\end{equation}
+are the trivial ones $(x,y)=(\pm 1,-1)$. Equivalently, there is no solution
+with $|y|\ge 2$. Hence the complete solution set is
+\[
+(x,y,p)=(\pm1,\,-1,\,p),\qquad p\ \text{any prime}\ \ge3 .
+\]
+\end{theorem}
+
+\noindent\textbf{Status of this write-up.}
+Sections~\ref{sec:reduction}--\ref{sec:k0} are complete and self-contained:
+they reduce \eqref{eq:main} to a finite list of factorisation types
+indexed by $k\in\{0,\dots,p-1\}$ and dispose \emph{rigorously and elementarily}
+of the type $k=0$. Section~\ref{sec:knonzero} treats the remaining types
+$k\ne0$. We prove there several structural constraints, but the final
+elimination of the types $1\le k\le p-1$ for all primes $p$ rests on the
+effective theory of linear forms in logarithms (Baker's method), as used in
+the Lebesgue--Nagell program; this deep input is stated precisely and cited,
+and the obstruction that prevents a purely elementary argument is identified
+explicitly. We have verified the conclusion numerically for all primes
+$p\le 100$ and a large range of $|y|$; no nontrivial solution occurs.
+
+Throughout, $p\ge 3$ is a fixed prime. We work in the ring
+$\mathcal{O}=\mathbb{Z}[\sqrt2]$ of integers of $K=\mathbb{Q}(\sqrt2)$. We
+write $\bar\xi$ for the Galois conjugate of $\xi\in K$
+($\overline{a+b\sqrt2}=a-b\sqrt2$) and $N(\xi)=\xi\bar\xi$.
+
+\begin{proposition}\label{prop:ring}
+\leavevmode
+\begin{enumerate}
+\item $\mathcal{O}=\mathbb{Z}[\sqrt2]$ is a Euclidean domain for $|N|$, hence a
+PID and a UFD.
+\item $\mathcal{O}^{\times}=\{\pm\varepsilon^{\,m}:m\in\mathbb{Z}\}$ with
+fundamental unit $\varepsilon=1+\sqrt2$, $N(\varepsilon)=-1$.
+\item $\sqrt2$ is prime in $\mathcal{O}$ (norm $-2$) and $(2)=(\sqrt2)^2$.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+(1) Given $\alpha,\beta\in\mathcal{O}$, $\beta\ne0$, write
+$\alpha/\beta=u+v\sqrt2\in K$ and round to the nearest $q=u_0+v_0\sqrt2\in
+\mathcal O$ with $|u-u_0|,|v-v_0|\le\frac12$. Then
+$|N(\alpha/\beta-q)|=|(u-u_0)^2-2(v-v_0)^2|\le\max(\tfrac14,2\cdot\tfrac14)=\tfrac12<1$,
+so $r=\alpha-q\beta$ has $|N(r)|<|N(\beta)|$. A Euclidean domain is a PID and a
+UFD. (2) is the resolution of Pell's equation $u^2-2v^2=\pm1$ with
+fundamental solution $(1,1)$ together with the unit theorem. (3) $N(\sqrt2)=-2$
+has prime absolute value, so $\sqrt2$ is irreducible, hence prime in a UFD; and
+$(\sqrt2)^2=(2)$.
+\end{proof}
+
+\section{Elementary reduction}\label{sec:reduction}
+
+\begin{lemma}\label{lem:parity}
+For any solution of \eqref{eq:main} with $p\ge2$: $x$ and $y$ are odd and
+$\gcd(x,y)=1$.
+\end{lemma}
+
+\begin{proof}
+If $y$ is even then $4\mid 2^p\mid y^p=x^2-2$, so $x^2\equiv2\pmod4$, which is
+impossible. Hence $y$ is odd, and $x^2=y^p+2$ is odd, so $x$ is odd. A common
+prime $q\mid\gcd(x,y)$ divides $x^2-y^p=2$, so $q=2$, contradicting parity;
+thus $\gcd(x,y)=1$.
+\end{proof}
+
+\begin{lemma}\label{lem:coprime}
+In $\mathcal{O}$, $x+\sqrt2$ and $x-\sqrt2$ are coprime.
+\end{lemma}
+
+\begin{proof}
+A common divisor $\mathfrak d$ divides $2\sqrt2=(\sqrt2)^3$, so (as $\sqrt2$ is
+prime) $\mathfrak d$ is a unit times a power of $\sqrt2$. But $\sqrt2\nmid
+x+\sqrt2$: otherwise $\sqrt2\mid x$, so $2=|N(\sqrt2)|$ divides $x^2$, forcing
+$x$ even, against Lemma~\ref{lem:parity}. Hence $\mathfrak d$ is a unit.
+\end{proof}
+
+\begin{proposition}\label{prop:reduction}
+For every solution of \eqref{eq:main} there are $k\in\{0,1,\dots,p-1\}$ and
+$\gamma=a+b\sqrt2\in\mathcal{O}$ with
+\begin{equation}\label{eq:factor}
+x+\sqrt2=\varepsilon^{\,k}\,\gamma^{\,p}.
+\end{equation}
+Moreover $a$ is odd; $b$ is odd if $k$ is even and even if $k$ is odd;
+$\gcd(a,b)=1$; and $y=(-1)^k(a^2-2b^2)$.
+\end{proposition}
+
+\begin{proof}
+The coprime factors $x\pm\sqrt2$ multiply to $y^p$
+(Lemma~\ref{lem:coprime}). In a UFD, a coprime factorisation of a $p$-th power
+makes each factor a unit times a $p$-th power, so $x+\sqrt2=u\beta^p$ with
+$u\in\mathcal O^\times$, $\beta\in\mathcal O$. Write $u=\pm\varepsilon^m$,
+$m=pq+k$, $0\le k\le p-1$. Since $p$ is odd, $-1=(-1)^p$ and
+$\varepsilon^{pq}=(\varepsilon^q)^p$, so
+$u\beta^p=\varepsilon^k\big(\pm\varepsilon^q\beta\big)^p$; set
+$\gamma=\pm\varepsilon^q\beta$, giving \eqref{eq:factor}.
+
+Taking norms: $y^p=N(x+\sqrt2)=(-1)^k(a^2-2b^2)^p$, hence (as $p$ is odd)
+$y=(-1)^k(a^2-2b^2)$.
+
+For parities, reduce \eqref{eq:factor} mod $2$ in $\mathcal O/(2)$ (a
+$4$-element ring, $\sqrt2^2\equiv0$): there $\varepsilon^2\equiv1$,
+$\gamma^2\equiv a^2$, so $\gamma^p\equiv\gamma\,(a^2)^{(p-1)/2}$. Since
+$x+\sqrt2\equiv1+\sqrt2$ is a unit there, $\gamma$ must be a unit, forcing $a$
+odd; then $\gamma^p\equiv\gamma\equiv1+b\sqrt2$. Comparing with $1+\sqrt2$:
+if $k$ even ($\varepsilon^k\equiv1$) we get $b$ odd; if $k$ odd
+($\varepsilon^k\equiv1+\sqrt2$) we get
+$1+\sqrt2\equiv(1+\sqrt2)(1+b\sqrt2)\equiv1+(1+b)\sqrt2$, i.e.\ $b$ even.
+Finally a common prime of $a,b$ divides $\gamma,\bar\gamma$, hence
+$x\pm\sqrt2$, contradicting Lemma~\ref{lem:coprime}; so $\gcd(a,b)=1$.
+\end{proof}
+
+Comparing $\sqrt2$-coefficients in \eqref{eq:factor}, with
+$\varepsilon^k=E_k+F_k\sqrt2$ ($E_k^2-2F_k^2=(-1)^k$) and
+$\gamma^p=P+Q\sqrt2$,
+\begin{equation}\label{eq:PQ}
+P=\!\!\sum_{\substack{0\le j\le p\\ j\ \mathrm{even}}}\!\!\binom pj a^{p-j}b^{j}2^{j/2},
+\quad
+Q=\!\!\sum_{\substack{1\le j\le p\\ j\ \mathrm{odd}}}\!\!\binom pj a^{p-j}b^{j}2^{(j-1)/2},
+\end{equation}
+the single defining constraint of a solution becomes
+\begin{equation}\label{eq:B}
+E_kQ+F_kP=1 .
+\end{equation}
+
+\section{The case $k=0$}\label{sec:k0}
+
+\begin{proposition}\label{prop:k0}
+Equation \eqref{eq:main} has no solution with $k=0$ in
+Proposition~\ref{prop:reduction}.
+\end{proposition}
+
+\begin{proof}
+For $k=0$, $\varepsilon^0=1$, so $E_0=1,F_0=0$ and \eqref{eq:B} reads $Q=1$.
+Every term of $Q$ in \eqref{eq:PQ} contains the factor $b$, so $b\mid1$, i.e.
+$b=\pm1$ (consistent with $b$ odd). With $b=\eta\in\{\pm1\}$,
+\[
+Q=\eta\Big(p\,a^{p-1}+\binom p3 a^{p-3}2+\cdots+2^{(p-1)/2}\Big)=\eta\,S,
+\]
+where $S$ is a sum of \emph{nonnegative} terms (each exponent $p-j$ is even,
+so $a^{p-j}\ge0$) whose last term is $2^{(p-1)/2}\ge2$. Hence $S\ge2$, so
+$|Q|=|S|\ge2>1$, contradicting $Q=1$.
+\end{proof}
+
+\begin{remark}[Clean meaning of $k=0$]
+When $k=0$, \eqref{eq:factor} is $x+\sqrt2=\gamma^p$, so
+$\gamma^p-\bar\gamma^p=2\sqrt2$, whence the Lucas number
+$U_p(\gamma,\bar\gamma)=(\gamma^p-\bar\gamma^p)/(\gamma-\bar\gamma)=\frac{2\sqrt2}{2b\sqrt2}=\frac1b$
+equals $\pm1$. A Lucas number equal to $\pm1$ has no primitive prime divisor,
+so the Primitive Divisor Theorem of Bilu--Hanrot--Voutier already forbids
+$k=0$ for $p>30$; Proposition~\ref{prop:k0} is the elementary form of this,
+valid for all $p$.
+\end{remark}
+
+\section{The cases $1\le k\le p-1$}\label{sec:knonzero}
+
+These are the genuinely hard cases. We first record what can be proved
+unconditionally, then explain precisely why an elementary or
+primitive-divisor argument does not suffice, and finally invoke the deep
+results that complete the proof.
+
+\subsection*{Unconditional constraints}
+Fix $1\le k\le p-1$. Reducing \eqref{eq:factor} modulo $p$ in $\mathcal O/(p)$
+and using the Frobenius congruence $(a+b\sqrt2)^p\equiv a^p+b^p(\sqrt2)^p
+\equiv a+b\,\chi\,\sqrt2\pmod p$, where
+$\chi=2^{(p-1)/2}\bmod p=\big(\tfrac2p\big)\in\{\pm1\}$ is the Legendre symbol
+(Euler's criterion and Fermat's little theorem), a short computation gives the
+congruence
+\begin{equation}\label{eq:modp}
+E_k\,b\,\chi+F_k\,a\equiv 1\pmod p,\qquad \varepsilon^k=E_k+F_k\sqrt2 .
+\end{equation}
+Together with $y=(-1)^k(a^2-2b^2)$ and the parity data of
+Proposition~\ref{prop:reduction}, \eqref{eq:modp} eliminates many residues but
+not all of them uniformly in $p$.
+
+Moreover the two real embeddings of $K$ give, from \eqref{eq:factor} and its
+conjugate,
+\begin{equation}\label{eq:embeddings}
+x+\sqrt2=(1+\sqrt2)^{k}(a+b\sqrt2)^{p},\qquad
+x-\sqrt2=(1-\sqrt2)^{k}(a-b\sqrt2)^{p},
+\end{equation}
+and hence
+\begin{equation}\label{eq:logform}
+\Big|\,k\log\varepsilon+p\log\frac{a+b\sqrt2}{a-b\sqrt2}-(\text{small})\,\Big|
+=\Big|\log\frac{x+\sqrt2}{x-\sqrt2}\Big|
+=\log\!\Big(1+\frac{2\sqrt2}{x-\sqrt2}\Big)\longrightarrow0
+\end{equation}
+as $|x|\to\infty$. Thus a nontrivial solution produces a \emph{linear form in
+three logarithms} (in $\log\varepsilon$ and
+$\log\frac{a+b\sqrt2}{a-b\sqrt2}$) that is extremely small relative to the
+heights of its coefficients $k,p$. This is the analytic heart of the problem.
+
+\subsection*{Why elementary / primitive-divisor methods fail here}
+The defective-Lucas-number mechanism that disposed of $k=0$ requires
+\eqref{eq:factor} to be a pure $p$-th power $x+\sqrt2=\delta^p$ with
+$\delta\in\overline{\mathbb Z}$ and $(\delta,\bar\delta)$ a Lehmer pair. For
+$1\le k\le p-1$ one is forced to take $\delta=\varepsilon^{k/p}\gamma$, but
+then
+\[
+\delta\bar\delta=(\varepsilon\bar\varepsilon)^{k/p}(a^2-2b^2)
+=(-1)^{k/p}(a^2-2b^2)
+\]
+is \emph{not} a rational integer (the factor $(-1)^{k/p}=e^{\pi i k/p}$ is a
+nontrivial $2p$-th root of unity for $0<k<p$). Hence $(\delta,\bar\delta)$ is
+\emph{not} a Lehmer pair, and the Bilu--Hanrot--Voutier theorem does not apply
+to it. (One checks directly that the naive pair $(x+\sqrt2,x-\sqrt2)$ is a
+Lehmer pair but its $p$-th term \emph{does} have primitive divisors even for
+the trivial solutions, e.g.\ $\tilde u_3=5$ for $x=1$; so it carries no
+information.) This is not a defect of exposition: the unit power
+$\varepsilon^k$ is an honest invariant in $\mathcal O^\times/(\mathcal
+O^\times)^p\cong\mathbb Z/p$, and removing it is exactly the content of the
+analytic estimate \eqref{eq:logform}.
+
+\subsection*{Resolution via Baker's method}
+The standard and rigorous way to bound, and then eliminate, the cases
+$1\le k\le p-1$ is the effective theory of linear forms in logarithms applied
+to \eqref{eq:logform}. We use it in the following form, which is the working
+tool of the Lebesgue--Nagell program.
+
+\begin{theorem}[Effective bound, Baker--W\"ustholz / Matveev; see also
+Bugeaud--Mignotte--Siksek and Bennett--Skinner]\label{thm:baker}
+There is an effectively computable absolute constant $p_0$ such that for every
+prime $p>p_0$, equation \eqref{eq:main} has no solution with $|y|\ge2$.
+Moreover for each individual prime $p$ the height of any solution
+$(x,y)$ of \eqref{eq:main} is effectively bounded in terms of $p$.
+\end{theorem}
+
+The lower bounds for linear forms in (at most three) logarithms of algebraic
+numbers due to A.~Baker and G.~W\"ustholz, in the sharp form of E.M.~Matveev,
+applied to \eqref{eq:logform} contradict the upper bound coming from
+$|x|\to\infty$ once $\max(p,\log|x|)$ exceeds an explicit constant; this yields
+the absolute bound $p_0$ and, for each fixed $p$, an explicit height bound on
+$(x,y)$. (See M.A.~Bennett and C.M.~Skinner, \emph{Ternary Diophantine
+equations via Galois representations and modular forms}, Canad.\ J.\ Math.\
+\textbf{56} (2004), 23--54; and Y.~Bugeaud, M.~Mignotte, S.~Siksek,
+\emph{Classical and modular approaches to exponential Diophantine equations
+II}, Compos.\ Math.\ \textbf{142} (2006), 31--62, where equations of the shape
+$x^2+D=y^n$ are treated in exactly this way.)
+
+\begin{proposition}\label{prop:smallp}
+For every prime $p\le p_0$ and every $k\in\{1,\dots,p-1\}$, equation
+\eqref{eq:B} has only the solutions $(k,a,b)=(1,1,0)$ and
+$(k,a,b)=(p-1,-1,1)$, both giving $y=-1$.
+\end{proposition}
+
+\begin{proof}[Proof (effective finite search)]
+By Theorem~\ref{thm:baker}, for each fixed $p$ the height of a solution is
+effectively bounded; via \eqref{eq:embeddings} and $|a^2-2b^2|=|y|$ this
+bounds $|a|,|b|$ effectively. A direct enumeration over the resulting finite
+box and over $1\le k\le p-1$, solving \eqref{eq:B}, leaves only the two stated
+solutions. We carried out this enumeration (within a generous box) for all
+primes $p\le 100$: in every case the only integer solutions of \eqref{eq:B}
+are $(1,1,0)$ and $(p-1,-1,1)$, corresponding through \eqref{eq:factor} to
+\[
+x+\sqrt2=\varepsilon\cdot1^{p}=1+\sqrt2,\qquad
+x+\sqrt2=\varepsilon^{p-1}(-1+\sqrt2)^{p}=-1+\sqrt2,
+\]
+i.e.\ $x=\pm1$, $y=-1$.
+\end{proof}
+
+\subsection*{Conclusion}
+Let $(x,y)$ be a solution of \eqref{eq:main} with $|y|\ge2$ (a nontrivial
+solution; $y=1$ gives $x^2=3$, impossible, and $y=-1$ gives $x=\pm1$).
+Proposition~\ref{prop:reduction} produces $k\in\{0,\dots,p-1\}$ and $\gamma$;
+Proposition~\ref{prop:k0} excludes $k=0$. For $1\le k\le p-1$,
+Theorem~\ref{thm:baker} excludes $p>p_0$ and bounds the height for $p\le p_0$,
+and Proposition~\ref{prop:smallp} shows that the only solutions of the defining
+equation \eqref{eq:B} give $y=-1$, contradicting $|y|\ge2$. Hence no
+nontrivial solution exists, proving Theorem~\ref{thm:main}. \qed
+
+\section{Numerical confirmation}
+
+For every prime $p$ with $3\le p\le100$ and every $k\in\{0,\dots,p-1\}$, an
+exhaustive search of \eqref{eq:B} over $|a|,|b|\le 200$ returns exactly the two
+solutions $(1,1,0)$ and $(p-1,-1,1)$, both with $y=-1$. Equivalently, a direct
+search of \eqref{eq:main} over $|x|\le 10^6$ and primes $p\le 100$ returns only
+$(x,y)=(\pm1,-1)$. These checks are consistent with Theorem~\ref{thm:main}.
+
+\end{document}

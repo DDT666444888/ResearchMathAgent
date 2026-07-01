@@ -1,0 +1,31 @@
+{
+  "id": "q5-37",
+  "problem_id": "q5",
+  "dataset": "first_proof_1",
+  "title": "Connectivity-detection (conservativity) of $\\{\\Phi^H\\}$ on bounded-below spectra",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T09:18:20Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev92b923b0",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T09:18:20Z"
+    },
+    {
+      "id": "ccf920463",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Sub-lemma (NEW): Connectivity-detection / conservativity of the geometric fixed-point family $\\{\\Phi^H\\}_{H\\le G}$ on bounded-below $G$-spectra.**\n\nThe converse direction (q5-30) names \"conservativity / connectivity-detection\" as its *step 1* but does not isolate or prove it; q5-30's actual difficulty is the isotropy-separation **re-assembly using only $\\aO$-admissible norms**, a distinct statement. The detection lemma is used independently in (i) the forward direction's boundary checks, (ii) the slice-tower convergence/separatedness sub-lemma (companion new issue), and (iii) the base and induced steps of the converse. It therefore deserves its own tracked statement so q5-30 and the convergence lemma can cite it rather than re-derive it.\n\n**Statement to prove.** For $X\\in\\mathrm{Sp}^G$ **bounded below**,\n$$\\mathrm{conn}(X^H)\\;\\ge\\;\\min_{K\\le H}\\,\\mathrm{gconn}\\big(\\Phi^K X\\big)\\qquad\\text{for all }H\\le G,$$\nequivalently: if $X$ is bounded below and $\\Phi^K X\\simeq 0$ for all $K\\le G$, then $X\\simeq 0$ (joint conservativity).\n\n**Note on hypotheses (load-bearing).** The bounded-below hypothesis is *essential*: without it $\\{\\Phi^H\\}$ is not jointly conservative. This is precisely why the problem restricts to **connective** spectra, and the proof must flag exactly where boundedness-below is invoked (cf. q5-32, which only asks where the connective hypothesis is used in the main theorem; this lemma is the concrete place it bites).\n\n**This statement is NOT $\\aO$-dependent** — it is pure equivariant stable homotopy theory — which makes it cleanly separable from the $\\aO$-specific re-assembly in q5-30.\n\n**Suggested route.**\n1. Isotropy separation cofiber sequence $(E\\mathcal F)_+\\wedge X\\to X\\to\\widetilde{E\\mathcal F}\\wedge X$ for a family $\\mathcal F$ of proper subgroups.\n2. Induct on $|G|$. Base case $G=e$: ordinary connectivity is detected by homotopy groups. \n3. Inductive step: the underlying part $(E\\mathcal F)_+\\wedge X$ is controlled by restriction to proper subgroups (IH); the geometric part $\\widetilde{E\\mathcal F}\\wedge X$ is detected by $\\Phi^G$. Combine to obtain the $\\min_{K\\le H}$ estimate.\n\nReferences: HHR (Ann. of Math. 184, 2016), isotropy separation and geometric fixed points; Hill, *Slice filtration primer* (HHA 14, 2012).",
+      "created_at": "2026-06-27T09:18:20Z"
+    }
+  ]
+}

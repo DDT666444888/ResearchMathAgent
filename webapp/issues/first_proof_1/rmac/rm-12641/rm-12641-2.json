@@ -1,0 +1,31 @@
+{
+  "id": "rm-12641-2",
+  "problem_id": "rm-12641",
+  "dataset": "rmac",
+  "title": "Theorem 3.4(e) symmetrization claim is false (counterexample)",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T01:59:10Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "evafae4c67",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T01:59:10Z"
+    },
+    {
+      "id": "c8da25fdd",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Location:** Theorem 3.4(e) and Step 5 of the algorithm (§3,§4).\n\nThe claim that a generating set of $R=(R^\\circ)^{\\langle\\sigma\\rangle}$ is obtained from a generating set $u_1^\\circ,\\dots,u_p^\\circ$ of $R^\\circ$ by adjoining ONLY the orbit-sums $u_j^\\circ+\\sigma u_j^\\circ$ and orbit-products $u_j^\\circ\\cdot\\sigma u_j^\\circ$ is **false**.\n\nNoether's symmetric-function argument requires orbit sums/products of ALL monomials in the generators (equivalently $\\bar G$-symmetrizations of all monomials up to degree $|\\bar G|$), not just degree-1 monomials in the generators.\n\n**Counterexample:** $R^\\circ=k[s,t]$, $\\sigma:s\\mapsto-s,\\ t\\mapsto-t$ (order 2). Generators $u_1^\\circ=s,\\ u_2^\\circ=t$ give $u_j+\\sigma u_j=0$ and $u_j\\cdot\\sigma u_j=-s^2,-t^2$, producing only $k[s^2,t^2]$, which MISSES the invariant $st$. The true invariant ring is $k[s^2,st,t^2]$.\n\n**Consequence:** the claimed generating family of $R$ is incomplete, so in general $\\operatorname{im}\\Phi\\subsetneq R$, and then $\\ker\\Phi$ presents a proper subalgebra rather than the dihedral invariant ring. This breaks the correctness proof of the algorithm (Prop 4.2, 'dihedral branch'), which uses 3.4(e) to assert $\\operatorname{im}\\Phi=R$. (The $g=2$ example survives only by accident: $\\sigma$ fixes one generator and swaps the other two, so no cross-term invariant is missed.)\n\n**Fix:** state Noether correctly — generate $R$ by $\\{\\rho(a^e):|e|\\le|\\bar G|\\}$ via the full Reynolds operator $\\rho$, or by orbit sums/products of a monomial generating set of $R^\\circ$ closed under products up to the bound; then re-verify $g=2$.",
+      "created_at": "2026-06-28T01:59:10Z"
+    }
+  ]
+}

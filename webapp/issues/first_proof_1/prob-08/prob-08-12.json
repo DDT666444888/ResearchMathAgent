@@ -1,0 +1,31 @@
+{
+  "id": "prob-08-12",
+  "problem_id": "prob-08",
+  "dataset": "first_proof_1",
+  "title": "Scope error: lem:incid-plucker stated for all loopless M is literally false (U_{3,5}); cryptomorphism must use modularity",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T06:38:18Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev6037c1cb",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T06:38:18Z"
+    },
+    {
+      "id": "c98bf6af2",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Precision point (independent confirmation + scope error).** This complements prob-08-10 and prob-08-11; it is filed because the *as-stated hypotheses* of `lem:incid-plucker` and `prop:essential-relations` make them not merely unproven but **literally false**, and because I have independently reproduced both counterexamples.\n\n**Scope error.** `lem:incid-plucker` and `prop:essential-relations` are stated \"Let $M$ be loopless of rank $r$, $0\\le k\\le r$\" — i.e. for **all** loopless $M$, with **no modularity hypothesis**. But the conclusion fails for non-modular $M$:\n\n**Independent reproduction of the $U_{3,5}$ counterexample (prob-08-11).** $M=U_{3,5}$, $k=2$, the ten rank-2 flats are the pairs. Take\n$$w(\\{2,4\\})=w(\\{3,4\\})=1,\\qquad w=0\\text{ on the other eight pairs}.$$\n- (E2) holds: through each point $p$ the four incident pair-values have their tropical min attained $\\ge 2$ times (point 4: $0,0,1,1$; points 2,3: $0,0,0,1$; points 0,1: $0,0,0,0$).\n- Tropical Plücker fails at $S=\\{0\\},T=\\{2,3,4\\}$: the three terms are $w(\\{0,3\\})+w(\\{2,4\\})=1$, $w(\\{0,2\\})+w(\\{3,4\\})=1$, $w(\\{0,4\\})+w(\\{2,3\\})=0$; minimum $0$ attained **once**.\n\nSo $\\theta_w$ satisfies (E2) but is not a valuated matroid: `lem:incid-plucker` is false as stated.\n\n**Independent reproduction of the $F_7$ four-term witness (prob-08-10).** In $F_7$, the incidence relation at $S=\\varnothing,T=\\{0,1,3,6\\}$ has all four triples $\\{1,3,6\\},\\{0,3,6\\},\\{0,1,6\\},\\{0,1,3\\}$ of rank 3 (bases), hence is the genuine **four-term** relation $\\min\\{w(0),w(1),w(3),w(6)\\}$; the four points lie on no common line, so it is not the three-term (E2) relation of any length-2 interval. The \"term-by-term/multiset coincidence\" of `lem:E2-incidence` therefore fails.\n\n**Consequence / required fix.** Because the proof of `lem:incid-plucker` never invokes modularity, and $U_{3,5}$ (5 atoms, 10 rank-2 flats, no order-reversing involution) is a counterexample, **any correct proof of the cryptomorphism must genuinely use modularity** of $\\mathcal L(M)$ (every pair of flats a modular pair: $\\operatorname{rk} F+\\operatorname{rk} G=\\operatorname{rk}(F\\vee G)+\\operatorname{rk}(F\\wedge G)$). Concretely the lemma should (i) be restricted to modular $M$ (the only case where $\\perp$ exists anyway), and (ii) its proof must keep the *genuine, $T$-dependent* index sets of incidence relations and prove redundancy of the higher/disjoint-index relations from modularity + the elementary-quotient chain (Murota/BESS), not from the false \"all atoms of an interval\" reduction.\n\n**Positive evidence the modular case is true.** I verified that for $M(K_4)$, (E2)$\\Leftrightarrow$full Plücker over $\\{0,1,2,\\infty\\}^7$ (0 mismatches), and that for $F_7$ with its polarity the full $\\Phi=w\\mapsto w\\circ\\perp$ is well-defined, involutive and order-reversing over values $\\{0,1,\\infty\\}$ (0 failures). So the theorem itself is true; only the general-$M$ lemma statement and its proof are wrong.",
+      "created_at": "2026-06-28T06:38:18Z"
+    }
+  ]
+}

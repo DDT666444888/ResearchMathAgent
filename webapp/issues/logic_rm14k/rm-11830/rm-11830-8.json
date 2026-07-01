@@ -1,0 +1,31 @@
+{
+  "id": "rm-11830-8",
+  "problem_id": "rm-11830",
+  "dataset": "logic_rm14k",
+  "title": "G7: Strict extension and recovery of classical DP (S=∅) + separation example",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T01:40:28Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev5fe5faa5",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T01:40:28Z"
+    },
+    {
+      "id": "c1b967ceb",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "Two parts of task (3).\n\n**(a) Recovery.** Prove that for $S=\\emptyset$, $\\mathrm{DP}_{\\mathrm{rel}}(R,\\emptyset)=\\mathrm{DP}(R)$, relative chains coincide with classical minimal chains, and each relative processor specializes exactly to its Arts–Giesl / GTSF counterpart. This must be a precise equality of definitions, not an analogy.\n\n**(b) Strict extension / separation.** Exhibit an explicit pair $(R,S)$ such that:\n- the new relative-chain criterion proves $\\mathrm{SN}(R/S)$, **but**\n- a currently known sufficient criterion that reduces relative termination to an ordinary DP problem fails (cite the specific criterion and its hypotheses — e.g. ones requiring non-duplication of $S$, left-linearity, or $\\mathrm{SN}(\\to_S)$).\n\nProvide the example, verify $\\mathrm{SN}(R/S)$ independently, run the new criterion to success, and show the named criterion's hypotheses are violated or its conclusion not derivable. Without a concrete separating example, the \"strictly extends\" claim is unproven.",
+      "created_at": "2026-06-28T01:40:28Z"
+    }
+  ]
+}

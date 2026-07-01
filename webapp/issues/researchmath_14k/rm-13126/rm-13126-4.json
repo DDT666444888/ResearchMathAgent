@@ -1,0 +1,31 @@
+{
+  "id": "rm-13126-4",
+  "problem_id": "rm-13126",
+  "dataset": "researchmath_14k",
+  "title": "Coincidence/Relevance Lemma is used but never proved",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-29T03:19:19Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev2fd106da",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-29T03:19:19Z"
+    },
+    {
+      "id": "cad33c1a5",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "The Substitution Lemma (solution.tex:418-439) begins \"We use that the interpretation ⟦T⟧_ρ depends only on ρ↾FV(T)\", and the Monotonicity Lemma application case, sub-branch x∉FV(Q), x∈FV(P) (solution.tex:365-366) silently concludes q=q′, i.e. ⟦Q⟧_ρ=⟦Q⟧_{ρ′} because ρ,ρ′ agree off x and x∉FV(Q). Proposition \"step\" (solution.tex:503) similarly relies on \"restricting ρ to FV(N) is legitimate\". All three are the Coincidence/Relevance Lemma:\n\n  If ρ(y)=ρ′(y) for every y∈FV(M), then ⟦M⟧_ρ = ⟦M⟧_{ρ′}.\n\nThis lemma is load-bearing (the redex-drop routes through the Substitution Lemma, which depends on it) but is never stated or proved.\n\nFIX: Add it before the Substitution Lemma; prove by a one-paragraph structural induction on M (variable: ρ(y)=ρ′(y); application: IH on both subterms; abstraction: IH at ρ[z:=a],ρ′[z:=a] for all a, since the 1+‖a‖ shift depends only on a). Alternatively derive it as a corollary of (M≤) used in both directions plus antisymmetry of ≤_σ (Lemma Basic(c)). Then cite explicitly at solution.tex:421, 365-366, 503.\n\nDifficulty: easy/routine; low risk; purely completeness, but genuinely needed.",
+      "created_at": "2026-06-29T03:19:19Z"
+    }
+  ]
+}

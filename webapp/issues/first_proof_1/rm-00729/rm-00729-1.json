@@ -2,7 +2,7 @@
   "id": "rm-00729-1",
   "problem_id": "rm-00729",
   "title": "Proof: (untitled)",
-  "status": "open",
+  "status": "in_progress",
   "labels": [
     "proof-task"
   ],
@@ -15,6 +15,93 @@
       "role": "agent",
       "body": "**Area:** (unspecified)  \n**Problem author:** (unknown)\n\n---\nAgents should post sub-lemma proposals, proof sketches, or blockers as comments. When a complete proof is agreed upon, mark this issue resolved.",
       "created_at": "2026-06-22T18:18:41Z"
+    },
+    {
+      "id": "cfdb0138f",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "PROBE - checking write access",
+      "created_at": "2026-06-27T08:34:41Z"
+    },
+    {
+      "id": "ce8e5b748",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "PROBE - checking write access",
+      "created_at": "2026-06-27T08:34:41Z"
+    },
+    {
+      "id": "cbfb04c86",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "## Mathematical Review — BLOCKED on missing problem statement\n\nI was asked to identify the key sub-lemmas for `rm-00729` and open `proof-gap` issues. I cannot do so faithfully because **the problem statement for `rm-00729` is not available anywhere in the system**, and issue *creation* on this id is rejected (`POST /api/issues/rm-00729` -> `invalid problem id`) because the problem is registered without a statement.\n\nNote: two short `PROBE`/probe comments above were write-access checks while diagnosing the tracker; please disregard them.\n\nFabricating sub-lemmas would violate the **Faithfulness** commandment (no substituting a guessed/related problem; definitional drift is the #1 failure mode), so I am filing this diagnosis instead. Full write-up attached as the `Critic Analysis` doc.\n\n---\n\n# Critic Analysis — Problem rm-00729\n\n## Background\n\nThis review was commissioned to identify the key mathematical sub-lemmas for\nproblem **rm-00729** and to open tracker issues for each genuine gap, given that\nno proof attempt (`solution.tex`) exists yet.\n\nBefore any mathematical sub-lemmas can be identified, the *statement* of the\nproblem must be available. The standard tooling exposes problem statements in\ntwo ways:\n\n1. The benchmark `read_problem` interface (problems `q1`–`q10`).\n2. The dataset detail endpoint of the solve backend,\n   `GET /api/ds/problem/{dataset}/{problem_id}`, which returns a JSON object\n   with a `statement` field (verified working, e.g.\n   `mathphysics_rm14k/rm-01516` returns a full particle-physics statement).\n\nI attempted to retrieve the statement for `rm-00729` through every available\nchannel (see Gap Analysis). **No statement could be located.** The issue\ntracker contains a single seeded record:\n\n```\nGET /api/q-detail/rm-00729\n{\n  \"open_issues\": [{\"id\":\"rm-00729-1\",\"title\":\"Proof: (untitled)\",\n                   \"status\":\"open\",\"labels\":[\"proof-task\"]}],\n  \"recent_activity\": [{\"author\":\"system\",\n     \"body\":\"**Area:** (unspecified)  **Problem author:** (unknown) ...\n             Agents should post sub-lemma proposals ...\"}]\n}\n```\n\ni.e. the problem is registered as **untitled**, with **unspecified area** and\n**unknown author**, and **no statement text**. The local workspace contains\nonly `preamble.tex` (the shared First-Proof LaTeX preamble) and `SKILL.md`; the\nfile `problem.tex` referenced by the task does **not** exist, and\n`solution.tex` does not exist.\n\n## Proof Structure\n\nA complete proof cannot be outlined because the target statement (hypotheses,\nquantifiers, the object to be constructed or the inequality/identity to be\nproved) is unknown. Identifying sub-lemmas without the statement would require\n*guessing* the problem, which violates the Faithfulness commandment\n(adhere to the original problem statement; definitional drift / substituting a\nrelated problem is the most common failure mode). I therefore decline to\nfabricate sub-lemmas.\n\n## Gap Analysis\n\nThere is no `solution.tex`, so there are no proof-step gaps to cite. The single,\noverriding gap is at the level of the problem record itself:\n\n**GAP-0 (blocking): The problem statement for `rm-00729` is missing from the\nsystem.** Concretely, the following retrieval attempts all failed:\n\n- `read_problem(\"rm-00729\")` → \"Invalid problem id. Expected q1..q10.\"\n- Local files: only `preamble.tex`, `SKILL.md` present; no `problem.tex`.\n- Solve backend `GET /api/problem/rm-00729` → `{\"error\":\"invalid problem id\"}`.\n- Solve backend `GET /api/issues/rm-00729` (list) → `{\"error\":\"invalid problem id\"}`\n  (note: the *per-issue* route `/api/issues/rm-00729/rm-00729-1` and\n  `/api/q-detail/rm-00729` *do* resolve, so the id is registered but partially\n  seeded).\n- Dataset detail `GET /api/ds/problem/{ds}/rm-00729` for every dataset\n  (`researchmath_14k`, all `*_rm14k` curated subsets, `unsolved_math`,\n  `erdos_problems`, `formal_conjectures`, `first_proof_1/2`) → `not found`.\n- Exhaustive pagination of the solve backend corpus\n  (`GET /api/ds/problems`, 170 curated problems incl. 110 from\n  `researchmath_14k`) contains **no** id `rm-00729` and no id matching `0072x`.\n- The filter backend (`:8013`) exposes only 10-problem curated subsets per\n  dataset; `rm-00729` is absent from all of them.\n- The seeded comment on `rm-00729-1` records Area \"(unspecified)\" and Problem\n  author \"(unknown)\" with no statement.\n\nThe shared `preamble.tex` (operators `\\vecop`, `\\diag`; script macros `\\aA`,\n`\\aO`, `\\scrS`; `\\bR`) is the *common* First-Proof preamble and is byte-for-byte\nidentical across at least `q9` and `q10`; it therefore does **not** discriminate\nwhich problem `rm-00729` is and cannot be used to reconstruct the statement.\n\n## Difficulty Assessment\n\nThis gap is not \"hard\" in a mathematical sense — it is a **data/provisioning\ndefect**. It is, however, *blocking*: every downstream task (sub-lemma\nidentification, proof-structure outline, gap analysis of an attempt) is\nlogically impossible without the statement. Any attempt to proceed would\nnecessarily involve inventing a problem, which would (a) almost certainly not\nmatch the intended `rm-00729`, and (b) seed the tracker with misleading\n\"proof-gap\" issues that a solver agent would waste effort on.\n\n## Suggested Approaches\n\n1. **Re-seed the problem record.** Populate `rm-00729` with its `statement`,\n   `title`, `area`, and `author` from the ResearchMath-14k source\n   (HF dataset `amphora/ResearchMath-14k`, arXiv:2605.28003), then re-run this\n   critic pass. The id format `rm-00729` is consistent with that corpus\n   (other live ids: `rm-00505`, `rm-00781`, `rm-00785`, `rm-00806`, `rm-00807`,\n   `rm-00899`), so the canonical statement should exist upstream even though it\n   is not in the locally curated 170-problem slice.\n2. **Verify the provisioning pipeline.** Because `/api/q-detail/rm-00729` and\n   the per-issue route resolve while `/api/problem/rm-00729` and the dataset\n   detail return errors, the issue tracker was seeded ahead of (or without) the\n   dataset/statement ingest. Confirm the statement-ingest step for\n   `rm-00729` ran.\n3. **After re-seeding**, the critic workflow is: formalize the statement\n   (write every nonstandard definition out in full), decompose into subgoals,\n   extract constraints/edge cases, then open one `proof-gap` issue per genuine\n   sub-lemma with precise mathematical content.\n\n## References\n\n- `skills/math-research/SKILL.md` — Proof Commandments (esp. **(2) Faithfulness**:\n  do not substitute a related problem; **definitional drift** warning),\n  Step 1 (Formalization/Decomposition/Constraint extraction), Step 4 gap audit.\n- Shared `preamble.tex` (First-Proof batch-1 preamble) — confirmed\n  non-discriminating across problems.\n- Solve backend OpenAPI (`:8010/openapi.json`) — endpoints\n  `/api/issues/{problem_id}/{issue_id}`, `/api/q-detail/{problem_id}`,\n  `/api/ds/problem/{dataset}/{problem_id}`, `/api/ds/problems`.\n- Filter backend OpenAPI (`:8013/openapi.json`) — `/api/problem/{dataset}/{problem_id}`,\n  `/api/datasets`, curated subset listings.\n- Reference statement format verified via `mathphysics_rm14k/rm-01516`.",
+      "created_at": "2026-06-27T08:34:57Z"
+    },
+    {
+      "id": "evab17f23a",
+      "author": "agent",
+      "role": "event",
+      "event_type": "doc_generated",
+      "body": "Document generated: **Critic Analysis**",
+      "created_at": "2026-06-27T08:35:01Z"
+    },
+    {
+      "id": "ce0d6f875",
+      "author": "solver-agent",
+      "role": "agent",
+      "body": "## Solver-agent: independently re-verified BLOCKER — statement absent\n\nI attempted to solve rm-00729 and independently reproduced the critic-agent's diagnosis: **the problem statement is not provisioned anywhere reachable**, so no faithful proof can be written.\n\n### Retrieval attempts (all failed)\n- `read_problem(\"rm-00729\")` -> invalid id (only `q1..q10` exist).\n- Workspace: no `problem.tex` and no pre-existing `solution.tex`.\n- Solve backend `GET /api/problem/rm-00729` -> 400 Bad Request.\n- Solve backend `GET /api/ds/problem/{dataset}/rm-00729` -> 404 for every dataset (`researchmath_14k`, `first_proof_1/2`, `unsolved_math`, `erdos_problems`, `formal_conjectures`, `aim_problem_lists`).\n- Solve `GET /api/ds/problems` (170 problems) -> `rm-00729` absent; nearest live ids are `rm-00781`, `rm-00785`.\n- Filter backend: `rm-00729` absent from all 17 datasets / all `*_rm14k` slices (110 researchmath ids checked); no statement endpoint resolves it.\n- Only the issue-tracker stubs (`/api/q-detail/rm-00729`, `/api/issues/rm-00729/rm-00729-1`) resolve; both carry Area `(unspecified)`, author `(unknown)`, and **no statement text**.\n\n### Action taken\nI did **not** fabricate a statement or a proof (that would violate Faithfulness / definitional-drift). `solution.tex` now contains only a documented blocker stub, not a proof.\n\n### What is needed to unblock\nRe-seed `rm-00729` with its canonical `statement` (and title/area/author) from the upstream ResearchMath source; once a real `problem.tex`/statement is available, the solver pass can run. **Keeping this issue `in_progress`** — it is a data-provisioning defect, not a mathematically resolved item, so it must not be closed as resolved.",
+      "created_at": "2026-06-27T08:36:26Z"
+    },
+    {
+      "id": "ev9f90a9bd",
+      "author": "system",
+      "role": "event",
+      "event_type": "status_changed",
+      "body": "🟡 Status changed: **open** → **in_progress**",
+      "created_at": "2026-06-27T08:36:31Z"
+    },
+    {
+      "id": "cb72ff2c4",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "blocker note",
+      "created_at": "2026-06-27T15:33:51Z"
+    },
+    {
+      "id": "cf62d6687",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "## Critic re-review (2026-06-27, critic-agent) — confirms BLOCKER, no proof-gap to file\n\nI re-audited `rm-00729` with a freshly provisioned `solution.tex` present. `solution.tex` now contains **no proof body** — only a documented blocker note. I concur this is the correct, faithful action and I confirm the prior diagnosis.\n\n### Independent verification this pass\n- `read_problem(\"rm-00729\")` -> `Invalid problem id ... Expected q1..q10.`\n- `list_problems` / `GET /rmac/solve/api/problems` enumerate exactly q1..q10; `rm-00729` is absent.\n- No `problem.tex` in the workspace; no `docs_*.md` files exist locally.\n- Issue **list** route `GET /rmac/solve/api/issues/rm-00729?status=open,in_progress` -> HTTP 400 `{\"error\":\"invalid problem id\"}`; issue **create** route `POST /rmac/solve/api/issues/rm-00729` -> HTTP 400 `invalid problem id`. Only the **per-issue** route (this thread) resolves, so the tracker stub exists without a statement/dataset record.\n\n### No proof-gap issues filed (by design)\nThere is **no mathematical gap** to report: with no hypotheses/conclusion there is no theorem and no proof to audit. Filing `proof-gap` issues would require fabricating a statement, violating the Faithfulness commandment. The create endpoint also rejects the id, so issue creation is impossible regardless.\n\n### Housekeeping\nWhile diagnosing tracker write-access I inadvertently posted one stray `blocker note` comment above — please disregard it.\n\n### Status / unblock\nKeep this issue **in_progress** (it is a data-provisioning defect, not a resolved math item). To unblock: re-seed `rm-00729` with its canonical `statement` (title/area/author) from the upstream ResearchMath source, then re-run solver + critic passes.",
+      "created_at": "2026-06-27T15:34:13Z"
+    },
+    {
+      "id": "ev9307ac56",
+      "author": "agent",
+      "role": "event",
+      "event_type": "doc_generated",
+      "body": "Document generated: **Critic Analysis**",
+      "created_at": "2026-06-27T15:34:13Z"
+    },
+    {
+      "id": "c47830641",
+      "author": "solver-agent",
+      "role": "agent",
+      "body": "## Solver-agent re-verification (fresh pass) — BLOCKER persists, no proof possible\n\nI attempted to solve `rm-00729` again. The data-provisioning defect is **unchanged**: the problem still has no statement anywhere reachable, so no faithful proof can be written.\n\n### Retrieval attempts this pass (all negative)\n- `read_problem(\"rm-00729\")` -> `Invalid problem id ... Expected q1..q10`.\n- `list_problems` / `GET /rmac/solve/api/problems` enumerate exactly **q1..q10**; `rm-00729` absent.\n- Workspace: **no `problem.tex`**; `solution.tex` contains only the documented blocker stub (no proof body).\n- `GET /rmac/solve/api/problem/rm-00729` -> **HTTP 400** Bad Request.\n- `GET /rmac/solve/api/ds/problems` enumerates **170** problems (110 `rm-` ids); `rm-00729` is **absent**. Nearest live ids: `rm-00781`, `rm-00785`, `rm-00806`. No `rm-0072x` id exists in the corpus.\n- `GET /rmac/solve/api/q-detail/rm-00729` and the per-issue route resolve, but both still carry Area `(unspecified)`, author `(unknown)`, and **no statement text** — i.e. tracker stub seeded ahead of (or without) the dataset ingest.\n\n### Action\nDid **not** fabricate a statement or proof (would violate Faithfulness / definitional drift). `solution.tex` left as a documented blocker, not a proof. Verified it is well-formed LaTeX (no toolchain installed to compile).\n\n### Status\nKeeping this **in_progress** — it is a data-provisioning defect, not a mathematically resolved item, and must not be closed as `resolved`. Unblock by re-seeding `rm-00729` with its canonical `statement` (title/area/author) from the upstream ResearchMath source, then re-running solver + critic passes.",
+      "created_at": "2026-06-27T15:35:13Z"
+    }
+  ],
+  "documents": [
+    {
+      "title": "Critic Analysis",
+      "path": "questions/rm-00729/analysis.md",
+      "created_at": "2026-06-27T08:35:01Z",
+      "created_by": "agent"
+    },
+    {
+      "title": "Critic Analysis",
+      "path": "questions/rm-00729/analysis.md",
+      "created_at": "2026-06-27T15:34:13Z",
+      "created_by": "agent"
     }
   ]
 }

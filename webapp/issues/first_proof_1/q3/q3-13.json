@@ -1,0 +1,31 @@
+{
+  "id": "q3-13",
+  "problem_id": "q3",
+  "dataset": "first_proof_1",
+  "title": "lem:decrement(b2): fiber-independence over-claimed (positional skip-counts, not from (W1)-(W2))",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T11:44:52Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "evd86fb8c1",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T11:44:52Z"
+    },
+    {
+      "id": "cf01b1a9f",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Where.** `lem:decrement`, part **(b)**, specifically step **(b2)** (\"The fiber sum is independent of the lower configuration\"), which is the load-bearing analytic claim of the decrement recursion `lem:decrement` ⇒ `thm:G` ⇒ `cor:rec` ⇒ `thm:main`.\n\n**Claim made.** The proof asserts that the fiber sum\n$$S(\\overline Q)=\\sum_{Q\\in\\Psi^{-1}(\\overline Q)}\\mathrm{wt}_{\\mathrm{top}}(Q)$$\nis the **same** for every lower queue $\\overline Q$, and derives this *internally* from case-locality (W1) and skip-locality (W2). The argument given is: \"relative to a removed ball with label $a$, every lower ball except the unique equal-label ball is strictly weaker; therefore the number of admissible pairings and the multiset of skip-values depend only on $k,n$; in particular a moving top ball that may jump over up to $W$ strictly weaker lower balls contributes $\\sum_{s=0}^{W}(1-t)t^{s}=1-t^{W+1}$ with $W$ determined by $k,n$ alone.\"\n\n**Why this is a gap (over-claim).**\n1. In a (signed) multiline queue the pairing rule is **positional/cyclic**: a top ball at site $j$ pairs to a lower ball by sweeping the ring, and $\\mathrm{skip}(p)$ counts the strictly-weaker lower balls passed **between the top site and the pairing target along the ring**. By (W2) this count depends on the **sites** of the lower balls, *not merely on their labels or their number*. Two lower queues $\\overline Q,\\overline Q'$ with the same lower-row label content but different site arrangements generally produce different per-pairing skip-values and different sets of admissible pairings. Hence \"$W$ determined by $k,n$ alone\" and the term-by-term collapse $\\sum_s (1-t)t^s=1-t^{W+1}$ are not justified.\n2. The independence of $S(\\overline Q)$ from $\\overline Q$ is precisely the **non-trivial** content of the interpolation single-row identity [BDW25a Lem 5.6]. The solution itself, in `prop:general`(C), explicitly notes that case-locality (W1) and skip-locality (W2) do **not** by themselves deliver Pieri-type identities (it cannot resolve the merge `eq:mergewt` for this reason). That is inconsistent with claiming the same kind of fiber-independence \"follows from (W1)–(W2)\" in (b2).\n3. The fallback in **(b3)** (the \"non-circular check\" via $\\sum_{\\mu\\in S_n(\\lambda)}F^*_\\mu=P^*_\\lambda$) only pins the **value** of the constant *once its existence is granted*; it does **not** establish independence. A dependency trace confirms (b3) is non-circular for the *value* $e^*_k$ (the telescoping $P^*_\\lambda/P^*_\\kappa=e^*_{\\lambda'_1}$ uses only the factorization `eq:factor`), but it **presupposes** the (b2) independence and the orbit-sum identity (q3-11).\n\n**Relation to q3-10.** q3-10 framed the issue as *citation-dependence* on [BDW25a Lem 5.6]. The current revision replaced the citation by a claimed *internal* derivation; this issue records that the internal derivation (b2) is **invalid as written**, so the honest route is to invoke Lem 5.6 (or a genuine weight-preserving bijection) for the **entire fiber**, not merely the base instance in (b3).\n\n**Required to close.** Either (a) replace (b2) by a direct application of [BDW25a Lem 5.6] giving uniform $e^*_k$ over *every* lower row (reproduce the lemma statement and check its hypotheses match the $q=1$ interpolation weights of `def:unsigned`), or (b) construct a weight-preserving bijection proving $S(\\overline Q)=S(\\overline Q')$ across lower configurations with different site arrangements. \"$S(\\overline Q)$ is constant because labels are globally largest and parts are distinct\" is not sufficient: positional skip-counts must be controlled.\n\n**Suggested check.** Implement BDW25a sMLQ weights for $\\lambda=(3,2,0)$, $n=3$, and verify numerically that $\\sum_{Q\\in\\Psi^{-1}(\\overline Q)}\\mathrm{wt}_{\\mathrm{top}}(Q)$ takes the *same* value $e^*_2(x;t)$ for each of the six lower queues $\\overline Q$ (different site arrangements). If it does, the bijection/independence is true (and one then needs an honest proof); if some $\\overline Q$ differ, (b2) is outright false.",
+      "created_at": "2026-06-27T11:44:52Z"
+    }
+  ]
+}

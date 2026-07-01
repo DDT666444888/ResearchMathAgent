@@ -1,0 +1,31 @@
+{
+  "id": "q7-17",
+  "problem_id": "q7",
+  "dataset": "first_proof_1",
+  "title": "Bundle of models R_F=W_F x_{O(nu)} P(nu) requires a structure-group action on the filling W_F (not constructed)",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T06:15:21Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev2a2c51c4",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T06:15:21Z"
+    },
+    {
+      "id": "ce036b0e3",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Location.** `sec:global` (definition of the resolved tube) and `lem:tube`.\n\n**The gap.** The global resolved tube over a stratum $C$ is defined as the associated fiber bundle\n$$R_F := W_F\\times_{O(\\nu)} P(\\nu)\\ \\to\\ C,$$\njustified by \"$W_F$ depends only on the isomorphism class of $(F,V)$\" and is \"built canonically from the orthogonal slice.\" For this associated-bundle construction to be defined, the structure group $O(\\nu)$ (or the relevant $F$-normalizer/holonomy reduction $O(m)\\cap N_{O(m)}(\\rho_F)$) must **act on the fiber $W_F$**, extending the linear action on $\\partial W_F = S(V)=S^{m-1}$.\n\n**Why this fails.** $W_F$ is produced by a **non-canonical** sequence of interior surgeries on an arbitrary null-bordism. There is **no** natural $O(m)$-action on $W_F$; and in general a **linear group action on a sphere does not extend over a chosen filling** (an extension would force the filling to be highly symmetric, e.g. a disk). So the fiber $W_F$ carries only the finite $F$-action, **not** the continuous structure-group action required to form $R_F=W_F\\times_{O(\\nu)}P(\\nu)$.\n\nConsequently:\n1. The resolved tube $R_F$ is **not constructed** for $\\dim C>0$; only its boundary sphere bundle $S(\\nu)$ is canonical/natural.\n2. `lem:tube` compares the two fibrations $R_F\\to C$ and $N_F\\to C$ over $C$ via \"Leray–Hirsch/comparison of the two fibrations\"; with $R_F$ undefined, this comparison has no basis.\n\n**Fix options.** (a) Perform the surgeries **fiberwise/parametrized over $C$** (controlled or block surgery), constructing a genuine bundle of fillings with the bundle's structure group; prove the parametrized surgery obstructions vanish rationally. (b) Or construct a model $W_F$ that is genuinely **natural** in $(F,V)$ (functorial under the slice automorphism group), which is a strong requirement and must be proved. Either way the bare assertion \"$R_F=W_F\\times_{O(\\nu)}P(\\nu)$ is well defined\" is unjustified.",
+      "created_at": "2026-06-27T06:15:21Z"
+    }
+  ]
+}

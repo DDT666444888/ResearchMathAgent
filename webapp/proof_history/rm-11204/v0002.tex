@@ -1,0 +1,370 @@
+\documentclass{amsart}
+\usepackage{amsmath,amssymb,amsthm,hyperref}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{remark}{Remark}
+
+\DeclareMathOperator{\supp}{supp}
+\DeclareMathOperator{\err}{err}
+\DeclareMathOperator*{\OR}{OR}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\X}{\{0,1\}^n}
+
+\begin{document}
+
+\title{Efficient semi-supervised PAC learning of two-sided disjunctions}
+\maketitle
+
+\section{Statement and answer}
+
+We work in the model described in the problem. Examples lie in $X=\X$. A
+\emph{two-sided disjunction} is a pair $h=(h^+,h^-)$ where, for some subsets
+$S^+,S^-\subseteq\{1,\dots,n\}$,
+\[
+  h^+(x)=\OR_{i\in S^+} x_i=\mathbf 1[\,S^+\cap P(x)\neq\emptyset\,],\qquad
+  h^-(x)=\OR_{i\in S^-} x_i=\mathbf 1[\,S^-\cap P(x)\neq\emptyset\,],
+\]
+with $P(x):=\{i:x_i=1\}$ (and the empty disjunction is identically $0$). The
+\emph{classifier} associated with $h$ uses $h^+$ only: $x$ is labeled $+1$ if
+$h^+(x)=1$ and $-1$ otherwise. For a distribution $D$ on $X$ and a target
+$h^\ast=(h^{\ast+},h^{\ast-})$, the error of a hypothesis classifier $g$ is
+\[
+  \err_{D,h^\ast}(g):=\Pr_{x\sim D}\bigl[g(x)\neq h^{\ast+}(x)\bigr].
+\]
+A hypothesis $h$ is \emph{compatible} with $D$ if for every $x\in\supp(D)$ we
+have $h^+(x)=\lnot h^-(x)$, i.e.\ exactly one of $h^+(x),h^-(x)$ equals $1$. Let
+$C$ be the class of two-sided disjunctions with this compatibility notion, and
+for a fixed $D$ let
+\[
+  C_D:=\{h\in C: h \text{ is compatible with } D\}
+\]
+be the compatibility-filtered subclass. Throughout we assume
+$\eps,\delta\in(0,\tfrac12)$, the standard PAC regime (any
+$\delta\in(0,1)$ is reduced to this regime by the usual confidence
+amplification, which only multiplies the labeled sample by an
+$O(\log(1/\delta))$ factor).
+
+\begin{definition}[Filtered sample complexity]\label{def:filt}
+$m_{\mathrm{filt}}(D,\eps,\delta)$ is the smallest integer $m$ for which there
+exists a (possibly randomized) learning rule that takes $m$ labeled examples
+drawn i.i.d.\ from $D$ and labeled by an arbitrary target $h^\ast\in C_D$, and
+outputs a classifier $g$ such that, \emph{for every} $h^\ast\in C_D$,
+$\Pr[\err_{D,h^\ast}(g)\le\eps]\ge1-\delta$, the probability over the sample and
+the learner's internal randomness.
+\end{definition}
+
+\begin{theorem}\label{thm:main}
+The answer to the problem is \textbf{yes}. There is an algorithm $\mathcal A$
+for the semi-supervised PAC model of $C$ such that, on every unknown
+distribution $D$ with $C_D\neq\emptyset$ and every target $h^\ast\in C_D$:
+\begin{enumerate}
+\item[(a)] $\mathcal A$ runs in time polynomial in $n$, $1/\eps$ and
+$1/\delta$;
+\item[(b)] with probability at least $1-\delta$ the output classifier has error
+at most $\eps$, and the number of labeled examples used is
+\[
+  m \;=\; \Bigl\lceil \tfrac{1}{\eps}\bigl(n\ln 2+\ln(1/\delta)\bigr)\Bigr\rceil
+  \;\le\; p\bigl(n,1/\eps,\log(1/\delta)\bigr)\cdot
+          m_{\mathrm{filt}}(D,\eps,\delta)
+\]
+for the fixed polynomial $p(n,1/\eps,\log(1/\delta))=\tfrac1\eps\bigl(n+\log_2(1/\delta)+1\bigr)$;
+\end{enumerate}
+while using a number of unlabeled examples that is polynomial in $n$, $1/\eps$
+and $\log(1/\delta)$ (indeed, $\mathcal A$ needs no unlabeled examples).
+\end{theorem}
+
+The bound in (b) is the genuine \emph{multiplicative} comparison requested in
+the problem: there is no additive slack. The crux of the proof, and the
+correction relative to a naive ``unfiltered $\le$ poly'' argument, is
+Proposition~\ref{prop:lb}: \emph{for this concept class one always has
+$m_{\mathrm{filt}}(D,\eps,\delta)\ge1$ whenever a target exists.} This is what
+makes a clean multiplicative bound possible without adaptively shrinking the
+labeled budget. The structure is: Section~\ref{sec:alg} gives the algorithm and
+its labeled-sample upper bound (Lemma~\ref{lem:upper}); Section~\ref{sec:lower}
+proves the structural lower bound $m_{\mathrm{filt}}\ge1$
+(Proposition~\ref{prop:lb}) and assembles the multiplicative comparison
+(Lemma~\ref{lem:compare}); Section~\ref{sec:thm} assembles the theorem.
+
+\section{The algorithm and its labeled-sample upper bound}\label{sec:alg}
+
+The classifier produced by a two-sided disjunction depends only on $h^+$, which
+is a monotone disjunction. We therefore learn $h^{\ast+}$ directly with the
+classical elimination (list-and-cross-off) algorithm. Correctness needs only
+$h^\ast\in C$; the quantitative \emph{matching} of $m_{\mathrm{filt}}$ is
+provided by Section~\ref{sec:lower}.
+
+\begin{algorithm}[h]
+\caption{Elimination learner for the classifier of $C$}\label{alg:elim}
+\begin{algorithmic}[1]
+  \Require parameters $\eps,\delta\in(0,1)$; oracle access to labeled examples
+           $(x,y)$, $x\sim D$, $y=h^{\ast+}(x)$.
+  \Ensure a classifier $g$ which is a monotone disjunction over $\{1,\dots,n\}$.
+  \State $m \gets \bigl\lceil \tfrac1\eps\bigl(n\ln 2+\ln(1/\delta)\bigr)\bigr\rceil$
+  \State $T \gets \{1,2,\dots,n\}$
+         \Comment{$T$ = set of variables still allowed in $g$}
+  \For{$t=1$ \textbf{to} $m$}
+     \State draw a labeled example $(x,y)$
+     \If{$y=-1$} \Comment{$h^{\ast+}(x)=0$}
+        \State $T \gets T \setminus P(x)$
+            \Comment{remove every variable set to $1$ in $x$}
+     \EndIf
+  \EndFor
+  \State \Return the classifier $g(x):=\OR_{i\in T} x_i$
+         \big(equivalently $g(x)=\mathbf 1[\,T\cap P(x)\neq\emptyset\,]$\big)
+\end{algorithmic}
+\end{algorithm}
+
+\begin{lemma}\label{lem:upper}
+Fix any $D$ on $X$ and any target $h^\ast\in C$. On a labeled sample of size
+$m=\lceil\frac1\eps(n\ln2+\ln(1/\delta))\rceil$, Algorithm~\ref{alg:elim}:
+\begin{enumerate}
+\item runs in time $O(mn)=\mathrm{poly}(n,1/\eps,\log(1/\delta))$ and uses $m$
+labeled examples and no unlabeled examples;
+\item outputs a classifier $g$ with
+$\Pr[\err_{D,h^\ast}(g)\le\eps]\ge 1-\delta$,
+the probability over the labeled sample.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+\emph{Running time and sample size.} The loop runs $m$ times; each iteration
+draws one labeled example, inspects the at most $n$ coordinates of $x$ and
+deletes the corresponding elements from $T$, costing $O(n)$. Output is $O(n)$.
+Total time $O(mn)$, polynomial in $n,1/\eps,\log(1/\delta)$, hence in
+$n,1/\eps,1/\delta$. No unlabeled example is requested.
+
+\emph{Structure of the output.} Let $S^\ast:=S^{\ast+}$ be the index set of the
+target classifier $h^{\ast+}=\OR_{i\in S^\ast}x_i$, and let $T_{\mathrm{out}}$ be
+the final value of $T$.
+
+\textbf{(I1) $S^\ast\subseteq T_{\mathrm{out}}$.}
+A variable $i$ is deleted only when, on some example $(x,-1)$, $i\in P(x)$. If
+$i\in S^\ast$ then $x_i=1$ forces $h^{\ast+}(x)=1$, so the label would be $+1$,
+not $-1$. Hence no $i\in S^\ast$ is ever deleted.
+
+\textbf{(I2) $g$ is consistent with the whole sample.} For a sampled $(x,y)$:
+if $y=+1$ then $S^\ast\cap P(x)\neq\emptyset$, and (I1) gives
+$T_{\mathrm{out}}\cap P(x)\neq\emptyset$, so $g(x)=1$; if $y=-1$, the iteration
+processing $(x,-1)$ deleted all of $P(x)$ and elements are never re-added, so
+$T_{\mathrm{out}}\cap P(x)=\emptyset$ and $g(x)=0$. Thus $g$ agrees with the
+target on every sampled example.
+
+\emph{Generalization (finite-class realizable PAC bound).}
+Let $\mathcal H=\{g_T:T\subseteq\{1,\dots,n\}\}$, $|\mathcal H|=2^n$; the output
+$g\in\mathcal H$ and the target classifier $g_{S^\ast}\in\mathcal H$, so the
+problem is realizable. Call $g_T$ \emph{bad} if $\err_{D,h^\ast}(g_T)>\eps$. For
+a fixed bad $g_T$, $\Pr[g_T\text{ consistent with the sample}]
+=(1-\err_{D,h^\ast}(g_T))^m<(1-\eps)^m\le e^{-\eps m}$. By a union bound over the
+$\le2^n$ bad hypotheses,
+$\Pr[\exists\text{ bad consistent }g_T]\le 2^n e^{-\eps m}$. With
+$m\ge\frac1\eps(n\ln2+\ln(1/\delta))$ we get $\eps m\ge n\ln2+\ln(1/\delta)$,
+hence $2^ne^{-\eps m}\le\delta$. By (I2) the output $g$ is consistent with the
+sample, so with probability $\ge1-\delta$ it is not bad, i.e.\
+$\err_{D,h^\ast}(g)\le\eps$.
+\end{proof}
+
+\section{The filtered complexity is at least one, and the multiplicative
+comparison}\label{sec:lower}
+
+The previous version of this argument compared $m$ to $m_{\mathrm{filt}}+1$,
+which is vacuous: $m$ is already bounded by a polynomial $p$, so $m\le
+p\le p\cdot(m_{\mathrm{filt}}+1)$ holds for \emph{any} learner with labeled usage
+$\le p$, regardless of $m_{\mathrm{filt}}$. The additive ``$+1$'' was inserted to
+cover a putative degenerate regime $m_{\mathrm{filt}}=0$. We now prove that this
+regime \emph{cannot occur}, which removes the slack and turns the comparison into
+a genuine multiplicative bound.
+
+We begin with two structural facts about compatibility for this class.
+
+\begin{lemma}[$0^n$ is incompatible]\label{lem:zero}
+If $C_D\neq\emptyset$ then $0^n\notin\supp(D)$.
+\end{lemma}
+
+\begin{proof}
+At $x=0^n$ we have $P(x)=\emptyset$, so $S^+\cap P(x)=S^-\cap P(x)=\emptyset$ for
+\emph{every} pair $(S^+,S^-)$; thus $h^+(0^n)=h^-(0^n)=0$, violating the
+compatibility requirement that exactly one of $h^+(x),h^-(x)$ equal $1$ at every
+support point. Hence no hypothesis is compatible with a distribution whose
+support contains $0^n$; if $C_D\neq\emptyset$ then $0^n\notin\supp(D)$.
+\end{proof}
+
+\begin{lemma}[Two extreme compatible targets]\label{lem:extreme}
+Suppose $C_D\neq\emptyset$. Then both of the following hypotheses lie in $C_D$:
+\[
+  t_0:=(S^+=\emptyset,\;S^-=\{1,\dots,n\}),\qquad
+  t_1:=(S^+=\{1,\dots,n\},\;S^-=\emptyset).
+\]
+Their classifiers $c_0:=t_0^{+}$ and $c_1:=t_1^{+}$ satisfy $c_0(x)=0$ and
+$c_1(x)=1$ for every $x\in\supp(D)$; in particular $\err_{D,c_1}(c_0)=1$.
+\end{lemma}
+
+\begin{proof}
+By Lemma~\ref{lem:zero}, $0^n\notin\supp(D)$, so every $x\in\supp(D)$ has
+$P(x)\neq\emptyset$.
+
+\emph{$t_0\in C_D$.} Here $t_0^+=\OR_{\emptyset}\equiv0$ and
+$t_0^-=\OR_{\{1,\dots,n\}}$. For $x\in\supp(D)$: $t_0^+(x)=0$, and
+$\{1,\dots,n\}\cap P(x)=P(x)\neq\emptyset$ so $t_0^-(x)=1$. Thus exactly one of
+$t_0^+(x),t_0^-(x)$ is $1$, and $t_0$ is compatible. Its classifier is $c_0\equiv0$
+on $\supp(D)$.
+
+\emph{$t_1\in C_D$.} Here $t_1^+=\OR_{\{1,\dots,n\}}$ and $t_1^-\equiv0$. For
+$x\in\supp(D)$: $t_1^+(x)=1$ (since $P(x)\neq\emptyset$) and $t_1^-(x)=0$. Again
+exactly one is $1$, so $t_1$ is compatible, with classifier $c_1\equiv1$ on
+$\supp(D)$.
+
+Finally $\err_{D,c_1}(c_0)=\Pr_{x\sim D}[c_0(x)\neq c_1(x)]=\Pr_{x\sim
+D}[0\neq1]=1$, since $c_0,c_1$ disagree at every support point.
+\end{proof}
+
+\begin{proposition}[The filtered complexity is at least one]\label{prop:lb}
+For every $D$ with $C_D\neq\emptyset$ and all $\eps,\delta\in(0,\tfrac12)$,
+\[
+  m_{\mathrm{filt}}(D,\eps,\delta)\ge 1 .
+\]
+\end{proposition}
+
+\begin{proof}
+Suppose, for contradiction, that $m_{\mathrm{filt}}(D,\eps,\delta)=0$. By
+Definition~\ref{def:filt} there is a randomized learning rule that uses $0$
+labeled examples and outputs a classifier $g$ (a random function, whose
+distribution does not depend on the unknown target, since it sees no
+target-dependent input) such that for \emph{every} target $h^\ast\in C_D$,
+$\Pr[\err_{D,h^\ast}(g)\le\eps]\ge1-\delta>0$; in particular for each target
+there is at least one realization $g$ of the output with
+$\err_{D,h^\ast}(g)\le\eps$.
+
+Apply this to the two targets $t_0,t_1\in C_D$ of Lemma~\ref{lem:extreme}, with
+classifiers $c_0\equiv0$, $c_1\equiv1$ on $\supp(D)$. For \emph{any} fixed
+classifier $g$,
+\[
+  \err_{D,t_0}(g)+\err_{D,t_1}(g)
+  =\Pr_{x\sim D}[g(x)\neq0]+\Pr_{x\sim D}[g(x)\neq1]
+  =\Pr_{x\sim D}[g(x)=1]+\Pr_{x\sim D}[g(x)=0]
+  =1,
+\]
+where the middle equality uses $c_0(x)=0,c_1(x)=1$ on $\supp(D)$ and the last
+that the two events partition $\supp(D)$. Hence, for every realized $g$,
+$\max\{\err_{D,t_0}(g),\err_{D,t_1}(g)\}\ge\tfrac12>\eps$ (as $\eps<\tfrac12$).
+Therefore \emph{no} realization of the output can satisfy both
+$\err_{D,t_0}(g)\le\eps$ and $\err_{D,t_1}(g)\le\eps$. Writing $A_j:=\{g:\err_{D,t_j}(g)\le\eps\}$, the displayed identity
+shows that the sets $A_0,A_1$ of \emph{successful} outputs are disjoint:
+$A_0\cap A_1=\emptyset$ (no $g$ lies in both, since that would give
+$\err_{D,t_0}(g)+\err_{D,t_1}(g)\le2\eps<1$, contradicting the identity
+$=1$). Since the learner's output distribution is identical against $t_0$
+and against $t_1$ (it receives no labels), $\Pr[A_0]$ and $\Pr[A_1]$ are
+well defined under this common distribution, and
+$\Pr[A_0]+\Pr[A_1]=\Pr[A_0\cup A_1]\le1$.
+
+Since $\delta<\tfrac12$ we have $1-\delta>\tfrac12$, so the success
+guarantee demands $\Pr[A_0]\ge1-\delta>\tfrac12$ and
+$\Pr[A_1]\ge1-\delta>\tfrac12$ simultaneously, whence
+$\Pr[A_0]+\Pr[A_1]>1$. This contradicts $\Pr[A_0]+\Pr[A_1]\le1$
+(from $A_0\cap A_1=\emptyset$). Hence the assumption
+$m_{\mathrm{filt}}(D,\eps,\delta)=0$ is impossible, and
+$m_{\mathrm{filt}}(D,\eps,\delta)\ge1$.
+\end{proof}
+
+\begin{remark}
+The clean takeaway of Proposition~\ref{prop:lb}, used below, is:
+\emph{for every $D$ with $C_D\neq\emptyset$ and every $\eps,\delta\in(0,\tfrac12)$,
+one has $m_{\mathrm{filt}}(D,\eps,\delta)\ge1$.} This is the only consequence of
+the proposition that the comparison invokes, and the proof of this consequence is
+exactly the contradiction with $A_0\cap A_1=\emptyset$ above for $\delta<\tfrac12$.
+(In fact a standard two-point/EHKV refinement using the everywhere-disagreeing
+pair $t_0,t_1$ gives the stronger
+$m_{\mathrm{filt}}(D,\eps,\delta)=\Omega\bigl(\tfrac1\eps\log\tfrac1\delta\bigr)$,
+but $m_{\mathrm{filt}}\ge1$ already suffices for the multiplicative bound.)
+\end{remark}
+
+\begin{lemma}[Multiplicative comparison]\label{lem:compare}
+Let $p(n,1/\eps,\log(1/\delta)):=\frac1\eps\bigl(n+\log_2(1/\delta)+1\bigr)$.
+For every $D$ with $C_D\neq\emptyset$ and all $\eps,\delta\in(0,\tfrac12)$,
+\[
+  m=\Bigl\lceil \tfrac1\eps\bigl(n\ln 2+\ln(1/\delta)\bigr)\Bigr\rceil
+  \;\le\; p\bigl(n,1/\eps,\log(1/\delta)\bigr)\cdot
+          m_{\mathrm{filt}}(D,\eps,\delta).
+\]
+\end{lemma}
+
+\begin{proof}
+Using $\lceil a\rceil\le a+1$, $\ln2<1$, $\ln(1/\delta)<\log_2(1/\delta)$, and
+$1\le\frac1\eps$ (as $\eps<1$),
+\[
+  m \le \tfrac1\eps\bigl(n\ln2+\ln(1/\delta)\bigr)+1
+     \le \tfrac1\eps\bigl(n+\log_2(1/\delta)\bigr)+\tfrac1\eps
+     = \tfrac1\eps\bigl(n+\log_2(1/\delta)+1\bigr)
+     = p\bigl(n,1/\eps,\log(1/\delta)\bigr).
+\]
+By Proposition~\ref{prop:lb}, $m_{\mathrm{filt}}(D,\eps,\delta)\ge1$. Therefore
+\[
+  m \le p\bigl(n,1/\eps,\log(1/\delta)\bigr)
+     = p\bigl(n,1/\eps,\log(1/\delta)\bigr)\cdot 1
+     \le p\bigl(n,1/\eps,\log(1/\delta)\bigr)\cdot
+         m_{\mathrm{filt}}(D,\eps,\delta).\qedhere
+\]
+\end{proof}
+
+The point is that $m_{\mathrm{filt}}\ge1$ is exactly what licenses replacing
+$(m_{\mathrm{filt}}+1)$ by $m_{\mathrm{filt}}$: the comparison is now genuinely
+multiplicative, with no additive slack, and $m_{\mathrm{filt}}$ appears
+non-trivially as a multiplicative lower-anchor on the right-hand side.
+
+\section{Proof of Theorem~\ref{thm:main}}\label{sec:thm}
+
+Take $\mathcal A$ to be Algorithm~\ref{alg:elim} with parameters
+$\eps,\delta\in(0,\tfrac12)$. Fix any $D$ with $C_D\neq\emptyset$ and any target
+$h^\ast\in C_D\subseteq C$.
+
+\emph{Clause (a).} By Lemma~\ref{lem:upper}(1) the running time is $O(mn)$ with
+$m=\lceil\frac1\eps(n\ln2+\ln(1/\delta))\rceil$, polynomial in $n,1/\eps$ and
+(since $\log(1/\delta)\le1/\delta$) in $1/\delta$.
+
+\emph{Correctness and clause (b).} By Lemma~\ref{lem:upper}(2), $\mathcal A$
+outputs a classifier $g$ with $\Pr[\err_{D,h^\ast}(g)\le\eps]\ge1-\delta$, using
+exactly $m$ labeled examples and no unlabeled examples (Lemma~\ref{lem:upper}
+needs only $h^\ast\in C$, which holds since $C_D\subseteq C$). By
+Lemma~\ref{lem:compare},
+\[
+  m \le p\bigl(n,1/\eps,\log(1/\delta)\bigr)\cdot
+        m_{\mathrm{filt}}(D,\eps,\delta),
+  \qquad p\bigl(n,1/\eps,\log(1/\delta)\bigr)=\tfrac1\eps\bigl(n+\log_2(1/\delta)+1\bigr),
+\]
+a fixed polynomial in $n,1/\eps,\log(1/\delta)$. Hence the labeled-sample size
+matches the compatibility-filtered sample complexity up to a polynomial factor in
+$n,1/\eps,\log(1/\delta)$, in the genuine multiplicative sense.
+
+\emph{Unlabeled sample.} $\mathcal A$ uses $0$ unlabeled examples, trivially a
+polynomial number.
+
+If $C_D=\emptyset$ there is no compatible target and the learning instance is
+empty, so there is nothing to prove. In all instances with a target, all three
+requirements hold, completing the proof of Theorem~\ref{thm:main}. \qed
+
+\begin{remark}[Why no adaptivity or unlabeled data is needed --- and why this is
+not vacuous]
+A priori, matching $m_{\mathrm{filt}}$ \emph{multiplicatively} could require an
+adaptive learner that detects when compatibility collapses the live class
+$C_D$ to a single classifier (the regime $m_{\mathrm{filt}}=0$) and then spends
+no labeled examples; otherwise a learner that always draws $\Theta(n/\eps)$
+labeled examples would violate $m_{\mathrm A}\le p\cdot m_{\mathrm{filt}}$ at
+$m_{\mathrm{filt}}=0$. Proposition~\ref{prop:lb} shows that for two-sided
+disjunctions this collapse \emph{never happens}: compatibility forces the two
+everywhere-disagreeing targets $t_0,t_1$ into $C_D$ (Lemma~\ref{lem:extreme}),
+so $C_D$ always contains a maximally separated pair and $m_{\mathrm{filt}}\ge1$.
+Consequently the non-adaptive, unlabeled-data-free elimination learner already
+attains a true multiplicative match. The semantic content is thus that, for this
+particular class, the compatibility structure does not in fact shrink the
+classifier complexity below the universal floor $m_{\mathrm{filt}}\ge1$, so
+unlabeled data buys nothing here --- in contrast to general Balcan--Blum settings
+where it can. This is a statement about the class, established by
+Proposition~\ref{prop:lb}, not an artifact of an additive ``$+1$''.
+\end{remark}
+
+\end{document}

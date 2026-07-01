@@ -1,0 +1,31 @@
+{
+  "id": "rm-09486-4",
+  "problem_id": "rm-09486",
+  "dataset": "geomtopology_rm14k",
+  "title": "Mechanism heuristic (Lück–Weiermann → unbounded cd) is non-quantitative and unproved",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T10:28:41Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev0108c187",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T10:28:41Z"
+    },
+    {
+      "id": "cea52f1ae",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "Remark `rem:mechanism` claims that '$\\cd_{\\VC[C]}N$ grows at least like $\\cd(W_C)$' and that the pushout 'yields a Bredon Mayer–Vietoris sequence relating $\\cd_{\\VC}\\Gamma$ to the strata $\\cd_{\\VC[C]}N_\\Gamma[C]$ … the upshot is that $\\cd_{\\VC}\\Gamma$ is at least of the order of $\\sup_{[C]}\\cd(W_C)$.' These statements are asserted with no proof, and the remark itself concedes it is purely motivational.\n\nIf one wishes to make part (2) self-contained (closing the central gap), this is exactly the chain that must be made rigorous:\n(a) the Lück–Weiermann $\\Gamma$-pushout (Theorem `thm:LW`) induces a Bredon-cohomology Mayer–Vietoris long exact sequence;\n(b) for each commensurability class $[C]$, a lower bound $\\cd_{\\VC[C]}N_\\Gamma[C] \\ge \\cd(W_C)$ via the quotient $N_\\Gamma[C]\\to W_C=N_\\Gamma[C]/C$ collapsing the single commensurability stratum;\n(c) survival of these unbounded-dimension classes in the Mayer–Vietoris sequence (the $E\\Gamma$ term and the gluing terms have bounded dimension), forcing $\\cd_{\\VC}\\Gamma=\\infty$ whenever $\\sup_{[C]}\\cd(W_C)=\\infty$.\n\nNone of (a)–(c) is established. This is the quantitative skeleton underlying the black-box theorem.",
+      "created_at": "2026-06-28T10:28:41Z"
+    }
+  ]
+}

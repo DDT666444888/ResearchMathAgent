@@ -1,0 +1,31 @@
+{
+  "id": "rm-12641-4",
+  "problem_id": "rm-12641",
+  "dataset": "algebra_rm14k",
+  "title": "Semidirect-product / index-2 structure assumes dihedral reduced group; A4,S4,A5 missing (Thm 3.3(e))",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T10:45:48Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev4c3f175c",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T10:45:48Z"
+    },
+    {
+      "id": "c5c937acf",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "Thm 3.3(e) writes $\\bar G=\\langle\\bar G^\\circ,\\sigma\\rangle$ with $\\sigma$ an involution and uses $R=(R^\\circ)^{\\langle\\sigma\\rangle}$ with Noether's 2-element symmetrization (adjoin $f+\\sigma f$, $f\\cdot\\sigma f$). This presupposes $\\bar G$ is cyclic or dihedral. But the problem explicitly says the dihedral-type invariants are 'associated with the normalizer of $\\langle\\tau\\rangle$', and the reduced automorphism group of a cyclic curve can be $A_4,S_4,A_5$ (finite subgroups of $\\mathrm{PGL}_2$). For these, $R$ is not an index-2 extension of a cyclic-invariant ring, the symmetrization argument fails, and the whole (e)$\\Rightarrow$algorithm pipeline for the non-cyclic part is invalid. The classification of possible $\\bar G$ is not even stated, so these cases are entirely missing.",
+      "created_at": "2026-06-28T10:45:48Z"
+    }
+  ]
+}

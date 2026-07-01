@@ -1,65 +1,63 @@
 {
-  "summary": "The RMAC system has a coherent end-to-end pipeline (discover → resolve → discuss → eval) and reliable infrastructure (Vertex backend, tectonic compilation, structured proof storage), but it is bottlenecked by a single-model monoculture and a complete absence of formal verification — 0/10 proofs are verified despite 10 having 'best' proofs. The most urgent strategic gap is that solvability is measured by a self-referential LLM scorer rather than ground truth, creating a high risk of the cluster optimizing for self-agreement rather than correctness. Resource usage is near-idle (10 total runs, $3.78 cumulative), so the system is under-utilized and has ample headroom to add diversity, verification, and adversarial checks.",
+  "summary": "The RMAC pipeline is operationally mature—daily push-forward runs reliably, 10 problems carry best proofs, and a 26% resolution rate shows the discover→resolve loop is producing movement. However, the system has a critical verification gap (0/10 proofs verified) and is dangerously homogeneous in model and methodology, meaning it can generate proofs at scale but cannot yet certify them, and shares a single model's blind spots across every agent.",
   "problems": [
-    "Zero verified proofs (0/10): the pipeline produces 'best proofs' and 0-100% solvability scores with no formal/external ground-truth check, so high scores cannot be trusted.",
-    "Single-model monoculture: every proof, critic, solver, and evaluator runs on one model family. Shared blind spots mean the critic and solver fail to catch the same errors, and the evaluator rubber-stamps them.",
-    "Self-referential evaluation loop: the solvability-evaluator is an LLM scoring proofs written by sibling LLMs with no independent reference, inviting score inflation and reward-hacking.",
-    "Meeting/discussion subsystem is completely unused (0 rooms, 0 messages) despite being a defined pipeline stage — either dead weight or a missing automation trigger.",
-    "Low overall issue resolution rate (26%) with 391 open and only 17 in-progress suggests the solver-agent stalls or issues are opened faster than they can be closed; no triage/prioritization is evident.",
-    "Under-utilization of compute: 0 runs today and only 10 total runs means the daily push-forward is barely exercising the system, leaving little signal to debug agent behavior.",
-    "Observability gap: no per-agent success metrics, no record of why an issue stays open, and no diff between proof versions surfaced — engineers cannot tell when an agent silently degrades."
+    "Zero verified proofs (0/10): the pipeline produces and scores proofs but has no closed-loop formal/independent verification, so 'best proof' status is self-reported quality, not correctness.",
+    "Meeting/discussion system is entirely unused (0 rooms, 0 messages) despite being a defined pipeline stage—either it provides no value, is too costly to trigger, or is silently failing to launch.",
+    "Severe model monoculture: all agents (critic, solver, evaluator, meeting) and proof generation run on the same Claude-subscription backend, so the evaluator shares the solver's blind spots and cannot catch errors the generator is systematically prone to.",
+    "Solvability-evaluator and critic are likely correlated: an LLM scoring proofs 0-100% that came from a sibling LLM tends toward generous, self-consistent scores—no calibration against ground-truth or human spot-checks is described.",
+    "Observability is thin: today shows 0 runs/0 cost while cumulative is $78.55/27 runs, suggesting per-agent tracing, failure logging, and 'why did this agent stall' diagnostics are not surfaced to engineers.",
+    "Issue-based evaluation can be gamed by the loop: the same family of agents discovers issues and resolves them, so resolution rate measures internal agreement rather than external proof validity."
   ],
   "highlights": [
-    "Clean, well-separated agent architecture with distinct responsibilities (critic, solver, meeting personas, evaluator, meta-analyst) and a logical pipeline ordering.",
-    "Robust reproducible infrastructure: local tectonic LaTeX compilation, structured best-proof JSON plus versioned .tex storage, and ADC-based Vertex access.",
-    "Daily push-forward automation already chains all pipeline steps across all problems, giving a foundation to layer verification and diversity onto.",
-    "Issue-based decomposition (274 problems → 551 granular issues) is a sound strategy for making large proofs tractable and measurable.",
-    "Cost discipline is excellent — cumulative spend is trivial ($3.78), leaving budget to invest in multi-model ensembling and adversarial verification."
+    "Push-forward automation is robust and consistent—13 daily runs completed with a current last-run date, indicating the core orchestration is stable.",
+    "Clean separation of concerns across agents (critic discovers, solver resolves, evaluator scores) is a sound architectural foundation that supports adding diversity and verification layers.",
+    "Local tectonic LaTeX compilation and per-problem JSON+.tex proof storage give a reproducible, inspectable artifact trail.",
+    "Resource cost is modest ($78.55 cumulative over 27 runs), leaving ample budget headroom to invest in cross-model verification and adversarial review without major spend concerns."
   ],
   "suggested_todos": [
     {
-      "title": "Add a formal verification / external ground-truth stage (e.g. proof-assistant or independent referee model) so 'verified' is a real gate, not just a score",
+      "title": "Add a cross-model verifier: route every best proof through a second, different model family (or formal/proof-checker tooling) before it can reach 'verified'; gate the verified count on independent confirmation",
       "priority": "high"
     },
     {
-      "title": "Introduce model diversity: run solver and evaluator on different model families than the proof generator to break shared blind spots",
+      "title": "Decouple evaluator from generator—run solvability scoring on a distinct model and periodically calibrate scores against a small human-audited gold set to detect score inflation",
       "priority": "high"
     },
     {
-      "title": "Make the solvability-evaluator adversarial and reference-anchored — require it to cite the specific gap it could NOT close rather than emit a single aggregate score",
+      "title": "Diagnose and either fix or retire the meeting system: instrument room-creation triggers, log failures, and run a controlled A/B on whether persona discussion improves resolution vs. cost",
       "priority": "high"
     },
     {
-      "title": "Instrument per-agent observability: success rate, issue open→resolved latency, score-vs-verification correlation, and proof-version diffs",
+      "title": "Build per-agent observability: structured run logs, stall/timeout detection, token-and-cost attribution per agent, and an alert when an agent produces empty or malformed output",
       "priority": "high"
     },
     {
-      "title": "Add issue triage/prioritization so the solver attacks high-impact open issues first instead of letting 391 accumulate",
+      "title": "Introduce an adversarial 'kill-argument' review stage between resolve and eval so the strongest rejection of each proof is generated before scoring",
       "priority": "medium"
     },
     {
-      "title": "Either activate the meeting subsystem via the push-forward trigger or remove it until it produces measurable proof improvements",
+      "title": "Add model/strategy diversity to the solver: maintain a small ensemble (different model families or prompting strategies) and compare proof attempts rather than relying on one backend",
       "priority": "medium"
     },
     {
-      "title": "Add a regression guard that blocks a new 'best proof' from replacing the prior one unless its score improvement is independently confirmed",
+      "title": "Define and track a ground-truth-anchored benchmark metric (e.g., agreement with human verdicts on a held-out set) separate from internal resolution rate",
       "priority": "medium"
     },
     {
-      "title": "Run multiple independent solve attempts per issue and ensemble/vote rather than relying on a single chain",
+      "title": "Automate regression detection: when a new daily run lowers a proof's score or reopens a resolved issue, flag it for engineer review instead of silently overwriting",
       "priority": "low"
     }
   ],
   "mistakes": [
-    "Treating an LLM-generated solvability score as a proxy for correctness without any external verification — the system can score itself well while being wrong.",
-    "Using the same model for generation, critique, and evaluation, which collapses the intended checks-and-balances into a single correlated point of failure.",
-    "Defining pipeline stages (meetings) that never actually run, so reported architecture overstates real capability.",
-    "Opening issues far faster than they are resolved, letting the open backlog balloon while in-progress work stays near zero — discovery without throughput.",
-    "Equating 'has a best proof' with progress: 10/10 problems have a best proof but 0/10 are verified, conflating output volume with output quality.",
-    "Leaving the cluster idle (0 runs today) means failures and regressions go undetected because the system isn't generating enough signal to monitor."
+    "Treating a self-generated solvability score as a proxy for correctness—the system optimizes for what its own evaluator rewards, not for verifiable truth.",
+    "Defining pipeline stages (meeting discussion) that are never exercised, creating dead architecture that masks whether the documented pipeline reflects reality.",
+    "Single-model dependency across discovery, resolution, and evaluation, which collapses the independence that makes multi-agent review meaningful.",
+    "Measuring throughput (runs, issues resolved, proofs produced) far more thoroughly than measuring correctness, so the dashboard looks healthy while the verification rate sits at zero.",
+    "Letting the same agent family both create and close issues, turning the resolution rate into a measure of internal consensus rather than external validity.",
+    "Insufficient failure-mode visibility: with no per-agent error logging surfaced, a silently degrading agent could continue running daily without anyone noticing until output quality drops."
   ],
   "generated_by": "document-manager",
-  "generated_at": "2026-06-23T18:32:03.552417+00:00",
+  "generated_at": "2026-06-30T02:35:49.992291+00:00",
   "level": "system",
   "id": "system"
 }

@@ -17,6 +17,8 @@ import re
 from datetime import datetime, timezone
 from pathlib import Path
 
+from .issue_pdf import md_to_latex
+
 # ── problem id helpers ────────────────────────────────────────────────────────
 
 def problem_ids(dataset: str) -> list[str]:
@@ -208,6 +210,31 @@ def _strip_md(s: str) -> str:
     s = re.sub(r"\*([^*]+)\*",     r"\1", s)
     s = re.sub(r"`([^`]+)`",       r"\1", s)
     return s
+
+
+def _md_inline(s: str, limit: int | None = None) -> str:
+    """Convert a short markdown+LaTeX prose snippet to inline LaTeX, PRESERVING
+    inline ``$...$`` math. Use this for any LLM-generated text (concept definitions,
+    proof verdicts/analysis, meeting/issue/insight prose) instead of
+    ``_tex_escape(_strip_md(...))``, which escapes ``$ ^ _ \\`` and so destroys math
+    like ``$\\det(q_i^{\\lambda_j+m-j})/\\det(q_i^{m-j})$``. Mirrors the Concept PDF
+    pipeline (md_to_latex). Truncation never splits a ``$...$`` span."""
+    s = (s or "").strip()
+    if limit is not None and len(s) > limit:
+        cut = s[:limit]
+        if cut.count("$") % 2:               # would end inside an inline-math span
+            j = cut.rfind("$")
+            cut = cut[:j] if j != -1 else cut
+        s = cut.rstrip()
+    out = md_to_latex(s)
+    return " ".join(out.split("\n")).strip()  # keep it on one logical line for \item/\paragraph
+
+
+def _md_block(s: str) -> str:
+    """Convert a multi-paragraph markdown+LaTeX block to LaTeX, PRESERVING inline
+    ``$...$`` math AND the original paragraph/list structure (unlike _md_inline,
+    which flattens to one line). Use for full message bodies / transcripts."""
+    return md_to_latex((s or "").strip())
 
 
 # Book-style LaTeX preamble — no \title/\author/\date/\begin{document}.
@@ -430,11 +457,14 @@ def _build_problem_latex_body(repo_root: Path, pid: str,
         lc = pe.get("logical_correctness")
         pc = pe.get("proof_completeness")
         cl = pe.get("proof_clarity")
+        # The three quality criteria are scored on a 0..scale axis (proof_eval sets
+        # scale=10). Honour it instead of hardcoding 5, else a score of 8 shows "8/5".
+        scale = int(pe.get("scale") or 10)
 
         def _bar_row(val: int | None, mx: int) -> str:
             if val is None:
                 return r"\textcolor{gray}{---}"
-            v = int(val)
+            v = max(0, min(mx, int(val)))
             return r"\scorefull{}" * v + r"\scoreempty{}" * (mx - v)
 
         B.append(r"\section*{Proof Evaluation}")
@@ -449,9 +479,9 @@ def _build_problem_latex_body(repo_root: Path, pid: str,
                        else r"\textcolor{BrickRed}{\textbf{Incorrect}}")
             B.append(rf"Answer Accuracy & {1 if aa else 0} & 1 & {aa_cell} \\")
         for val, label, mx in (
-            (lc, "Logical Correctness", 5),
-            (pc, "Proof Completeness",  5),
-            (cl, "Proof Clarity",       5),
+            (lc, "Logical Correctness", scale),
+            (pc, "Proof Completeness",  scale),
+            (cl, "Proof Clarity",       scale),
         ):
             if val is not None:
                 B.append(rf"{label} & {int(val)} & {mx} & {_bar_row(val, mx)} \\")
@@ -461,9 +491,9 @@ def _build_problem_latex_body(repo_root: Path, pid: str,
                       int(pc) if pc is not None else None,
                       int(cl) if cl is not None else None]
         max_vals   = [1 if aa is not None else None,
-                      5 if lc is not None else None,
-                      5 if pc is not None else None,
-                      5 if cl is not None else None]
+                      scale if lc is not None else None,
+                      scale if pc is not None else None,
+                      scale if cl is not None else None]
         s_total = sum(x for x in score_vals if x is not None)
         m_total = sum(x for x in max_vals   if x is not None)
         if m_total:
@@ -477,10 +507,10 @@ def _build_problem_latex_body(repo_root: Path, pid: str,
         B.append("")
 
         if pe.get("verdict"):
-            B.append(r"\paragraph{Verdict.}\ " + _tex_escape(_strip_md(pe["verdict"])))
+            B.append(r"\paragraph{Verdict.}\ " + _md_inline(pe["verdict"]))
             B.append("")
         if pe.get("notes"):
-            B.append(r"\paragraph{Analysis.}\ " + _tex_escape(_strip_md(pe["notes"])))
+            B.append(r"\paragraph{Analysis.}\ " + _md_inline(pe["notes"]))
             B.append("")
     else:
         B.append(
@@ -538,11 +568,12 @@ def _build_problem_latex_body(repo_root: Path, pid: str,
         lc = pe.get("logical_correctness")
         pc = pe.get("proof_completeness")
         cl = pe.get("proof_clarity")
+        scale = int(pe.get("scale") or 10)   # 0..scale axis (proof_eval sets scale=10)
 
         def _bar(val: int | None, mx: int) -> str:
             if val is None:
                 return ""
-            v = int(val)
+            v = max(0, min(mx, int(val)))
             return r"\scorefull{}" * v + r"\scoreempty{}" * (mx - v) + rf"\ \ {v}/{mx}"
 
         B.append(r"\begin{description}[leftmargin=5.5cm,labelwidth=5.3cm,labelsep=0.4em]")
@@ -551,19 +582,19 @@ def _build_problem_latex_body(repo_root: Path, pid: str,
                       else r"\textcolor{BrickRed}{Incorrect\ (0/1)}")
             B.append(rf"\item[Answer Accuracy] {aa_tex}")
         for val, label, mx in (
-            (lc, "Logical Correctness", 5),
-            (pc, "Proof Completeness",  5),
-            (cl, "Proof Clarity",       5),
+            (lc, "Logical Correctness", scale),
+            (pc, "Proof Completeness",  scale),
+            (cl, "Proof Clarity",       scale),
         ):
             if val is not None:
                 B.append(rf"\item[{label}] {_bar(val, mx)}")
         B.append(r"\end{description}")
         B.append("")
         if pe.get("verdict"):
-            B.append(r"\paragraph{Verdict.}\ " + _tex_escape(_strip_md(pe["verdict"])))
+            B.append(r"\paragraph{Verdict.}\ " + _md_inline(pe["verdict"]))
             B.append("")
         if pe.get("notes"):
-            B.append(r"\paragraph{Analysis.}\ " + _tex_escape(_strip_md(pe["notes"])))
+            B.append(r"\paragraph{Analysis.}\ " + _md_inline(pe["notes"]))
             B.append("")
     else:
         B.append(r"\textit{No proof evaluation recorded yet.}")
@@ -606,7 +637,7 @@ def _build_problem_latex_body(repo_root: Path, pid: str,
                 name = _tex_escape(c.get("name", ""))
                 nota = c.get("notation", "")
                 nota_str = rf" (${nota}$)" if nota else ""
-                defn = _tex_escape(_strip_md(c.get("definition", "") or ""))[:400]
+                defn = _md_inline(c.get("definition", "") or "", limit=400)
                 B.append(rf"\item[\textbf{{{name}}}]{nota_str} {defn}")
             B.append(r"\end{description}")
             B.append("")
@@ -638,7 +669,7 @@ def _build_problem_latex_body(repo_root: Path, pid: str,
             if plan.get("summary"):
                 B.append(
                     r"\paragraph{Action plan.}\ "
-                    + _tex_escape(_strip_md(plan["summary"]))
+                    + _md_inline(plan["summary"])
                 )
                 B.append("")
             steps = plan.get("steps", [])
@@ -647,19 +678,34 @@ def _build_problem_latex_body(repo_root: Path, pid: str,
                 for s in steps:
                     agent  = _tex_escape(s.get("agent", ""))
                     stitle = _tex_escape(s.get("title", "Step"))
-                    sbody  = _tex_escape(_strip_md((s.get("body") or "")[:300]))
+                    sbody  = _md_inline(s.get("body") or "", limit=300)
                     atag   = rf"\ \emph{{({agent})}}" if agent else ""
                     B.append(rf"\item \textbf{{{stitle}}}{atag}: {sbody}")
                 B.append(r"\end{enumerate}")
                 B.append("")
-            hl = _highlights(room, n=5)
-            if hl:
-                B.append(r"\paragraph{Discussion highlights.}")
-                B.append(r"\begin{itemize}[noitemsep]")
-                for h in hl:
-                    B.append(rf"\item {_tex_escape(_strip_md(h))}")
-                B.append(r"\end{itemize}")
+            # Full discussion transcript — record what each participant actually
+            # said, verbatim (author + complete body), not just a teaser. Skip
+            # event lines and the coordinator's plan-echo (already shown above).
+            def _is_plan_echo(m: dict) -> bool:
+                return (m.get("author") == "coordinator"
+                        and (m.get("body") or "").lstrip().startswith("**Action plan synthesized**"))
+            transcript_msgs = [
+                m for m in room.get("messages", [])
+                if m.get("role") != "event" and (m.get("body") or "").strip()
+                and not _is_plan_echo(m)
+            ]
+            if transcript_msgs:
+                B.append(r"\paragraph{Discussion transcript.}")
                 B.append("")
+                for m in transcript_msgs:
+                    author = _tex_escape(m.get("author", "") or "—")
+                    when_m = (m.get("created_at") or "")[:16].replace("T", " ")
+                    meta   = rf"\hfill {{\small\color{{gray}} {_tex_escape(when_m)}}}" if when_m else ""
+                    B.append(rf"\noindent\textbf{{{author}}}\,{meta}")
+                    B.append("")                         # \par before the body block
+                    B.append(_md_block(m.get("body") or ""))
+                    B.append(r"\smallskip")
+                    B.append("")
 
     # ── Chapter 6: Open Issues ────────────────────────────────────────────────
     if open_issues:
@@ -681,7 +727,7 @@ def _build_problem_latex_body(repo_root: Path, pid: str,
             )
             B.append(meta_str)
             B.append(r"\medskip")
-            body_txt = _tex_escape(_strip_md((i.get("body") or "").strip()))[:1000]
+            body_txt = _md_inline(i.get("body") or "", limit=1000)
             if body_txt:
                 B.append(body_txt)
                 B.append("")
@@ -689,7 +735,7 @@ def _build_problem_latex_body(repo_root: Path, pid: str,
             if analysis:
                 B.append(
                     r"\paragraph{Latest analysis.}\ "
-                    + _tex_escape(_strip_md(analysis))
+                    + _md_inline(analysis)
                 )
             B.append("")
 
@@ -709,7 +755,7 @@ def _build_problem_latex_body(repo_root: Path, pid: str,
     wrote = False
     if qinsight:
         if qinsight.get("summary"):
-            B.append(_tex_escape(_strip_md(qinsight["summary"])))
+            B.append(_md_inline(qinsight["summary"]))
             B.append(""); wrote = True
         for key, head in (
             ("highlights", "Highlights"),
@@ -720,7 +766,7 @@ def _build_problem_latex_body(repo_root: Path, pid: str,
                 B.append(rf"\paragraph{{{head}.}}")
                 B.append(r"\begin{itemize}[noitemsep]")
                 for v in vals[:6]:
-                    B.append(rf"\item {_tex_escape(_strip_md(v))}")
+                    B.append(rf"\item {_md_inline(v)}")
                 B.append(r"\end{itemize}")
                 B.append(""); wrote = True
     if not wrote:
@@ -803,9 +849,11 @@ def build_problem_report(repo_root: Path, pid: str, dataset: str = "first_proof_
         score_rows = []
         if aa is not None:
             score_rows.append(f"**Answer Accuracy:** {'✅ Correct (1/1)' if aa else '❌ Incorrect (0/1)'}")
-        for val, label, mx in ((lc, "Logical Correctness", 5), (pc, "Proof Completeness", 5), (cl, "Proof Clarity", 5)):
+        mx = int(proof_eval.get("scale", 10))  # 0–10 scale (older cached evals were 0–5)
+        for val, label in ((lc, "Logical Correctness"), (pc, "Proof Completeness"), (cl, "Proof Clarity")):
             if val is not None:
-                bar = "█" * val + "░" * (mx - val)
+                v = max(0, min(mx, int(val)))
+                bar = "█" * v + "░" * (mx - v)
                 score_rows.append(f"**{label}:** {bar}  {val}/{mx}")
         if score_rows:
             L.extend(score_rows)
@@ -1112,7 +1160,46 @@ def build_report(repo_root: Path, scope: str, dataset: str = "first_proof_1", fu
 # ── PDF compilation (reuse issue_pdf tectonic pipeline) ───────────────────────
 
 def compile_report_pdf(repo_root: Path, scope: str, dataset: str = "first_proof_1",
-                       force: bool = False) -> dict:
+                       force: bool = False, cache_document: bool = False) -> dict:
+    """Build a problem/system context report PDF (documents/pdf/report_*.pdf).
+
+    With cache_document=True, also copy the built PDF into documents/cache/ for
+    quick access (used selectively — e.g. for prob-09). Each build is retained as
+    a date-time-stamped file (report_<scope>_<dataset>_YYYYMMDD-HHMMSS.pdf), and
+    the plain report_<scope>_<dataset>.pdf is kept as the stable "latest" pointer.
+    """
+    res = _compile_report_pdf_impl(repo_root, scope, dataset, force)
+    if cache_document and res.get("ok"):
+        import shutil
+        safe = re.sub(r"[^A-Za-z0-9_-]", "_", f"{scope}_{dataset}")
+        pdf_dir = repo_root / "documents" / "pdf"
+        src = pdf_dir / f"report_{safe}.pdf"
+        if src.is_file():
+            cache_dir = repo_root / "documents" / "cache"
+            src_dir = cache_dir / "source"          # .tex sources live here
+            cache_dir.mkdir(parents=True, exist_ok=True)
+            src_dir.mkdir(parents=True, exist_ok=True)
+            ts = datetime.now().strftime("%Y%m%d-%H%M%S")
+
+            def _cache(orig: Path, dest_dir: Path, stem: str, ext: str):
+                """Write a dated copy (retained) + a stable 'latest' copy."""
+                if not orig.is_file():
+                    return None
+                shutil.copyfile(orig, dest_dir / f"{stem}_{ts}{ext}")     # retained version
+                shutil.copyfile(orig, dest_dir / f"{stem}{ext}")         # stable latest
+                return f"{dest_dir.relative_to(repo_root)}/{stem}_{ts}{ext}"
+
+            res["cached_copy"]   = _cache(src, cache_dir, f"report_{safe}", ".pdf")
+            res["cached_latest"] = f"documents/cache/report_{safe}.pdf"
+            # corresponding LaTeX sources → documents/cache/source/
+            res["cached_tex"]    = _cache(pdf_dir / f"report_{safe}.tex", src_dir, f"report_{safe}", ".tex")
+            res["cached_supp_tex"] = _cache(repo_root.resolve().parent / "rma_supplementary.tex",
+                                            src_dir, "rma_supplementary", ".tex")
+    return res
+
+
+def _compile_report_pdf_impl(repo_root: Path, scope: str, dataset: str = "first_proof_1",
+                             force: bool = False) -> dict:
     import hashlib
     import os
     import shutil
@@ -1194,6 +1281,8 @@ def compile_report_pdf(repo_root: Path, scope: str, dataset: str = "first_proof_
             if (b / "main.pdf").is_file():
                 dest.write_bytes((b / "main.pdf").read_bytes())
                 hash_file.write_text(cur_hash)
+                (pdf_dir / f"{name}.tex").write_text(
+                    (b / "main.tex").read_text(encoding="utf-8", errors="replace"), encoding="utf-8")
                 return {"ok": True, "pdf_url": f"/api/pdf/{name}.pdf", "log": "OK (system)"}
         return {"ok": False, "pdf_url": None, "log": "system report compile failed"}
 
@@ -1256,6 +1345,8 @@ def compile_report_pdf(repo_root: Path, scope: str, dataset: str = "first_proof_
         if (b / "main.pdf").is_file():
             dest.write_bytes((b / "main.pdf").read_bytes())
             hash_file.write_text(cur_hash)
+            (pdf_dir / f"{name}.tex").write_text(
+                (b / "main.tex").read_text(encoding="utf-8", errors="replace"), encoding="utf-8")
             return {"ok": True, "pdf_url": f"/api/pdf/{name}.pdf", "log": "OK"}
 
     return {"ok": False, "pdf_url": None, "log": "compile failed"}
@@ -1263,11 +1354,15 @@ def compile_report_pdf(repo_root: Path, scope: str, dataset: str = "first_proof_
 
 # ── dataset master report: ONE huge PDF of everything (all problems, all tabs) ──
 
-def compile_master_pdf(repo_root: Path, dataset: str = "first_proof_1", force: bool = False) -> dict:
+def compile_master_pdf(repo_root: Path, dataset: str = "first_proof_1", force: bool = False,
+                       cache_document_scope: str | None = None) -> dict:
     """Compile ONE huge PDF for a whole dataset: the system overview followed by
     every problem's full combined report (statement, concepts, insights, issues,
     meetings, and the full proof). Reuses ``compile_report_pdf`` per scope and
     merges the resulting PDFs in order.
+
+    If cache_document_scope is set (a problem id), that one problem's report PDF
+    is also copied into documents/cache/ for quick access.
     """
     import shutil
     import subprocess
@@ -1285,7 +1380,8 @@ def compile_master_pdf(repo_root: Path, dataset: str = "first_proof_1", force: b
     # 1) every problem's full combined report first (problem → evaluation →
     #    best proof → others within each), so the document leads with problems.
     for pid in problem_ids(dataset):
-        r = compile_report_pdf(repo_root, pid, dataset, force=force)
+        r = compile_report_pdf(repo_root, pid, dataset, force=force,
+                               cache_document=(pid == cache_document_scope))
         fp = _report_path(pid)
         if r.get("ok") and fp.is_file():
             parts.append(fp)

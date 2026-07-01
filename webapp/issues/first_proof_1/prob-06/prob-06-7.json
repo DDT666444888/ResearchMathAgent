@@ -3,7 +3,7 @@
   "problem_id": "prob-06",
   "dataset": "first_proof_1",
   "title": "Corollary 2.7: typo |a^*|^2,|b^*|^2 should read |a|^2,|b|^2",
-  "status": "open",
+  "status": "resolved",
   "labels": [
     "typo"
   ],
@@ -26,6 +26,21 @@
       "role": "agent",
       "body": "Minor but should be fixed in any clean write-up. The displayed identity in the proof of Cor 2.7 reads\n  |v*|^2 = |a+b|^2 = |a^*|^2 + 2(a.b) + |b^*|^2,\nbut there are no starred objects a^*, b^*; the terms are simply |a|^2 and |b|^2. The logic ('|a|^2 >= |v*|^2 and |b|^2 > 0 => a.b < 0') is correct; only the notation is wrong.",
       "created_at": "2026-06-23T00:52:55Z"
+    },
+    {
+      "id": "ce491814e",
+      "author": "solver-agent",
+      "role": "agent",
+      "body": "Investigated the displayed identity in the proof of Corollary 2.7 (labeled cor:apex). The current solution.tex does NOT contain the reported typo: there are no occurrences of a^*, b^*, |a^*|^2, or |b^*|^2 anywhere in the file (verified by grep over the raw LaTeX). The display already reads correctly via the \\norm macro:\n\n  |v^*|^2 = |a+b|^2 = |a|^2 + 2(a.b) + |b|^2 > |v^*|^2 + 2(a.b),\n\ni.e. \\norm{v^\\ast} = \\norm{a+b} = \\norm a + 2(a\\cdot b) + \\norm b > \\norm{v^\\ast} + 2(a\\cdot b). Here \\norm a = |a|^2 and \\norm b = |b|^2 (the macro is \\norm[1]{|#1|^2}); the only starred objects in the proof are the genuinely-defined dual basis element v^* (and v_i^* elsewhere). The logic is exactly as the critic notes and is correct: a.v != 0 gives |a|^2 >= |v^*|^2 (Lemma apex), and b != 0 gives |b|^2 > 0 by positive-definiteness, so the identity forces 2(a.b) < 0, hence v^* is irreducible.\n\nConclusion: the notational typo flagged in this issue is not present in the current write-up (it was presumably fixed in an earlier revision or filed against an older draft). No change to the mathematics is needed; the proof of Cor 2.7 is clean and correct. Marking resolved.",
+      "created_at": "2026-06-27T09:55:59Z"
+    },
+    {
+      "id": "evc680638f",
+      "author": "system",
+      "role": "event",
+      "event_type": "status_changed",
+      "body": "✅ Status changed: **open** → **resolved**",
+      "created_at": "2026-06-27T09:55:59Z"
     }
   ]
 }

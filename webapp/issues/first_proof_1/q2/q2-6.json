@@ -3,7 +3,7 @@
   "problem_id": "q2",
   "dataset": "first_proof_1",
   "title": "Sub-lemma: existence of a single $\\pi$-independent $W$ serving all $\\pi$ (uniformity)",
-  "status": "open",
+  "status": "resolved",
   "labels": [
     "proof-gap"
   ],
@@ -26,6 +26,28 @@
       "role": "agent",
       "body": "**Quantifier structure.** The problem is $\\exists W\\in\\mathcal W(\\Pi,\\psi^{-1})\\ \\forall\\pi\\ \\exists V\\in\\mathcal W(\\pi,\\psi)$ such that\n$$\\Psi(s;W,V)=\\int_{N_n\\backslash\\mathrm{GL}_n} W(\\operatorname{diag}(g,1)u_Q)\\,V(g)\\,|\\det g|^{s-1/2}\\,dg$$\nis finite and nonzero for all $s\\in\\mathbb C$. The hard part is that **one fixed $W$** must work for **every** generic irreducible admissible $\\pi$ of $\\mathrm{GL}_n(F)$, whose conductor $a(\\pi)$ (and hence $|Q|=q^{a(\\pi)}$) is unbounded.\n\n**To prove.** Construct an explicit $W$ (depending only on $\\Pi,\\psi,n$) and show that for each $\\pi$ a suitable $V$ exists. The natural mechanism: the conductor dependence is carried entirely by the shift $u_Q=I_{n+1}+QE_{n,n+1}$, so $W$ near the mirabolic need not depend on $\\pi$. One must prove rigorously that for arbitrary $a(\\pi)$ the map $g\\mapsto W(\\operatorname{diag}(g,1)u_Q)$ retains the structure needed for the test-vector argument (support and equivariance), uniformly in $a(\\pi)$.\n\n**Why hard.** No on-record construction is provably $\\pi$-independent across all conductors. This is the conceptual core; it ties to local newvector / test-vector theory (JPSS, Matringe, Miyauchi, Kurinczuk–Matringe).",
       "created_at": "2026-06-23T16:18:07Z"
+    },
+    {
+      "id": "cbceaa3c2",
+      "author": "solver-agent",
+      "role": "agent",
+      "body": "probe",
+      "created_at": "2026-06-27T11:37:47Z"
+    },
+    {
+      "id": "c47b2b341",
+      "author": "solver-agent",
+      "role": "agent",
+      "body": "**Resolution of the uniformity sub-lemma.**\n\nI addressed the conceptual core of this issue: that one fixed, $\\pi$-independent $W$ serves *every* generic $\\pi$ uniformly across unbounded conductors $a(\\pi)=c$.\n\n**What was already in place.** $W_0$ is defined in (W0) purely from $\\Pi,\\psi,n$ (before any $\\pi$), and Lemma `lem:extend` realizes it in $\\mathcal W(\\Pi,\\psi^{-1})$. The unfolding (Lemma `lem:unfold`) collapses the integral to $I=\\int_{K_n}\\psi(-Q k_{nn})V(k)\\,dk$.\n\n**What I added.** A dedicated **Lemma `lem:uniform` (Uniform structure of the $u_Q$-translate)** that isolates exactly what the issue demanded — that $g\\mapsto W_0(\\mathrm{diag}(g,1)u_Q)$ retains its support and equivariance *uniformly in $a(\\pi)$*. It proves, for **every** $c\\ge0$:\n- (i) closed form $W_0(\\mathrm{diag}(g,1)u_Q)=\\psi(-Q\\,g_{nn})\\,W_0(g)$;\n- (ii) $\\mathrm{supp}=N_nK_n$, the **same set for all $c$**, hence supported on the single shell $|\\det g|=1$;\n- (iii) the **same** $\\psi^{-1}$-equivariance as $W_0$.\n\nDecisive point made rigorous: the conductor dependence is carried **entirely** by the modulus-one phase $\\psi(-Q\\,g_{nn})$; the geometry (support + equivariance) of the translated vector is literally $c$-independent. Hence a single $W_0$ chosen before $\\pi$ works for arbitrarily ramified $\\pi$, with no boundedness hypothesis on the conductor. Lemma `lem:unfold` Step 1 now cites this lemma.\n\n**Verification performed.**\n- Symbolically (sympy): $n_g^{(Q)}=\\mathrm{diag}(g,1)u_Q\\mathrm{diag}(g,1)^{-1}=I+Q\\sum_i g_{in}E_{i,n+1}$ has unique superdiagonal entry $Q g_{nn}$.\n- Numerically: $n=1$ Gauss sum $|I|=q^{-c/2}\\ne0$ for $c=1,2,3$ (with $\\mathrm{vol}(\\mathfrak o^\\times)=1-1/q$), matching the claimed value exactly and uniformly in $c$.\n- LaTeX structure: all environments balanced, all refs resolved (new label `lem:uniform`), braces balanced. (No local TeX toolchain to compile.)\n\n**Scope / honesty.** This issue is the *uniformity* of $W$; that is now fully and rigorously settled. The remaining nonvanishing $I\\ne0$ for $n\\ge2$ still rests on cited essential-vector theory (JPSS81, Matringe), which is a separate (nonvanishing) concern and is itself uniform in $c$. I am marking this uniformity issue resolved.",
+      "created_at": "2026-06-27T11:38:06Z"
+    },
+    {
+      "id": "ev8273f4bd",
+      "author": "system",
+      "role": "event",
+      "event_type": "status_changed",
+      "body": "✅ Status changed: **open** → **resolved**",
+      "created_at": "2026-06-27T11:38:12Z"
     }
   ]
 }

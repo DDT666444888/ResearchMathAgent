@@ -26,6 +26,36 @@
       "role": "agent",
       "body": "**Sub-lemma G2.** Prove rigorously the alternating formula\n$$c_{(a,1^b)}(n)=\\sum_{i=0}^b(-1)^i\\#\\{w\\in\\OSP(n,n-b+i)\\ :\\ \\inv(w)=a+i\\}\\qquad(\\star)$$\nby equating the Rhoades–Wilson series (Thm `\\ref{thm:hilbert}`) with the super-Schur expansion (Prop. `\\ref{prop:ds}`).\n\n**Key point requiring care.** Using the hook super-Schur identity $s_{(a,1^b)}(q/u)=q^au^b+q^{a-1}u^{b+1}$, the LHS becomes\n$$1+\\sum_{a\\ge1,\\,b\\ge0}c_{(a,1^b)}(n)\\,(q^au^b+q^{a-1}u^{b+1}).$$\nEach monomial $q^au^b$ receives contributions from **two distinct hooks**: from $(a,1^b)$ (its $q^au^b$ term) and from $(a+1,1^{b-1})$ (its $q^{(a+1)-1}u^{(b-1)+1}=q^au^b$ term). The proof must show:\n\n- (i) no other hook contributes to $q^au^b$;\n- (ii) the RHS $u$-degree bookkeeping $u^{n-d}$ pairs with $b=n-d$, i.e. the relevant stratum is $\\OSP(n,n-b)$;\n- (iii) boundary case $b=0$: only $(a)$ contributes, giving $c_{(a)}(n)=\\#\\{w\\in\\OSP(n,n):\\inv(w)=a\\}$.\n\nThis yields the recurrence\n$$c_{(a,1^b)}(n)+c_{(a+1,1^{b-1})}(n)=\\#\\{w\\in\\OSP(n,n-b):\\inv(w)=a\\}\\quad(b\\ge1),$$\nwhich telescopes/solves to $(\\star)$. Provide the explicit solution of the recurrence (the telescoping must be written out).\n\n**Status:** verified numerically for $n\\le6$. The gap is rigor of the extraction and the telescoping solution.",
       "created_at": "2026-06-23T02:11:50Z"
+    },
+    {
+      "id": "cf67a3264",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Re-review against current draft — largely ADDRESSED.**\n`lem:c_{(a,1^b)}` now contains the full extraction: the two-hook contribution to\n$q^au^b$ is justified (\"$(\\alpha,\\beta)=(a,b)$ or $(a+1,b-1)$\"), the $u$-degree\nbookkeeping $b=n-d\\Rightarrow$ stratum $\\OSP(n,n-b)$ is explicit, the $b=0$ base\ncase is handled, and the telescoping is written out term-by-term with the $i=b$\nboundary identified as $A_b=c_{(a+b)}$. I verified the recurrence and its solution\nnumerically ($n\\le5$). I see no remaining gap in this step beyond its dependence\non `prop:ds` (tracked in prob-09-2) and `lem:schur-1-1` (prob-09-6).",
+      "created_at": "2026-06-27T02:56:22Z"
+    },
+    {
+      "id": "c6bd59b36",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "## Independent Mathematical Review (critic-agent, fresh pass)\n\nI re-derived the full solution and **verified every structural claim\nnumerically/symbolically for $n\\le6$ with zero violations**. **Conclusion: the\ncombinatorial core is correct and, in the current draft, rigorous. I found no new\ngenuine mathematical gap.** I did not touch the resolved reduction issue (prob-09-2).\n\n### Verification performed (all passed)\n- **Main theorem** $c_{(a,1^b)}(n)=\\#\\{w\\in\\OSP(n,n-b):\\inv(w)=a,\\ \\text{type I}\\}$:\n  full OSP enumeration reproduces the Rhoades–Wilson series\n  $\\sum_k[k]_q!S[n,k]u^{n-k}$ (via the hook super-Schur expansion) **exactly for\n  $n=1,\\dots,6$**.\n- **`lem:phi-props`**: $\\phi$ involution; merge $\\Rightarrow(\\Delta\\inv,\\Delta\\blocks)=(-1,-1)$,\n  split $\\Rightarrow(+1,+1)$ — **0 violations**, $n\\le6$.\n- **`lem:large-values`**: every value $>M$ lies in a singleton block of index $\\ge i$,\n  no value $\\ge M$ precedes $S_i$ — **0 violations**, $n\\le6$.\n- **`lem:schur-1-1`**: hook/non-hook/$\\varnothing$ cases confirmed from the definition.\n- **$n=4$ example table** reproduced exactly.\n\n### Status of the open issues\n- **prob-09-3 (this issue) — ADDRESSED.** Two-hook extraction of $q^au^b$ (from\n  $(a,b)$ and $(a+1,b-1)$), $u$-degree bookkeeping $b=n-d\\Rightarrow$ stratum\n  $\\OSP(n,n-b)$, $b=0$ base case, and explicit telescoping with boundary\n  $A_b=c_{(a+b)}$ all present and correct. No remaining gap beyond dependence on\n  `prop:ds` and `lem:schur-1-1`.\n- **prob-09-4 — residue CLOSED in current draft.** `lem:phi-props` derives\n  $\\Delta\\inv=\\pm1$ in full from the crossing form plus `lem:large-values`, isolating\n  the single removed pair $(\\{M\\},B)$ with $\\operatorname{cr}(\\{M\\},B)=1$;\n  `lem:classify`/`lem:survivors` written out and correct.\n\n### One residual caveat (already tracked under resolved prob-09-2 — NOT re-opened)\nReduction §3 invokes Bergeron (arXiv:2005.00924) and Lentfer's diagonal supersymmetry\n(arXiv:2505.14885) via hypothesis-checking prose, and matches the super-Schur\n**convention only empirically**. The load-bearing point: Lentfer's $s_\\lambda(q/u)$\nmust be the same object (same conjugation convention) as Cheng–Wang's in\n`lem:schur-1-1`; a hidden transpose $\\lambda\\leftrightarrow\\lambda'$ would break the\nnon-symmetric hook identity $q^au^b+q^{a-1}u^{b+1}$, and none appears for $n\\le5$ —\nstrong evidence, not a proof. Citation-rigor, not open mathematics. Optional\nhardening: exact theorem numbers + a one-line convention lemma.\n\nFull details in the attached *Critic Analysis* document.",
+      "created_at": "2026-06-30T02:24:43Z"
+    },
+    {
+      "id": "evc06e82a3",
+      "author": "agent",
+      "role": "event",
+      "event_type": "doc_generated",
+      "body": "Document generated: **Critic Analysis**",
+      "created_at": "2026-06-30T02:24:43Z"
+    }
+  ],
+  "documents": [
+    {
+      "title": "Critic Analysis",
+      "path": "questions/prob-09/analysis.md",
+      "created_at": "2026-06-30T02:24:43Z",
+      "created_by": "agent"
     }
   ]
 }

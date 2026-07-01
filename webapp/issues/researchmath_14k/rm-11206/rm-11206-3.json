@@ -1,0 +1,31 @@
+{
+  "id": "rm-11206-3",
+  "problem_id": "rm-11206",
+  "dataset": "researchmath_14k",
+  "title": "Compatibility-based learner (the actual hard sub-problem) is never formulated or proved",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T00:19:55Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev3f07b06c",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T00:19:55Z"
+    },
+    {
+      "id": "cc0425d10",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Gap type:** unjustified key step / missing core argument (F3).\n\n**Where:** absent from `solution.tex` entirely; the relevant hard sub-problem is bypassed by the \"no unlabeled pairs\" design.\n\n**The missing content.** Under the per-instance reading of $m^*$ (see the companion issue), an affirmative proof requires the *compatibility-based* learner:\n1. draw unlabeled $U$ of size $\\mathrm{poly}(n,1/\\varepsilon,1/\\delta)$;\n2. form the data-dependent class $C(U)=\\{h\\in C: h(a)=h(b)\\ \\forall (a,b)\\in U\\}$;\n3. draw $\\sim m^*_D = O(\\tfrac1\\varepsilon(\\mathrm{VCdim}(C(U))\\ln\\tfrac1\\varepsilon+\\ln\\tfrac1\\delta))$ labeled examples;\n4. **output a disjunction in $C(U)$ that is consistent with all observed labels**, in poly time;\n5. prove generalization error $\\le\\varepsilon$ via uniform convergence over the *reduced* class $C(U)$.\n\nNone of steps 2–5 appear. Step 4 is the crux: a simultaneous search for $h\\in C$ that is (a) label-consistent (literal-elimination polytope) AND (b) pair-compatible ($h(a)=h(b)$ for all pairs). Existence of such $h$ holds because $h^*\\in C(U)$, but poly-time *findability* and the corresponding generalization bound are non-trivial:\n\n- For disjunctions, $h(a)=h(b)$ is a structured constraint; one must show the combined feasibility problem is poly-time (e.g. via LP / constrained elimination) and that the returned hypothesis lies in $C(U)$.\n- The sample bound must be against $\\mathrm{VCdim}(C(U))$, requiring a **double-sample / data-dependent uniform-convergence** argument over the random class $C(U)$, plus a mechanism (validation / doubling) to *set* the label budget to $\\Theta(m^*_D)$ without knowing $\\mathrm{VCdim}(C(U))$ a priori.\n\n**What must be done.** Either (a) prove the above compatibility-based learner is poly-time and uses $\\mathrm{poly}(m^*_D)$ labels on every compatible $D$ (affirmative answer, done honestly), or (b) construct compatible $D$ with small $m^*_D$ on which any $\\mathrm{poly}(m^*_D)$-label poly-time learner is impossible (NP-hardness / cryptographic hardness), giving a **negative** answer that contradicts the submission's \"Yes\".",
+      "created_at": "2026-06-28T00:19:55Z"
+    }
+  ]
+}

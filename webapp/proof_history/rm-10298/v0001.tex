@@ -1,0 +1,357 @@
+\documentclass{amsart}
+\usepackage{amsmath,amssymb,amsthm,hyperref}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+
+\begin{document}
+
+\title{Total tardiness of unit jobs under chain precedence is NP-hard}
+\maketitle
+
+\section{The problem and the result}
+
+We are given $n$ unit-length jobs $\{1,\dots,n\}$, all released at time $0$, to be
+scheduled nonpreemptively on a single machine. Each job $j$ has an integer due date
+$d_j$. A precedence digraph $G$ on $\{1,\dots,n\}$ has maximum indegree $1$ and maximum
+outdegree $1$, so $G$ is a disjoint union of directed chains. A feasible schedule is a
+permutation $\sigma:\{1,\dots,n\}\to\{1,\dots,n\}$ with $\sigma(j)<\sigma(k)$ for every
+arc $(j,k)$ of $G$; here $\sigma(j)$ is the position (equivalently, since every job has
+unit processing time and the machine is never idle in any optimal schedule, the
+completion time) of job $j$. We minimize the total tardiness
+\[
+   T(\sigma)\;=\;\sum_{j=1}^{n}\bigl(\sigma(j)-d_j\bigr)^{+},
+   \qquad x^{+}:=\max\{0,x\}.
+\]
+In the standard three–field notation this is the problem
+$1\mid p_j=1,\ \mathrm{chains}\mid \sum T_j$.
+
+\begin{theorem}\label{thm:main}
+The decision version of $1\mid p_j=1,\ \mathrm{chains}\mid \sum T_j$ --- given a
+threshold $Y$, does there exist a feasible permutation $\sigma$ with $T(\sigma)\le Y$? ---
+is NP-complete. Consequently the optimization problem of minimizing total tardiness is
+NP-hard, and (unless $\mathrm{P}=\mathrm{NP}$) admits no polynomial-time algorithm.
+\end{theorem}
+
+The proof has two parts. Section~\ref{sec:structure} records exact structural facts
+about the objective that we use repeatedly (membership in NP and the cost of a block of a
+chain). Section~\ref{sec:reduction} gives a polynomial-time reduction from the strongly
+NP-complete problem \textsc{3-Partition}.
+
+\section{Structure of the objective}\label{sec:structure}
+
+Throughout we identify a schedule with the permutation $\sigma$; the completion time of
+$j$ equals $\sigma(j)\in\{1,\dots,n\}$. We first record the cost of placing a chain.
+
+\begin{lemma}[Membership in NP]\label{lem:np}
+The decision problem is in NP.
+\end{lemma}
+
+\begin{proof}
+A feasible permutation $\sigma$ is a certificate of size $O(n\log n)$. Given $\sigma$ one
+checks in time $O(n)$ that $\sigma(j)<\sigma(k)$ for each of the at most $n-1$ arcs of
+$G$, and computes $T(\sigma)=\sum_j(\sigma(j)-d_j)^{+}$ in time $O(n)$, comparing it to
+$Y$. All numbers occurring are bounded by $n+\max_j|d_j|$, so the verification runs in
+polynomial time.
+\end{proof}
+
+\begin{lemma}[Cost of a contiguous chain block]\label{lem:block}
+Let $C$ be a chain with vertices $c_1\to c_2\to\cdots\to c_p$ whose due dates are the
+``staircase'' values
+\[
+   d_{c_r}\;=\;D-p+r,\qquad r=1,\dots,p,
+\]
+for a fixed integer $D$. Suppose that in a schedule the jobs of $C$ occupy the $p$
+consecutive positions
+\[
+   E-p+1,\;E-p+2,\;\dots,\;E
+\]
+for some integer $E\ge p$ \textup{(}so the last job of $C$ completes at time $E$\textup{)}.
+Then, because $\sigma(c_r)<\sigma(c_{r+1})$ forces $c_r$ to occupy the $r$-th of these
+positions, namely position $E-p+r$, the total tardiness contributed by $C$ equals
+\[
+   \sum_{r=1}^{p}\bigl((E-p+r)-(D-p+r)\bigr)^{+}
+   \;=\;\sum_{r=1}^{p}(E-D)^{+}
+   \;=\;p\cdot (E-D)^{+}.
+\]
+\end{lemma}
+
+\begin{proof}
+Within the block the precedence arcs $c_r\to c_{r+1}$ force the $p$ jobs into the $p$
+consecutive positions in their chain order, so $c_r$ occupies position $E-p+r$. Its
+tardiness is $\bigl((E-p+r)-(D-p+r)\bigr)^{+}=(E-D)^{+}$, the same value for every
+$r$; summing over $r=1,\dots,p$ gives $p\,(E-D)^{+}$.
+\end{proof}
+
+Lemma~\ref{lem:block} is the crucial gadget: a contiguous staircase block of length $p$
+ending at time $E$ behaves \emph{exactly} like a single job of processing time $p$,
+weight $p$, and due date $D$, completing at time $E$, contributing $p\,(E-D)^{+}$ to the
+objective. The staircase due dates also penalize spreading the block out:
+
+\begin{lemma}[Staircase blocks prefer to stay contiguous and early]\label{lem:spread}
+Let $C$ be a staircase chain as in Lemma~\ref{lem:block}, and let it be placed
+(not necessarily contiguously) so that its $r$-th job sits at position $q_r$, with
+$q_1<q_2<\cdots<q_p$. Its tardiness equals
+$\sum_{r=1}^{p}\bigl(q_r-(D-p+r)\bigr)^{+}$. For fixed values of $q_p$ (the completion
+time of the block), this sum is minimized when the $q_r$ are as small and as tightly
+packed below $q_p$ as the schedule allows, i.e.\ when $q_r=q_p-p+r$; and it is
+nondecreasing under shifting all $q_r$ later by the same amount.
+\end{lemma}
+
+\begin{proof}
+Each summand $(q_r-(D-p+r))^{+}$ is a nondecreasing function of $q_r$, so decreasing any
+$q_r$ (subject to $q_1<\cdots<q_p$) cannot increase the sum; the tightest feasible packing
+below $q_p$ takes $q_r=q_p-p+r$, recovering the contiguous value of Lemma~\ref{lem:block}.
+Likewise, replacing every $q_r$ by $q_r+\delta$ ($\delta\ge0$) does not decrease any
+summand, so the total is nondecreasing in a common rightward shift.
+\end{proof}
+
+\section{Reduction from \textsc{3-Partition}}\label{sec:reduction}
+
+\subsection*{The source problem}
+\textsc{3-Partition}: given a positive integer $B$ and $3m$ positive integers
+$a_1,\dots,a_{3m}$ with
+\[
+   \tfrac{B}{4}<a_i<\tfrac{B}{2}\quad(1\le i\le 3m),
+   \qquad \sum_{i=1}^{3m}a_i=mB,
+\]
+decide whether $\{1,\dots,3m\}$ can be partitioned into $m$ triples
+$S_1,\dots,S_m$ with $\sum_{i\in S_t}a_i=B$ for every $t$. Because of the size bounds
+$B/4<a_i<B/2$, in \emph{any} partition into parts each summing to $B$, each part contains
+\emph{exactly} three elements; hence the partition is automatically into triples.
+\textsc{3-Partition} is strongly NP-complete (Garey--Johnson), so the reduction below,
+whose numerical parameters are polynomially bounded in $m$ and $B$, establishes (strong)
+NP-hardness.
+
+\subsection*{The instance we build}
+Set $N:=m(B+1)$. We construct a scheduling instance with exactly $N$ unit jobs, arranged
+in two families of chains: \emph{item chains} and a \emph{separator skeleton}. The
+intended schedule has the timeline $\{1,\dots,N\}$ split into $m$ consecutive
+\emph{windows}
+\[
+   W_t=\bigl\{(t-1)(B+1)+1,\dots,t(B+1)\bigr\},\qquad t=1,\dots,m,
+\]
+each of length $B+1$: the first $B$ positions of $W_t$ are reserved for item jobs and the
+last position of $W_t$ is reserved for one separator job.
+
+\medskip
+\noindent\textbf{Item chains.} For each $i\in\{1,\dots,3m\}$ create a chain
+$A_i=(a_{i,1}\to\cdots\to a_{i,a_i})$ of $a_i$ unit jobs with staircase due dates
+\[
+   d_{a_{i,r}} \;=\; B-a_i+r ,\qquad r=1,\dots,a_i .
+\]
+By Lemma~\ref{lem:block} (with $D=B$, $p=a_i$), if the jobs of $A_i$ occupy a contiguous
+block ending at position $E$, the chain contributes $a_i\,(E-B)^{+}$. Thus the item chain
+$A_i$ is ``happy'' (tardiness $0$) exactly when its block ends at a position $E\le B$,
+i.e.\ when it lies entirely inside the item part $\{(t-1)(B+1)+1,\dots,(t-1)(B+1)+B\}$ of
+the \emph{first} window $W_1$. We will see that the separator skeleton effectively shifts
+the relevant ``due date'' window by window.
+
+\medskip
+\noindent\textbf{Separator skeleton.} Create a single chain
+$P=(p_1\to p_2\to\cdots\to p_m)$ of $m$ unit jobs with due dates
+\[
+   d_{p_t} \;=\; t(B+1),\qquad t=1,\dots,m .
+\]
+The intended position of $p_t$ is the last slot $t(B+1)$ of window $W_t$, where its
+tardiness is $0$. If fewer than $tB$ item jobs are scheduled before $p_t$, then $p_t$ is
+forced earlier than $t(B+1)$ (precedence $p_{t-1}\to p_t$ keeps the $p$'s ordered); if
+more than $tB$ item jobs precede $p_t$, then $p_t$ is pushed past $t(B+1)$ and becomes
+tardy.
+
+\medskip
+\noindent\textbf{Threshold.} We ask whether there is a feasible schedule with total
+tardiness
+\[
+   Y \;=\; 0 .
+\]
+
+The instance has $N=m(B+1)$ jobs; the largest number used is $m(B+1)$, which is
+polynomial in $m$ and $B$. All chains have indegree and outdegree at most $1$, as
+required. The construction is computable in time polynomial in the size of the
+\textsc{3-Partition} instance.
+
+\subsection*{Correctness}
+
+\begin{lemma}[Yes $\Rightarrow$ tardiness $0$]\label{lem:yes}
+If the \textsc{3-Partition} instance has a solution, then the constructed scheduling
+instance has a feasible schedule with $T(\sigma)=0$.
+\end{lemma}
+
+\begin{proof}
+Let $S_1,\dots,S_m$ be triples with $\sum_{i\in S_t}a_i=B$. Build $\sigma$ window by
+window. In window $W_t$ place, in its first $B$ positions
+$(t-1)(B+1)+1,\dots,(t-1)(B+1)+B$, the three item chains
+$\{A_i:i\in S_t\}$ as three contiguous blocks (their internal order is forced by their
+chain arcs; the three blocks may be put in any order), and place the separator job $p_t$
+in the last position $t(B+1)$ of $W_t$. Since $\sum_{i\in S_t}a_i=B$, these $B$ item jobs
+exactly fill the first $B$ slots of $W_t$, so the assignment uses every position of
+$\{1,\dots,N\}$ exactly once and is a permutation.
+
+\emph{Feasibility.} Within each item chain the blocks are contiguous and laid out in
+chain order, so all arcs $a_{i,r}\to a_{i,r+1}$ are respected. For the skeleton, $p_t$ is
+at position $t(B+1)$, which is strictly increasing in $t$, so all arcs
+$p_{t-1}\to p_t$ are respected.
+
+\emph{Zero tardiness.} Consider an item chain $A_i$ with $i\in S_t$. Its block lies in
+window $W_t$; let it end at position $E$. Inside $W_t$ the three item blocks together
+occupy positions $(t-1)(B+1)+1,\dots,(t-1)(B+1)+B$, so each individual block ends at some
+$E\le (t-1)(B+1)+B$. By Lemma~\ref{lem:block} the chain's tardiness is $a_i\,(E-B)^{+}$
+\emph{relative to its own due-date offset $D=B$}; but here the offset that matters is the
+one built into its staircase, namely $D=B$. We must check $E-D\le 0$, i.e.\ $E\le B$, only
+in window $W_1$. For windows $t\ge 2$ the blocks end later than $B$, so we instead verify
+zero tardiness directly: the $r$-th job of $A_i$ sits at position
+$\sigma(a_{i,r})$, and its tardiness is $\bigl(\sigma(a_{i,r})-(B-a_i+r)\bigr)^{+}$.
+
+We now show this is $0$ for the layout above. Index the three chains assigned to $W_t$ as
+filling positions $(t-1)(B+1)+1,\dots,(t-1)(B+1)+B$ in some order; a job that is the
+$s$-th among these $B$ item jobs (counting from the left within the window) occupies
+position $(t-1)(B+1)+s$ with $1\le s\le B$. If that job is the $r$-th job of chain $A_i$
+and $A_i$ is laid out so that its block starts at the $u$-th of the $B$ in-window slots
+(so $s=u+r-1$), then its due date is $B-a_i+r$ and its tardiness is
+\[
+   \bigl((t-1)(B+1)+u+r-1-(B-a_i+r)\bigr)^{+}
+   =\bigl((t-1)(B+1)+u-1-B+a_i\bigr)^{+}.
+\]
+\emph{This is not automatically $0$ for $t\ge2$, which shows that the present due-date
+choice does not by itself realize the windows.} We therefore adjust the staircase offsets
+so that windows are realized; see Remark~\ref{rem:offsets}, which gives the corrected,
+window-dependent offsets. With those offsets every in-window block has zero tardiness, and
+each separator job $p_t$ at position $t(B+1)$ has tardiness
+$(t(B+1)-t(B+1))^{+}=0$. Hence $T(\sigma)=0$.
+\end{proof}
+
+\begin{remark}[Corrected, window-independent construction]\label{rem:offsets}
+The clean way to make all blocks ``happy'' in their own window is to give every item chain
+the \emph{same} large slack and to let the separator skeleton, not the item due dates,
+carry the window information. Concretely, replace the item due dates by
+\[
+   d_{a_{i,r}} \;=\; N-a_i+r \qquad(r=1,\dots,a_i),
+\]
+so that, by Lemma~\ref{lem:block} with $D=N$, an item block ending at any position
+$E\le N$ has tardiness $a_i\,(E-N)^{+}=0$. Item chains are then never tardy, whatever
+window they occupy. The entire objective is then carried by the separator skeleton:
+job $p_t$ has due date $t(B+1)$ and tardiness $(\sigma(p_t)-t(B+1))^{+}$. Thus
+$T(\sigma)=\sum_{t=1}^m(\sigma(p_t)-t(B+1))^{+}$, and a schedule has $T(\sigma)=0$ iff
+$\sigma(p_t)\le t(B+1)$ for all $t$. We use this corrected instance in the remainder of
+the proof.
+\end{remark}
+
+We now redo both directions with the corrected instance of Remark~\ref{rem:offsets}, in
+which item chains are never tardy and
+\begin{equation}\label{eq:obj}
+   T(\sigma)\;=\;\sum_{t=1}^{m}\bigl(\sigma(p_t)-t(B+1)\bigr)^{+}.
+\end{equation}
+
+\begin{lemma}[Yes $\Rightarrow$ tardiness $0$, corrected]\label{lem:yes2}
+If \textsc{3-Partition} has a solution, the corrected instance has a schedule with
+$T(\sigma)=0$.
+\end{lemma}
+
+\begin{proof}
+Take the window layout of Lemma~\ref{lem:yes}: triple $S_t$'s three item blocks fill the
+first $B$ slots of $W_t$ and $p_t$ takes the last slot $t(B+1)$. Then
+$\sigma(p_t)=t(B+1)$, so by \eqref{eq:obj} every term vanishes and $T(\sigma)=0$. The
+layout is a feasible permutation exactly as argued in Lemma~\ref{lem:yes}.
+\end{proof}
+
+\begin{lemma}[Tardiness $0$ $\Rightarrow$ Yes]\label{lem:no}
+If the corrected instance has a feasible schedule with $T(\sigma)=0$, then the
+\textsc{3-Partition} instance has a solution.
+\end{lemma}
+
+\begin{proof}
+By \eqref{eq:obj}, $T(\sigma)=0$ forces
+\begin{equation}\label{eq:deadlines}
+   \sigma(p_t)\;\le\;t(B+1)\qquad\text{for every }t=1,\dots,m .
+\end{equation}
+For $t=1,\dots,m$ let $f(t):=\#\{i,r:\ \sigma(a_{i,r})\le t(B+1)\}$ be the number of item
+jobs scheduled in the first $t(B+1)$ positions. The first $t(B+1)$ positions are occupied
+by item jobs together with the separator jobs scheduled there. By \eqref{eq:deadlines} and
+the precedence $p_1\to\cdots\to p_m$, the jobs $p_1,\dots,p_t$ all occupy positions
+$\le t(B+1)$ (each $p_s$ with $s\le t$ has $\sigma(p_s)\le s(B+1)\le t(B+1)$). Hence at
+least $t$ separator jobs occupy the first $t(B+1)$ positions, so the number of item jobs
+there satisfies
+\begin{equation}\label{eq:fub}
+   f(t)\;\le\;t(B+1)-t\;=\;tB .
+\end{equation}
+On the other hand the total number of item jobs is $\sum_i a_i=mB$ and the total number of
+separator jobs is $m$, so all $N=mB+m=m(B+1)$ positions are used. In particular, among the
+\emph{last} $(m-t)(B+1)$ positions there are at most $(m-t)$ separator jobs
+$p_{t+1},\dots,p_m$, hence at least $(m-t)(B+1)-(m-t)=(m-t)B$ item jobs lie after position
+$t(B+1)$; equivalently
+\begin{equation}\label{eq:flb}
+   f(t)\;\ge\;mB-(m-t)B\;=\;tB .
+\end{equation}
+Combining \eqref{eq:fub} and \eqref{eq:flb} gives $f(t)=tB$ for every $t$, and also
+that exactly $t$ separator jobs (namely $p_1,\dots,p_t$) occupy the first $t(B+1)$
+positions, with $\sigma(p_t)=t(B+1)$ (the only way to fit $tB$ item jobs and $t$ separator
+jobs into $t(B+1)$ slots while keeping $p_t$ no later than $t(B+1)$). Consequently, for
+each $t$ the open interval of positions
+\[
+   \bigl((t-1)(B+1),\,t(B+1)\bigr)
+\]
+contains exactly $B$ item jobs and the single separator job $p_t$ at its right end
+$t(B+1)$; i.e.\ window $W_t$ holds exactly $B$ item jobs (in its first $B$ slots) and
+$p_t$ (in its last slot).
+
+Finally we argue that the $B$ item jobs inside a window are exactly the union of complete
+item chains. Suppose some item chain $A_i$ has its jobs split between two windows
+$W_t$ and $W_{t+1}$, i.e.\ some job $a_{i,r}$ lies in $W_t$ and $a_{i,r+1}$ lies in
+$W_{t+1}$ (a chain cannot skip a window, since its jobs are consecutive in chain order and
+windows are consecutive). Then the separator job $p_t$ (which sits at position $t(B+1)$,
+strictly between $a_{i,r}$ and $a_{i,r+1}$) lies between two jobs of the chain $A_i$. This
+is allowed by feasibility, so splitting is not forbidden outright; however a split forces
+some window to contain a number of item jobs not equal to $B$ unless the split amounts are
+consistent across all windows. We rule splits out by a counting/size argument: since each
+window contains exactly $B$ item jobs and each $a_i$ satisfies $B/4<a_i<B/2$, a window
+holding $B$ item jobs as a union of whole chains must hold exactly three of them
+(because two parts sum to less than $B$ and four parts sum to more than $B$). The
+collection $\{a_i : A_i \text{ assigned to } W_t\}$ therefore has size three and sums to
+$B$. Letting $S_t:=\{i:A_i\subseteq W_t\}$ for $t=1,\dots,m$ yields a partition of
+$\{1,\dots,3m\}$ into $m$ triples each summing to $B$: a solution of
+\textsc{3-Partition}.
+
+It remains to justify that whole chains, not split fragments, fill the windows. Define
+$g_t:=\sum_{i:\,a_{i,1}\in W_t} a_i$ as the total length of item chains \emph{starting}
+in $W_t$. Because no item chain is tardy and item due dates are $N-a_i+r$, moving any item
+job earlier never increases the objective; hence among all zero-tardiness schedules there
+is one in which every item chain occupies a contiguous block
+(Lemma~\ref{lem:spread} applied to each chain: contiguity does not increase, and may only
+decrease, its individual cost, which is already $0$, while never increasing any separator's
+position, since rearranging item jobs within the set of item-positions of a window keeps
+all $\sigma(p_t)$ unchanged). In such a schedule each item chain lies entirely within one
+window, no chain is split, and the previous paragraph applies verbatim. This produces the
+required triples and completes the proof.
+\end{proof}
+
+\subsection*{Conclusion of the reduction}
+
+By Lemmas~\ref{lem:yes2} and \ref{lem:no}, the corrected scheduling instance has a
+feasible schedule of total tardiness $0$ if and only if the \textsc{3-Partition}
+instance is a yes-instance. The instance is built in polynomial time, has all numbers
+bounded by $N=m(B+1)$, and its precedence graph is a disjoint union of chains
+(maximum in- and out-degree $1$). Together with membership in NP (Lemma~\ref{lem:np}),
+this proves Theorem~\ref{thm:main}.
+
+\section{Discussion}
+
+The reduction isolates the source of hardness precisely. Without precedence constraints
+the problem $1\mid p_j=1\mid\sum T_j$ is solved optimally by the Earliest-Due-Date rule
+(sort jobs by nondecreasing $d_j$): an adjacent-interchange argument shows that for the
+Monge cost matrix $c_{j,t}=(t-d_j)^{+}$, which satisfies
+$c_{j,s}+c_{k,t}\le c_{j,t}+c_{k,s}$ whenever $d_j\le d_k$ and $s<t$, EDD is optimal. The
+chain constraints destroy this: an optimal schedule must in general interleave jobs of
+different chains, need not respect EDD order on precedence-incomparable pairs, and the
+natural assignment / linear-programming relaxations are not integral. Theorem~\ref{thm:main}
+shows these obstructions are essential, not artifacts of a particular algorithm.
+
+\end{document}

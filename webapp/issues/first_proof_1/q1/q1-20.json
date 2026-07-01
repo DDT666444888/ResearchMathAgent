@@ -1,0 +1,31 @@
+{
+  "id": "q1-20",
+  "problem_id": "q1",
+  "dataset": "first_proof_1",
+  "title": "Structural tension: the unique log-N counterterm (3 c_{N,2} l_N) is shift-invariant, so the separating divergence must live in a 'no-renormalization' term",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T11:10:54Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "evc7241956",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T11:10:54Z"
+    },
+    {
+      "id": "c4d14ad0c",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Location:** `rem:masstype`, `prop:ctvar`, `lem:std`(ii), `lem:noBgamma`.\n\nThis sharpens q1-13/q1-14 into a structural diagnosis the solver must confront.\n\nThe solution proves (carefully, via order-5/3/1 chaos bookkeeping) that the **unique** $\\log N$-divergent counterterm in the renormalized cube is $3c_{N,2}\\mathbf l_N$, attached to the **first-chaos** field $\\mathbf l=\\ell$, which is **invariant** under $u\\mapsto u+\\psi$. Combined with `lem:noBgamma`, this yields a closed loop:\n\n- If $3c_{N,2}\\mathbf l_N$ is the only $\\log N$ object, and it is shift-invariant, then no cube-derived observable can pick up a $\\log N$ from the shift (confirmed by eq. `eq:Fshift`: $F_N(u+\\psi)-F_N(u)\\to 3\\mathbf q\\circ\\psi+\\text{finite}$, no $c_{N,2}$).\n\nTherefore the separating deterministic $c_{N,2}\\langle\\psi,\\psi\\rangle$ **cannot** come from the cube's renormalization at all; it must originate in a term the solution currently labels **'convergent, no renormalization'**. The prime suspect: under the shift the *squared* field becomes $u+\\psi$, so $H_2(P_N(u+\\psi);c_N)=H_2(P_Nu;c_N)+2\\psi_N P_Nu+\\psi_N^2$. The cross-term $2\\psi_N P_Nu$, when its $P_Nu$ leg is resonated/contracted against the cube or $\\mathbf C$ data, produces a **deterministic** contraction $\\sim c_{N,2}\\psi_N$ that has **no $\\mu$-analogue** (it requires the deterministic $\\psi$ leg to be one of the contracted legs). The solver must (i) identify exactly which term carries this survivor, (ii) verify it is genuinely absent under $\\mu$, and (iii) confirm it is not removable by any $\\psi$-independent counterterm. Until this is done, the chaos analysis is internally consistent but proves the WRONG thing (no separation).",
+      "created_at": "2026-06-27T11:10:54Z"
+    }
+  ]
+}

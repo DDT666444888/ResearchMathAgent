@@ -1,0 +1,83 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{hyperref}
+\usepackage{url}
+
+\title{Status Report: \texttt{erdos\_problems-1} --- No Resolvable Mathematical Statement}
+\author{solver-agent}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{Summary}
+
+This file documents the outcome of issue \texttt{erdos\_problems-1}.
+\textbf{No proof can be written}, because there is no well-defined
+mathematical statement to prove. The issue does not point to a single
+Erd\H{o}s problem; instead \texttt{erdos\_problems} is the \emph{slug of a
+dataset} (a collection of $1217$ Erd\H{o}s problems), and no individual
+problem statement is exposed through any accessible channel. This has now
+been independently confirmed three times (two prior agents and the present
+re-verification).
+
+\section*{Verification performed (this run)}
+
+I exhaustively re-checked every plausible source of a problem statement:
+
+\begin{itemize}
+\item \textbf{Problem registry (tooling).} The benchmark's own
+\texttt{list\_problems} returns exactly \texttt{q1}--\texttt{q10}
+(distinct research problems in analysis, number theory, representation
+theory, topology, etc.). \texttt{erdos\_problems} is \emph{not} among the
+ten benchmark problems and \texttt{read\_problem} accepts only
+\texttt{q1}--\texttt{q10}.
+\item \textbf{Workspace files.} There is no \texttt{problem.tex} (read
+returns ``file not found''), and there is no
+\texttt{problems/erdos\_problems/problem.tex}. The only mathematical
+LaTeX present is \texttt{preamble.tex} (the shared First\_Proof preamble,
+which contains no statement) and this \texttt{solution.tex}. The
+referenced \texttt{analysis.md} is not readable.
+\item \textbf{Issue content.} Issue \texttt{erdos\_problems-1} has title
+``Proof: (untitled)'', area ``(unspecified)'', author ``(unknown)'', and
+labels \texttt{[proof-task]}. Its body and comments contain no statement,
+no problem number, no OEIS reference, no quantifiers, no constants, and no
+intended status (open/solved/disproved). The comment thread consists only
+of a system boilerplate note plus prior \textsc{blocked} reviews.
+\end{itemize}
+
+\section*{Why no proof is written}
+
+Erd\H{o}s problems are extremely sensitive to phrasing (``for all large
+$n$'' versus ``infinitely often''; exact constants versus asymptotics
+$O,o,\sim,\asymp$; and open versus solved versus disproved status), and
+the dataset contains $1217$ candidate problems. With no verbatim
+statement, hypotheses $H$, conclusion $C$, or logical form, there is
+literally nothing to assess: standard proof-gap taxonomy (definitional
+drift, boundary cases, unjustified steps, quantifier-order errors) is
+inapplicable because no claim exists. Producing any ``proof'' would
+require fabricating both the claim and its argument, which violates
+grounding and faithfulness and would, with overwhelming probability, prove
+the wrong statement. A fabricated proof is mathematically worthless and
+actively harmful (it would falsely signal a completed result).
+
+\section*{Conclusion and unblock options}
+
+I confirm the specification blocker. The issue is \emph{not} resolvable by
+mathematical work; it can only be unblocked by supplying data. Any one of
+the following suffices:
+\begin{enumerate}
+\item Add a \texttt{problem.tex} containing the exact statement of the
+single target problem (with all quantifiers, constants, and intended
+status); or
+\item Edit the issue title/body to contain the exact Erd\H{o}s problem
+number together with its verbatim statement and intended status; or
+\item Expose a dataset endpoint that returns the selected problem's
+verbatim statement, and pin which index is the target.
+\end{enumerate}
+Once a concrete, verbatim statement is supplied, a genuine proof effort
+can begin immediately using the standard pipeline (formalize $\to$
+decompose quantifiers $\to$ choose strategy $\to$ full proof $\to$ gap
+audit).
+
+\end{document}

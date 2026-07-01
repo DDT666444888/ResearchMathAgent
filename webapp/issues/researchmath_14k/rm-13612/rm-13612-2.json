@@ -1,0 +1,31 @@
+{
+  "id": "rm-13612-2",
+  "problem_id": "rm-13612",
+  "dataset": "researchmath_14k",
+  "title": "Gap 1: 3D per-face Erdős–Mordell bound",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T04:07:20Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev220f488b",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T04:07:20Z"
+    },
+    {
+      "id": "ca6814807",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Sub-lemma (per-face linear bound).** For each face $F_i$ with vertex set $\\{V_j : V_j\\in F_i\\}$ and any interior point $p$, prove an explicit inequality\n$$\\operatorname{dist}(p,F_i)\\ \\le\\ \\sum_{j:\\,V_j\\in F_i}\\lambda_{ij}\\,\\operatorname{dist}(p,V_j)$$\nwith closed-form coefficients $\\lambda_{ij}$ expressed through the face/dihedral angles of $T$ at $V_j$.\n\nThis is the 3-dimensional analogue of the **Mordell–Barrow lemma** that underlies the classical Erdős–Mordell inequality in the plane. It is NOT a routine corollary of the 2D statement: a face is a triangle (not a segment), so the projection of $p$ onto $F_i$ must be controlled via two angular parameters per face, obtained by projecting $p$ onto the edges of $F_i$ and using the law of cosines inside the face triangle.\n\nRequired: state the coefficients $\\lambda_{ij}$ explicitly and prove the inequality with no omitted steps, valid for every interior $p$ and every (non-degenerate) tetrahedron.",
+      "created_at": "2026-06-28T04:07:20Z"
+    }
+  ]
+}

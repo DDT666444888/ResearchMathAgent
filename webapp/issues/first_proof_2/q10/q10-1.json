@@ -1,0 +1,43 @@
+{
+  "id": "q10-1",
+  "problem_id": "q10",
+  "title": "Proof: Problem 10: Preconditioned CG for RKHS-Constrained CP Decomposition",
+  "status": "open",
+  "labels": [
+    "proof-task"
+  ],
+  "created_at": "2026-06-28T05:17:55Z",
+  "created_by": "system",
+  "comments": [
+    {
+      "id": "cf8f40980",
+      "author": "system",
+      "role": "agent",
+      "body": "**Area:** Numerical Linear Algebra / Tensor Decomposition (Tamara G. Kolda, Rachel Ward)  \n**Problem author:** Tamara G. Kolda (MathSci.ai) \\and Rachel Ward (University of Texas at Austin)\n\n**Problem statement:**\n% Problem 10 — Numerical Linear Algebra / Tensor Decomposition (Tamara G. Kolda, Rachel Ward)\n% Source: First_Proof.tex, https://github.com/1stproof/batch-1\n\\input{preamble}\n\n\\title{Problem 10: Preconditioned CG for RKHS-Constrained CP Decomposition}\n\\author{Tamara G. Kolda (MathSci.ai) \\and Rachel Ward (University of Texas at Austin)}\n\\date{}\n\n\\begin{document}\n\\maketitle\n\nGiven a $d$-way tensor $\\mathcal{T} \\in \\mathbb{R}^{n_1 \\times n_2 \\times \\cdots \\times n_d}$ such that the data is unaligned (meaning the tensor $\\mathcal{T}$ has missing entries), we consider the problem of computing a CP decomposition of rank $r$ where some modes are infinite-dimensional and constrained to be in a Reproducing Kernel Hilbert Space (RKHS). We want to solve this using an alternating optimization approach, and our question is focused on the mode-$k$ subproblem for an infinite-dimensional mode. For the subproblem, the CP factor matrices $A_1, \\dots, A_{k-1}, A_{k+1}, \\dots, A_d$ are fixed, and we are solving for $A_k$.\n\nOur notation is as follows. Let $N = \\prod_i n_i$ denote the product of all sizes. Let $n \\equiv n_k$ be the size of mode $k$, let $M = \\prod_{i\\neq k} n_i$ be the product of all dimensions except $k$, and assume $n \\ll M$. Since the data are unaligned, this means only a subset of $\\mathcal{T}$'s entries are observed, and we let $q \\ll N$ denote the number of observed entries. We let $T \\in \\mathbb{R}^{n \\times M}$ denote the mode-$k$ unfolding of the tensor $\\mathcal{T}$ with all missing entries set to zero. The $\\vecop$ operation creates a vector from a matrix by stacking its columns, and we let $S \\in \\mathbb{R}^{N \\times q}$ denote the selection matrix (a subset of the $N \\times N$ identity matrix) such that $S^T \\vecop(T)$ selects the $q$ known entries of the tensor $\\mathcal{T}$ from the vectorization of its mode-$k$ unfolding. We let $Z = A_d \\odot \\cdots \\odot A_{k+1} \\odot A_{k-1} \\odot \\cdots \\odot A_1 \\in \\mathbb{R}^{M \\times r}$ be the Khatri-Rao product \n\n---\nAgents should post sub-lemma proposals, proof sketches, or blockers as comments. When a complete proof is agreed upon, mark this issue resolved.",
+      "created_at": "2026-06-28T05:17:55Z"
+    },
+    {
+      "id": "cc1ebb3a2",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "## Mathematical Review — Problem 10 (Kolda–Ward): Preconditioned CG for RKHS-Constrained CP Decomposition\n\n**Routing.** Local slug `list` = dataset `first_proof_2`, problem `q10`, anchor `q10-1`. (Problem 10 is the unique problem using `\\vecop`/`\\diag` from the shared preamble.)\n\nNo `solution.tex` exists yet; below is the decomposition into sub-lemmas an attempt must prove.\n\n### System under study\n$$\\big[(Z\\otimes K)^\\top S S^\\top (Z\\otimes K)+\\lambda(I_r\\otimes K)\\big]\\mathrm{vec}(W)=(I_r\\otimes K)\\mathrm{vec}(B),\\quad B=TZ,$$\nan $nr\\times nr$ SPD(-or-SPSD) system; goal is a PCG solver with **no $O(M)$/$O(N)$ step** under $d<n,r<q\\ll N$, $n\\ll M$. Two algorithm boxes required (direct symmetric + PCG).\n\n### Sub-lemmas / gaps filed\n- **G1 (q10-3, CORE):** implicit observed-only matvec $v\\mapsto\\mathcal A v$ via $(Z\\otimes K)\\mathrm{vec}(W)=\\mathrm{vec}(KWZ^\\top)$ + observed mask; $O(n^2r+qr)$, no $M,N$. Verified to $10^{-14}$.\n- **G2 (q10-4, CORE):** preconditioner $P_0=\\lambda(I_r\\otimes K)$ and explicit bound $1\\le\\lambda(P_0^{-1}\\mathcal A)\\le 1+\\lambda^{-1}\\|Z\\|_2^2\\|K\\|_2$ ⇒ $M/N$-free iteration count. Numerics: $\\kappa\\approx71$.\n- **G3 (q10-5, CORE/faithfulness):** $K$ is **psd, not pd** ⇒ $\\mathcal A$ and $P_0$ singular; system is consistent, run PCG on $\\mathrm{range}(I_r\\otimes K)$ (or use $K+\\epsilon I$); $A_k=KW$ independent of null component. Verified singular for rank-deficient $K$.\n- **G4 (q10-6):** RHS/MTTKRP $B=TZ$ must be assembled observed-only ($O(qr)$), else $O(nMr)=O(M)$.\n- **G5 (q10-7):** direct symmetric box must assemble/factor $\\mathcal A$ observed-only, not via $Z\\otimes K$.\n- **G6 (q10-8, boundary):** $\\lambda=0$ or $q<nr$ ⇒ under-determined; handle degeneracy.\n- **G7 (q10-9, format):** both boxes need `algorithm`/`algorithmic` with Input/Output and correctness/termination/complexity proofs.\n\n### Difficulty\nG2 is the genuine mathematical core (honest $M/N$-free upper eigenvalue bound). G3 is a subtle faithfulness trap (psd vs pd). G1/G4/G5 are where attempts silently smuggle in an $O(M)$ dense intermediate. Full analysis with derivations and numerical verification is attached as the linked doc *Critic Analysis*.",
+      "created_at": "2026-06-28T05:21:37Z"
+    },
+    {
+      "id": "ev3b5d8915",
+      "author": "agent",
+      "role": "event",
+      "event_type": "doc_generated",
+      "body": "Document generated: **Critic Analysis**",
+      "created_at": "2026-06-28T05:21:43Z"
+    }
+  ],
+  "documents": [
+    {
+      "title": "Critic Analysis",
+      "path": "questions/list/analysis.md",
+      "created_at": "2026-06-28T05:21:43Z",
+      "created_by": "agent"
+    }
+  ]
+}

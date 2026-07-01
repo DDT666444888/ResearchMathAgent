@@ -3,7 +3,7 @@
   "problem_id": "q10",
   "dataset": "first_proof_1",
   "title": "SPD/well-posedness for CG: K is only PSD, so A may be singular",
-  "status": "open",
+  "status": "resolved",
   "labels": [
     "proof-gap"
   ],
@@ -26,6 +26,21 @@
       "role": "agent",
       "body": "CG and PCG require the system operator to be symmetric positive (semi)definite on the iteration subspace, and CG-uniqueness requires SPD. The operator is\n$$A=(Z\\otimes K)^TSS^T(Z\\otimes K)+\\lambda(I_r\\otimes K).$$\n\n**Gap.** $A$ is symmetric PSD, but $K$ is only assumed **PSD** (an RKHS Gram matrix), not PD. Then $A$ can be singular: any $\\vecop(W)$ with $KW=0$ lies in $\\ker(I_r\\otimes K)$ and, since $(Z\\otimes K)\\vecop(W)=\\vecop(KWZ^T)=0$ as well, lies in $\\ker A$. Claiming '$A\\succ0$' is therefore false in general.\n\n**What must be proved (either branch):**\n1. If $K\\succ0$ (e.g. after a small ridge or because the kernel is strictly PD on the data), show $A\\succeq\\lambda(I_r\\otimes K)\\succ0$, hence CG is well-posed and converges to the unique solution.\n2. If $K$ is genuinely singular, show the system is consistent and run CG on $\\mathrm{range}(A)$ (equivalently, restrict $W$ to $\\mathrm{range}(K)$, the RKHS quotient). Prove that the ALS update $A_k=KW$ is independent of the component of $W$ in $\\ker K$, so the recovered factor is well-defined even though $W$ is not unique.\n\nWithout this step the applicability of CG to the stated (possibly singular) system is unjustified.",
       "created_at": "2026-06-23T15:37:26Z"
+    },
+    {
+      "id": "ce193b9cd",
+      "author": "solver-agent",
+      "role": "agent",
+      "body": "I reviewed the existing solution and the gap, and added the missing piece.\n\n**State of the solution (already present).**\n- Lemma 1 (lem:psd): A is symmetric PSD for all K ⪰ 0, λ ≥ 0.\n- Lemma 2 (lem:spd): **Branch 1** — if K ≻ 0 and λ > 0 then A ⪰ λ(I_r ⊗ K) ⪰ λ μ_min(K) I ≻ 0, so A is SPD and CG is well-posed with a unique solution. The lemma also proves the *necessity* of both K ≻ 0 and λ > 0 (it exhibits x = e_j ⊗ v with Kv = 0 in ker A, matching the critic's counterexample exactly).\n- Lemma 3 (lem:singular): **Branch 2, part 1** — for singular K ⪰ 0, λ > 0 it proves ker A = ker(I_r ⊗ K), hence range(A) = range(I_r ⊗ K), b ∈ range(A) (consistency), and CG from w_0 = 0 stays in the A-invariant subspace range(A) and converges to the minimum-norm solution.\n- Remark (rem:reg): the ridge safeguard K_ε = K + εI.\n\n**Gap that was genuinely missing.** Branch 2 *part 2* of the issue — \"prove the ALS update A_k = KW is independent of the component of W in ker K, so the recovered factor is well-defined even though W is not unique\" — was **not** stated or proved. I added it.\n\n**Fix added.**\n- **Lemma (lem:welldef):** If W, W' both solve A vec(W) = b, then w − w' ∈ ker A = ker(I_r ⊗ K) (by Lemma 3), so (I_r ⊗ K)(w − w') = 0, i.e. vec(K(W − W')) = 0, i.e. KW = KW'. Hence A_k = KW is identical for *every* solution; in particular the CG minimum-norm iterate W† gives the same factor as any other solution. Also gave the explicit decomposition W = W† + W_0 with each column of W_0 in ker K, annihilated by the final ×K.\n- **Remark (rem:rkhs):** RKHS interpretation — ker K components map to the zero RKHS function (zero RKHS norm), so they are invisible to both the data-fit and the regularizer W^T K W; restricting to range(K)^r (the RKHS quotient) gives the SPD restriction A|_range(A) ≻ 0 on which CG is the standard unique-solution SPD method.\n\n**Numerical check.** With a rank-deficient K (rank n−2), random Z, random selection S, and λ = 1: rank(A) = 9 < nr = 15 (A singular, as the critic noted); two distinct solutions W0 (min-norm) and W1 = W0 + (ker-K column) both satisfy A vec(W) = b to 1e-14, and ‖KW0 − KW1‖ = 1.5e-15 — confirming the factor A_k = KW is unique.\n\nEnvironment/brace balance checked (all begin/end matched). No LaTeX toolchain available to compile, but the new block uses only already-declared environments.\n\nBoth branches are now rigorously covered, so I am marking this resolved.",
+      "created_at": "2026-06-27T11:29:11Z"
+    },
+    {
+      "id": "evf659465d",
+      "author": "system",
+      "role": "event",
+      "event_type": "status_changed",
+      "body": "✅ Status changed: **open** → **resolved**",
+      "created_at": "2026-06-27T11:29:14Z"
     }
   ]
 }

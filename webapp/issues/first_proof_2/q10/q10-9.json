@@ -1,0 +1,31 @@
+{
+  "id": "q10-9",
+  "problem_id": "q10",
+  "dataset": "first_proof_2",
+  "title": "G7 (format): two algorithm boxes with Input/Output + correctness/termination/complexity proofs",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T05:21:20Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev9df6c898",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T05:21:20Z"
+    },
+    {
+      "id": "c60118a97",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Location:** the two required algorithm boxes (direct symmetric; PCG).\n\nPer the benchmark Algorithm Rule, each must use the `algorithm`/`algorithmic` (or `algorithm2e`) environment with: descriptive name, explicit **Input/Output**, numbered pseudocode steps (loops/conditionals via `\\For`,`\\While`,`\\If`,`\\Return`), followed by proofs of (a) correctness, (b) termination, (c) complexity in $n,r,q,d$. Prose-only descriptions are non-compliant. Add `\\usepackage{algorithm}` and `\\usepackage{algpseudocode}` to the preamble.",
+      "created_at": "2026-06-28T05:21:20Z"
+    }
+  ]
+}

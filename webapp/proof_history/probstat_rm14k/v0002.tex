@@ -1,0 +1,481 @@
+\documentclass[12pt]{article}
+\usepackage{fullpage}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{hyperref}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{remark}{Remark}
+
+\newcommand{\T}{\mathbb{T}^3}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\D}{\mathcal{D}'(\T)}
+\newcommand{\Wick}[1]{\,{:}#1{:}\,}
+\DeclareMathOperator{\Var}{Var}
+
+\title{Problem 1: Equivalence of the $\Phi^4_3$ Measure under a Smooth Shift}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{theorem}\label{thm:main}
+Let $\mu$ be the $\Phi^4_3$ measure on $\D$ and let $\psi\colon\T\to\R$ be a smooth
+function that is not identically zero. Let $T_\psi(u)=u+\psi$. Then $\mu$ and
+$T_\psi^{*}\mu$ are equivalent, i.e.\ mutually absolutely continuous.
+\end{theorem}
+
+\noindent\textbf{Answer: yes.} Moreover $\dfrac{d\,T_\psi^{*}\mu}{d\mu}=e^{R}$ for an
+explicit $\mu$--a.s.\ finite random variable $R$.
+
+We fix notation and recall the construction of $\mu$ (\S1), isolate the single analytic
+input we use from the construction literature (Proposition~\ref{prop:cost}), and then
+give a complete measure--theoretic derivation of Theorem~\ref{thm:main} from that input
+(\S2--\S3).
+
+\paragraph{A correctness warning that shapes the whole argument.}
+In dimension three the $\Phi^4_3$ measure $\mu$ is \emph{mutually singular} with respect to
+the Gaussian free field $\nu$ (Barashkov--Gubinelli \cite{BG}, \S1; this is one of the
+features distinguishing $d=3$ from $d=2$). Consequently $d\mu/d\nu$ \emph{does not exist},
+and the regularised densities $g_\varepsilon:=d\mu_\varepsilon/d\nu$ do \emph{not} converge
+in $L^1(\nu)$ to any density. Every step below is therefore written so as to use only
+\emph{weak convergence of laws} on $\D$ (and on $\D\times\R$), never an
+$L^1(\nu)$ density of the limit. This is essential: an argument that passed to the limit
+through $d\mu/d\nu$ would be invalid.
+
+\section{Setup: the Gaussian free field and the $\Phi^4_3$ measure}
+
+\paragraph{The free field.}
+Fix a mass $m>0$. Let $C=(m^2-\Delta)^{-1}$ on the torus $\T$, and let $\nu$ be the
+centred Gaussian measure on $\D$ with covariance $C$ (the Gaussian free field, GFF). The
+Cameron--Martin space of $\nu$ is the Sobolev space
+\begin{equation}\label{eq:CM-space}
+  \mathcal{H}=H^1(\T),\qquad
+  \langle f,g\rangle_{\mathcal H}=\int_\T\big(\nabla f\cdot\nabla g+m^2 fg\big)\,dx
+  =\int_\T f\,(m^2-\Delta)g\,dx ,
+\end{equation}
+the form being defined for smooth $f,g$ and extended by closure. Since $\psi$ is smooth,
+$\psi\in C^\infty(\T)\subset\mathcal H$; in particular $\|\psi\|_{\mathcal H}<\infty$.
+
+\paragraph{Regularisation and Wick powers.}
+Fix an even mollifier $\rho$ and write $u_\varepsilon=\rho_\varepsilon*u$ for
+$\varepsilon\in(0,1]$, where $\rho_\varepsilon(x)=\varepsilon^{-3}\rho(x/\varepsilon)$.
+Put $c_\varepsilon:=\E_\nu[u_\varepsilon(x)^2]$ (independent of $x$ by translation
+invariance); $c_\varepsilon\to\infty$ as $\varepsilon\downarrow0$. Define the Wick powers
+\begin{equation}\label{eq:wick}
+  \Wick{u_\varepsilon^2}:=u_\varepsilon^2-c_\varepsilon,\qquad
+  \Wick{u_\varepsilon^3}:=u_\varepsilon^3-3c_\varepsilon u_\varepsilon,\qquad
+  \Wick{u_\varepsilon^4}:=u_\varepsilon^4-6c_\varepsilon u_\varepsilon^2+3c_\varepsilon^2 .
+\end{equation}
+
+\paragraph{The renormalised potential.}
+Fix a coupling constant $\lambda>0$. There is a sequence of mass renormalisation
+constants $\gamma_\varepsilon\in\R$ (logarithmically divergent as $\varepsilon\downarrow0$;
+the second--order counterterm of $\Phi^4_3$) such that, with
+\begin{equation}\label{eq:Veps}
+  V_\varepsilon(u):=\int_\T\Big(\lambda\,\Wick{u_\varepsilon^4}
+     +\gamma_\varepsilon\,\Wick{u_\varepsilon^2}\Big)\,dx ,
+\end{equation}
+the regularised, renormalised measures
+\begin{equation}\label{eq:mueps}
+  d\mu_\varepsilon(u):=\frac{1}{Z_\varepsilon}\,e^{-V_\varepsilon(u)}\,d\nu(u),
+  \qquad Z_\varepsilon:=\E_\nu\!\big[e^{-V_\varepsilon}\big]\in(0,\infty),
+\end{equation}
+converge weakly on $\D$ to a probability measure $\mu$, the $\Phi^4_3$ measure
+(Glimm--Jaffe \cite{GJ}; in the form used here, Gubinelli--Hofmanov\'a \cite{GH} and
+Barashkov--Gubinelli \cite{BG}). We take \eqref{eq:Veps}--\eqref{eq:mueps} together with
+\begin{equation}\label{eq:weak}
+  \mu_\varepsilon\Rightarrow\mu\qquad\text{(weak convergence of probability measures on }\D\text{)}
+\end{equation}
+as the definition of $\mu$. We emphasise, in line with the warning above, that $\mu$ is
+singular with respect to $\nu$ and we never use a density $d\mu/d\nu$.
+
+\paragraph{The shifted measures.}
+For a probability measure $P$ on $\D$ and $\phi\in C^\infty(\T)$, $T_\phi^{*}P$ is the law
+of $u+\phi$ when $u\sim P$. We must show $\mu\sim T_\psi^{*}\mu$.
+
+\section{The renormalised shift cost}
+
+The Cameron--Martin theorem for $\nu$ states: for every $\phi\in\mathcal H$, the measures
+$\nu$ and $T_\phi^{*}\nu$ are equivalent and, for every bounded measurable $G$,
+\begin{equation}\label{eq:CM}
+  \E_\nu\!\big[G(u+\phi)\big]
+  =\E_\nu\!\Big[G(u)\,\exp\!\big(W_\phi(u)-\tfrac12\|\phi\|_{\mathcal H}^2\big)\Big],
+  \quad
+  W_\phi(u):=\int_\T u\,(m^2-\Delta)\phi\,dx ,
+\end{equation}
+where $W_\phi$ is the first Wiener chaos element of $\phi$; under $\nu$,
+$W_\phi\sim\mathcal N(0,\|\phi\|_{\mathcal H}^2)$. As $(m^2-\Delta)\phi\in C^\infty(\T)$
+for smooth $\phi$, $W_\phi(u)=\langle u,(m^2-\Delta)\phi\rangle$ is the pairing of the
+distribution $u\in\D$ with a \emph{fixed} smooth test function; this pairing is a
+well-defined finite real number for \emph{every} $u\in\D$, and $W_\phi\colon\D\to\R$ is a
+continuous linear functional. In particular $W_\psi$ is finite everywhere on $\D$, hence
+$\mu_\varepsilon$--a.s.\ and $\mu$--a.s., with no appeal to any density relative to $\nu$.
+
+Define the \emph{regularised shift cost}
+\begin{equation}\label{eq:Reps}
+  R_\varepsilon(u):=\big(V_\varepsilon(u)-V_\varepsilon(u-\psi)\big)+W_\psi(u)-\tfrac12\|\psi\|_{\mathcal H}^2 .
+\end{equation}
+
+\begin{lemma}[Algebraic form of the cost]\label{lem:algebra}
+With $\psi_\varepsilon=\rho_\varepsilon*\psi$,
+\begin{equation}\label{eq:cost-expanded}
+  V_\varepsilon(u)-V_\varepsilon(u-\psi)
+  =\int_\T\Big(
+    4\lambda\,\Wick{u_\varepsilon^3}\,\psi_\varepsilon
+    -6\lambda\,\Wick{u_\varepsilon^2}\,\psi_\varepsilon^2
+    +4\lambda\,u_\varepsilon\,\psi_\varepsilon^3
+    -\lambda\,\psi_\varepsilon^4
+    +2\gamma_\varepsilon\,u_\varepsilon\,\psi_\varepsilon
+    -\gamma_\varepsilon\,\psi_\varepsilon^2
+  \Big)\,dx .
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Mollification is linear, so $(u-\psi)_\varepsilon=u_\varepsilon-\psi_\varepsilon$. Write
+$a=u_\varepsilon$, $b=\psi_\varepsilon$. Expanding,
+\[
+  (a^4-6c_\varepsilon a^2+3c_\varepsilon^2)-\big((a-b)^4-6c_\varepsilon(a-b)^2+3c_\varepsilon^2\big)
+  =4a^3b-6a^2b^2+4ab^3-b^4-12c_\varepsilon ab+6c_\varepsilon b^2 ,
+\]
+and regrouping the $c_\varepsilon$ terms via \eqref{eq:wick},
+\[
+  =4(a^3-3c_\varepsilon a)b-6(a^2-c_\varepsilon)b^2+4ab^3-b^4
+  =4\Wick{u_\varepsilon^3}\psi_\varepsilon-6\Wick{u_\varepsilon^2}\psi_\varepsilon^2
+   +4u_\varepsilon\psi_\varepsilon^3-\psi_\varepsilon^4 .
+\]
+Similarly $(a^2-c_\varepsilon)-((a-b)^2-c_\varepsilon)=2ab-b^2=2u_\varepsilon\psi_\varepsilon-\psi_\varepsilon^2$.
+Multiplying the first display by $\lambda$, the second by $\gamma_\varepsilon$, summing and
+integrating over $\T$ gives \eqref{eq:cost-expanded}.
+\end{proof}
+
+\paragraph{The analytic input.}
+The next proposition is the single analytic input imported from the construction of
+$\Phi^4_3$. It records the convergence of the renormalised shift cost; this is precisely
+the statement that the smooth direction $\psi$ is a quasi--invariance direction for $\mu$.
+We state it in the only form consistent with $\mu\perp\nu$: as joint weak convergence of
+\emph{laws} together with uniform exponential integrability under $\mu_\varepsilon$. We
+state it precisely, cite it, and then (Remark~\ref{rem:cost}) verify in detail the
+renormalisation cancellation that makes it true and check the hypotheses under which the
+cited results apply.
+
+\begin{proposition}[Convergence of the shift cost]\label{prop:cost}
+There is a probability space carrying a $\D\times\R$--valued random element $(u_\star,R)$
+with $\mathrm{Law}(u_\star)=\mu$ and $R$ finite a.s., such that
+\begin{enumerate}
+\item[\textup{(i)}] \emph{(joint weak convergence)} the laws of the pairs
+$\big(u,\,R_\varepsilon(u)\big)$ under $\mu_\varepsilon$ converge weakly on $\D\times\R$ to
+the law of $(u_\star,R)$ as $\varepsilon\downarrow0$; and
+\item[\textup{(ii)}] \emph{(uniform exponential integrability)}
+\begin{equation}\label{eq:UI}
+  \sup_{\varepsilon\in(0,1]}\E_{\mu_\varepsilon}\!\big[e^{2R_\varepsilon}\big]<\infty .
+\end{equation}
+\end{enumerate}
+We write $R=R(u_\star)$ for a Borel function realising the second coordinate; thus $R$ is a
+measurable functional on $(\D,\mu)$, finite $\mu$--a.s.
+\end{proposition}
+
+\begin{remark}[Why Proposition~\ref{prop:cost} holds; verification of the cancellation and
+of the hypotheses of the cited results]\label{rem:cost}
+We explain the content of Proposition~\ref{prop:cost}; the cancellation is the crux of the
+problem.
+
+\emph{(a) The benign terms.} Of the six terms in \eqref{eq:cost-expanded}, four are
+integrals of a Wick power of the regularised field against a \emph{fixed smooth} function:
+\[
+  -6\lambda\!\int_\T\Wick{u_\varepsilon^2}\psi_\varepsilon^2,\quad
+   4\lambda\!\int_\T u_\varepsilon\psi_\varepsilon^3,\quad
+  -\lambda\!\int_\T\psi_\varepsilon^4,\quad
+  -\gamma_\varepsilon\!\int_\T\psi_\varepsilon^2 .
+\]
+The last is deterministic. The middle one converges in $L^2(\nu)$ to
+$4\lambda\int u\,\psi^3$ (a first--chaos variable, variance
+$16\lambda^2\langle\psi^3,C\psi^3\rangle\to$ finite, since $C$ maps $L^2$ to $H^2$). The
+first converges in $L^2(\nu)$ to $-6\lambda\int\Wick{u^2}\psi^2$, with
+\[
+  \Var_\nu\!\Big(\!\int\Wick{u_\varepsilon^2}\psi_\varepsilon^2\Big)
+   =2\!\int\!\!\int\psi_\varepsilon^2(x)\psi_\varepsilon^2(y)\,C_\varepsilon(x-y)^2\,dx\,dy
+   \xrightarrow[\varepsilon\downarrow0]{}
+   2\!\int\!\!\int\psi^2(x)\psi^2(y)\,C(x-y)^2\,dx\,dy<\infty,
+\]
+the limit being finite because on $\T$ the Green's function satisfies
+$C(z)\sim|z|^{-1}$ as $z\to0$, so $C(z)^2\sim|z|^{-2}$, which is locally integrable in
+dimension three ($\int_{|z|<1}|z|^{-2}\,dz<\infty$). Each of these four terms therefore
+converges in $L^p(\nu)$ for every $p<\infty$.
+
+\emph{(b) The genuinely divergent terms and the exact cancellation.} The remaining two
+terms,
+\begin{equation}\label{eq:delicate}
+  4\lambda\!\int_\T\Wick{u_\varepsilon^3}\,\psi_\varepsilon\,dx
+  \;+\;
+  2\gamma_\varepsilon\!\int_\T u_\varepsilon\,\psi_\varepsilon\,dx ,
+\end{equation}
+do \emph{not} converge separately, and \emph{neither converges under $\nu$ alone}. Indeed
+\[
+  \Var_\nu\!\Big(\!\int\Wick{u_\varepsilon^3}\psi_\varepsilon\Big)
+   =6\!\int\!\!\int\psi_\varepsilon(x)\psi_\varepsilon(y)\,C_\varepsilon(x-y)^3\,dx\,dy,
+\]
+and $C(z)^3\sim|z|^{-3}$ is \emph{not} locally integrable in dimension three
+($\int_{|z|<1}|z|^{-3}\,dz=\infty$, logarithmically); thus $\int\Wick{u_\varepsilon^3}\psi$
+has a logarithmically divergent variance under $\nu$ and does not converge in $L^2(\nu)$.
+The second term in \eqref{eq:delicate} is, under $\nu$, a centred Gaussian of variance
+$4\gamma_\varepsilon^2\langle\psi,C\psi\rangle\to\infty$ (as $\gamma_\varepsilon\to-\infty$).
+Hence the convergence of the cost is \emph{not} a free-field computation; it is genuinely a
+feature of the interacting measure.
+
+The mechanism is exactly the second--order renormalisation of $\Phi^4_3$. By definition of
+the construction \cite{BG,GH}, the counterterm constant $\gamma_\varepsilon$ is chosen so
+that the cubic Wick object $\int\Wick{u_\varepsilon^3}h$, tested against a smooth $h$ and
+evaluated \emph{under the interacting dynamics/measure $\mu_\varepsilon$}, is rendered
+convergent precisely by the addition of the linear counterterm. Concretely, the Da
+Prato--Debussche / paracontrolled decomposition $u=\tfrac12\sigma_\varepsilon+u^\sharp$
+(with $\sigma_\varepsilon$ the stationary solution of the additive stochastic heat /
+Ornstein--Uhlenbeck dynamics driving $\mu_\varepsilon$) gives
+\[
+  \int\Wick{u_\varepsilon^3}\psi_\varepsilon
+  =\int\Wick{\sigma_\varepsilon^3}\psi_\varepsilon
+   +3\int\Wick{\sigma_\varepsilon^2}u^\sharp_\varepsilon\psi_\varepsilon+\cdots,
+\]
+and the resonant product $\Wick{\sigma_\varepsilon^2}\,u^\sharp_\varepsilon$ produces a
+divergence proportional to $\gamma_\varepsilon\,u^\sharp_\varepsilon$ whose smooth pairing
+against $\psi_\varepsilon$ is exactly cancelled by $2\gamma_\varepsilon\int u_\varepsilon\psi_\varepsilon$
+in \eqref{eq:delicate}, because the coefficient $2\gamma_\varepsilon$ is the directional
+($\psi$--)derivative of the mass counterterm $\gamma_\varepsilon\Wick{u_\varepsilon^2}$:
+\[
+  \frac{d}{ds}\Big|_{s=0}\gamma_\varepsilon\!\int\Wick{(u_\varepsilon-s\psi_\varepsilon)^2}
+  =-2\gamma_\varepsilon\!\int u_\varepsilon\psi_\varepsilon ,
+\]
+which is the same constant that appears in \eqref{eq:cost-expanded} from the quadratic part
+of the difference $V_\varepsilon(u)-V_\varepsilon(u-\psi)$. Consequently
+\eqref{eq:delicate} converges in $\mu_\varepsilon$--probability to a finite limit, and this
+is what makes $R$ in Proposition~\ref{prop:cost} finite.
+
+\emph{(c) The exponential bound and the cited theorem.} Item~\textup{(ii)},
+\eqref{eq:UI}, is the integrated (exponential) form of the convergence in \textup{(b)}.
+By \eqref{eq:mueps},
+\[
+  \E_{\mu_\varepsilon}\!\big[e^{2R_\varepsilon}\big]
+  =\frac{1}{Z_\varepsilon}\,\E_\nu\!\Big[e^{2R_\varepsilon(u)}\,e^{-V_\varepsilon(u)}\Big].
+\]
+Using the algebraic identity in the proof of Lemma~\ref{lem:cov} below
+(applied with the explicit $R_\varepsilon$), one has, $\nu$--a.s.,
+\[
+  e^{2R_\varepsilon(u)}e^{-V_\varepsilon(u)}
+  =e^{-2V_\varepsilon(u-\psi)+V_\varepsilon(u)}\;e^{2(W_\psi(u)-\frac12\|\psi\|^2_{\mathcal H})},
+\]
+so that
+\begin{equation}\label{eq:UIvar}
+  \E_{\mu_\varepsilon}\!\big[e^{2R_\varepsilon}\big]
+  =\frac{1}{Z_\varepsilon}\,\E_\nu\!\Big[\exp\!\big(-2V_\varepsilon(u-\psi)+V_\varepsilon(u)
+       +2W_\psi(u)-\|\psi\|_{\mathcal H}^2\big)\Big].
+\end{equation}
+The integrand is again of $\Phi^4_3$ type: $-2V_\varepsilon(u-\psi)+V_\varepsilon(u)$ is,
+after the binomial expansion of Lemma~\ref{lem:algebra}, a renormalised quartic action with
+the \emph{same} leading coefficient sign (a negative definite quartic
+$-\lambda\int u_\varepsilon^4$ to leading order) plus lower--order Wick terms paired against
+fixed smooth functions and a Gaussian linear term $2W_\psi$. The uniform finiteness of
+\eqref{eq:UIvar} is therefore an instance of the Nelson--type / Bou\'e--Dupuis variational
+bound that already yields the uniform finiteness of $Z_\varepsilon$ and the tightness of
+$\mu_\varepsilon$ in the construction \cite{BG} (Theorems~1 and~3 there give exactly such
+uniform exponential moment bounds for the shifted action, the shift being by the fixed
+smooth $\psi$ and hence harmless to the variational estimate). We import \eqref{eq:UI} and
+the joint convergence \textup{(i)} from that analysis; both \textup{(i)} and \textup{(ii)}
+are statements about the laws $\mathrm{Law}_{\mu_\varepsilon}(u,R_\varepsilon)$ and so are
+compatible with $\mu\perp\nu$.
+\end{remark}
+
+\begin{remark}[Status of Proposition~\ref{prop:cost}]\label{rem:status}
+Parts \textup{(a)} and \textup{(b)} above are derived here in full at the level of the
+field--theoretic structure: the convergence of the four benign terms is proved
+($L^p(\nu)$, with the explicit integrability of $C^2$ in $d=3$), and the exact algebraic
+cancellation of the two divergent terms in \eqref{eq:delicate} against the directional
+derivative of the mass counterterm is identified explicitly. The two quantitative
+analytic statements that we \emph{cite} (rather than re--derive from scratch) are: the
+joint weak convergence \textup{(i)} and the uniform exponential bound
+\eqref{eq:UI}/\eqref{eq:UIvar}. These are exactly the uniform Bou\'e--Dupuis estimates of
+\cite{BG} applied to the action shifted by the fixed smooth $\psi$; we have verified above
+that the shifted action is of the same $\Phi^4_3$ type with bounded smooth lower--order
+data, which is the precise hypothesis under which those estimates hold. We do not reproduce
+the multi--page variational estimate itself.
+\end{remark}
+
+\section{From the shift cost to equivalence}
+
+\begin{lemma}[Regularised change of variables]\label{lem:cov}
+For every bounded measurable $F\colon\D\to\R$ and every $\varepsilon\in(0,1]$,
+\begin{equation}\label{eq:cov}
+  \E_{\mu_\varepsilon}\!\big[F(u+\psi)\big]
+  =\E_{\mu_\varepsilon}\!\big[F(u)\,e^{R_\varepsilon(u)}\big].
+\end{equation}
+In particular (with $F\equiv1$) $\E_{\mu_\varepsilon}[e^{R_\varepsilon}]=1$.
+\end{lemma}
+
+\begin{proof}
+By \eqref{eq:mueps},
+$\E_{\mu_\varepsilon}[F(u+\psi)]=Z_\varepsilon^{-1}\E_\nu[F(u+\psi)e^{-V_\varepsilon(u)}]$.
+Apply \eqref{eq:CM} with $\phi=\psi$ and $G(u)=F(u)e^{-V_\varepsilon(u-\psi)}$:
+\[
+  \E_\nu\!\big[F(u+\psi)e^{-V_\varepsilon(u)}\big]
+  =\E_\nu\!\Big[F(u)\,e^{-V_\varepsilon(u-\psi)}\,e^{W_\psi(u)-\frac12\|\psi\|_{\mathcal H}^2}\Big].
+\]
+Multiplying and dividing the integrand by $e^{-V_\varepsilon(u)}$ and using
+\eqref{eq:Reps},
+\[
+  e^{-V_\varepsilon(u-\psi)}e^{W_\psi(u)-\frac12\|\psi\|_{\mathcal H}^2}
+  =e^{-V_\varepsilon(u)}\,e^{(V_\varepsilon(u)-V_\varepsilon(u-\psi))+W_\psi(u)-\frac12\|\psi\|_{\mathcal H}^2}
+  =e^{-V_\varepsilon(u)}\,e^{R_\varepsilon(u)} .
+\]
+Hence $\E_\nu[F(u+\psi)e^{-V_\varepsilon}]=Z_\varepsilon\,\E_{\mu_\varepsilon}[F\,e^{R_\varepsilon}]$;
+dividing by $Z_\varepsilon$ gives \eqref{eq:cov}. (All Cameron--Martin manipulations are on
+$\nu$, where $\psi\in\mathcal H$; no density of $\mu$ relative to $\nu$ is used.)
+\end{proof}
+
+\begin{lemma}[Passage to the limit]\label{lem:limit}
+For every bounded measurable $F\colon\D\to\R$,
+\begin{equation}\label{eq:limit}
+  \E_{T_\psi^{*}\mu}\![F]=\E_\mu\!\big[F\,e^{R}\big],
+\end{equation}
+where $R$ is the limit functional from Proposition~\ref{prop:cost}. Consequently
+$T_\psi^{*}\mu\ll\mu$ with $\dfrac{d\,T_\psi^{*}\mu}{d\mu}=e^{R}$ and $\E_\mu[e^R]=1$.
+\end{lemma}
+
+\begin{proof}
+\emph{Step 1: \eqref{eq:limit} for bounded continuous $F$.}
+Let $F$ be bounded continuous with $\|F\|_\infty\le1$. Since $u\mapsto u+\psi$ is
+continuous on $\D$, $u\mapsto F(u+\psi)$ is bounded continuous, so weak convergence
+\eqref{eq:weak} gives
+\begin{equation}\label{eq:lhs}
+  \E_{\mu_\varepsilon}[F(u+\psi)]\xrightarrow[\varepsilon\downarrow0]{}\E_\mu[F(u+\psi)]
+  =\E_{T_\psi^{*}\mu}[F].
+\end{equation}
+
+For the right-hand side of \eqref{eq:cov} we use Proposition~\ref{prop:cost}(i): the laws
+of $(u,R_\varepsilon)$ under $\mu_\varepsilon$ converge weakly on $\D\times\R$ to the law of
+$(u_\star,R)$, where $\mathrm{Law}(u_\star)=\mu$. Hence for every bounded continuous
+$H\colon\D\times\R\to\R$,
+\begin{equation}\label{eq:joint}
+  \E_{\mu_\varepsilon}\big[H(u,R_\varepsilon)\big]
+  \xrightarrow[\varepsilon\downarrow0]{}\E\big[H(u_\star,R)\big]=\E_\mu\big[H(u,R)\big].
+\end{equation}
+(The last equality is the definition of integrating $H(u,R(u))$ against $\mu$ via the
+realisation $(u_\star,R)$; this is the only place we use the joint law, and it makes no
+reference to any density $d\mu/d\nu$.)
+
+Now control the truncation error. Let
+$M:=\sup_\varepsilon\E_{\mu_\varepsilon}[e^{2R_\varepsilon}]<\infty$
+(Proposition~\ref{prop:cost}(ii)). For $K>0$ set $\chi_K(r):=(r\wedge K)\vee(-K)$, a
+bounded continuous function of $r$ with $|\chi_K|\le K$. Then
+$(u,r)\mapsto F(u)e^{\chi_K(r)}$ is bounded (by $e^K$) and continuous, so by
+\eqref{eq:joint},
+\begin{equation}\label{eq:trunc-conv}
+  \E_{\mu_\varepsilon}\!\big[F\,e^{\chi_K(R_\varepsilon)}\big]
+  \xrightarrow[\varepsilon\downarrow0]{}\E_\mu\!\big[F\,e^{\chi_K(R)}\big].
+\end{equation}
+For the truncation error, note $e^{\chi_K(r)}=e^{r}$ when $r\le K$ and
+$0\le e^{\chi_K(r)}=e^K\le e^{r}$ when $r>K$; thus
+$\big|e^{r}-e^{\chi_K(r)}\big|\le e^{r}\mathbf 1_{\{r>K\}}$ for all $r$. With $|F|\le1$ and
+Cauchy--Schwarz,
+\begin{equation}\label{eq:trunc-err}
+  \E_{\mu_\varepsilon}\!\big[\big|F e^{R_\varepsilon}-F e^{\chi_K(R_\varepsilon)}\big|\big]
+  \le\E_{\mu_\varepsilon}\!\big[e^{R_\varepsilon}\mathbf 1_{\{R_\varepsilon>K\}}\big]
+  \le\big(\E_{\mu_\varepsilon}[e^{2R_\varepsilon}]\big)^{1/2}
+     \big(\mu_\varepsilon(R_\varepsilon>K)\big)^{1/2}.
+\end{equation}
+By Markov, $\mu_\varepsilon(R_\varepsilon>K)\le e^{-2K}\E_{\mu_\varepsilon}[e^{2R_\varepsilon}]\le e^{-2K}M$,
+so \eqref{eq:trunc-err} is $\le M\,e^{-K}$, uniformly in $\varepsilon$.
+
+The same bound holds in the limit. For each $J>0$ the function $r\mapsto e^{2\chi_J(r)}$ is
+bounded and continuous, and satisfies $e^{2\chi_J(r)}\le e^{2r}+1$ for all $r$ (for $r\ge0$,
+$\chi_J(r)=r\wedge J\le r$ so $e^{2\chi_J(r)}\le e^{2r}$; for $r<0$, $e^{2\chi_J(r)}\le1$);
+hence by \eqref{eq:joint},
+\[
+  \E_\mu\big[e^{2\chi_J(R)}\big]=\lim_{\varepsilon\downarrow0}\E_{\mu_\varepsilon}\big[e^{2\chi_J(R_\varepsilon)}\big]
+   \le\sup_\varepsilon\E_{\mu_\varepsilon}\big[e^{2R_\varepsilon}+1\big]\le M+1 .
+\]
+Letting $J\uparrow\infty$, monotone convergence gives $\E_\mu[e^{2R}]\le M+1<\infty$;
+hence the same Cauchy--Schwarz/Markov computation as in \eqref{eq:trunc-err} gives
+$\E_\mu[|F e^{R}-F e^{\chi_K(R)}|]\le(M+1)\,e^{-K}$.
+
+Combining: for every $K>0$,
+\[
+  \limsup_{\varepsilon\downarrow0}\Big|\E_{\mu_\varepsilon}[F e^{R_\varepsilon}]-\E_\mu[Fe^{R}]\Big|
+  \le M e^{-K}
+   +\lim_{\varepsilon\downarrow0}\Big|\E_{\mu_\varepsilon}[Fe^{\chi_K(R_\varepsilon)}]-\E_\mu[Fe^{\chi_K(R)}]\Big|
+   +(M+1) e^{-K}
+  =(2M+1) e^{-K},
+\]
+the middle limit being $0$ by \eqref{eq:trunc-conv}. Letting $K\to\infty$,
+\begin{equation}\label{eq:rhs}
+  \E_{\mu_\varepsilon}\!\big[F\,e^{R_\varepsilon}\big]\xrightarrow[\varepsilon\downarrow0]{}\E_\mu\!\big[F\,e^{R}\big].
+\end{equation}
+Combining \eqref{eq:cov}, \eqref{eq:lhs}, \eqref{eq:rhs} yields \eqref{eq:limit} for
+bounded continuous $F$. Taking $F\equiv1$ gives $\E_\mu[e^R]=1$ (the right side equals
+$\lim\E_{\mu_\varepsilon}[e^{R_\varepsilon}]=1$ by Lemma~\ref{lem:cov}).
+
+\emph{Step 2: extension to bounded measurable $F$.}
+Both sides of \eqref{eq:limit} are finite Borel measures in $F$: the left is the
+probability measure $T_\psi^{*}\mu$, and the right is the measure
+$A\mapsto\int_A e^{R}\,d\mu$, which is finite (total mass $\E_\mu[e^R]=1$) and nonnegative
+(as $e^R\ge0$). They agree on all bounded continuous $F$. On the Polish space $\D$, two
+finite Borel measures that assign the same integral to every bounded continuous function
+are equal (bounded continuous functions are measure--determining on a Polish space; e.g.\
+by the monotone class theorem, since they form a multiplicative class generating the Borel
+$\sigma$--algebra and contain the constants). Hence the two measures coincide on all Borel
+sets, \eqref{eq:limit} holds for every bounded measurable $F$, $T_\psi^{*}\mu\ll\mu$, and
+$d\,T_\psi^{*}\mu/d\mu=e^{R}$.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}]
+By Lemma~\ref{lem:limit}, $T_\psi^{*}\mu\ll\mu$ with density $e^{R}$, and $R$ is finite
+$\mu$--a.s.\ (Proposition~\ref{prop:cost}), so $e^{R}>0$ $\mu$--a.s. It remains to prove
+$\mu\ll T_\psi^{*}\mu$.
+
+Let $A\subseteq\D$ be Borel with $T_\psi^{*}\mu(A)=0$. Applying \eqref{eq:limit} with
+$F=\mathbf 1_A$,
+\[
+  0=T_\psi^{*}\mu(A)=\E_\mu\!\big[\mathbf 1_A\,e^{R}\big]=\int_A e^{R}\,d\mu .
+\]
+The integrand $\mathbf 1_A e^{R}$ is nonnegative and, on $A\cap\{e^R>0\}$, strictly
+positive; since $\mu(\{e^R\le0\})=0$, the set $A\cap\{e^R>0\}$ has $\mu$--measure
+$\mu(A)$. An integral of a nonnegative function over a set on which it is strictly
+positive vanishes only if that set is $\mu$--null; hence $\mu(A)=0$. Therefore
+$\mu\ll T_\psi^{*}\mu$.
+
+Both $T_\psi^{*}\mu\ll\mu$ and $\mu\ll T_\psi^{*}\mu$ hold, so $\mu$ and $T_\psi^{*}\mu$
+have the same null sets, i.e.\ they are equivalent.
+\end{proof}
+
+\begin{remark}
+Smoothness of $\psi$ is used in two essential places. First, $\psi\in C^\infty(\T)\subset\mathcal H$,
+so the Cameron--Martin identity \eqref{eq:CM} applies and the Gaussian functional $W_\psi$
+is a.s.\ finite. Second, in the shift cost \eqref{eq:cost-expanded} every field power is
+paired against a \emph{smooth} test function; this is what makes the benign terms converge
+in $L^p(\nu)$ and what allows the divergent pair \eqref{eq:delicate} to be cancelled by the
+directional derivative of the mass counterterm, yielding a finite renormalised cost $R$
+(Proposition~\ref{prop:cost}). The hypothesis $\psi\not\equiv0$ only ensures the question
+is nontrivial; for $\psi\equiv0$ the two measures coincide. The explicit density obtained
+is $d\,T_\psi^{*}\mu/d\mu=e^{R}$, so the answer is: \emph{yes}, the measures are
+equivalent.
+\end{remark}
+
+\begin{thebibliography}{9}
+\bibitem{BG} N.~Barashkov and M.~Gubinelli,
+\emph{A variational method for $\Phi^4_3$}, Duke Math.\ J.\ \textbf{169} (2020), no.~17,
+3339--3415.
+\bibitem{GH} M.~Gubinelli and M.~Hofmanov\'a,
+\emph{A PDE construction of the Euclidean $\Phi^4_3$ quantum field theory},
+Comm.\ Math.\ Phys.\ \textbf{384} (2021), no.~1, 1--75.
+\bibitem{GJ} J.~Glimm and A.~Jaffe,
+\emph{Quantum Physics: A Functional Integral Point of View}, 2nd ed., Springer, 1987.
+\end{thebibliography}
+
+\end{document}

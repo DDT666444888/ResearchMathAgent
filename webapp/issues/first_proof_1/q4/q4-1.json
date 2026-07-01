@@ -195,6 +195,21 @@
       "event_type": "doc_generated",
       "body": "Document generated: **Critic Analysis**",
       "created_at": "2026-06-23T15:09:43Z"
+    },
+    {
+      "id": "c4277dcb2",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "## Mathematical Review (critic-agent) — current `solution.tex` (MSS / finite-free-Stam reduction)\n\n**Verdict.** The statement $(\\star)$ is TRUE (I confirmed numerically for $n=2,\\dots,6$: equality at $n=2$, strict for $n\\ge3$; also confirmed the contraction bound $\\Phi_n(p\\boxplus_n q)\\le\\min\\{\\Phi_n(p),\\Phi_n(q)\\}$). However the current solution **does not prove the general-$n$ case** — the author explicitly admits this in Remark `rem:honest` (\"We have not closed this point here\"). The submission is a partial result + numerics, which violates the No-Retreat policy.\n\n### What IS correctly proved\n- Structural lemmas (`lem:diffop`, `lem:matrix`, `cor:homog`): operator form, MSS matrix model, homogeneity/translation. Solid.\n- Score formula `lem:scoreformula` ($\\score_i=p''(\\alpha_i)/2p'(\\alpha_i)$) and variational form `lem:variational` (rank-one Cauchy–Schwarz). Correct.\n- $n=2$ exact additivity (`prop:n2`): the cross term $2(\\alpha_1+\\alpha_2)(\\beta_1+\\beta_2)$ cancels; verified. Correct.\n- Abstract reduction `lem:reduction`: given (i)–(iii), the convexity/contraction argument is valid and yields the *reciprocal* (harmonic-mean) bound correctly.\n\n### Genuine gaps (severity ordered)\n**G1 (fatal, central).** `prop:status`(II): the eigenvalue conditional expectation $P$ is *assumed* to be an orthogonal contraction reproducing $\\score(\\rho)$, but the relevant averaging weight $D_Q(\\rho)/r'(\\rho)$ in `eq:scoreavg` is **signed**, so Jensen/conditional-expectation contractivity does NOT apply. This is the whole content of the general case. Tracked by q4-47, q4-52, q4-48, q4-53.\n\n**G2 (definitional, underlies G1).** `prop:status` never defines $\\xi,\\eta\\in H$ as honest vectors with $P\\xi=\\sigma$. Note `eq:scoreavg` expresses $\\score(\\rho)$ as a *ratio of two expectations* $\\mathbb E[D_Q(t^2-s)]/(2\\mathbb E[D_Q t])$ — a ratio of averages is not a linear projection of a single $\\xi$, so \"applying $P$ reproduces $\\score(\\rho)$\" does not follow. Tracked by q4-52.\n\n**G3 (new, logical error).** `prop:status`(III): orthogonality $\\langle\\xi,\\eta\\rangle_H=0$ is inferred from the *first* moment $\\mathbb E_Q(QBQ^\\top)=\\tfrac{\\tr B}{n}I=0$. But $\\langle\\xi(Q),\\eta(Q)\\rangle$ is quadratic in $Q$; its expectation involves *second-order* Weingarten moments, not the first. The \"finite-$n$ asymptotic freeness\" appeal is a heuristic (finite-$n$ blocks are not free). **New issue q4-61.**\n\n**G4 (new, circular).** `prop:reductions` case (a) reduces to the contraction bound and calls it \"the content of $(\\star)$ when one term vanishes\" — i.e. invokes $(\\star)$ to prove a case of $(\\star)$. The contraction bound must be proved independently. **New issue q4-62.**\n\n**G5.** `prop:reductions` simple-roots reduction: the density/continuity (\"extends from nearby simple-rooted data\") needs the correct upper-semicontinuity of $1/\\Phi_n$ and limsup bookkeeping, AND presupposes the simple-rooted case which is unproved. Tracked by q4-54, q4-55.\n\n**G6 (minor).** `lem:jacobi`: differentiation under $\\mathbb E_Q$ deserves a clean dominated-convergence statement (true but thinly justified).\n\n### Suggested path forward\n1. Prove the contraction bound first (closes G4 and is a reusable lemma): globalize the local $T_\\varepsilon=(1-\\varepsilon D)^n$ monotonicity $\\frac{d}{d\\varepsilon}|_0\\Phi_n^{-1}=0$, $\\frac{d^2}{d\\varepsilon^2}|_0\\Phi_n^{-1}\\ge0$.\n2. For the core G1–G3: either (a) construct the correct positive Hilbertian structure / Cholesky factorization making $P$ a genuine orthogonal projection despite the signed weight (finite free conjugate-variable identity — Voiculescu Part V; Arizmendi–Perales finite free cumulants; Shlyakhtenko), or (b) abandon the MSS-projection route in favor of a direct $T_\\varepsilon$-flow convexity proof of $(\\star)$, integrating an infinitesimal Stam inequality (cf. q4-56, q4-58).\n\nFull details, theorem citations, and difficulty assessment in the attached Critic Analysis document.",
+      "created_at": "2026-06-28T01:51:54Z"
+    },
+    {
+      "id": "ev9cf436ca",
+      "author": "agent",
+      "role": "event",
+      "event_type": "doc_generated",
+      "body": "Document generated: **Critic Analysis**",
+      "created_at": "2026-06-28T01:51:59Z"
     }
   ],
   "documents": [
@@ -220,6 +235,12 @@
       "title": "Critic Analysis",
       "path": "questions/aim_problem_lists/analysis.md",
       "created_at": "2026-06-23T15:09:43Z",
+      "created_by": "agent"
+    },
+    {
+      "title": "Critic Analysis",
+      "path": "questions/q4/analysis.md",
+      "created_at": "2026-06-28T01:51:59Z",
       "created_by": "agent"
     }
   ]

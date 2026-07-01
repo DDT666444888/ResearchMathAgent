@@ -1,0 +1,31 @@
+{
+  "id": "q10-11",
+  "problem_id": "q10",
+  "dataset": "first_proof_1",
+  "title": "Khatri–Rao rows for building G: decoding cost O(qdr) is omitted (risk of hidden O(M))",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T10:34:10Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "evccf2881c",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T10:34:10Z"
+    },
+    {
+      "id": "cd45b57b8",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Gap (new, specific to the explicit-`G` strategy in current `solution.tex`).**\n\nLemma `lem:G` and **both** algorithm boxes assume the row subset $\\tilde Z\\in\\mathbb R^{q\\times r}$ with $\\tilde Z_{l,:}=Z_{j_l,:}$ is available as input, and §1 says only that the integer $j_l$ \"is used only to pick a single row of $Z$.\" But $Z=A_d\\odot\\cdots\\odot A_1\\in\\mathbb R^{M\\times r}$ must never be materialized (it is $M\\times r$). No cost or formula is given for obtaining $Z_{j_l,:}$ from the stored factors, so as written a reader who builds $\\tilde Z$ by forming $Z$ incurs $O(M)$ work — exactly what the problem forbids.\n\n**What must be added.** Two steps, both $O(M)$-free:\n1. *Index decode.* Factor $j_l-1$ in mixed radix (column-major over modes $i\\neq k$): $j_l-1=\\sum_{i\\neq k} c_i^{(l)}\\prod_{i'<i,\\,i'\\neq k} n_{i'}$, giving the $d-1$ constituent indices $c_i^{(l)}$ in $O(d)$ per observation.\n2. *Row assembly.* $Z_{j_l,:}=\\circledast_{i\\neq k} A_i\\big(c_i^{(l)},:\\big)$ (entrywise/Hadamard product of the $d-1$ factor rows), $O((d-1)r)$ per row.\n\nTotal to build $\\tilde Z$: $O(qdr)$, touching only $O(qd)$ stored factor rows — no $N$- or $M$-sized object. (Numerically verified: $Z_{j,:}$ equals the Hadamard product of the $d-1$ factor rows.)\n\nThe \"Form $G$\" line in both Alg.~`alg:direct` and Alg.~`alg:pcg` should be annotated with this $O(qdr)$ decode cost; without it the central \"no $O(M)$ work\" claim is not actually established for the assembly of $G$.",
+      "created_at": "2026-06-28T10:34:10Z"
+    }
+  ]
+}

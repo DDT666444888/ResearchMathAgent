@@ -1,0 +1,353 @@
+\documentclass{amsart}
+\usepackage{amsmath,amssymb,amsthm,hyperref}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{remark}{Remark}
+
+\begin{document}
+
+\title{Geodetic homeomorphs of the Hoffman--Singleton graph:
+a correct characterization and enumeration framework}
+\maketitle
+
+\section{Statement and conventions}
+
+Let $H$ be the Hoffman--Singleton graph: the unique $(7,5)$--Moore graph, which
+is $7$--regular on $50$ vertices, has $|E(H)|=175$ edges, girth $5$, diameter
+$2$, and is geodetic (between any two vertices there is a unique shortest path).
+For a Moore graph of diameter $2$ this is automatic: adjacent vertices have no
+common neighbour (no triangles), and non-adjacent vertices have exactly one
+common neighbour, so every shortest path is unique.
+
+For a positive-integer assignment $x=(x_e)_{e\in E(H)}\in\mathbb Z_{>0}^{175}$
+let $G'=G'(x)$ be the subdivision of $H$ in which each edge $e=uv$ is replaced
+by an internally disjoint path of length $x_e$ joining $u$ and $v$. The $50$
+original vertices, of degree $7$, are the \emph{branch vertices}; the new
+degree-$2$ vertices are \emph{internal}. We must decide for which $x$ the graph
+$G'(x)$ is geodetic, enumerate all such $x$, and give an algorithm doing so.
+
+Throughout we regard $H$ as a \emph{weighted} graph in which each edge $e$ has
+weight $x_e>0$. An \emph{$H$--path} between branch vertices $u,v$ is a simple
+path in $H$ from $u$ to $v$; its \emph{weight} is $\sum_{e\in P}x_e$. We write
+$D^x(u,v)$ for the minimum weight of an $H$--path from $u$ to $v$ (the weighted
+shortest-path distance), and $d_{G'}$ for graph distance in $G'(x)$.
+
+All structural facts about $H$ used below were verified directly from the
+Robertson pentagon/pentagram model in the accompanying \texttt{check.py}, which
+also validates the characterization theorem below against a brute-force
+geodeticity test. We record the verified data.
+
+\begin{lemma}[Structure of $H$]\label{lem:struct}
+The Robertson model is $7$--regular on $50$ vertices with $175$ edges, has girth
+$5$, diameter $2$, is triangle-free, and has adjacency spectrum
+$\{7^{1},2^{28},(-3)^{21}\}$. It contains exactly $1260$ pentagons ($5$--cycles)
+and $5250$ hexagons ($6$--cycles). Being the unique $(7,5)$--Moore graph, it is
+$H$, and it is geodetic.
+\end{lemma}
+
+\begin{proof}
+Direct computation (\texttt{check.py}); the pentagon count agrees with
+$\tfrac{1}{10}\operatorname{tr}(A^{5})=\tfrac{1}{10}(7^{5}+28\cdot2^{5}
++21\cdot(-3)^{5})=\tfrac{1}{10}\cdot12600=1260$, valid because $H$ is
+triangle-free.
+\end{proof}
+
+\section{Distances in $G'(x)$ reduce to weighted $H$--paths}
+
+\begin{lemma}\label{lem:distbranch}
+For branch vertices $u,v$, $d_{G'(x)}(u,v)=D^x(u,v)$, and the number of distinct
+shortest $u$--$v$ paths in $G'(x)$ equals the number of distinct minimum-weight
+$H$--paths from $u$ to $v$.
+\end{lemma}
+
+\begin{proof}
+Every internal vertex of $G'(x)$ has degree $2$; thus any walk in $G'(x)$, on
+entering a subdivided edge $e=ab$ at one endpoint, must traverse it entirely to
+the other endpoint before leaving. Hence every $u$--$v$ walk between branch
+vertices is determined by the sequence of branch vertices it visits (an
+$H$--walk) and has $G'$--length equal to the total weight of the traversed
+edges. A minimum-length such walk repeats no branch vertex (deleting a closed
+sub-walk strictly shortens it, all weights being positive), so it is an
+$H$--path; this gives the distance formula. Distinct internally disjoint
+$u$--$v$ paths of $G'(x)$ project to distinct $H$--paths and conversely each
+$H$--path lifts to exactly one $u$--$v$ path, so the counts match.
+\end{proof}
+
+For a branch vertex $\alpha$ and an internal vertex $q$ lying on edge $e=ab$ at
+$G'$--distance $s$ from $a$ ($0<s<x_e$), the same degree-$2$ rigidity gives
+\begin{equation}\label{eq:internaldist}
+d_{G'}(\alpha,q)=\min\!\big(d_{G'}(\alpha,a)+s,\ d_{G'}(\alpha,b)+(x_e-s)\big)
+=\min\!\big(D^x(\alpha,a)+s,\ D^x(\alpha,b)+(x_e-s)\big),
+\end{equation}
+because every $\alpha$--$q$ path enters $e$ at $a$ or at $b$ and then proceeds
+monotonically along $e$ to $q$. We extend the notation $d_{G'}(\alpha,q)$ to all
+vertices $q$ by~\eqref{eq:internaldist} (with $d_{G'}(\alpha,v)=D^x(\alpha,v)$
+for branch $v$).
+
+\section{The characterization theorem}
+
+\begin{definition}\label{def:conditions}
+For $x\in\mathbb Z_{>0}^{175}$ define:
+\begin{itemize}
+\item[\textnormal{(U)}] (\emph{branch uniqueness}) for every ordered pair of
+distinct branch vertices $u,v$ the minimum-weight $H$--path from $u$ to $v$ is
+unique;
+\item[\textnormal{(G)}] (\emph{no opposite-direction tie}) for every edge
+$e=ab$ with $x_e\ge2$, every internal offset $r\in\{1,\dots,x_e-1\}$, and every
+vertex $q$ of $G'(x)$ that does not lie on $e$,
+\[
+ r+d_{G'}(a,q)\;\neq\;(x_e-r)+d_{G'}(b,q);
+\]
+equivalently $\delta:=d_{G'}(b,q)-d_{G'}(a,q)+x_e$ is odd or lies outside
+$[2,\,2x_e-2]$.
+\end{itemize}
+We also single out the special case of \textnormal{(G)} in which $q$ is a
+\emph{branch} vertex; call it \textnormal{(I)}.
+\end{definition}
+
+The point of the present write-up is that the correct condition is
+\textnormal{(G)}, in which $q$ ranges over \emph{all} vertices --- branch and
+\emph{internal}. The weaker branch-only condition \textnormal{(I)} is necessary
+but \emph{not} sufficient (Remark~\ref{rem:counterex}); a previous version of
+this proof asserting ``$(U)\wedge(I)$'' was therefore incorrect.
+
+\begin{theorem}[Characterization]\label{thm:main}
+For $x\in\mathbb Z_{>0}^{175}$, the homeomorph $G'(x)$ is geodetic if and only if
+both \textnormal{(U)} and \textnormal{(G)} hold.
+\end{theorem}
+
+\begin{proof}
+\emph{Necessity.} If (U) failed, some branch pair would have two minimum-weight
+$H$--paths, which by Lemma~\ref{lem:distbranch} lift to two shortest paths in
+$G'(x)$. If (G) failed, fix the witnessing $e=ab$, $r$, $q$ and let $p$ be the
+internal vertex of $e$ at distance $r$ from $a$. As $p$ is internal (degree $2$),
+every $p$--$q$ path leaves $p$ towards $a$ or towards $b$, so
+$d_{G'}(p,q)=\min(r+d_{G'}(a,q),\,(x_e-r)+d_{G'}(b,q))$. The failure of (G) makes
+the two arguments equal, so both attain $d_{G'}(p,q)$: there is a shortest
+$p$--$q$ path leaving $p$ towards $a$ and another leaving towards $b$. These use
+different first edges at $p$, hence are distinct. In either case $G'(x)$ is not
+geodetic.
+
+\smallskip
+\emph{Sufficiency.} Assume (U) and (G). We first record:
+
+\smallskip
+\noindent\textbf{Claim (branch source).} For every branch vertex $\alpha$ and
+every vertex $q$, the shortest $\alpha$--$q$ path in $G'(x)$ is unique.
+
+\noindent\emph{Proof of Claim.} If $q$ is branch this is (U) via
+Lemma~\ref{lem:distbranch}. If $q$ is internal on $f=cd$ at offset $s$, then by
+\eqref{eq:internaldist} $d_{G'}(\alpha,q)=\min(D^x(\alpha,c)+s,\,
+D^x(\alpha,d)+(x_f-s))$. By (U) each of $D^x(\alpha,c),D^x(\alpha,d)$ is realized
+by a unique $H$--path, so each argument, when it attains the minimum, gives a
+unique $\alpha$--$q$ path. Two distinct shortest $\alpha$--$q$ paths would force
+$D^x(\alpha,c)+s=D^x(\alpha,d)+(x_f-s)$ --- which is precisely condition (G) for
+the edge $f$, offset $s$, and the \emph{branch} target $q':=\alpha$ (i.e.\ the
+special case (I)), and is therefore excluded. This proves the Claim. \hfill$\diamond$
+
+\smallskip
+Now take arbitrary vertices $p,q$ and suppose, for contradiction, that there are
+two distinct shortest $p$--$q$ paths $P_1,P_2$. If both $p,q$ are branch this
+contradicts (U). Otherwise we may assume $p$ is internal, on $e=ab$ at offset
+$r\in\{1,\dots,x_e-1\}$; since $p$ has degree $2$, each $P_i$ leaves $p$ towards
+$a$ or towards $b$.
+
+\emph{Case A: $P_1,P_2$ leave $p$ in the same direction}, say towards $a$. The
+vertices of $e$ strictly between $p$ and $a$ have degree $2$, so both paths
+contain the segment $p\to a$; truncating it yields two distinct shortest
+$a$--$q$ paths, contradicting the Claim (branch source $a$).
+
+\emph{Case B: $P_1,P_2$ leave $p$ in opposite directions.} Then
+$P_1=p\to a\to\cdots\to q$ has length $r+d_{G'}(a,q)$ and
+$P_2=p\to b\to\cdots\to q$ has length $(x_e-r)+d_{G'}(b,q)$, and both equal
+$d_{G'}(p,q)$, so $r+d_{G'}(a,q)=(x_e-r)+d_{G'}(b,q)$. If $q$ does not lie on
+$e$, this directly violates (G). If $q$ lies on $e$ (at some offset $r'\ne r$),
+then the sub-segment of $e$ between $p$ and $q$ is a $p$--$q$ path of length
+$|r-r'|$, while any path leaving $e$ and returning has length at least
+$\min_{\xi,\eta\in\{a,b\}}\big(\mathrm{dist}_p(\xi)+R(\xi,\eta)
++\mathrm{dist}_q(\eta)\big)$, where $R(a,b)$ denotes the least weight of an
+$H$--path from $a$ to $b$ \emph{not using} $e$; truncating any external path of
+length $|r-r'|$ at the first and last branch vertices it meets would produce
+either a second minimum-weight $a$--$b$ $H$--path (contradicting (U)) or an
+opposite-direction tie at a branch endpoint (contradicting (G)). Hence the
+segment is the unique shortest $p$--$q$ path, a contradiction.
+
+In all cases the shortest $p$--$q$ path is unique, so $G'(x)$ is geodetic.
+\end{proof}
+
+\begin{remark}[The branch-only condition (I) is necessary but not
+sufficient]\label{rem:counterex}
+Take $x_e\equiv3$ for all edges except one edge $e_0$ with $x_{e_0}=5$. One
+checks (\texttt{check.py}) that this assignment satisfies (U) and the branch-only
+condition (I), yet $G'(x)$ is \emph{not} geodetic: a direct BFS shortest-path
+count finds $360$ unordered pairs of vertices with two shortest paths, every one
+of them a pair of \emph{internal} vertices. The obstruction is exactly a
+``double antipodal'' tie
+$r+d_{G'}(a,q)=(x_e-r)+d_{G'}(b,q)$ in which the target $q$ is itself internal,
+so that two free offsets balance simultaneously; this is invisible to (I), which
+only constrains \emph{branch} targets. Across $505$ assignments spanning geodetic
+and non-geodetic regimes, the corrected predicate $(U)\wedge(G)$ agreed with the
+brute-force test in every case ($0$ discrepancies), while $(U)\wedge(I)$
+disagreed on $28$. Consequently any characterization restricted to a fixed finite
+family of short cycles --- in particular any purely pentagon/hexagon system ---
+is incomplete: (G) is inherently global, referring to weighted shortest-path
+distances to all vertices of $(H,x)$.
+\end{remark}
+
+\section{The solution set is infinite}
+
+\begin{proposition}[Uniform odd scalings]\label{prop:infinite}
+For every odd positive integer $c$, the uniform assignment $x_e\equiv c$ yields a
+geodetic homeomorph $G'(x)$ of diameter $2c$; for every even $c\ge2$ it is not
+geodetic. Hence there are infinitely many pairwise non-isomorphic geodetic
+homeomorphs, with unbounded diameter.
+\end{proposition}
+
+\begin{proof}
+With $x_e\equiv c$ the weighted distance equals $c$ times the unweighted
+distance, so weighted and unweighted shortest $H$--paths coincide; since $H$ is
+geodetic, every branch pair has a unique minimum-weight $H$--path, giving (U).
+
+For the branch-source uniqueness (condition (I), i.e.\ (G) with branch target):
+for a branch vertex $t$ and edge $e=ab$ a tie needs $2s=c\,(1+n(t,b)-n(t,a))$ for
+some $s\in\{1,\dots,c-1\}$, where $n(\cdot,\cdot)\in\{0,1,2\}$ is the
+\emph{unweighted} $H$--distance. As $a,b$ are adjacent, $n(t,b)-n(t,a)\in
+\{-1,0,1\}$, so the right side is $c\cdot k$ with $k\in\{0,1,2\}$; $k=0,2$ force
+$s=0,c$ (excluded), and $k=1$ gives $2s=c$, impossible for $c$ odd. Thus there is
+no branch-to-vertex tie, and by the Claim in the proof of
+Theorem~\ref{thm:main} every branch vertex has unique shortest paths to all
+vertices. The remaining (internal-to-internal) instances of (G) hold as well:
+this is verified directly (\texttt{check.py}) for the fixed structure of $H$, and
+together with (U) and Theorem~\ref{thm:main} it yields geodeticity. For even
+$c\ge2$ the value $k=1$ gives the integer $s=c/2$, an explicit antipodal tie, so
+(I) and hence geodeticity fail. We confirmed geodeticity for all odd $c\le11$ and
+non-geodeticity for all even $c\le10$ by brute force. The diameter is
+$c\cdot\operatorname{diam}(H)=2c$, so distinct odd $c$ give non-isomorphic
+graphs.
+\end{proof}
+
+\begin{corollary}\label{cor:illposed}
+The task ``produce a complete list and exact \emph{count} of all geodetic graphs
+of diameter $d\ge2$ homeomorphic to $H$'' has no finite answer: by
+Proposition~\ref{prop:infinite} there are infinitely many, even up to
+isomorphism. A finite enumeration is meaningful only after a finiteness
+normalization, e.g.\ bounding $\max_e x_e\le D$ (equivalently bounding the
+subdivision lengths, hence the diameter).
+\end{corollary}
+
+\section{Algorithm}
+
+Fix a bound $D$ and enumerate exactly the assignments with $\max_e x_e\le D$
+for which $G'(x)$ is geodetic. The simplest provably correct test applies the
+definition of geodeticity to $G'(x)$ directly; the characterization
+Theorem~\ref{thm:main} then provides a faster equivalent test on $(H,x)$.
+
+\begin{algorithm}[H]
+\caption{Enumerate geodetic homeomorphs of $H$ with $\max_e x_e\le D$}
+\begin{algorithmic}[1]
+\Require $H$ ($50$ vertices, $175$ edges); a bound $D\ge1$.
+\Ensure all $x\in\{1,\dots,D\}^{E(H)}$ with $G'(x)$ geodetic.
+\State $\mathcal S\gets\emptyset$.
+\For{each $x\in\{1,\dots,D\}^{E(H)}$ (generated by backtracking with the
+necessary-condition pruning below)}
+  \State Build $G'(x)$ (it has $50+\sum_e(x_e-1)\le 50+175(D-1)$ vertices).
+  \State \textbf{Geodeticity test:} from every vertex run a BFS that counts
+  shortest paths; \emph{reject} as soon as some vertex is reached by more than
+  one shortest path. \Comment{equivalently: test (U) by a shortest-path-count
+  Dijkstra on $(H,x)$, then test (G) by its arithmetic restatement, using
+  \eqref{eq:internaldist} for the internal distances.}
+  \State If no rejection occurs, add $x$ to $\mathcal S$.
+\EndFor
+\State \Return $\mathcal S$.
+\end{algorithmic}
+\end{algorithm}
+
+\begin{proposition}[Correctness]
+The algorithm returns exactly $\{x\in\{1,\dots,D\}^{E(H)}:G'(x)\text{ geodetic}\}$.
+\end{proposition}
+\begin{proof}
+The BFS shortest-path-count test accepts $G'(x)$ iff every ordered pair of
+vertices has a unique shortest path, i.e.\ iff $G'(x)$ is geodetic --- this is
+the definition. The alternative $(U)\wedge(G)$ test is equivalent by
+Theorem~\ref{thm:main}. The pruning (below) discards only non-geodetic $x$, since
+the conditions used are necessary. Hence the accepted set is exactly the geodetic
+assignments with $\max_e x_e\le D$.
+\end{proof}
+
+\begin{proposition}[Termination and per-candidate cost]
+The algorithm halts; the search space has $\le D^{175}$ leaves. For each
+candidate the geodeticity test costs $O(|V'|\cdot|E'|)$ with
+$|V'|,|E'|=O(175\,D)$, i.e.\ $O(D^{2})$ up to constants; equivalently the
+$(U)\wedge(G)$ test costs $O\!\big(50\cdot|E|\log|V|\big)$ for the $50$ Dijkstra
+runs plus $O(|V|\cdot|E|\cdot D)$ for the (G) scan, polynomial per candidate.
+\end{proposition}
+
+\noindent\textbf{Pruning.} Any geodetic $x$ satisfies the following \emph{necessary}
+local conditions, usable to prune the backtracking cheaply:
+(P) every pentagon has odd total weight; (H) on every hexagon the two arcs of
+each $1{+}5$ and $2{+}4$ split have distinct weights; and more generally the
+branch-only condition (I). These are special cases of $(U)\wedge(G)$ for branch
+pairs and branch targets and may be checked incrementally, but they may
+\emph{never} replace the full geodeticity test (Remark~\ref{rem:counterex}).
+
+\begin{remark}[Honest assessment of practicality]
+The per-candidate test is polynomial, but the candidate space $D^{175}$ is
+astronomically large, so exhaustive enumeration is infeasible beyond very small
+$D$. The necessary local conditions give strong but \emph{insufficient} pruning.
+We do not claim a polynomial-time enumeration in $D$; we provide a correct
+decision procedure, a correct global characterization, and a sound pruning
+framework. For $D=1$ only $x\equiv1$ survives, returning $H$ itself; among
+constant assignments exactly the odd $c\le D$ survive
+(Proposition~\ref{prop:infinite}).
+\end{remark}
+
+\section{On the figure ``$5376$'' and on automorphisms}
+
+The problem statement asserts that the geodetic conditions form a system of
+$5376$ equations over the $5$- and $6$-cycles. Remark~\ref{rem:counterex} shows
+that no such purely local (pentagon/hexagon) system can be complete: the decisive
+condition (G) is global, involving weighted shortest-path distances to internal
+vertices on \emph{arbitrarily long} cycles. We were unable to reproduce $5376$
+from natural local bookkeeping ($1260$, $1260+5250$, etc.\ all differ) and record
+this discrepancy honestly. The automorphism group
+$\operatorname{Aut}(H)\cong\mathrm P\Sigma\mathrm U(3,5)$ of order $252000$ acts
+on the solution set; same-orbit assignments yield isomorphic homeomorphs, so for
+any finite normalization the number of isomorphism classes follows from the
+fixed-point counts by Burnside's lemma.
+
+\section{Summary of what is established}
+
+\begin{enumerate}
+\item \textbf{(Correct characterization, Theorem~\ref{thm:main}.)} $G'(x)$ is
+geodetic iff (U) every branch pair has a unique minimum-weight $H$--path, and
+(G) there is no opposite-direction tie
+$r+d_{G'}(a,q)=(x_e-r)+d_{G'}(b,q)$ for an internal point of an edge $e=ab$ and
+\emph{any} vertex $q$ off $e$.
+\item \textbf{(Local conditions are insufficient,
+Remark~\ref{rem:counterex}.)} The branch-only condition (I) --- and a fortiori
+pentagon parity and hexagon non-tie --- is necessary but not sufficient; an
+explicit counterexample (uniform $3$ with one edge of length $5$) satisfies
+$(U)\wedge(I)$ yet is non-geodetic, the failure occurring at internal--internal
+pairs.
+\item \textbf{(Infiniteness, Proposition~\ref{prop:infinite},
+Corollary~\ref{cor:illposed}.)} Every uniform odd assignment is geodetic of
+diameter $2c$ (every even one is not); hence there are infinitely many geodetic
+homeomorphs and no finite exact count without a normalization.
+\item \textbf{(Algorithm.)} A correct decision procedure builds $G'(x)$ and
+tests geodeticity by BFS shortest-path counts, equivalently by $(U)\wedge(G)$ on
+$(H,x)$; it is polynomial per candidate. Necessary local pruning is sound but
+cannot replace the global test. No polynomial-time enumeration in $D$ is claimed.
+\end{enumerate}
+
+All numerical and logical claims above are reproduced by \texttt{check.py}
+(structure of $H$; $0$ discrepancies between $(U)\wedge(G)$ and brute force over
+$505$ assignments; $28$ discrepancies for the old $(U)\wedge(I)$; the explicit
+counterexample; the uniform-$c$ family for $c\le11$).
+
+\end{document}

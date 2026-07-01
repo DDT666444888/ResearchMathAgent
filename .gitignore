@@ -87,3 +87,5 @@ outputs/
 
 # Local secrets (ANTHROPIC_API_KEY etc.)
 .env.local
+
+logs

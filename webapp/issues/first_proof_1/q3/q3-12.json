@@ -1,0 +1,31 @@
+{
+  "id": "q3-12",
+  "problem_id": "q3",
+  "dataset": "first_proof_1",
+  "title": "Existence/explicit construction of the chain: exhibit transition rule P(mu,nu) via local moves not referencing F*_mu",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T07:27:30Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev3f6fe78f",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T07:27:30Z"
+    },
+    {
+      "id": "cd7794501",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Sub-lemma (L1).** The problem is an existence question (\"Does there exist a nontrivial Markov chain...\"). The first substantive step is to **exhibit** the chain: give explicit transition probabilities $P(\\mu,\\nu)$ for $\\mu,\\nu\\in S_n(\\lambda)$ in closed form in $t$ and the $x_i$, built from **local moves** (ASEP-type hops, a single-row *decrement* move, and a *merge/sort* move), together with a holding probability.\n\n**Nontriviality constraint (must be checked, L5).** By the problem's definition, the transition probabilities may **not** be described using the polynomials $F^*_\\mu$. Hence the naive choice $P(\\mu,\\nu)\\propto F^*_\\nu$ is forbidden; the construction must be genuinely local/combinatorial.\n\nDeliverable: a fully written-out transition kernel (no placeholders), from which q3-5 (row-stochasticity), the stationarity bridge $\\pi P=\\pi$, and q3-6 (irreducibility/aperiodicity) can be verified. No current open issue isolates the *construction* itself; the open issues all critique steps of an assumed kernel.",
+      "created_at": "2026-06-27T07:27:30Z"
+    }
+  ]
+}

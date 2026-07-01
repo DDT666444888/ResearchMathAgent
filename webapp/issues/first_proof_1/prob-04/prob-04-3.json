@@ -26,6 +26,13 @@
       "role": "agent",
       "body": "Lemma `lemmaisoperimetric2` (the $k=2,n=4$ special cases used in the main argument) is stated as a corollary of `isoperimetriclemma` but **no derivation is given**. A solver must supply it:\n\n- Regime A, $cR_1^2\\le V\\le cR_1R_2$: take $j=1$, $\\rho=V/(cR_1)\\in[R_1,R_2]$, so $I^2_R(V)\\le C R_1\\rho^2=C'R_1^{-1}V^2$ (matches `bounda`).\n- Regime B, $V\\le cR_1^2$: take $j=0$, $\\rho=(V/c)^{1/2}\\in[R_0,R_1]$, so $I^2_R(V)\\le C\\rho^3=C'V^{3/2}$ (matches `boundb`).\n\n(Exponents verified numerically by the critic.)\n\n**Gap:** Regime B uses $j=0$, which requires the constraint \"$R_j\\le\\rho\\le R_{j+1}$\" with $j=0$, i.e. $R_0\\le\\rho\\le R_1$. The value $R_0$ and the empty product $R_1\\cdots R_0=1$ are **never defined** in the statement of `isoperimetriclemma`, and admissibility of $j=0$ is not addressed (the lemma says $0\\le j\\le k-1$, so $j=0$ is nominally allowed, but the interval endpoint $R_0$ is undefined). The convention $R_0=0$ (or $R_0=$ the smallest admissible scale) must be stated explicitly and the regime split $V\\lessgtr cR_1^2$ matched to $j\\in\\{0,1\\}$ with full justification (gap type F2 boundary case).",
       "created_at": "2026-06-23T00:15:31Z"
+    },
+    {
+      "id": "cdbec0f48",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Status (current revision):** PARTIALLY ADDRESSED. The revised `lemmaisoperimetric2` proof now matches the regime split $V\\lessgtr cR_1^2$ to $j\\in\\{0,1\\}$ explicitly (Regime B: $j=0$, $\\rho=(V/c)^{1/2}\\le R_1$; Regime A: $j=1$). **Residual gap:** the $j=0$ branch writes $C\\,R_1\\cdots R_0\\,\\rho^3$, i.e. it uses the empty product $R_1\\cdots R_0=1$ and the interval endpoint $R_0$ ($R_0\\le\\rho\\le R_1$), but the statement of `isoperimetriclemma` (which allows $0\\le j\\le k-1$) never defines $R_0$ nor the empty-product convention. A one-line convention ($R_0:=0$, empty product $:=1$) and a note that $j=0\\Leftrightarrow V\\le c(n)R_1^k$ must be inserted into the lemma statement.",
+      "created_at": "2026-06-27T09:16:55Z"
     }
   ]
 }

@@ -1,0 +1,31 @@
+{
+  "id": "rm-02193-4",
+  "problem_id": "rm-02193",
+  "dataset": "first_proof_2",
+  "title": "Minor: 'unique topological order' of condensation stated imprecisely",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T12:30:39Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "evb795c6c5",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T12:30:39Z"
+    },
+    {
+      "id": "c03769a45",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Severity: minor (wording).**\n\nIn Section 3.1, after Lemma 2: \"Because $\\widehat D$ is acyclic, it has at most one Hamiltonian path, and it has one iff its unique topological order ... satisfies $C_{\\sigma(j)}\\to C_{\\sigma(j+1)}$.\" An acyclic digraph need not have a *unique* topological order; uniqueness holds only *after* one knows a Hamiltonian path exists. Correct statement: an acyclic digraph has a Hamiltonian path iff *some* topological order has all consecutive arcs present, and in that case both the Hamiltonian path and the realising order are unique. The algorithmic check is correct; only the wording asserting a pre-existing \"unique topological order\" should be tightened. Not a substantive gap.",
+      "created_at": "2026-06-27T12:30:39Z"
+    }
+  ]
+}

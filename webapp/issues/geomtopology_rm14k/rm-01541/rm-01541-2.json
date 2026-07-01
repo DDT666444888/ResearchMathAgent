@@ -3,7 +3,7 @@
   "problem_id": "rm-01541",
   "dataset": "geomtopology_rm14k",
   "title": "G1: Rationally generating family of 4k-manifolds without cobordism theory",
-  "status": "open",
+  "status": "resolved",
   "labels": [
     "proof-gap"
   ],
@@ -26,6 +26,21 @@
       "role": "agent",
       "body": "**Central gap.** The standard proof reduces the signature theorem to checking two ring homomorphisms ($\\tau$ and $\\langle L,[\\cdot]\\rangle$) agree on generators of $\\Omega^{SO}_*\\otimes\\mathbb{Q}=\\mathbb{Q}[\\,[\\mathbb{CP}^2],[\\mathbb{CP}^4],\\dots]$ (Thom). The problem **explicitly bans cobordism theory / Pontryagin–Thom**, so this generation statement is not available off the shelf.\n\n**What must be proved.** In each dimension $4k$, exhibit an explicit finite family of closed oriented manifolds $M^{(1)},\\dots,M^{(N)}$ (e.g. products $\\mathbb{CP}^{2i_1}\\times\\cdots\\times\\mathbb{CP}^{2i_r}$ and Milnor hypersurfaces $H_{i,j}\\subset\\mathbb{CP}^i\\times\\mathbb{CP}^j$) whose **Pontryagin-number vectors are linearly independent** (span the space of Pontryagin numbers in degree $4k$, dimension $=p(k)$ = number of partitions of $k$), and on which both $\\tau$ and $\\langle L,[\\cdot]\\rangle$ can be computed in closed form. Then conclude the two linear functionals on Pontryagin-number space coincide.\n\n**Risk to audit:** any argument that 'these manifolds generate rationally' must not covertly re-invoke $\\Omega^{SO}_*\\otimes\\mathbb{Q}$; the spanning must be a direct (e.g. determinant/Vandermonde-type) computation. This is the hardest gap and the reason 'elementary' is a real constraint.",
       "created_at": "2026-06-23T07:08:06Z"
+    },
+    {
+      "id": "c58e5ac3a",
+      "author": "solver-agent",
+      "role": "agent",
+      "body": "**Resolution of G1 (rationally generating family without cobordism theory).**\n\nI audited and verified the existing spanning argument (§3–4, Thm. *Spanning*) and tightened its one soft spot. The section now constitutes a *complete, self-contained, cobordism-free* proof of exactly what the issue demands.\n\n**What is established (all verified numerically/symbolically):**\n\n1. **Explicit family.** For each partition $\\mu\\in P(k)$, $M_\\mu=\\prod_s \\mathbb{CP}^{2\\mu_s}$ — a family of exactly $p(k)$ closed oriented $4k$-manifolds.\n\n2. **Closed-form Pontryagin numbers.** Using only the Euler sequence / Whitney formula computation $p(T\\mathbb{CP}^n)=(1+h^2)^{n+1}$ (proved from scratch in §1) and the pairing rule, the power-sum Pontryagin numbers are\n$\\mathfrak p_\\lambda[M_\\mu]=\\big[\\prod_s t_s^{\\mu_s}\\big]\\prod_i\\big(\\sum_s(2\\mu_s+1)t_s^{\\lambda_i}\\big)$, a finite integer combinatorial sum $\\sum_f \\prod_i(2\\mu_{f(i)}+1)$ over balanced functions $f$. I cross-checked formula (7) against an independent symbolic expansion in the cohomology of the product for all $k\\le5$: **exact match**.\n\n3. **Direct (non-cobordism) spanning via a triangular determinant.** Ordering $P(k)$ by dominance, $\\mathfrak p_\\lambda[M_\\mu]\\ne0\\Rightarrow\\lambda\\preceq\\mu$ (Coarsening-dominates lemma) and diagonal entries are strictly positive. I verified triangularity (no violations) and positive diagonal for **all $k\\le8$**, and confirmed the determinants $3,90,17010,1653372000,4640436523800000$ for $k=1,\\dots,5$ — matching the values claimed in the text. So $\\det\\ne0$, the Pontryagin vectors span $\\mathbb{Q}^{P(k)}$. This is a pure Vandermonde-type determinant computation; **$\\Omega^{SO}_*\\otimes\\mathbb{Q}$ is never invoked here.**\n\n4. **Closed-form functional values.** $\\tau(M_\\mu)=1$ (rank-one positive intersection form, multiplicativity) and $L[M_\\mu]=1$ via the residue computation $[h^{2m}](h/\\tanh h)^{2m+1}=[w^{2m}](1-w^2)^{-1}=1$ — verified symbolically for $m\\le6$. Hence both functionals agree on the spanning family, forcing $\\tau=L[\\cdot]$ on degree-$4k$ Pontryagin numbers (given Facts (I),(II), which are separate issues).\n\n**Fix applied.** The previous text justified the $p_\\lambda\\leftrightarrow\\mathfrak p_\\lambda$ transition by the imprecise phrase \"unitriangular up to nonzero scalars.\" I replaced this with a self-contained **Lemma (Newton change of basis; invertibility)**: from Newton's identities $\\mathfrak p_i=(-1)^{i-1} i\\,e_i+(\\text{poly in }e_{<i})$, the products $\\mathfrak p_\\lambda$ expand in the $p_\\mu$ basis triangularly *with respect to the refinement order* with nonzero diagonal $\\prod_i(-1)^{\\lambda_i-1}\\lambda_i$, hence the transition matrix is invertible over $\\mathbb{Q}$. I verified the refinement-triangularity and the exact diagonal value for all $k\\le5$.\n\n**Scope note (honest).** This issue (G1) concerns *only* the generating-family/spanning step, and that step is now fully elementary and complete. The distinct upper-bound input $\\dim_\\mathbb{Q}\\Omega^{SO}_{4k}\\otimes\\mathbb{Q}\\le p(k)$ used in Fact (II) is a *separate* matter (handled in §6 / its own issue) and is **not** used anywhere in the spanning argument. The spanning is genuinely a direct determinant computation, as the issue required.\n\nMarking G1 resolved.",
+      "created_at": "2026-06-28T09:23:33Z"
+    },
+    {
+      "id": "ev06241cd4",
+      "author": "system",
+      "role": "event",
+      "event_type": "status_changed",
+      "body": "✅ Status changed: **open** → **resolved**",
+      "created_at": "2026-06-28T09:23:36Z"
     }
   ]
 }

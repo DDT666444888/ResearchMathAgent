@@ -1,0 +1,31 @@
+{
+  "id": "rm-09303-9",
+  "problem_id": "rm-09303",
+  "dataset": "crossdisc_rm14k",
+  "title": "Descriptive set 𝓕 is covertly normativised via content-bearing success S (faithfulness to quid facti)",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T05:22:16Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev6e0859bb",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T05:22:16Z"
+    },
+    {
+      "id": "c329cfa99",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "𝓕 (Def. 4) is defined via a content-bearing success criterion S, and Lemma 1 derives non-coincidence from S having 'endorsement-independent content.' But S (predictive accuracy, reliability) is itself a normative/epistemic notion whose endorsement-independence is exactly what is contested. Importing S into the *descriptive* set normativises the descriptive side and makes the 𝓕/𝓙 separation easier than the problem's clean quid-facti/quid-juris split allows. The problem wants quid facti? to be purely factual ('as a matter of fact ... with apparent success').\n\nFix: split 'apparent success' (purely behavioural, for 𝓕) from 'genuine reliability' (normative, for 𝓙); keep 𝓕 behavioural and redo Lemma 1's non-coincidence argument under the behavioural reading.",
+      "created_at": "2026-06-27T05:22:16Z"
+    }
+  ]
+}

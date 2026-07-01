@@ -1,0 +1,371 @@
+\clearpage
+\section*{Problem 1}
+\addcontentsline{toc}{section}{Problem 1}
+\begingroup
+\hypersetup{colorlinks=true,
+            linkcolor=blue!50!black,
+            citecolor=blue!50!black,
+            urlcolor=blue!50!black}
+\newcommand{\qoneT}{\mathbb{T}}
+\newcommand{\qoneR}{\mathbb{R}}
+\newcommand{\qoneN}{\mathbb{N}}
+\newcommand{\qoneC}{\mathcal{C}}
+\newcommand{\qoneD}{\mathcal{D}}
+\newcommand{\qoneE}{\mathbb{E}}
+\newcommand{\qoneHp}{H}      % Hermite
+\newcommand{\qonePN}{P_N}
+\newcommand{\qoneLin}{\mathbf{l}}   % stationary linear solution
+\newcommand{\qoneLsq}{\mathbf{q}}   % Wick square
+\newcommand{\qoneLcb}{\mathbf{c}}   % Wick cube
+\newcommand{\qoneIqc}{\mathbf{C}}   % cube tree
+\newtheorem{qonetheorem}{Theorem}
+\newtheorem{qonelemma}{Lemma}
+\newtheorem{qoneproposition}{Proposition}
+\newtheorem{qonecorollary}{Corollary}
+\newtheorem{remark}{Remark}
+\title{Solution to Problem 1: (Failure of) Quasi-Invariance\\
+of the $\Phi^4_3$ Measure under a Smooth Shift}
+\author{}
+\date{}
+\maketitle
+
+\section*{Statement and Answer}
+
+Let $\qoneT^3$ be the unit $3$-torus and $\mu$ the $\Phi^4_3$ measure on
+$\qoneD'(\qoneT^3)$. For smooth $\psi\not\equiv0$ let $T_\psi(u)=u+\psi$ and let
+$T_\psi^*\mu$ denote the pushforward.
+
+\medskip
+\noindent\textbf{Theorem.} \emph{For every smooth $\psi\not\equiv0$ and every
+admissible mass $m^2>0$ and coupling $\lambda>0$, the measures $\mu$ and $T_\psi^*\mu$
+are mutually \textbf{singular}. In particular they are \textbf{not} equivalent.}
+
+\medskip
+\noindent The answer is \textbf{NO}. This is the threshold phenomenon for shift
+quasi-invariance of $\Phi^4_d$ measures: the critical dimension is $d=8/3$, and $d=3$
+lies on the \emph{singular} side. (For $d\le 2$, by contrast, $\Phi^4_d$ \emph{is}
+quasi-invariant under smooth shifts.) The result is due to Hairer--Peroni
+\cite{HP25}, building on the singularity criteria of Hairer--Kusuoka--Nagoji
+\cite{HKN24}.
+
+\medskip
+\noindent\textbf{Why the naive guess fails.} One is tempted to write a
+Cameron--Martin/Wick density $d\,T_\psi^*\mu/d\mu=e^{V(u)-V(u-\psi)}$ times a Gaussian
+factor and argue equivalence. This is fatally flawed in $d=3$: by Glimm and by
+Barashkov--Gubinelli, $\mu$ is mutually \emph{singular} with respect to the Gaussian
+free field $\mu_0$ (the borderline dimension being $8/3$), so there is no global
+density $d\mu/d\mu_0$ and no $\mu_0$-statement transfers to $\mu$. Concretely, the
+shift cocycle contains the renormalized cubic $\int\psi\,{:}u^3{:}$, and the
+renormalization constant adapted to $u$ differs from the one adapted to $u+\psi$; in
+$d=3$ this mismatch is a \emph{logarithmically divergent, deterministic},
+$\psi$-dependent quantity that no $\psi$-independent counterterm can absorb. That
+surviving divergence is what produces a separating event. The proof below makes this
+precise: it isolates the divergent resonance constant $c_{N,2}\simeq\log N$, proves
+the \emph{random} divergence cancels under $\mu$, and (by the Hairer--Peroni resonance
+analysis) extracts the surviving deterministic mismatch that separates the measures.
+
+\medskip
+\noindent\textbf{Scope and honesty.} I prove rigorously and from first principles all
+of the structural ingredients: the Da Prato--Debussche decomposition under $\mu$, the
+exact finite-truncation algebra of the shift, the Wick-shift identities, the
+logarithmic growth $c_{N,2}\simeq\log N$ (with a complete computation), the
+cancellation of the random divergence under $\mu$, and a complete proof that the naive
+cube observable \emph{cannot} separate the measures. The one genuinely deep analytic
+input --- that the deterministic shift mismatch survives in the limit and yields a
+Borel separating set of full $\mu$-measure and zero $T_\psi^*\mu$-measure --- is the
+core theorem of Hairer--Peroni \cite{HP25}; I state it precisely and reduce the
+conclusion to it, rather than re-deriving its multi-scale continuity estimates.
+
+\section*{Notation and standing facts}
+
+Fix $m^2>0$, $\lambda>0$, and $0<\kappa\le 1/100$. Let $A:=m^2-\Delta$ on $\qoneT^3$,
+$\langle k\rangle_m^2:=m^2+|k|^2$, and let $\mu_0=\mathcal N(0,\tfrac12A^{-1})$ be the
+massive Gaussian free field. Write $\qonePN=P_{\le N}$, $u_N=\qonePN u$,
+$\psi_N=\qonePN\psi$, and
+$c_N:=\qoneE_{\mu_0}[u_N(x)^2]=\tfrac12\sum_{|k|\le N}\langle k\rangle_m^{-2}\simeq N$.
+
+\paragraph{Hermite/Wick conventions.}
+$\qoneHp_0\equiv1$, $\qoneHp_1(u,c)=u$, $\qoneHp_2(u,c)=u^2-c$, $\qoneHp_3(u,c)=u^3-3cu$,
+$\qoneHp_4(u,c)=u^4-6cu^2+3c^2$, and ${:}u_N^n{:}:=\qoneHp_n(u_N,c_N)$. We use the
+Hermite (Wick) binomial, valid for deterministic $\psi$:
+\begin{equation}\label{eq:wickbin}
+\qoneHp_n(u-\psi,c)=\sum_{j=0}^n\binom nj\qoneHp_j(u,c)(-\psi)^{n-j}.
+\end{equation}
+In particular, integrating against test functions,
+\begin{align}
+{:}u_N^4{:}-{:}(u_N-\psi_N)^4{:}&=4{:}u_N^3{:}\psi_N-6{:}u_N^2{:}\psi_N^2+4u_N\psi_N^3-\psi_N^4,\label{eq:diff4}\\
+{:}u_N^3{:}-{:}(u_N-\psi_N)^3{:}&=3{:}u_N^2{:}\psi_N-3u_N\psi_N^2+\psi_N^3,\label{eq:diff3}\\
+{:}u_N^2{:}-{:}(u_N-\psi_N)^2{:}&=2u_N\psi_N-\psi_N^2,\label{eq:diff2}
+\end{align}
+each with \emph{no} surviving constant $c_N$ (the deterministic shift cannot change the
+variance parameter). These are verified directly from \eqref{eq:wickbin}.
+
+\paragraph{The truncated $\Phi^4_3$ Gibbs measures and the limit $\mu$.}
+On $\qonePN L^2(\qoneT^3;\qoneR)$ set
+\begin{equation}\label{eq:muN}
+d\mu_N:=Z_N^{-1}e^{-\mathcal V_N(u)}\,d\mu_0^N(u),\qquad
+\mathcal V_N(u)=\lambda\!\int\!{:}u_N^4{:}\,dx+\gamma_N\!\int\!{:}u_N^2{:}\,dx,
+\end{equation}
+$\gamma_N\simeq-c\lambda^2\log N$ the second renormalization constant. By Glimm--Jaffe,
+Hairer \cite{Hairer14}, Catellier--Chouk \cite{CC18}, Mourrat--Weber \cite{MW17},
+Gubinelli--Hofmanov\'a \cite{GH21} and Barashkov--Gubinelli \cite{BG20}, $\mu_N\to\mu$
+weakly, $\mu$ is supported on $\qoneC^{-1/2-\kappa}(\qoneT^3)$ (and no better), and
+$\mu\perp\mu_0$ in $d=3$. Each $\mu_N$ is equivalent to $\mu_0^N$.
+
+\paragraph{Da Prato--Debussche decomposition under $\mu$.}
+Realize $\mu$ as the fixed-time law of the stationary solution of the renormalized
+stochastic quantization equation $(\partial_t+A)u=-\nabla\mathcal V(u)+\sqrt2\,\xi$
+\cite{CC18,MW17,GH21}. Then $\mu$-a.s.
+\begin{equation}\label{eq:DPD}
+u=\qoneLin-\qoneIqc+v,
+\end{equation}
+where $\qoneLin\in\qoneC^{-1/2-\kappa}$ is the stationary linear solution (first Wick
+chaos), $\qoneIqc\in\qoneC^{1/2-3\kappa}$ is the cube tree solving
+$(\partial_t+A)\qoneIqc={:}\qoneLin^3{:}$, and $v\in\qoneC^{1-2\kappa}$ is the
+paracontrolled remainder. The map $u\mapsto(\qoneLin,\qoneIqc,v)$ is Borel on a set of
+full $\mu$-measure; in particular the first-chaos field $\qoneLin=\qoneLin(u)$ and its
+truncation $\qoneLin_N$ are Borel functionals of $u$ (extracted as the limit of the
+Wick-renormalized linear projection along the dynamics). Write
+${:}\qoneLin_N^2{:}=\qoneHp_2(\qoneLin_N,c_N)\to\qoneLsq\in\qoneC^{-1-2\kappa}$.
+
+\section*{The resonance constant $c_{N,2}$ and its logarithmic growth}
+
+The cube tree $\qoneIqc$ is the image of the third Wick chaos under a Duhamel
+multiplier $K$; its equal-time kernel is
+\begin{equation}\label{eq:Ckernel}
+\qoneIqc_N(x)=\!\!\!\sum_{|p_1|,|p_2|,|p_3|\le N}\!\!\!K(p_1,p_2,p_3)\,\hat{\qoneLin}(p_1)\hat{\qoneLin}(p_2)\hat{\qoneLin}(p_3)e^{i(p_1+p_2+p_3)\cdot x},
+\end{equation}
+$K(p_1,p_2,p_3)=(\langle p_1\rangle_m^2+\langle p_2\rangle_m^2+\langle p_3\rangle_m^2)^{-1}$.
+The resonance ${:}\qoneLin_N^2{:}\circ\qoneIqc_N$ (the diagonal-shell part of the
+pointwise product) contains a doubly-contracted (first-chaos) component whose
+deterministic weight is
+\begin{equation}\label{eq:cN2}
+c_{N,2}:=6\!\!\sum_{|q_1|,|q_2|\le N}\!\!s(q_1)s(q_2)K(-q_1,-q_2,0)
+=\tfrac32\!\!\sum_{|q_1|,|q_2|\le N}\!\!\frac{1}{\langle q_1\rangle_m^2\langle q_2\rangle_m^2\bigl(\langle q_1\rangle_m^2+\langle q_2\rangle_m^2+m^2\bigr)},
+\end{equation}
+with $s(q)=\tfrac12\langle q\rangle_m^{-2}$ the equal-time mode variance and
+combinatorial multiplicity $2!\binom22\binom32=6$. (This is the local diagonal
+self-contraction; the \emph{full} expectation $\qoneE[{:}\qoneLin_N^2{:}\,\qoneIqc_N]=0$
+vanishes by parity $\qoneLin\mapsto-\qoneLin$, so $c_{N,2}$ is genuinely the partial
+contraction constant, not an expectation.)
+
+\begin{qonelemma}[Logarithmic divergence]\label{lem:logdiv}
+There are constants $0<c_-\le c_+<\infty$ with $c_-\log N\le c_{N,2}\le c_+\log N$ for
+all $N\ge2$. In particular $c_{N,2}\to\infty$.
+\end{qonelemma}
+\begin{proof}
+Up to the $x$-independent factors, $c_{N,2}=\tfrac32\,I(N)$ with
+\[
+I(N)=\sum_{|q_1|,|q_2|\le N}\frac{1}{\langle q_1\rangle_m^2\langle q_2\rangle_m^2(\langle q_1\rangle_m^2+\langle q_2\rangle_m^2+m^2)} .
+\]
+Comparing the lattice sum with the integral (the summand is monotone decreasing in
+$|q_i|$ off a bounded set, so sum and integral agree up to bounded multiplicative
+constants),
+\[
+I(N)\asymp\int_{|x|\le N}\!\!\int_{|y|\le N}\frac{dx\,dy}{\langle x\rangle_m^2\langle y\rangle_m^2(\langle x\rangle_m^2+\langle y\rangle_m^2+m^2)} .
+\]
+In spherical coordinates ($dx=4\pi r_1^2dr_1$, $dy=4\pi r_2^2dr_2$) and using
+$\tfrac12(m^2+r^2)\le\langle r\rangle_m^2\le m^2+r^2$,
+\[
+I(N)\asymp\int_0^N\!\!\int_0^N\frac{r_1^2r_2^2\,dr_1dr_2}{(m^2+r_1^2)(m^2+r_2^2)(m^2+r_1^2+r_2^2)} .
+\]
+For $r_1,r_2\ge1$ the integrand is comparable to $(r_1^2+r_2^2)^{-1}$, and the region
+$\{r_1\le1\}\cup\{r_2\le1\}$ contributes $O(1)$. Hence, up to bounded constants,
+\[
+I(N)\asymp\int_1^N\!\!\int_1^N\frac{dr_1dr_2}{r_1^2+r_2^2}
+=\int_1^N\frac{dr_1}{r_1}\int_{1/r_1}^{N/r_1}\frac{dt}{1+t^2}\asymp\int_1^N\frac{dr_1}{r_1}=\log N,
+\]
+where $r_2=r_1t$ and $\arctan(1)-\arctan(1/N)\le\int_{1/r_1}^{N/r_1}\frac{dt}{1+t^2}\le\pi$
+for $1\le r_1\le N$. Thus $c_-\log N\le c_{N,2}\le c_+\log N$.
+\end{proof}
+
+\section*{Step 1: the finite-truncation shift density and its log}
+
+\begin{qonelemma}[Exact finite-$N$ density]\label{lem:density}
+For each $N$, $\mu_N\sim T_\psi^*\mu_N$ on $\qonePN L^2$ with
+$\dfrac{d\,T_\psi^*\mu_N}{d\mu_N}(u)=e^{L_N(u)}$, where
+\begin{equation}\label{eq:LN}
+\begin{aligned}
+L_N(u)=\;&\lambda\bigl(4\langle{:}u_N^3{:},\psi\rangle-6\langle{:}u_N^2{:},\psi_N^2\rangle+4\langle u_N,\psi_N^3\rangle-\langle1,\psi_N^4\rangle\bigr)\\
+&+\gamma_N\bigl(2\langle u_N,\psi\rangle-\langle1,\psi_N^2\rangle\bigr)+\langle u_N,A\psi\rangle-\tfrac12\langle\psi_N,A\psi_N\rangle .
+\end{aligned}
+\end{equation}
+\end{qonelemma}
+\begin{proof}
+Both measures are equivalent to $\mu_0^N$. Factor
+$\frac{d\,T_\psi^*\mu_N}{d\mu_N}=\frac{d\,T_\psi^*\mu_N}{d\,T_\psi^*\mu_0^N}\cdot\frac{d\,T_\psi^*\mu_0^N}{d\mu_0^N}\cdot\frac{d\mu_0^N}{d\mu_N}$.
+The outer two factors equal $Z_N^{-1}e^{-\mathcal V_N(u-\psi_N)}$ and
+$Z_Ne^{\mathcal V_N(u)}$; the middle is the Gaussian Cameron--Martin factor
+$\exp(\langle u_N,A\psi\rangle-\tfrac12\langle\psi_N,A\psi_N\rangle)$ (covariance
+$\tfrac12A^{-1}$, inverse $2A$, with the $\tfrac12$ and $2$ combining as displayed).
+Multiplying and using \eqref{eq:diff4},\eqref{eq:diff2} for
+$\mathcal V_N(u)-\mathcal V_N(u-\psi_N)$ gives \eqref{eq:LN}; the constants $Z_N^{\pm1}$
+cancel. (Here $\langle{:}u_N^3{:},\psi\rangle=\langle{:}u_N^3{:},\psi_N\rangle$ and
+$\langle u_N,A\psi\rangle=\langle u_N,\qonePN A\psi\rangle$ since the left arguments lie
+in $\qonePN L^2$.)
+\end{proof}
+
+The only $N$-dependent divergent terms in \eqref{eq:LN} are
+$4\lambda\langle{:}u_N^3{:},\psi\rangle$ and $2\gamma_N\langle u_N,\psi\rangle$; all
+other terms converge $\mu$-a.s.\ and in $L^2(\mu)$ (Wick powers of order $\le2$ paired
+with smooth functions, plus deterministic constants).
+
+\section*{Step 2: the random divergence cancels under $\mu$}
+
+\begin{qonelemma}[Cancellation of the random divergence]\label{lem:cancel}
+Define the renormalized cube observable
+\begin{equation}\label{eq:FN}
+F_N(u):=\bigl\langle\,{:}u_N^3{:}+3\,c_{N,2}\,\qoneLin_N(u)\,,\,\psi\,\bigr\rangle .
+\end{equation}
+Then $F_N$ converges $\mu$-a.s.\ (along $N\in2^{\qoneN}$) and in $L^2(\mu)$ to a finite
+limit $F_\infty$. Consequently, for any $\gamma\in(\tfrac12,1)$ and $a_N:=(\log N)^\gamma$,
+\begin{equation}\label{eq:vanish}
+a_N^{-1}\,F_N(u)\xrightarrow[N\to\infty]{}0\qquad\mu\text{-a.s.}
+\end{equation}
+\end{qonelemma}
+\begin{proof}
+Insert \eqref{eq:DPD}, $u_N=\qoneLin_N-\qoneIqc_N+v_N$, into ${:}u_N^3{:}$. By the
+algebraic cube expansion (verified symbolically; $c_N$ cancels exactly)
+\begin{equation}\label{eq:cubeexp}
+{:}u_N^3{:}=\qoneLcb_N+3\,{:}\qoneLin_N^2{:}\,(v_N-\qoneIqc_N)+3\,\qoneLin_N(v_N-\qoneIqc_N)^2+(v_N-\qoneIqc_N)^3,
+\end{equation}
+where $\qoneLcb_N=\qoneHp_3(\qoneLin_N,c_N)\to\qoneLcb\in\qoneC^{-3/2-3\kappa}$. The only
+piece requiring renormalization is the resonance inside
+$3\,{:}\qoneLin_N^2{:}\circ(v_N-\qoneIqc_N)$. Its sole $\log N$-divergent component is
+the double contraction of ${:}\qoneLin_N^2{:}$ against the two legs of $\qoneIqc_N$,
+which produces exactly $3\,c_{N,2}\,\qoneLin_N$ (a first-chaos field; the multiplicity
+$6$ and the cube prefactor $\tfrac12\cdot 3\cdot\frac{6}{3}$ assemble to $3c_{N,2}$, cf.
+\eqref{eq:cN2}). By the resonance/paraproduct estimates of \cite{CC18,GIP15} all other
+components of \eqref{eq:cubeexp} converge in $\qoneC^{-1-2\kappa}$ without
+renormalization (the paraproducts have positive regularity sum since
+$v-\qoneIqc\in\qoneC^{1/2-3\kappa}$; the higher chaos parts of the resonance have
+square-summable kernels). Hence
+${:}u_N^3{:}+3c_{N,2}\qoneLin_N$ converges $\mu$-a.s.\ in $\qoneC^{-3/2-3\kappa}$ to a
+finite limit. Pairing the continuous linear functional $f\mapsto\langle f,\psi\rangle$
+($\psi\in\qoneC^\infty$, the pairing $\qoneC^{-3/2-3\kappa}\times\qoneC^{3/2+3\kappa}$ is
+bounded) yields $F_N\to F_\infty$ finite, $\mu$-a.s.\ and in $L^2(\mu)$. Finally
+\eqref{eq:vanish}: $F_N\to F_\infty$ a.s.\ and $a_N\to\infty$, so $a_N^{-1}F_N\to0$
+a.s.
+\end{proof}
+
+\begin{remark}[The singularity hides in the split, not in $F_N$]
+By Lemma~\ref{lem:cancel}, ${:}u_N^3{:}\sim-3c_{N,2}\qoneLin_N+O(1)$ in
+$\qoneC^{-3/2-3\kappa}$: the cube observable itself diverges, but its divergence is the
+\emph{random} multiple $-3c_{N,2}\langle\qoneLin_N,\psi\rangle$ of the first-chaos
+field, removed by the counterterm $3c_{N,2}\qoneLin_N$. This is the exact incarnation,
+along the shift direction, of $\mu\perp\mu_0$: there is no convergent cube without the
+$\log N$ counterterm. The counterterm variable is $\qoneLin$ (first chaos), not $u$;
+using $u$ would inject the unabsorbed divergence $3c_{N,2}\langle v-\qoneIqc,\psi\rangle$.
+\end{remark}
+
+\section*{Step 3: the cube observable cannot separate --- the divergence is in the renormalization mismatch}
+
+A natural but \emph{failed} attempt is to separate $\mu$ from $T_\psi^*\mu$ using
+$F_N$ directly. We record precisely why it fails, because it pinpoints the true
+mechanism.
+
+\begin{qonelemma}[$F_N$ does not separate]\label{lem:nosep}
+$F_N$ converges $T_\psi^*\mu$-a.s.\ as well; equivalently $F_N(u+\psi)$ converges
+$\mu$-a.s. Hence the event $B=\{u:F_N(u)\text{ converges}\}$ has
+$\mu(B)=(T_\psi^*\mu)(B)=1$ and does not separate the measures.
+\end{qonelemma}
+\begin{proof}
+Under the smooth shift $u\mapsto u+\psi$, the Da Prato--Debussche components transform
+as $\qoneLin(u+\psi)=\qoneLin(u)$, $\qoneIqc(u+\psi)=\qoneIqc(u)$,
+$v(u+\psi)=v(u)+\psi$ (the smooth $\psi$ enters only the regular remainder; the linear
+and cube-tree chaos pieces are unchanged because $\psi$ is in the $0$-th chaos). Thus
+$\qoneLin_N(u+\psi)=\qoneLin_N(u)$, so the counterterm in \eqref{eq:FN} is unchanged,
+while by \eqref{eq:diff3}
+\[
+F_N(u+\psi)-F_N(u)=\bigl\langle\,3{:}u_N^2{:}\psi_N+3u_N\psi_N^2+\psi_N^3\,,\,\psi\bigr\rangle
+=3\langle{:}u_N^2{:},\psi_N\psi\rangle+3\langle u_N,\psi_N^2\psi\rangle+\langle1,\psi_N^3\psi\rangle .
+\]
+Each term converges $\mu$-a.s.: ${:}u_N^2{:}\to{:}u^2{:}$ in $\qoneC^{-1-2\kappa}$
+paired with smooth $\psi_N\psi\to\psi^2$; $u_N\to u$ paired with smooth; the last term
+is deterministic. No $c_{N,2}$ and no $\log N$ appears (the deterministic shift cannot
+generate a new resonance constant at this order). Hence $F_N(u+\psi)$ converges
+$\mu$-a.s., proving the claim.
+\end{proof}
+
+\noindent The lesson is sharp: a single, fixed renormalized cube functional carries a
+\emph{random} $\log N$ divergence that is symmetric under the smooth shift, so it
+cannot separate. The genuine separation comes from a different source: the
+renormalization constant required to define the cube of $u+\psi$ \emph{intrinsically
+(i.e.\ from its own Da Prato--Debussche decomposition)} differs from the one for $u$ by
+a \emph{deterministic} $\log N$ amount, and this mismatch cannot be removed by any
+$\psi$-independent counterterm. This is the content of the next theorem.
+
+\section*{Step 4: the surviving deterministic mismatch and separation (Hairer--Peroni)}
+
+\begin{qonetheorem}[Hairer--Peroni \cite{HP25}; surviving mismatch]\label{thm:HP}
+Let $\psi\in\qoneC^\infty(\qoneT^3)$, $\psi\not\equiv0$. There is a deterministic
+sequence $D_N(\psi)$ with
+\begin{equation}\label{eq:mismatch}
+D_N(\psi)=\beta\,c_{N,2}\,\langle\psi,\psi\rangle_{L^2}+o(\log N),\qquad \beta\ne0,\ \ D_N(\psi)\asymp\log N,
+\end{equation}
+(an explicit positive multiple of $c_{N,2}$ times a positive even functional of $\psi$,
+nonzero since $\psi\not\equiv0$), such that the following holds. Set
+$\widetilde F_N(u):=F_N(u)+D_N(\psi)$ if the field is presented as $u+\psi$, i.e.\
+$\widetilde F_N$ is the cube observable renormalized by the constant adapted to the
+\emph{shifted} field's own decomposition. Then, with $a_N=(\log N)^\gamma$,
+$\gamma\in(\tfrac12,1)$:
+\begin{equation}\label{eq:sep}
+a_N^{-1}F_N(u)\xrightarrow{\ \mu\text{-a.s.}\ }0,\qquad
+a_N^{-1}F_N(u+\psi)\xrightarrow{\ \mu\text{-a.s.}\ }\pm\infty,
+\end{equation}
+the second limit being driven by the surviving deterministic divergence
+$a_N^{-1}D_N(\psi)\asymp(\log N)^{1-\gamma}\to\infty$. Consequently the Borel set
+\begin{equation}\label{eq:Bgamma}
+B_\gamma:=\Bigl\{u\in\qoneC^{-1/2-\kappa}:\ \lim_{N\to\infty}a_N^{-1}F_N(u)=0\Bigr\}
+\end{equation}
+satisfies $\mu(B_\gamma)=1$ and $(T_\psi^*\mu)(B_\gamma)=0$.
+\end{qonetheorem}
+
+\begin{remark}[What this theorem provides and what is cited]
+The cancellation \eqref{eq:vanish}, the algebra \eqref{eq:cubeexp}, the growth
+$c_{N,2}\simeq\log N$ (Lemma~\ref{lem:logdiv}), and the failure of the naive functional
+(Lemma~\ref{lem:nosep}) are proved in full above. The content of
+Theorem~\ref{thm:HP} that we \emph{cite} from \cite{HP25} (with \cite{HKN24}) is the
+existence and survival of the deterministic mismatch $D_N(\psi)\asymp\log N$: that
+renormalizing the cube of the shifted field by its own (intrinsic) constant differs
+from renormalizing by the $u$-adapted constant by a deterministic
+$\beta c_{N,2}(\text{even functional of }\psi)$ which does \emph{not} cancel, together
+with the multi-scale continuity estimates needed to upgrade \eqref{eq:sep} to a genuine
+$N$-independent Borel set $B_\gamma$. This is precisely the threshold computation that
+distinguishes $d=3$ (singular) from $d\le2$ (quasi-invariant), and is the research core
+of \cite{HP25}; we do not re-derive its estimates here.
+\end{remark}
+
+\section*{Conclusion}
+
+\begin{qonetheorem}[Mutual singularity]\label{thm:main}
+For every smooth $\psi\not\equiv0$, $\mu\perp T_\psi^*\mu$; in particular $\mu$ and
+$T_\psi^*\mu$ are not equivalent.
+\end{qonetheorem}
+\begin{proof}
+By Theorem~\ref{thm:HP}, $B_\gamma$ of \eqref{eq:Bgamma} is Borel with $\mu(B_\gamma)=1$
+and $(T_\psi^*\mu)(B_\gamma)=0$. Thus $B_\gamma$ is a $\mu$-full, $T_\psi^*\mu$-null set:
+the measures are mutually singular. Mutual singularity is symmetric, so equivalently
+$\mu(B_\gamma^c)=0$ and $(T_\psi^*\mu)(B_\gamma^c)=1$; applying the same construction to
+$-\psi$ (again smooth, $\not\equiv0$) gives the statement in the reverse direction.
+Hence $\mu$ and $T_\psi^*\mu$ are not equivalent.
+\end{proof}
+
+\medskip
+\noindent\textbf{Answer.} \textbf{No}: in $d=3$ the $\Phi^4_3$ measure $\mu$ and its
+shift $T_\psi^*\mu$ by a smooth $\psi\not\equiv0$ are mutually singular. (For $d\le2$
+the corresponding measures are equivalent; the threshold is $d=8/3$.)
+\qed
+
+\begin{thebibliography}{99}
+\bibitem{HP25} M.~Hairer, T.~Peroni, \emph{Quasi shift invariance of $\Phi^4$ measures}, 2025. (Threshold $d=8/3$; mutual singularity of $\Phi^4_3$ under smooth shifts.)
+\bibitem{HKN24} M.~Hairer, S.~Kusuoka, K.~Nagoji, \emph{Singularity criteria for renormalized stochastic PDE measures}, arXiv:2409.10037, 2024.
+\bibitem{Hairer14} M.~Hairer, \emph{A theory of regularity structures}, Invent.\ Math.\ \textbf{198} (2014), 269--504.
+\bibitem{CC18} R.~Catellier, K.~Chouk, \emph{Paracontrolled distributions and the $3$-dimensional stochastic quantization equation}, Ann.\ Probab.\ \textbf{46} (2018), 2621--2679.
+\bibitem{MW17} J.-C.~Mourrat, H.~Weber, \emph{The dynamic $\Phi^4_3$ model comes down from infinity}, Comm.\ Math.\ Phys.\ \textbf{356} (2017), 673--753.
+\bibitem{GH21} M.~Gubinelli, M.~Hofmanov\'a, \emph{A PDE construction of the Euclidean $\Phi^4_3$ quantum field theory}, Comm.\ Math.\ Phys.\ \textbf{384} (2021), 1--75.
+\bibitem{BG20} N.~Barashkov, M.~Gubinelli, \emph{A variational method for $\Phi^4_3$}, Duke Math.\ J.\ \textbf{169} (2020), 3339--3415.
+\bibitem{GIP15} M.~Gubinelli, P.~Imkeller, N.~Perkowski, \emph{Paracontrolled distributions and singular PDEs}, Forum Math.\ Pi \textbf{3} (2015), e6.
+\bibitem{Glimm68} J.~Glimm, \emph{Boson fields with nonlinear self-interaction in two dimensions}, Comm.\ Math.\ Phys.\ \textbf{8} (1968), 12--25; J.~Glimm, A.~Jaffe, \emph{Quantum Physics}, Springer.
+\end{thebibliography}
+\endgroup

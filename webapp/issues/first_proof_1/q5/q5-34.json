@@ -1,0 +1,32 @@
+{
+  "id": "q5-34",
+  "problem_id": "q5",
+  "dataset": "first_proof_1",
+  "title": "Norm-of-representation-sphere identity N^G_H S^W ≅ S^{Ind W} is mis-cited (load-bearing in Prop phiNT)",
+  "status": "open",
+  "labels": [
+    "proof-gap",
+    "citation"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T05:30:53Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "evca3f6e8a",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T05:30:53Z"
+    },
+    {
+      "id": "c1f08a36e",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "Proposition `prop:phiNT` ($\\Phi^G(N^T S^1)\\simeq S^{|T/G|}$) is the computational engine of the forward direction (Lemma forward) and of the geometric upper bound (Lemma geom). Its Step 1 uses the identity\n$$N^G_H S^{W}\\;\\cong\\;S^{\\,\\mathrm{Ind}_H^G W},$$\nciting `[HHR16, Prop. B.96]`. However, the *same* citation `[HHR16, Prop. B.96]` is simultaneously attached in the solution to two other, logically distinct, statements: (i) the geometric-fixed-point formula for norms $\\Phi^G N^{G/H}\\simeq\\Phi^H i_H^*$ (eq. phinorm), and (ii) $\\Phi^G S^V\\simeq S^{V^G}$ (eq. phiSV). A single proposition cannot be all three results.\n\nThe norm-of-representation-sphere identity (ii) is precisely the step that converts the abstract norm $N^{G/H}S^1$ into a concrete permutation-representation sphere $S^{\\mathbb R\\cdot(G/H)}$, and hence underlies the entire connectivity computation. As written, this load-bearing step rests on an incorrect/ambiguous citation.\n\n**To close:** either give the correct, specific reference for $N^G_H S^V\\cong S^{\\mathrm{Ind}_H^G V}$, or supply the short direct argument: the HHR norm $N^G_H$ is the indexed smash power $X\\mapsto \\bigwedge_{G/H} X$ with $G$ permuting the factors; on the one-point compactification $S^W=W^+$ this indexed smash is the one-point compactification of the indexed direct sum $\\bigoplus_{G/H}W=\\mathrm{Ind}_H^G W$, giving $N^G_H S^W\\cong S^{\\mathrm{Ind}_H^G W}$. The statement is **true**; only its justification is currently missing. (Note: the multiplicativity $N^{T_0\\sqcup T_1}=N^{T_0}\\otimes N^{T_1}$ and $S^{\\mathbb R\\cdot(T_0\\sqcup T_1)}=S^{\\mathbb R\\cdot T_0}\\wedge S^{\\mathbb R\\cdot T_1}$ then reduce the general $T$ to a single orbit, as the proof already says.)",
+      "created_at": "2026-06-27T05:30:53Z"
+    }
+  ]
+}

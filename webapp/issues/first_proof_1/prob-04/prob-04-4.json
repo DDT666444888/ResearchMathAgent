@@ -26,6 +26,13 @@
       "role": "agent",
       "body": "The definition of the linking invariant $L_h(g)=\\int_z\\alpha_1\\wedge g^*\\omega_2$ requires forms $\\alpha_i$ that are (i) supported in $\\mathrm{Int}(M)$ and (ii) satisfy $d\\alpha_i=g^*\\omega_i$. The file justifies their existence with one sentence:\n\n> \"By the de Rham theorem for cohomology with compact support, it follows that there are piecewise smooth differential forms $\\alpha_1,\\alpha_2$...\"\n\n**What needs to be proved/clarified:**\n1. State the compactly-supported de Rham isomorphism $H^k_c(\\mathrm{Int}\\,M;\\RR)\\cong H^k(M,\\partial M;\\RR)$ precisely.\n2. The hypothesis is $g^*\\Omega_i=0\\in H^2(M,\\partial M;\\ZZ)$ (**integral** coefficients). One must pass to real coefficients: the integral class vanishing implies the **real** class vanishes (torsion is killed by $\\otimes\\RR$), hence $g^*\\omega_i$ is exact via an interior-supported primitive. This integral-vs-real step is exactly what the one-line citation hides and should be written out.\n3. Piecewise-smooth regularity of $\\alpha_i$ should be noted.\n\nThis is an unjustified key step (F3) underpinning the entire linking-invariant machinery.",
       "created_at": "2026-06-23T00:15:31Z"
+    },
+    {
+      "id": "c6adff80a",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Status (current revision):** APPEARS ADDRESSED. The new Lemma `lemmaprimitive` gives a 4-step proof: (1) $g^*\\omega_i$ vanishes near $\\partial M$ hence defines a compactly-supported class on $\\mathrm{Int}(M)$; (2)-(3) the compactly-supported de Rham isomorphism and the integral-$\\Rightarrow$-real vanishing via UCT/torsion are written out; (4) extension by zero gives the interior-supported primitive. Only a minor residue: the *piecewise-smooth* compactly-supported de Rham theorem is invoked ('smoothing the chain homotopy') rather than cited to a precise statement (low priority — see analysis.md G5).",
+      "created_at": "2026-06-27T09:17:17Z"
     }
   ]
 }

@@ -26,6 +26,13 @@
       "role": "agent",
       "body": "The PCG right-hand side is $(I_r\\otimes K)\\vecop(B)=\\vecop(KB)$ with $B=TZ$ the MTTKRP.\n\n**Gap.** The naive MTTKRP $B=TZ$ costs $O(nMr)$ (an $O(M)$ object), which is explicitly banned. This is a *distinct* object from the LHS matvec (cf. q10-2): the RHS must be assembled once before CG starts.\n\n**What must be proved.** Since $T$ (zero-filled mode-$k$ unfolding) has only $q$ nonzeros at the observed index pairs $(i_\\ell,j_\\ell)$ with value $t_\\ell=T(i_\\ell,j_\\ell)$, one has\n$$B(i,:)=\\sum_{\\ell:\\,i_\\ell=i} t_\\ell\\,Z(j_\\ell,:),\\qquad i=1,\\dots,n,$$\ncomputable in $O(qr)$, after which $KB$ costs $O(n^2r)$. Total $O(qr+n^2r)$, no $O(M)$/$O(N)$. Rows $Z(j_\\ell,:)$ are obtained on demand from the Khatri-Rao structure in $O(dr)$ each, never forming $Z\\in\\mathbb R^{M\\times r}$.\n\n**Verified numerically:** observed-only $B$ equals dense $TZ$ for random data.\n\nA complete solution must include this derivation and fold it into the PCG algorithm box's setup phase.",
       "created_at": "2026-06-23T15:37:26Z"
+    },
+    {
+      "id": "c4d916873",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "## Critic re-review against current (rewritten) `solution.tex`\n\nThis issue is **still open and still applicable**. The current draft uses a new explicit-`G` strategy but its §3 and Alg.~`alg:pcg` line `b ← KB` treat the MTTKRP $B=TZ$ as a *given input* (\"the right-hand side ... is formed once ... from the given MTTKRP $B$\"). The problem **defines** $B=TZ$, and the naive product is $O(nMr)$ — an $O(M)$ object that is banned. The observed-only form $B(i,:)=\\sum_{l:i_l=i} t_l Z_{j_l,:}$ ($O(qr)$, then $KB$ at $O(n^2r)$) is still missing from the draft and must be inserted into the PCG setup. (Note the row $Z_{j_l,:}$ itself needs the $O(dr)$ Khatri–Rao decode flagged in q10-11.)",
+      "created_at": "2026-06-28T10:34:29Z"
     }
   ]
 }

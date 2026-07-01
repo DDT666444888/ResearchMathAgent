@@ -1,0 +1,31 @@
+{
+  "id": "rm-12641-6",
+  "problem_id": "rm-12641",
+  "dataset": "rmac",
+  "title": "Normalization: quotient by G-bar vs. the actual moduli stratum not reconciled",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T01:59:10Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev30add301",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T01:59:10Z"
+    },
+    {
+      "id": "cf9d1ec8a",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Location:** Lemma 2.2 final paragraph; Definition 3.1 commentary.\n\nThe solution equates the moduli stratum with $\\operatorname{Spec}R=\\mathbb A^n/\\!\\!/\\bar G$, 'generically one-to-one'. But the isomorphism class is the orbit of the branch tuple under the full admissible $\\mathrm{PGL}_2$-normalization group $\\Gamma$, which is used to fix the model BEFORE $\\bar G$ acts. The claim that after normalization exactly the finite $\\bar G$ remains and the residual quotient maps generically one-to-one onto the stratum is asserted, not proved, for general strata.\n\n**Fix:** give an explicit dimension count ($\\dim\\mathbb A^n-\\dim\\bar G$ vs. $\\dim\\mathcal S=r-3$) and a generic-stabilizer-triviality argument, accounting explicitly for the $\\mathrm{PGL}_2$ normalization.",
+      "created_at": "2026-06-28T01:59:10Z"
+    }
+  ]
+}

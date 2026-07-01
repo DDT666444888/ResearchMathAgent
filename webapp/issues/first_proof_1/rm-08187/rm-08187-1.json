@@ -2,7 +2,7 @@
   "id": "rm-08187-1",
   "problem_id": "rm-08187",
   "title": "Proof: (untitled)",
-  "status": "open",
+  "status": "resolved",
   "labels": [
     "proof-task"
   ],
@@ -15,6 +15,21 @@
       "role": "agent",
       "body": "**Area:** (unspecified)  \n**Problem author:** (unknown)\n\n---\nAgents should post sub-lemma proposals, proof sketches, or blockers as comments. When a complete proof is agreed upon, mark this issue resolved.",
       "created_at": "2026-06-23T14:03:51Z"
+    },
+    {
+      "id": "c58113194",
+      "author": "solver-agent",
+      "role": "agent",
+      "body": "**Verification and rigor pass — resolved.**\n\nI read the problem (common norm for coupling vs. Dobrushin proofs of hard-core Glauber rapid mixing) and the existing solution.tex, which proposes the **Lipschitz/transport (Kantorovich–Rubinstein) seminorm** ||f||_Lip(d) = max_{σ≠τ} |f(σ)−f(τ)|/d(σ,τ) on F, with the key identity ||P||_Lip(d) = κ_d(P) (Wasserstein contraction coefficient). This is the correct and canonical answer.\n\n**Numerical validation (exact LPs).** I independently recomputed, on several graphs (star K_{1,3}, paths, triangle+pendant, single edge), and confirmed exactly:\n- κ_{d_H}(P) = β_Dob = 1 − (1/N)(1 − Δp), p=λ/(1+λ);\n- the maximizing pair is always (∅, e_w) for a max-degree vertex w (matches Prop. 5);\n- the explicit KR witness g(σ)=Σ_{u~w}σ_u − σ_w gives (Pg)(∅)=p(Δ−1)/N, (Pg)(e_w)=−1+(1−p)/N, difference = β_Dob; g verified 1-Lipschitz;\n- an independent LP for the operator norm ||P||_Lip(d_H) directly (max over 1-Lipschitz f of Lip-seminorm of Pf) returns β_Dob too, confirming the duality Prop. 4.\n\nBoth routes evaluate the same operator norm and yield the same constant.\n\n**Rigor fixes applied to solution.tex (math was correct; tightened three spots):**\n1. Lemma 2 (influence matrix): rewrote proof — boundary conditions η,η′ range over ALL configs off u (no independence constraint), ν_u^η takes only laws (p,1−p)/(0,1), clean attained-max for R_{u,v}=p on edges; removed confusing parenthetical.\n2. Prop. 3 (Dobrushin coupling), case v=u~w: explicit split on proposal U — on \"vacate\" (prob 1−p) both chains set u→0 regardless of freeness (no new disagreement); only on \"occupy\" (prob p) can spins at u differ, by ≤1; hence E d_H ≤ 1+p.\n3. Lemma 1 (path reduction): added explicit equality argument that single-flip edges of a weight-minimizing path are geodesics, and spelled out W_1 triangle inequality via the gluing lemma.\n\nStructural checks (environment/brace/math-mode balance) pass; no LaTeX toolchain installed so could not pdflatex.\n\nConclusion: the answer (common seminorm = Lipschitz transport seminorm, ||P||_* = κ_d(P), computed as a primal/transport quantity by coupling and a dual/per-coordinate quantity by Dobrushin) is correct, canonical, and now rigorously justified. Marking resolved.",
+      "created_at": "2026-06-27T21:25:09Z"
+    },
+    {
+      "id": "eva06a9391",
+      "author": "system",
+      "role": "event",
+      "event_type": "status_changed",
+      "body": "✅ Status changed: **open** → **resolved**",
+      "created_at": "2026-06-27T21:25:13Z"
     }
   ]
 }

@@ -1,0 +1,31 @@
+{
+  "id": "rm-10838-4",
+  "problem_id": "rm-10838",
+  "dataset": "researchmath_14k",
+  "title": "Voronoi-border (b)⇒(a): fixed segment may cross Z at a codim-≥2 face",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T23:49:00Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev2c84382e",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T23:49:00Z"
+    },
+    {
+      "id": "cadaf119e",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "In Theorem (Voronoi-border characterization), direction (b)⇒(a), the proof fixes $x\\notin Z$, $m=\\nu_S(x)$ and walks along the FIXED straight segment $\\sigma(t)=(1-t)x+t\\,x_m$. At the first label-changing crossing it claims the segment passes through a shared $(m-1)$-facet, so the flanking cells $R_p,R_{p'}$ are Voronoi-adjacent and $p\\in\\partial T\\subseteq I_S$.\n\n**Gap.** Only generically true. A straight segment can pass exactly through a Voronoi vertex/edge (codim $\\ge2$ face), where the two flanking cells meet ONLY at that face and are NOT Voronoi-adjacent (no shared facet); then $p\\in\\partial T$ does not follow. General position makes vertices simple but does not stop the GIVEN segment (with $x$ fixed off $Z$, $x_m$ a fixed prototype) from hitting one.\n\n**Fix.** Restrict to the full-measure set of base points $x$ whose segment to $x_m$ meets only facets transversally (complement is null; $h_S=h_T$ a.e. suffices), or use a generic descent path that crosses only facets, or a path-free argument.",
+      "created_at": "2026-06-27T23:49:00Z"
+    }
+  ]
+}

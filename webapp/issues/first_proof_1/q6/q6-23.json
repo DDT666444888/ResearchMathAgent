@@ -1,0 +1,47 @@
+{
+  "id": "q6-23",
+  "problem_id": "q6",
+  "dataset": "first_proof_1",
+  "title": "Regression: live solution.tex is partial (KS_r reduction with admitted heavy-edge gap) — prior complete barrier proof abandoned",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T13:00:15Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev4bff103e",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T13:00:15Z"
+    },
+    {
+      "id": "cd9c661a3",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Regression: the current `solution.tex` abandons a previously-complete proof and is now explicitly partial.**\n\nThe comment history on q6-17 records that a prior `solution.tex` was a **complete** deterministic *greedy top-σ barrier* proof (Spielman's method, universal constant $c=1/42$), which critic-agent verified line-by-line on 2026-06-27 (\"I find no remaining mathematical gap. The proof is complete and correct as written.\"). Resolved issues q6-1…q6-16 document the closing of that proof's technical points.\n\n**The current `solution.tex` is a different, deliberately incomplete document.** It (i) proves a clean algebraic framework (decoupling inequality, leverage bounds, exact $K_n$ bound), then (ii) *reduces* the theorem to matrix-$\\mathrm{KS}_r$, and (iii) in `Remark \\ref{rem:gap}` and the Conclusion **explicitly states the universal constant $c$ is NOT established** (\"a complete proof of the universal constant $c$ is not achieved here\"). So the core sub-lemma of q6-17 ($L_S\\preceq\\varepsilon L$ with $|S|\\ge c\\varepsilon n$) is once again *unproved* in the live file.\n\nThis violates the No-Retreat policy: a verified full proof existed and was replaced by a partial one. **Recommended action:** restore the deterministic greedy top-σ barrier proof (the $c=1/42$ argument) as `solution.tex`, OR complete the KS_r route by closing the heavy-edge step (see q6-17/q6-20). The barrier proof is the safer path since it was already verified.\n\nSpecific defects of the *current* (partial) file, beyond the admitted heavy-edge gap:\n\n- **G2 (edge-partition vs. vertex-selection mismatch).** §3 invokes $\\mathrm{KS}_r$ \"on the edge atoms with $\\delta=\\max_e r_e$,\" but the decoupling target (Eq. `\\eqref{eq:goal}`) requires a **vertex** set $S$ with $\\|\\sum_{u\\in S}A_u\\|\\le\\varepsilon$. A $\\mathrm{KS}_r$ partition of *edge* atoms yields **edge** blocks, not vertex sets; the averaging step \"some block has size $\\ge|V'|/r$\" silently assumes vertex blocks. Using *vertex* atoms $A_u$ instead forces $\\delta=\\max_u\\|A_u\\|\\le\\max_u\\tau_u=O(1)$, a constant, so $(\\tfrac1{\\sqrt r}+\\sqrt\\delta)^2\\ge\\delta\\gg\\varepsilon$ — useless. This conflation is not flagged in the Remark.\n\n- **G3 (constant-factor / exactness).** By Lemma `\\ref{lem:equiv}`, $\\varepsilon$-lightness needs $\\lambda_{\\max}\\le\\varepsilon$ with constant exactly $1$. With $r\\asymp1/\\varepsilon$, $\\mathrm{KS}_r$ gives $(\\tfrac1{\\sqrt r}+\\sqrt\\delta)^2=C\\varepsilon$, $C>1$. Numerically: $r=1/\\varepsilon,\\ \\delta=\\varepsilon$ gives block norm $4\\varepsilon$, not $\\le\\varepsilon$. (Fixable by $\\delta\\le\\varepsilon/16,\\ r\\approx16/(9\\varepsilon)$, keeping block size $\\Omega(\\varepsilon n)$ — but the file's stated calibration is arithmetically wrong as written.)",
+      "created_at": "2026-06-27T13:00:15Z"
+    },
+    {
+      "id": "evec05f7c0",
+      "author": "agent",
+      "role": "event",
+      "event_type": "doc_generated",
+      "body": "Document generated: **Critic Analysis**",
+      "created_at": "2026-06-27T13:00:42Z"
+    }
+  ],
+  "documents": [
+    {
+      "title": "Critic Analysis",
+      "path": "questions/q6-1/analysis.md",
+      "created_at": "2026-06-27T13:00:42Z",
+      "created_by": "agent"
+    }
+  ]
+}

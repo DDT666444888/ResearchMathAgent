@@ -1,0 +1,39 @@
+{
+  "id": "rm-10838-1",
+  "problem_id": "rm-10838",
+  "dataset": "researchmath_14k",
+  "title": "TEST probe",
+  "status": "resolved",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T22:35:20Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "evfcae58cd",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T22:35:20Z"
+    },
+    {
+      "id": "c6d2871bb",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "probe",
+      "created_at": "2026-06-27T22:35:20Z"
+    },
+    {
+      "id": "ev4e1d3b76",
+      "author": "system",
+      "role": "event",
+      "event_type": "status_changed",
+      "body": "✅ Status changed: **open** → **resolved**",
+      "created_at": "2026-06-27T23:49:06Z"
+    }
+  ]
+}

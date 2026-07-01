@@ -1,0 +1,31 @@
+{
+  "id": "rm-13612-3",
+  "problem_id": "rm-13612",
+  "dataset": "researchmath_14k",
+  "title": "Gap 2: Coefficient bound $\\mu_j\\le 1/(2\\sqrt2)$ — the crux constant",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T04:07:20Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "evce9dafdc",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T04:07:20Z"
+    },
+    {
+      "id": "ce83590ec",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Sub-lemma (vertex coefficient bound).** After summing the four per-face inequalities of Gap 1, each vertex distance $\\operatorname{dist}(p,V_j)$ appears with total coefficient $\\mu_j=\\sum_{i:\\,V_j\\in F_i}\\lambda_{ij}$ (sum over the three faces incident to $V_j$). Prove\n$$\\mu_j\\ \\le\\ \\frac{1}{2\\sqrt2}\\qquad\\text{for every vertex }j\\text{ and every tetrahedron},$$\nso that $D_2(p)\\le\\frac{1}{2\\sqrt2}\\sum_j\\operatorname{dist}(p,V_j)=\\frac{1}{2\\sqrt2}D_0(p)$, i.e. $D_0\\ge 2\\sqrt2\\,D_2$.\n\n**This is where the constant $2\\sqrt2$ is produced and is the hardest step.** The optimization is over the trihedral solid angle at $V_j$. NOTE (numerically certified in workspace): the regular tetrahedron with $p$ at the centroid gives ratio **exactly $3$**, NOT the extremum — so the worst case is asymmetric/degenerate and standard symmetry or SOS reductions can miss it. Expect the supremum of $\\mu_j$ to sit on the boundary of the angle-parameter space (two coincident vertices, volume $\\to 0$). A careful KKT/boundary analysis is required, and equality $\\mu_j=1/(2\\sqrt2)$ should hold only in that degenerate limit.",
+      "created_at": "2026-06-28T04:07:20Z"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "id": "rm-03709-4",
+  "problem_id": "rm-03709",
+  "dataset": "researchmath_14k",
+  "title": "Missing lemma: gradients of smooth forms should be STABLE (not just semistable) in P(W)",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T18:31:48Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev539466bc",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T18:31:48Z"
+    },
+    {
+      "id": "c11f0344d",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Location:** Lemma `lem:ss-to-ss` (Section \\ref{sec:proj}); needed to close Lemma `lem:Nopen` (issue on saturation).\n\n**Gap.** `lem:ss-to-ss` only shows $\\nabla(\\mathbb{P}(\\mathcal V)^{ss})\\subseteq\\mathbb{P}(\\mathcal W)^{ss}$. The entire saturation difficulty in `lem:Nopen` would dissolve if in fact\n$$\\nabla(\\mathbb{P}X)\\subseteq\\mathbb{P}(\\mathcal W)^{s}\\quad(\\text{the STABLE locus}),$$\nbecause on the stable locus the good quotient is geometric, orbits are closed, fibers are single orbits, and every $G$-invariant open is automatically saturated *within* the stable locus. The proof never addresses stability (as opposed to mere semistability) of $\\nabla f$.\n\n**Suggested proof.** Use the $\\mathrm{GL}_n$-equivariant left inverse $R$ from Lemma `lem:euler` ($R\\circ\\nabla=\\mathrm{id}$). For a 1-parameter subgroup $\\lambda$, equivariant linear maps cannot increase the minimal Hilbert--Mumford weight; thus $\\mu(\\nabla f,\\lambda)\\le 0$ would force, via $R$, $\\mu(f,\\lambda)=\\mu(R(\\nabla f),\\lambda)\\le \\mu(\\nabla f,\\lambda)\\le 0$, contradicting stability of $f$ (Lemma `lem:stable`). Hence $\\mu(\\nabla f,\\lambda)>0$ for all nontrivial $\\lambda$, i.e. $\\nabla f$ is stable. Finite stabilizers transfer along the injective equivariant $\\nabla$. One must write the weight-monotonicity inequality $\\mu(R(w),\\lambda)\\le\\mu(w,\\lambda)$ carefully (sign conventions) and verify proper stability.",
+      "created_at": "2026-06-27T18:31:48Z"
+    }
+  ]
+}

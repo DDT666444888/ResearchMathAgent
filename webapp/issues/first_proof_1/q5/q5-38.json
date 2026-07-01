@@ -1,0 +1,47 @@
+{
+  "id": "q5-38",
+  "problem_id": "q5",
+  "dataset": "first_proof_1",
+  "title": "Closure of the null-class N_W under colimits in cor:exact-slice uses sequential Milnor lim^1 for general filtered colimits",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T12:37:17Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev499360e1",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T12:37:17Z"
+    },
+    {
+      "id": "c2770c088",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Location.** Corollary `cor:exact-slice` (the upper-bound half showing $\\Sigma^k HM$ is an exact $(kr_G)$-slice), in the verification that the closure class\n$$\\mathcal N_W=\\{X\\mid [\\Sigma^\\ell(G/K_+\\otimes X),W]^G=0\\ \\forall K\\subseteq G,\\ \\ell\\ge0\\},\\qquad W=\\Sigma^kHM,$$\nis closed under the generation operation (o1), specifically **under filtered/arbitrary homotopy colimits**.\n\n**The claim as written.** The proof argues:\n> \"Wedges and filtered colimits send $\\operatorname{Map}^G(G/K_+\\otimes(-),W)$ to products and homotopy limits; for a homotopy limit of spectra each having vanishing $\\pi_{\\ge0}$ the $\\lim^1$-sequence $0\\to\\lim^1\\pi_{\\ell+1}\\to\\pi_\\ell\\to\\lim\\pi_\\ell\\to0$ gives vanishing $\\pi_\\ell$ for $\\ell\\ge0$.\"\n\n**The gap.** The displayed exact sequence is the **Milnor $\\lim^1$ sequence**, which is valid for **sequential (tower-indexed) homotopy limits** $\\lim_{n}$. It is invoked here for the homotopy limit arising from an *arbitrary filtered* colimit $X=\\operatorname*{colim}_\\alpha X_\\alpha$ in the source, whose image under the contravariant $\\operatorname{Map}^G(G/K_+\\otimes(-),W)$ is a homotopy limit over the *opposite* (cofiltered) index category. For a general cofiltered diagram there is no two-term Milnor sequence; $\\pi_\\ell$ of the homotopy limit can receive contributions from higher derived limits $\\lim^s\\pi_{\\ell+s}$ ($s\\ge1$), and connectivity (vanishing of $\\pi_{\\ge0}$) is **not** in general preserved by arbitrary homotopy limits. So the argument as literally written only establishes (o1)-closure for *sequential* colimits, not for the arbitrary homotopy colimits that (o1) demands.\n\n**Why it is genuine.** The generation $\\langle\\mathcal G\\rangle_{\\ge}$ that defines $\\tau^{\\mathcal O}_{\\ge kr_G+1}$ is closed under *all* homotopy colimits (o1); to conclude $\\tau^{\\mathcal O}_{\\ge kr_G+1}\\subseteq\\mathcal N_W$ one must know $\\mathcal N_W$ is closed under all those colimits, not just sequential ones. The upper-bound (vanishing) half of the slice characterization — and hence the statement that $\\Sigma^kHM$ is an *exact* slice (Cor. `cor:exact-slice`) and the sharpness of the connectivity function — depends on this closure.\n\n**The conclusion is nonetheless true; only the justification is defective.** The clean fix: $\\mathcal N_W$ is (an intersection over $K,\\ell$ of) the **left/right-orthogonal complement of a set of objects**. Concretely, $X\\in\\mathcal N_W$ iff for every $K$ and $\\ell\\ge0$, $\\operatorname{Map}^G(\\Sigma^\\ell(G/K_+\\otimes X),W)$ is coconnected ($\\pi_{\\ge0}=0$), equivalently $\\tau_{\\ge0}\\operatorname{Map}^G(G/K_+\\otimes X,W)\\simeq 0$. The class of $X$ with $G/K_+\\otimes X$ in the **left orthogonal** $^{\\perp}(\\tau_{\\le -1}\\text{-shift of }W)$ of a *fixed target* is automatically closed under all colimits of the variable $X$ (mapping *out* of a colimit is a limit in the target, and \"left-orthogonal to a fixed object\" is colimit-closed in the source by definition of the orthogonality / by adjunction). State it this way (or cite that the $W$-acyclics form a colimit-closed subcategory) instead of via the sequential Milnor sequence.\n\n**To close.** Replace the Milnor-$\\lim^1$ sentence with the orthogonality/adjunction argument above (or restrict explicitly to the transfinite-sequential generation and note that $\\langle\\mathcal G\\rangle_{\\ge}$ is exhausted by such, with each generator compact — cf. q5-33). One sentence; logically required for the upper-bound half of `cor:exact-slice`.\n\n*Note:* this is distinct from q5-33 (compactness in the *slice-cover* lemma `lem:cover-conn`): that issue concerns mapping *out of compact generators into a colimit*; the present issue concerns the contravariant closure of the *null-class* $\\mathcal N_W$ under colimits of the source, in a different lemma.",
+      "created_at": "2026-06-27T12:37:17Z"
+    },
+    {
+      "id": "ev6b175222",
+      "author": "agent",
+      "role": "event",
+      "event_type": "doc_generated",
+      "body": "Document generated: **Critic Analysis (current solution audit)**",
+      "created_at": "2026-06-27T12:37:57Z"
+    }
+  ],
+  "documents": [
+    {
+      "title": "Critic Analysis (current solution audit)",
+      "path": "questions/q5/analysis.md",
+      "created_at": "2026-06-27T12:37:57Z",
+      "created_by": "agent"
+    }
+  ]
+}

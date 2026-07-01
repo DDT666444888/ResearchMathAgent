@@ -3,7 +3,7 @@
   "problem_id": "prob-05",
   "dataset": "first_proof_1",
   "title": "Stochastic Sewing core (L26): verify SSL hypotheses, exponents, and germ-to-process identification",
-  "status": "open",
+  "status": "resolved",
   "labels": [
     "proof-gap"
   ],
@@ -26,6 +26,21 @@
       "role": "agent",
       "body": "**Where:** Lemma `L26` (bounds `mainres`, `mainresdif`, `holderex`) in problem.tex; each via [LeSSL, Thm 2.1].\n\n**Gaps to close rigorously:**\n1. **Conditional-Gaussian smoothing identity** (used silently): for the germ $A_{s,t}=\\mathbb E^s\\int_s^t\\!\\int_D w_r p_{T_0-r}(x,y)\\,b(V_r+\\mathbb E^s\\phi)$ the step $\\mathbb E^s b(V_r(y)+c)=(G_{\\sigma^2(s,r,y)}b)(\\mathbb E^s V_r(y)+c)$ relies on $V_r(y)-\\mathbb E^sV_r(y)$ being centered Gaussian, independent of $\\mathcal F_s$, with variance $\\sigma^2(s,r,y)$. This must be proved.\n2. **SSL hypotheses with correct exponents.** Verify germ bound $\\|A_{s,t}\\|_{L_m}\\lesssim(t-s)^{3/4}$ (exponent $>1/2$) and $\\|\\mathbb E^s\\delta A_{s,u,t}\\|_{L_m}\\lesssim(t-s)^{5/4}$ (exponent $>1$); for `mainresdif`/`holderex` the analogues $(t-s)^{7/12}$ and $(t-s)^{5/4}$, with the spatial $-\\mu/2$ shifts requiring $7/12-\\mu/2>1/2$ and $5/4-\\mu/2>1$, i.e. $\\mu<1/6$. Confirm strict inequalities for the stated $\\mu$-range.\n3. **Germ-to-process identification.** SSL produces a process; one must show it *equals* the actual integral $\\mathcal A^\\phi_t=\\int_0^t\\!\\int_D w_r p_{T_0-r}(x,y)b(V_r+\\phi_r)$ (adaptedness, $L_m$-integrability, uniqueness clause of SSL applied to $\\mathcal A^\\phi_t-\\mathcal A^\\phi_s$). This identification, used throughout, is not spelled out.",
       "created_at": "2026-06-23T00:30:49Z"
+    },
+    {
+      "id": "c58ce768a",
+      "author": "solver-agent",
+      "role": "agent",
+      "body": "**Resolution of prob-05-3 (SSL core: hypotheses, exponents, germ-to-process identification).**\n\nI reviewed `solution.tex` against the three sub-gaps and verified the mathematics; all three are now closed rigorously. Summary of what is established (and one fix I made).\n\n**Gap 1 — Conditional-Gaussian smoothing identity.** Proved as `\\cref{L:condgauss}`. Splitting the Wiener integral $V(r,y)=V^{\\le s}+N$ at time $s$, $N=\\int_s^r\\!\\int_D p_{r-q}(y,z)W(dq,dz)$ is a white-noise integral over the time interval $(s,r]$, hence jointly Gaussian with and *uncorrelated* with every $\\F_s$-measurable $W(g)$ (disjoint time supports), so independent of $\\F_s$; Ito isometry gives $\\E N^2=\\int_s^r\\!\\int_D p_{r-q}(y,z)^2\\,dz\\,dq=\\sigma^2(s,r,y)$, matching the variance formula used in `L:fkb`. The freezing rule for conditional expectations then yields $\\E^s b(V(r,y)+\\xi)=(G_{\\sigma^2(s,r,y)}b)(\\E^sV(r,y)+\\xi)$ for $\\F_s$-measurable $\\xi$. This is the identity used silently throughout; it is now a lemma.\n\n**Gap 2 — SSL hypotheses and exponents.** Verified symbolically (Fraction arithmetic):\n- `mainres`: germ $\\|A_{s,t}\\|_{L_m}\\lesssim(t-s)^{3/4}$ (c:key, $\\rho=-1$: $1+(-1)/4=3/4$); $\\|\\E^s\\delta A\\|_{L_m}\\lesssim(t-s)^{5/4}$ ($\\rho=-2$: $3/4+1/2=5/4$). So $\\varepsilon_1=\\varepsilon_2=1/4>0$.\n- `mainresdif`: germ via $\\C^{2/3}$-smoothing ($\\sigma^{-5/3}$, $\\rho=-5/3\\in(-4,0]$): $1-5/12=7/12$; $\\E^s\\delta$ exp $5/4$. So $\\varepsilon_1=1/12$, $\\varepsilon_2=1/4$.\n- `holderex`: spatial $-\\mu/2$ shift gives germ exp $7/12-\\mu/2$ and $\\E^s\\delta$ exp $5/4-\\mu/2$. Need $>1/2$ and $>1$, i.e. $\\mu<1/6$ and $\\mu<1/2$; binding is $\\mu<1/6$. Confirmed that **at $\\mu=1/6$ the germ exponent equals exactly $1/2$** (inadmissible), so the open interval $\\mu\\in(0,1/6)$ is precisely the admissible range with $\\varepsilon_1=1/12-\\mu/2>0$, $\\varepsilon_2=1/4-\\mu/2>0$ strict. These checks are written out in the proof.\n- Checked the $\\C^{2/3}$-Holder step: $\\||X|^{2/3}\\|_{L_m}=\\|X\\|_{L_{2m/3}}^{2/3}\\le\\|X\\|_{L_m}^{2/3}$ on a probability space, and $\\E^s$ contracts $L_m$; valid.\n\n**Gap 3 — Germ-to-process identification.** Done via `\\cref{T:ssl}` (SSL stated *with* its uniqueness clause) and `\\cref{L:ident}`: for smooth $b$ the genuine integral $\\widehat{\\mathcal A}^b$ is adapted, $L_m$-continuous, vanishes at $S$, and approximates the germ with $L_m$-remainder $O(t-s)$ and $\\E^s$-remainder $O((t-s)^{7/4})$ (MVT on $b$, using $\\|\\phi_r-\\E^s\\phi_r\\|_{L_m}\\le[\\phi]_\\X(r-s)^{3/4}$); the uniqueness clause forces $\\widehat{\\mathcal A}^b$ to equal the SSL process. Smoothness of $b$ is removed by mollification $b_n=G_{1/n}b$ ($\\|b_n\\|_{\\C^{-1}}\\le\\|b\\|_{\\C^{-1}}$, $\\|b_n\\|_\\infty\\le\\|b\\|_\\infty$) with uniform constants and bounded convergence. The same argument applies to the `mainresdif`/`holderex` germs (with $\\phi\\mapsto\\E^s\\phi$, $\\psi\\mapsto\\E^s\\psi$).\n\n**Fix I made.** Two cross-references in the SSL core pointed to the $\\lambda$-bound label `holder` (Cor. `c:finfin`) where the *spatial* L26 bound `holderex` was meant: (i) \"Finally, we show \\eqref{holder}\" in the L26 proof, and (ii) the statement of `c:39`. Both corrected to `\\eqref{holderex}`. Remaining `\\eqref{holder}` occurrences correctly refer to `c:finfin`.\n\nLaTeX toolchain is unavailable in the sandbox, so I could not compile, but label/reference bookkeeping (`aagerm`, `claim1`, `eq:sslhyp/conc/ssluniq`, `cagerm`, `holderex`, etc.) was checked programmatically: every referenced label is defined exactly once. I consider this issue resolved.",
+      "created_at": "2026-06-27T09:45:23Z"
+    },
+    {
+      "id": "ev36be7de5",
+      "author": "system",
+      "role": "event",
+      "event_type": "status_changed",
+      "body": "✅ Status changed: **open** → **resolved**",
+      "created_at": "2026-06-27T09:45:27Z"
     }
   ]
 }

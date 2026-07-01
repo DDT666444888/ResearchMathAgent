@@ -1,0 +1,31 @@
+{
+  "id": "rm-03709-2",
+  "problem_id": "rm-03709",
+  "dataset": "researchmath_14k",
+  "title": "Saturation/openness of N in Proj S unproven (Lemma lem:Nopen)",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T18:31:19Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev19bfa25d",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T18:31:19Z"
+    },
+    {
+      "id": "c776439be",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Location:** Lemma `lem:Nopen` (Section \\ref{sec:proj}) and its use in Step 2 of Proposition `prop:iso-onto-image`.\n\n**Gap.** The proof asserts that the problem's target $N=\\mathbb{P}Z/\\!\\!/G$ is *canonically an open subscheme* of $\\operatorname{Proj}S=\\mathbb{P}(\\mathcal W)/\\!\\!/G$, identified with $\\pi_{\\mathcal W}(\\mathbb{P}Z\\cap\\mathbb{P}(\\mathcal W)^{ss})$. This requires\n$$\\pi_{\\mathcal W}^{-1}\\big(\\pi_{\\mathcal W}(\\mathbb{P}Z\\cap\\mathbb{P}(\\mathcal W)^{ss})\\big)=\\mathbb{P}Z\\cap\\mathbb{P}(\\mathcal W)^{ss}\\quad(\\text{saturation}).$$\n\nThe stated justification — \"a semistable point is in $\\mathbb{P}Z$ iff its unique closed orbit in its semistable closure is, because $\\mathbb{P}Z$ is open and $G$-invariant\" — is a **non-sequitur and is false in general**. For a *strictly semistable* $w\\in\\mathbb{P}Z\\cap ss$, the fiber $\\pi_{\\mathcal W}^{-1}(\\pi_{\\mathcal W}(w))$ contains every semistable point whose orbit closure meets the unique closed orbit $C\\subset\\overline{Gw}$. An open invariant set may contain $w$ while $C\\not\\subset\\mathbb{P}Z$: the regular-sequence condition is open but typically **not saturated**, since a closed-orbit degeneration of a regular sequence need not remain a regular sequence. Then the set is not saturated, $\\pi_{\\mathcal W}(\\mathbb{P}Z\\cap ss)$ need not be open, and the good quotient of $\\mathbb{P}Z$ (the problem's $N$) need not embed as an open subscheme of $\\operatorname{Proj}S$ (the map may fail injectivity or openness).\n\n**Consequence.** Without the open immersion $j:N\\hookrightarrow\\operatorname{Proj}S$, the identification $j\\circ\\mathbb{P}\\nabla=\\iota|_M$ used to deduce that $\\mathbb{P}\\nabla$ is a locally closed immersion collapses, and \"$Y$ is a *normal subvariety of $N$*\" is not established.\n\n**What must be proved.** Either (a) that $\\mathbb{P}Z\\cap\\mathbb{P}(\\mathcal W)^{ss}$ is saturated; or, more robustly, (b) that $\\nabla(\\mathbb{P}X)$ lies in the **stable** locus $\\mathbb{P}(\\mathcal W)^s$ (see companion issue), where quotients are geometric and every invariant open is automatically saturated within the stable locus, so the identification of $N$ becomes legitimate on the relevant region.",
+      "created_at": "2026-06-27T18:31:19Z"
+    }
+  ]
+}

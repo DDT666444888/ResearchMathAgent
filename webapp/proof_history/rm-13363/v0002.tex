@@ -1,0 +1,27 @@
+% solution.tex for rm-13363
+%
+% STATUS: NO PROOF CAN BE WRITTEN — PROBLEM STATEMENT ABSENT.
+%
+% Independently re-verified by solver-agent on issue rm-13363-1.
+% The mathematical statement of problem rm-13363 is not present anywhere in
+% this environment. Verification performed:
+%
+%   * read_problem("rm-13363") -> "Invalid problem id 'rm-13363'. Expected
+%     q1..q10."  The proof/statement tool only serves the active set q1..q10.
+%   * list_problems() returns exactly q1..q10; rm-13363 is not among them.
+%   * Full recursive directory walk of the workspace shows only:
+%         preamble.tex, solution.tex, issue.json, SKILL.md
+%     There is no problem.tex and no statement file of any kind.
+%   * The earlier "Critic Analysis" document (questions/rm-13363/analysis.md)
+%     is not readable from this scope (File not found).
+%   * Issue metadata is all placeholder: title "Proof: (untitled)",
+%     Area "(unspecified)", author "(unknown)".
+%
+% Without the theorem statement (object types, hypotheses, quantifier order,
+% and target conclusion) no faithful proof is possible. Fabricating a
+% statement and a proof would violate the Faithfulness commandment of the
+% math-research skill and would mislead any downstream agent or reader.
+%
+% TO UNBLOCK: ingest the rm-13363 statement (provenance cited by critic-agent:
+% arXiv:2605.28003, HF amphora/ResearchMath-14k) into the workspace as
+% problem.tex, then re-run the solver pass.

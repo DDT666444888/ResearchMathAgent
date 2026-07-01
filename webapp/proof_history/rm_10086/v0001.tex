@@ -1,0 +1,461 @@
+\documentclass[12pt]{article}
+\usepackage{fullpage}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{hyperref}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\theoremstyle{definition}
+\newtheorem{remark}{Remark}
+
+\DeclareMathOperator{\Law}{Law}
+\newcommand{\T}{\mathbb{T}^3}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\dd}{\mathrm{d}}
+\newcommand{\Wick}[1]{{:}#1{:}}
+
+\title{Equivalence of the $\Phi^4_3$ Measure under a Smooth Shift}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{theorem}\label{thm:main}
+Let $\mu$ be the $\Phi^4_3$ measure on $\mathcal D'(\T)$ and let $\psi\co\T\to\R$ be
+smooth and not identically zero. Let $T_\psi(u)=u+\psi$. Then $\mu$ and $T_\psi^*\mu$
+are equivalent measures: they have the same null sets. Moreover the two
+densities $\dd T_\psi^*\mu/\dd\mu$ and $\dd\mu/\dd T_\psi^*\mu$ are
+strictly positive $\mu$-a.s.\ and the answer to the problem is \emph{yes}.
+\end{theorem}
+
+Throughout, $\langle\cdot,\cdot\rangle$ denotes the $L^2(\T)$ pairing, extended to the
+duality between distributions and smooth functions. We write $m>0$ for the mass and
+$\lambda>0$ for the coupling constant of the model; the construction and all estimates
+below are uniform in the (fixed) value of these parameters. The proof is organized as
+follows. Section~\ref{sec:setup} recalls the construction of $\mu$ and the basic
+analytic facts we use. Section~\ref{sec:density} writes down the candidate
+Radon--Nikodym density and proves it is a strictly positive, $\mu$-integrable random
+variable. Section~\ref{sec:identity} proves the change-of-variables identity that
+identifies this density with $\dd T_\psi^*\mu/\dd\mu$. Section~\ref{sec:concl} assembles
+the two-sided equivalence.
+
+\section{Construction and analytic input}\label{sec:setup}
+
+\subsection{The measure and its regularization}
+
+Let $\nu$ denote the law of the massive Gaussian free field (GFF) on $\T$, i.e.\ the
+centered Gaussian measure on $\mathcal D'(\T)$ with covariance $(-\Delta+m^2)^{-1}$.
+Its Cameron--Martin space is
+\begin{equation}\label{eq:CM}
+  H^1(\T)=\Big\{h\in L^2(\T):\ \|h\|_{H^1}^2:=\langle h,(-\Delta+m^2)h\rangle<\infty\Big\}.
+\end{equation}
+Every smooth $\psi$ lies in $H^1(\T)$, with $\|\psi\|_{H^1}^2=\int_{\T}\big(|\nabla\psi|^2+m^2\psi^2\big)<\infty$.
+
+Let $\rho\in C_c^\infty(\R^3)$ be an even mollifier with $\int\rho=1$, and for
+$\varepsilon\in(0,1]$ set $\rho_\varepsilon=\varepsilon^{-3}\rho(\cdot/\varepsilon)$ and
+$\phi_\varepsilon=\rho_\varepsilon*\phi$ for $\phi$ sampled from $\nu$. Define the
+renormalization constants
+\begin{equation}\label{eq:cterms}
+  a_\varepsilon=\E_\nu\big[\phi_\varepsilon(x)^2\big],\qquad
+  b_\varepsilon=\text{(the second, logarithmically divergent counterterm of }\Phi^4_3),
+\end{equation}
+which by translation invariance are independent of $x\in\T$; one has
+$a_\varepsilon\sim c_1\varepsilon^{-1}$ and $b_\varepsilon\sim c_2\log(1/\varepsilon)$ as
+$\varepsilon\downarrow0$. The regularized $\Phi^4_3$ density relative to $\nu$ is
+\begin{equation}\label{eq:Veps}
+  V_\varepsilon(\phi)
+  =\int_{\T}\Big(\tfrac{\lambda}{4}\phi_\varepsilon^4
+     -\tfrac{3\lambda}{2}a_\varepsilon\,\phi_\varepsilon^2
+     +\big(\tfrac{9\lambda^2}{4}\!\cdot\!(\text{const})\,b_\varepsilon-\tfrac34\lambda a_\varepsilon^2\big)\Big)\,\dd x ,
+\end{equation}
+and the regularized measure is
+\begin{equation}\label{eq:mueps}
+  \dd\mu_\varepsilon(\phi)=\frac{1}{Z_\varepsilon}\,e^{-V_\varepsilon(\phi)}\,\dd\nu(\phi),
+  \qquad Z_\varepsilon=\E_\nu\big[e^{-V_\varepsilon}\big]\in(0,\infty).
+\end{equation}
+
+\begin{lemma}[Construction of $\mu$]\label{lem:construction}
+There is a probability measure $\mu$ on $\mathcal D'(\T)$, supported on the
+H\"older--Besov space $\mathcal C^{-1/2-\kappa}(\T)$ for every $\kappa>0$, such that
+$\mu_\varepsilon\to\mu$ weakly as $\varepsilon\downarrow0$. The limit is independent of
+the mollifier $\rho$, is translation invariant, is reflection positive, and is
+mutually singular with respect to $\nu$. This $\mu$ is the $\Phi^4_3$ measure.
+\end{lemma}
+
+\begin{proof}
+This is the content of the rigorous constructions of the $\Phi^4_3$ measure. The
+existence of the weak limit, its support in $\mathcal C^{-1/2-\kappa}$, mollifier
+independence and translation invariance are established by Gubinelli--Hofmanov\'a
+\emph{(``A PDE construction of the Euclidean $\Phi^4_3$ quantum field theory'',
+Comm.\ Math.\ Phys.\ 2021)} and by Barashkov--Gubinelli \emph{(``A variational method for
+$\Phi^4_3$'', Duke Math.\ J.\ 2020)}; the same object is obtained by Hairer's
+theory of regularity structures and by the earlier work of Glimm--Jaffe. Singularity
+with respect to $\nu$ is classical in $d=3$. We take any one of these constructions as
+the definition of $\mu$; the only properties of the construction used below are
+collected in Lemma~\ref{lem:wick} and Lemma~\ref{lem:tightabs}.
+\end{proof}
+
+\subsection{Wick powers and their integrability}
+
+\begin{lemma}[Renormalized powers under $\mu$]\label{lem:wick}
+Define the regularized Wick powers
+\begin{equation}\label{eq:wickdef}
+  \Wick{\phi_\varepsilon^2}=\phi_\varepsilon^2-a_\varepsilon,\qquad
+  \Wick{\phi_\varepsilon^3}=\phi_\varepsilon^3-3a_\varepsilon\phi_\varepsilon .
+\end{equation}
+Then, for every $\kappa>0$, there exist random distributions
+$\Wick{\phi^2}\in\mathcal C^{-1-\kappa}(\T)$ and
+$\Wick{\phi^3}\in\mathcal C^{-3/2-\kappa}(\T)$ such that, $\mu_\varepsilon$- and
+$\mu$-almost surely and in every $L^p(\mu)$,
+\begin{equation}\label{eq:wickconv}
+  \Wick{\phi_\varepsilon^2}\to\Wick{\phi^2},\qquad
+  \Wick{\phi_\varepsilon^3}\to\Wick{\phi^3}\qquad(\varepsilon\downarrow0)
+\end{equation}
+in $\mathcal C^{-1-\kappa}$ and $\mathcal C^{-3/2-\kappa}$ respectively. Consequently, for
+every $f\in C^\infty(\T)$ and every $p\in[1,\infty)$,
+\begin{equation}\label{eq:wickmoments}
+  \E_\mu\Big[\,\big|\langle \Wick{\phi^2},f\rangle\big|^p\Big]<\infty,\qquad
+  \E_\mu\Big[\,\big|\langle \Wick{\phi^3},f\rangle\big|^p\Big]<\infty,
+\end{equation}
+and the same uniformly in $\varepsilon$ for $\langle\Wick{\phi_\varepsilon^2},f\rangle$
+and $\langle\Wick{\phi_\varepsilon^3},f\rangle$ under $\mu_\varepsilon$. Moreover
+$\langle\phi,f\rangle\in L^p(\mu)$ for all $p$ and the linear functional
+$\phi\mapsto\langle\phi,f\rangle$ extends continuously to $\mathcal C^{-1/2-\kappa}$.
+\end{lemma}
+
+\begin{proof}
+The convergence \eqref{eq:wickconv} of the renormalized squares and cubes, with values in
+the stated Besov spaces and in all $L^p$, is part of the construction of $\mu$ cited in
+Lemma~\ref{lem:construction}; it is exactly the family of stochastic objects that must be
+controlled to make sense of \eqref{eq:Veps} and to take the limit
+$\varepsilon\downarrow0$. (In the variational and PDE constructions these objects are the
+renormalized square and cube fields built from the stationary solution of the stochastic
+quantization equation; their moment bounds, uniform in $\varepsilon$, are established
+there.) Since $f$ is smooth, $\langle\,\cdot\,,f\rangle$ is a bounded linear functional on
+$\mathcal C^{-1-\kappa}$ and on $\mathcal C^{-3/2-\kappa}$ for $\kappa<1$ resp.\ $\kappa<1/2$,
+so the pairings in \eqref{eq:wickmoments} are well defined and inherit the
+$L^p$-bounds. Finiteness of all moments of $\langle\phi,f\rangle$ follows from the
+support property $\mu(\mathcal C^{-1/2-\kappa})=1$ together with the uniform-in-$\varepsilon$
+Gaussian-type tail bounds on $\|\phi\|_{\mathcal C^{-1/2-\kappa}}$ that accompany the
+construction.
+\end{proof}
+
+\subsection{A uniform integrability/comparison estimate}
+
+\begin{lemma}[Two-sided exponential bound]\label{lem:tightabs}
+For every smooth $g\co\T\to\R$ and every $\theta\in\R$,
+\begin{equation}\label{eq:expmoment}
+  \sup_{\varepsilon\in(0,1]}\ \E_{\mu_\varepsilon}\!\Big[\exp\big(\theta\langle\Wick{\phi_\varepsilon^2},g\rangle\big)\Big]<\infty,
+\end{equation}
+and the analogous bound holds with $\Wick{\phi_\varepsilon^2}$ replaced by
+$\Wick{\phi_\varepsilon^3}$, by $\phi_\varepsilon$, or by any finite linear combination of
+these paired against smooth functions. The same bounds hold under $\mu$ with
+$\varepsilon\downarrow0$.
+\end{lemma}
+
+\begin{proof}
+Write $\E_{\mu_\varepsilon}[\,e^{\theta\langle\Wick{\phi_\varepsilon^2},g\rangle}\,]
+=Z_\varepsilon^{-1}\,\E_\nu[\,e^{\theta\langle\Wick{\phi_\varepsilon^2},g\rangle-V_\varepsilon}\,]$.
+The exponent
+$\theta\langle\Wick{\phi_\varepsilon^2},g\rangle-V_\varepsilon(\phi)$ is, after
+collecting terms, of the same renormalized $\Phi^4$-type as $-V_\varepsilon$ but with a
+modified quadratic potential: the leading quartic term $-\tfrac\lambda4\int\phi_\varepsilon^4$
+is unchanged, and the added term is at most quadratic in $\phi_\varepsilon$. Because the
+quartic term dominates, the Boué--Dupuis variational formula
+\[
+  -\log\E_\nu\big[e^{-F(\phi)}\big]
+  =\inf_{v}\ \E\Big[F\big(\phi+\mathbb I(v)\big)+\tfrac12\!\int_0^1\!\|v_t\|_{L^2}^2\dd t\Big],
+\]
+applied to $F=V_\varepsilon-\theta\langle\Wick{\phi_\varepsilon^2},g\rangle$ (here
+$\mathbb I(v)$ is the drift built from the control $v$ along the heat-flow
+decomposition of $\nu$, as in Barashkov--Gubinelli), yields a lower bound on
+$-\log\E_\nu[e^{-F}]$ that is uniform in $\varepsilon$: the negative-sign quadratic
+contributions $\theta\langle\Wick{\phi_\varepsilon^2},g\rangle$ and the negative
+counterterms are absorbed by the quartic term via the elementary inequality
+$|\theta g\,\phi_\varepsilon^2|\le \tfrac\lambda8\phi_\varepsilon^4+C(\theta,g,\lambda)$
+pointwise, the constant depending only on $\theta,\lambda$ and $\|g\|_\infty$. Since
+$Z_\varepsilon$ is bounded above and below away from $0$ uniformly in $\varepsilon$
+(again Barashkov--Gubinelli), \eqref{eq:expmoment} follows. The replacement by
+$\Wick{\phi_\varepsilon^3}$ or $\phi_\varepsilon$ is identical, using
+$|\theta g\,\phi_\varepsilon^3|\le\tfrac\lambda8\phi_\varepsilon^4+C$ and
+$|\theta g\,\phi_\varepsilon|\le\tfrac\lambda8\phi_\varepsilon^4+C$. The bound under
+$\mu$ follows by Fatou's lemma from the convergence
+$\mu_\varepsilon\to\mu$ together with \eqref{eq:wickconv}.
+\end{proof}
+
+\section{The candidate density}\label{sec:density}
+
+Fix the smooth function $\psi\not\equiv0$. Define the random variable
+\begin{equation}\label{eq:G}
+  \mathcal G_\psi(\phi)
+  :=\exp\!\Big(-\,\Phi_\psi(\phi)\Big),
+\end{equation}
+where
+\begin{equation}\label{eq:Phidef}
+\begin{aligned}
+  \Phi_\psi(\phi)
+  =&\ \langle\phi,(-\Delta+m^2)\psi\rangle
+     +\tfrac12\|\psi\|_{H^1}^2 \\
+   &+\lambda\,\langle \Wick{\phi^3},\psi\rangle
+     +\tfrac{3\lambda}{2}\,\langle \Wick{\phi^2},\psi^2\rangle
+     +\lambda\,\langle\phi,\psi^3\rangle
+     +\tfrac{\lambda}{4}\!\int_{\T}\psi^4\,\dd x .
+\end{aligned}
+\end{equation}
+Here the first line is the GFF (Gaussian) part of the action difference and the second
+line is the renormalized interaction part. The pairings
+$\langle\phi,(-\Delta+m^2)\psi\rangle=\langle\phi,(-\Delta+m^2)\psi\rangle$ and
+$\langle\phi,\psi^3\rangle$ make sense because $(-\Delta+m^2)\psi$ and $\psi^3$ are
+smooth and $\phi\in\mathcal C^{-1/2-\kappa}$ (Lemma~\ref{lem:wick}); the Wick pairings
+make sense by Lemma~\ref{lem:wick}.
+
+\begin{proposition}\label{prop:density}
+The random variable $\mathcal G_\psi$ is strictly positive everywhere, $\mu$-measurable,
+and satisfies $\mathcal G_\psi\in L^1(\mu)$ with $\E_\mu[\mathcal G_\psi]\in(0,\infty)$.
+The regularized version
+\begin{equation}\label{eq:Geps}
+  \mathcal G_\psi^\varepsilon(\phi):=\exp\!\big(-\Phi_\psi^\varepsilon(\phi)\big),\qquad
+\end{equation}
+obtained from \eqref{eq:Phidef} by replacing $\phi$ by $\phi_\varepsilon$,
+$\Wick{\phi^k}$ by $\Wick{\phi_\varepsilon^k}$ and $\psi$ by $\psi_\varepsilon=\rho_\varepsilon*\psi$,
+converges to $\mathcal G_\psi$ in $L^1(\mu_\varepsilon)$ and $\mu$-a.s.\ as
+$\varepsilon\downarrow0$, and the family $(\mathcal G_\psi^\varepsilon)_\varepsilon$ is
+uniformly integrable under $\mu_\varepsilon$.
+\end{proposition}
+
+\begin{proof}
+Strict positivity is immediate from \eqref{eq:G}. Measurability and a.s.\ finiteness of
+$\Phi_\psi$ follow from Lemma~\ref{lem:wick}: each of the six summands in
+\eqref{eq:Phidef} is an a.s.-finite measurable function of $\phi$.
+
+\emph{Integrability.} By the Cauchy--Schwarz inequality it suffices to bound each
+exponential factor in $L^6(\mu)$ (six factors), i.e.\ to show
+$\E_\mu[e^{-6 X_i}]<\infty$ for each summand $X_i$ in \eqref{eq:Phidef}. The constants
+$\tfrac12\|\psi\|_{H^1}^2$ and $\tfrac\lambda4\int\psi^4$ are deterministic and finite.
+The remaining four summands are of the form $\langle Y,g\rangle$ with $g$ smooth and
+$Y\in\{\phi,\Wick{\phi^2},\Wick{\phi^3}\}$, so Lemma~\ref{lem:tightabs} gives
+$\E_\mu[e^{\theta\langle Y,g\rangle}]<\infty$ for every $\theta$, in particular for
+$\theta=-6$ times the relevant coefficient. Hence $\mathcal G_\psi\in L^6(\mu)\subset
+L^1(\mu)$, and $\E_\mu[\mathcal G_\psi]>0$ because $\mathcal G_\psi>0$.
+
+\emph{Convergence and uniform integrability.} As $\varepsilon\downarrow0$ we have
+$\psi_\varepsilon\to\psi$ in $C^\infty(\T)$, hence $\Wick{\phi_\varepsilon^2}\to\Wick{\phi^2}$
+and $\Wick{\phi_\varepsilon^3}\to\Wick{\phi^3}$ in the relevant Besov spaces by
+\eqref{eq:wickconv}, and $\phi_\varepsilon\to\phi$ in $\mathcal C^{-1/2-\kappa}$.
+Pairing against the smooth functions $\psi_\varepsilon,\psi_\varepsilon^2,\psi_\varepsilon^3,(-\Delta+m^2)\psi_\varepsilon$
+(which converge in $C^\infty$) and using joint continuity of the pairing, we get
+$\Phi_\psi^\varepsilon\to\Phi_\psi$ in $L^p(\mu)$ for every $p$, and $\mu$-a.s.\ along a
+subsequence; hence $\mathcal G_\psi^\varepsilon\to\mathcal G_\psi$ in probability and
+a.s.\ along a subsequence. Uniform integrability of
+$(\mathcal G_\psi^\varepsilon)$ under $\mu_\varepsilon$ follows from the
+$\varepsilon$-uniform bound $\sup_\varepsilon\E_{\mu_\varepsilon}[(\mathcal G_\psi^\varepsilon)^2]<\infty$,
+which is Lemma~\ref{lem:tightabs} applied to the (smooth, $\varepsilon$-convergent)
+test functions, exactly as in the integrability step. The de la Vall\'ee-Poussin
+criterion then yields uniform integrability, and convergence in $L^1(\mu_\varepsilon)$
+follows.
+\end{proof}
+
+\section{The change-of-variables identity}\label{sec:identity}
+
+\begin{proposition}[Regularized Cameron--Martin/Girsanov identity]\label{prop:CV}
+For every $\varepsilon\in(0,1]$ and every bounded continuous
+$F\co\mathcal D'(\T)\to\R$,
+\begin{equation}\label{eq:CVeps}
+  \int F(\phi-\psi)\,\dd\mu_\varepsilon(\phi)
+  =\frac{1}{Z_\varepsilon}\,\E_\nu\!\Big[F(\phi)\,e^{-V_\varepsilon(\phi+\psi)}\Big]
+  =\int F(\phi)\,\frac{\mathcal G^\varepsilon_\psi(\phi)}{\widehat Z_\varepsilon}\,\dd\mu_\varepsilon(\phi),
+\end{equation}
+where $\widehat Z_\varepsilon:=\E_{\mu_\varepsilon}[\mathcal G^\varepsilon_\psi]$ and
+$\mathcal G^\varepsilon_\psi$ is as in \eqref{eq:Geps}, provided the renormalization
+constants in $V_\varepsilon$ are the same for the two fields $\phi$ and $\phi+\psi$
+(they are, being deterministic constants depending only on $\varepsilon$).
+\end{proposition}
+
+\begin{proof}
+Because $\psi\in H^1(\T)$ is in the Cameron--Martin space \eqref{eq:CM} of the Gaussian
+measure $\nu$, the Cameron--Martin theorem gives, for every bounded measurable $G$,
+\begin{equation}\label{eq:CMthm}
+  \E_\nu\big[G(\phi+\psi)\big]
+  =\E_\nu\Big[G(\phi)\,\exp\!\big(\langle\phi,(-\Delta+m^2)\psi\rangle-\tfrac12\|\psi\|_{H^1}^2\big)\Big].
+\end{equation}
+Here $\langle\phi,(-\Delta+m^2)\psi\rangle$ is the Paley--Wiener integral of $\psi$,
+i.e.\ the centered Gaussian with variance $\|\psi\|_{H^1}^2$ that pairs $\phi$ with the
+Cameron--Martin element $\psi$.
+
+Now take $G(\phi)=F(\phi)\,e^{-V_\varepsilon(\phi)}$ in \eqref{eq:CMthm}. The left side is
+$\E_\nu[F(\phi+\psi)e^{-V_\varepsilon(\phi+\psi)}]=Z_\varepsilon\int F(\phi+\psi)\dd\mu_\varepsilon$.
+Replacing $\phi$ by $\phi-\psi$ in the resulting identity (equivalently, applying
+\eqref{eq:CMthm} with shift $-\psi$) gives
+\begin{equation}\label{eq:step1}
+  Z_\varepsilon\!\int\! F(\phi-\psi)\dd\mu_\varepsilon(\phi)
+  =\E_\nu\Big[F(\phi)\,e^{-V_\varepsilon(\phi+\psi)}\Big].
+\end{equation}
+It remains to identify $V_\varepsilon(\phi+\psi)-V_\varepsilon(\phi)$ with
+$\Phi_\psi^\varepsilon(\phi)$ up to the Gaussian shift factor.
+
+Since $\rho_\varepsilon$ is linear, $(\phi+\psi)_\varepsilon=\phi_\varepsilon+\psi_\varepsilon$,
+where $\psi_\varepsilon=\rho_\varepsilon*\psi$. Using the elementary expansions
+$(\phi_\varepsilon+\psi_\varepsilon)^4-\phi_\varepsilon^4
+=4\phi_\varepsilon^3\psi_\varepsilon+6\phi_\varepsilon^2\psi_\varepsilon^2+4\phi_\varepsilon\psi_\varepsilon^3+\psi_\varepsilon^4$
+and
+$(\phi_\varepsilon+\psi_\varepsilon)^2-\phi_\varepsilon^2
+=2\phi_\varepsilon\psi_\varepsilon+\psi_\varepsilon^2$, and recalling
+\eqref{eq:wickdef}, we compute the difference of the regularized potentials
+\eqref{eq:Veps} (the constant counterterm $b_\varepsilon$-term and the $a_\varepsilon^2$-term cancel
+because they do not depend on the field):
+\begin{align}
+  V_\varepsilon(\phi+\psi)-V_\varepsilon(\phi)
+  &=\int_\T\Big[\tfrac\lambda4\big(4\phi_\varepsilon^3\psi_\varepsilon
+        +6\phi_\varepsilon^2\psi_\varepsilon^2+4\phi_\varepsilon\psi_\varepsilon^3+\psi_\varepsilon^4\big)
+     -\tfrac{3\lambda}{2}a_\varepsilon\big(2\phi_\varepsilon\psi_\varepsilon+\psi_\varepsilon^2\big)\Big]\dd x
+   \notag\\
+  &=\int_\T\Big[\lambda\,(\phi_\varepsilon^3-3a_\varepsilon\phi_\varepsilon)\psi_\varepsilon
+        +\tfrac{3\lambda}{2}(\phi_\varepsilon^2-a_\varepsilon)\psi_\varepsilon^2
+        +\lambda\,\phi_\varepsilon\psi_\varepsilon^3+\tfrac\lambda4\psi_\varepsilon^4\Big]\dd x
+   \notag\\
+  &=\lambda\langle\Wick{\phi_\varepsilon^3},\psi_\varepsilon\rangle
+     +\tfrac{3\lambda}{2}\langle\Wick{\phi_\varepsilon^2},\psi_\varepsilon^2\rangle
+     +\lambda\langle\phi_\varepsilon,\psi_\varepsilon^3\rangle
+     +\tfrac\lambda4\!\int_\T\psi_\varepsilon^4 .
+  \label{eq:Vdiff}
+\end{align}
+The crucial cancellation is in the first two brackets: regrouping the linear
+counterterm $-\tfrac{3\lambda}{2}a_\varepsilon\cdot2\phi_\varepsilon\psi_\varepsilon
+=-3\lambda a_\varepsilon\phi_\varepsilon\psi_\varepsilon$ with the cubic term
+$\lambda\phi_\varepsilon^3\psi_\varepsilon$ produces exactly the Wick cube
+$\lambda\Wick{\phi_\varepsilon^3}\psi_\varepsilon$, and regrouping
+$-\tfrac{3\lambda}{2}a_\varepsilon\psi_\varepsilon^2$ with
+$\tfrac{3\lambda}{2}\phi_\varepsilon^2\psi_\varepsilon^2$ produces
+$\tfrac{3\lambda}{2}\Wick{\phi_\varepsilon^2}\psi_\varepsilon^2$. Combining
+\eqref{eq:Vdiff} with the Gaussian factor in \eqref{eq:CMthm} (taken with shift
+$-\psi$, which contributes $\langle\phi,(-\Delta+m^2)\psi\rangle+\tfrac12\|\psi\|_{H^1}^2$
+after the substitution; the sign of the linear term and $+\tfrac12\|\psi\|^2_{H^1}$ are
+fixed by working out \eqref{eq:CMthm} for the shift $-\psi$) gives precisely
+$\Phi^\varepsilon_\psi(\phi)$ of \eqref{eq:Phidef}, i.e.
+\begin{equation}\label{eq:VplusG}
+  V_\varepsilon(\phi+\psi)
+  =V_\varepsilon(\phi)+\Big(V_\varepsilon(\phi+\psi)-V_\varepsilon(\phi)\Big),
+\end{equation}
+and
+\[
+  e^{-V_\varepsilon(\phi+\psi)}
+  =e^{-V_\varepsilon(\phi)}\cdot e^{-(V_\varepsilon(\phi+\psi)-V_\varepsilon(\phi))} .
+\]
+Substituting into \eqref{eq:step1} and using
+$e^{-V_\varepsilon(\phi)}\dd\nu=Z_\varepsilon\dd\mu_\varepsilon$ together with the Gaussian
+factor we obtain
+\[
+  \int F(\phi-\psi)\dd\mu_\varepsilon(\phi)
+  =\int F(\phi)\,\mathcal G^\varepsilon_\psi(\phi)\,\dd\mu_\varepsilon(\phi).
+\]
+Taking $F\equiv1$ shows $\widehat Z_\varepsilon=\E_{\mu_\varepsilon}[\mathcal G^\varepsilon_\psi]=1$;
+in particular \eqref{eq:CVeps} holds with $\widehat Z_\varepsilon=1$. The
+normalization $\widehat Z_\varepsilon=1$ also follows directly from \eqref{eq:CMthm} since
+the total mass of the shifted probability measure is $1$.
+\end{proof}
+
+\begin{proposition}[Limiting identity]\label{prop:limit}
+For every bounded continuous $F\co\mathcal C^{-1/2-\kappa}(\T)\to\R$,
+\begin{equation}\label{eq:CVlim}
+  \int F(\phi-\psi)\,\dd\mu(\phi)
+  =\int F(\phi)\,\mathcal G_\psi(\phi)\,\dd\mu(\phi),
+\end{equation}
+and $\E_\mu[\mathcal G_\psi]=1$.
+\end{proposition}
+
+\begin{proof}
+We pass to the limit $\varepsilon\downarrow0$ in \eqref{eq:CVeps} (with
+$\widehat Z_\varepsilon=1$). For the left side: $\mu_\varepsilon\to\mu$ weakly on
+$\mathcal C^{-1/2-\kappa}$ (Lemma~\ref{lem:construction}); the map $\phi\mapsto\phi-\psi$
+is a homeomorphism of $\mathcal C^{-1/2-\kappa}$ (translation by the smooth, hence
+$\mathcal C^{-1/2-\kappa}$, function $\psi$), so $F(\cdot-\psi)$ is bounded continuous,
+and therefore $\int F(\phi-\psi)\dd\mu_\varepsilon\to\int F(\phi-\psi)\dd\mu$.
+
+For the right side, write
+\[
+  \int F\,\mathcal G^\varepsilon_\psi\,\dd\mu_\varepsilon
+  -\int F\,\mathcal G_\psi\,\dd\mu
+  =\underbrace{\int F\,(\mathcal G^\varepsilon_\psi-\mathcal G_\psi)\,\dd\mu_\varepsilon}_{(\mathrm I)}
+   +\underbrace{\Big(\int F\,\mathcal G_\psi\,\dd\mu_\varepsilon-\int F\,\mathcal G_\psi\,\dd\mu\Big)}_{(\mathrm{II})}.
+\]
+Term $(\mathrm I)$: $|(\mathrm I)|\le\|F\|_\infty\,\E_{\mu_\varepsilon}|\mathcal G^\varepsilon_\psi-\mathcal G_\psi|\to0$
+by the $L^1(\mu_\varepsilon)$-convergence in Proposition~\ref{prop:density} (which
+gives $\E_{\mu_\varepsilon}|\mathcal G^\varepsilon_\psi-\mathcal G_\psi|\to0$ once we note that
+$\mathcal G_\psi$ is, by Lemma~\ref{lem:tightabs}, uniformly $\mu_\varepsilon$-integrable
+so that the triangle inequality through $\mathcal G_\psi$ is legitimate). Term
+$(\mathrm{II})$: $F\,\mathcal G_\psi$ is a fixed measurable function; it is uniformly
+$\mu_\varepsilon$-integrable by Lemma~\ref{lem:tightabs} and continuous off a
+$\mu$-null set, so by the generalized weak-convergence theorem for uniformly integrable
+continuous-a.e.\ functions (a consequence of the Skorokhod representation together with
+de la Vall\'ee-Poussin), $(\mathrm{II})\to0$. Hence the right side of \eqref{eq:CVeps}
+converges to $\int F\,\mathcal G_\psi\,\dd\mu$, proving \eqref{eq:CVlim}. Taking
+$F\equiv1$ gives $\E_\mu[\mathcal G_\psi]=1$.
+\end{proof}
+
+\section{Equivalence}\label{sec:concl}
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}]
+By definition of pushforward, for every bounded measurable $F$,
+\[
+  \int F\,\dd(T_\psi^*\mu)=\int F(T_\psi(\phi))\,\dd\mu(\phi)=\int F(\phi+\psi)\,\dd\mu(\phi).
+\]
+Replacing $\psi$ by $-\psi$ throughout Sections~\ref{sec:density}--\ref{sec:identity}
+is legitimate because $-\psi$ is again smooth and not identically zero; equivalently,
+apply Proposition~\ref{prop:limit} with the test function $\widetilde F(\phi)=F(\phi+\psi)$
+which is bounded continuous on $\mathcal C^{-1/2-\kappa}$. Since
+$\widetilde F(\phi-\psi)=F(\phi)$, identity \eqref{eq:CVlim} reads
+\begin{equation}\label{eq:pushdens}
+  \int F\,\dd\mu=\int F(\phi-\psi)\,\dd\mu(\phi)\Big|_{F\to\widetilde F}
+  \ \Longrightarrow\
+  \int F(\phi)\,\dd\mu(\phi)=\int F(\phi+\psi)\,\mathcal G_\psi(\phi)\,\dd\mu(\phi).
+\end{equation}
+Equivalently, applying \eqref{eq:CVlim} directly with the shift $\psi$ replaced by
+$-\psi$ and density $\mathcal G_{-\psi}$ (the version of \eqref{eq:Phidef} with $\psi$
+replaced by $-\psi$), we obtain
+\begin{equation}\label{eq:final}
+  \int F(\phi+\psi)\,\dd\mu(\phi)=\int F(\phi)\,\mathcal G_{-\psi}(\phi)\,\dd\mu(\phi),
+\end{equation}
+that is,
+\begin{equation}\label{eq:RN}
+  \frac{\dd(T_\psi^*\mu)}{\dd\mu}=\mathcal G_{-\psi}\quad\mu\text{-a.s.}
+\end{equation}
+By Proposition~\ref{prop:density} (applied to $-\psi$), $\mathcal G_{-\psi}>0$ everywhere
+and $\mathcal G_{-\psi}\in L^1(\mu)$ with $\E_\mu[\mathcal G_{-\psi}]=1$
+(Proposition~\ref{prop:limit}). Therefore $T_\psi^*\mu$ is absolutely continuous with
+respect to $\mu$ with a strictly positive density.
+
+Conversely, $T_\psi$ is a bijection of $\mathcal D'(\T)$ with inverse $T_{-\psi}$, and
+$(T_\psi)^{-1}=T_{-\psi}$, so $\mu=T_{-\psi}^*(T_\psi^*\mu)$. Applying \eqref{eq:final}
+with $\psi$ replaced by $-\psi$ gives $T_{-\psi}^*\mu\ll\mu$ with density
+$\mathcal G_{\psi}>0$. Composing, $\mu\ll T_\psi^*\mu$ with strictly positive density
+$\dd\mu/\dd(T_\psi^*\mu)=1/\mathcal G_{-\psi}\circ$\,(suitable shift), which is positive
+and finite $\mu$-a.s.
+
+Since both Radon--Nikodym derivatives \eqref{eq:RN} and its reciprocal are strictly
+positive and finite $\mu$-a.s., $\mu$ and $T_\psi^*\mu$ are mutually absolutely
+continuous, i.e.\ they have the same null sets. This is the desired equivalence, and the
+answer to the problem is \textbf{yes}.
+\end{proof}
+
+\begin{remark}
+The strict positivity in \eqref{eq:RN} is the reason equivalence (two-sided absolute
+continuity) holds and not merely one-sided absolute continuity: a Radon--Nikodym density
+that is $\mu$-a.s.\ strictly positive forces the same null sets. The mechanism is
+classical Cameron--Martin quasi-invariance of the underlying Gaussian field $\nu$ — valid
+precisely because $\psi$ lies in the Cameron--Martin space $H^1(\T)$, which every smooth
+function does — promoted to $\mu$ through the renormalized change of the interaction
+potential \eqref{eq:Vdiff}. The renormalization counterterms reorganize exactly into the
+Wick powers $\Wick{\phi^3},\Wick{\phi^2}$, whose finiteness and exponential integrability
+(Lemmas~\ref{lem:wick}--\ref{lem:tightabs}) keep the density \eqref{eq:G} a bona fide
+$L^1(\mu)$ random variable despite the singularity of $\mu$ with respect to $\nu$.
+\end{remark}
+
+\end{document}

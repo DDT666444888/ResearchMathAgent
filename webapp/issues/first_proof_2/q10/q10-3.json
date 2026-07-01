@@ -1,0 +1,31 @@
+{
+  "id": "q10-3",
+  "problem_id": "q10",
+  "dataset": "first_proof_2",
+  "title": "G1 (CORE): Implicit observed-only matvec for the nr×nr system must be derived and proved (no O(M)/O(N))",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T05:21:20Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev845d86fc",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T05:21:20Z"
+    },
+    {
+      "id": "c282a97df",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Location:** the system matrix $\\mathcal A=(Z\\otimes K)^\\top S S^\\top (Z\\otimes K)+\\lambda(I_r\\otimes K)$ in ($\\star$).\n\nThe PCG inner loop needs the action $v=\\mathrm{vec}(W)\\mapsto\\mathcal A v$ computed **without** forming $Z\\otimes K$ ($N\\times nr$), the dense $KWZ^\\top$ ($n\\times M$), or any $O(N)$ vector. A correct derivation must prove:\n\n1. $(Z\\otimes K)\\mathrm{vec}(W)=\\mathrm{vec}(KWZ^\\top)$ and $(Z\\otimes K)^\\top\\mathrm{vec}(R)=\\mathrm{vec}(KRZ)$ (Kronecker–vec identity).\n2. $SS^\\top$ is the 0/1 diagonal mask onto observed coordinates of $\\mathbb R^N$.\n3. Column-major unfolding: observed flat index $p\\Rightarrow (i,m)=(p\\bmod n,\\lfloor p/n\\rfloor)$.\n\nResulting algorithm (must be proved correct): $C=KW$ ($O(n^2r)$); for each observed $(i,m)$, $u_p=\\langle C_{i,:},Z_{m,:}\\rangle$ ($O(qr)$, touching only rows $\\tilde K,\\tilde Z$); scatter $u$ to sparse $R$; return $\\mathrm{vec}(K(RZ))+\\lambda\\,\\mathrm{vec}(KW)$ with $RZ\\in\\mathbb R^{n\\times r}$ assembled by scatter ($O(qr+n^2r)$). Net **$O(n^2r+qr)$ per matvec**, free of $M,N$.\n\nVerified numerically in-session (matches dense $\\mathcal A v$ to $10^{-14}$). The attempt must *prove* the identity, not assert it; the common failure is silently materializing the $n\\times M$ intermediate (an $O(M)$ step).",
+      "created_at": "2026-06-28T05:21:20Z"
+    }
+  ]
+}

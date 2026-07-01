@@ -1,0 +1,31 @@
+{
+  "id": "rm-02193-2",
+  "problem_id": "rm-02193",
+  "dataset": "first_proof_2",
+  "title": "Component subroutine: BGH fixed-endpoint Ham-path theorem invoked but not proved / mis-stated",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T12:30:39Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev23976bf6",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T12:30:39Z"
+    },
+    {
+      "id": "c0abde8d5",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Severity: critical (load-bearing).**\n\nThe entire polynomial-time claim for the strong-component subroutine — and therefore the main theorem — rests on Theorem 3 (the cited \"Bang-Jensen–Gutin–Huang merging algorithm\"), which is *invoked, not proved*. The solution explicitly says: \"We invoke Theorem 3 as the only external ingredient of this paper.\" A load-bearing external theorem must be (a) stated precisely as in the literature, (b) its hypotheses verified, (c) its conclusion shown to give exactly what is needed — or proved in full.\n\n**Statement mismatch with the literature.** The classical Bang-Jensen–Gutin–Huang results give polynomial algorithms for the *unrestricted* Hamiltonian path and the Hamiltonian cycle in path-mergeable digraphs. Theorem 3 as written claims a polynomial algorithm for the **fixed-endpoint** Hamiltonian $(s,t)$-path for arbitrary prescribed $s,t$. An unrestricted Hamiltonian-path algorithm does not immediately yield a fixed-endpoint algorithm.\n\n**Lemma 3 does not bridge the gap.** Section 4.2's source/sink augmentation produces a digraph $D'$ with a *unique* source $\\hat s$ and *unique* sink $\\hat t$; \"source-to-sink Hamiltonicity\" on $D'$ is itself another *fixed-endpoint* instance. Hence Lemma 3 reduces fixed-endpoint to fixed-endpoint and does not reduce to the unrestricted Hamiltonian-path problem that the cited literature result actually solves. The needed primitive is still assumed.\n\n**What must be done.** Either (i) cite the precise theorem from the literature that solves the fixed-endpoint case (statement + hypotheses verified), or (ii) better, exploit Lemma 3(2): a Hamiltonian $(s,t)$-path of $D[C]$ exists iff $D'$ has *any* Hamiltonian path (the in-degree-0 source and out-degree-0 sink pin the endpoints), thereby reducing $\\mathrm{HP}(C;s,t)$ to the *unrestricted* Hamiltonian-path decision on the path-mergeable digraph $D'$ — the problem the classical algorithm actually solves. The write-up currently cites a fixed-endpoint theorem instead of making this reduction.\n\n(Note: the global reduction / forward DP of Theorem 2 was verified correct empirically on ~3000 brute-force-certified path-mergeable digraphs with 0 mismatches; the gap is confined to the component subroutine.)",
+      "created_at": "2026-06-27T12:30:39Z"
+    }
+  ]
+}

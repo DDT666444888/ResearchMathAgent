@@ -1,0 +1,31 @@
+{
+  "id": "rm-05936-3",
+  "problem_id": "rm-05936",
+  "dataset": "researchmath_14k",
+  "title": "Moderate gap: localized polynomial ring vs polynomial ring — license for the cited LS formula",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T10:00:20Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "evee12f774",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T10:00:20Z"
+    },
+    {
+      "id": "c52f32d66",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Location.** solution.tex §1.1 (choice $R=k[x_1,\\dots,x_n]_{(x_1,\\dots,x_n)}$) and §1.2 (claim $\\Omega_{R/k}\\otimes_R A\\cong A^n$ free on $dx_i$).\n\nThe classical Lichtenbaum–Schlessinger $\\operatorname{coker}(J)$ statement is normally stated for $R$ a **polynomial** ring; the solution uses its **localization** at the irrelevant maximal ideal. To legitimately invoke the standard theorem one must justify that the localized presentation computes the same $T^1$. The needed facts are true but omitted:\n\n1. $\\Omega_{R/k}$ for the localization is the localization of $\\Omega_{k[x]/k}$, hence free with basis $dx_1,\\dots,dx_n$, and $\\Omega_{R/k}\\otimes_R A=\\Omega_{k[x]/k}\\otimes_{k[x]}A$. (Differentials commute with localization — Matsumura.)\n\n2. If $A=S/J$ with $S=k[x_1,\\dots,x_n]$ the polynomial ring and $J=\\ker(\\pi_S)$, then since $A$ is local Artinian (its own localization at the unique prime, the image of $(x)$) one has\n$$R/I=(S/J)_{(x)}=S/J=A,\\qquad\\text{hence } I=J\\cdot R,$$\nso the $A$-modules $I/I^2$ and $\\Omega_R\\otimes_R A$ agree with those computed from the polynomial presentation. Therefore the two presentations give the **identical** $\\operatorname{coker}(J)$.\n\n**How to close.** Add one short paragraph stating (1) and (2). Difficulty: low. But it is genuinely needed, otherwise the appeal to the (polynomial-base) standard theorem is not literally licensed.",
+      "created_at": "2026-06-28T10:00:20Z"
+    }
+  ]
+}

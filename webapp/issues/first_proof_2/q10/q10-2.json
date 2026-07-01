@@ -1,0 +1,47 @@
+{
+  "id": "q10-2",
+  "problem_id": "q10",
+  "dataset": "first_proof_2",
+  "title": "__probe__delete__",
+  "status": "closed",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T05:18:06Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "evaea03a20",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T05:18:06Z"
+    },
+    {
+      "id": "c7bc017bf",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "probe",
+      "created_at": "2026-06-28T05:18:06Z"
+    },
+    {
+      "id": "ev4efb38ea",
+      "author": "system",
+      "role": "event",
+      "event_type": "status_changed",
+      "body": "✅ Status changed: **open** → **resolved**",
+      "created_at": "2026-06-28T05:18:15Z"
+    },
+    {
+      "id": "eva082c7ec",
+      "author": "system",
+      "role": "event",
+      "event_type": "status_changed",
+      "body": "⚪ Status changed: **resolved** → **closed**",
+      "created_at": "2026-06-28T05:18:15Z"
+    }
+  ]
+}

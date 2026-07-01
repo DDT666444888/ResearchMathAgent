@@ -1,0 +1,323 @@
+\documentclass[12pt]{article}
+\usepackage{fullpage}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{hyperref}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\theoremstyle{definition}
+\newtheorem{remark}{Remark}
+
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator{\rank}{rank}
+\newcommand{\bR}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\psd}{\succeq 0}
+
+\title{Problem 6: $\eps$-Light Subsets in Graphs\\
+\large Partial solution with an honest account of the remaining gap}
+\date{}
+
+\begin{document}
+\maketitle
+
+\paragraph{Statement.}
+For a graph $G=(V,E)$ on $n=|V|$ vertices let $L$ be its Laplacian and, for $S\subseteq V$, let
+$L_S$ be the Laplacian of $G_S=(V,E(S,S))$, the subgraph keeping only edges with both endpoints in
+$S$. Call $S$ \emph{$\eps$-light} if $\eps L-L_S\psd$. The question is whether there is a universal
+constant $c>0$ such that for every graph $G$ and every $\eps\in(0,1)$, $V$ contains an $\eps$-light
+subset $S$ with $|S|\ge c\,\eps\,n$.
+
+\paragraph{Summary of what is proved here.}
+\begin{itemize}
+\item[(A)] The conjectured answer is \textbf{Yes}, and we reduce it cleanly to a single statement
+about partitioning positive semidefinite matrices (Section~\ref{sec:reduce}).
+\item[(B)] We prove rigorously the structural backbone: the algebraic identities, the
+\emph{decoupling inequality} (Lemma~\ref{lem:decouple}), which converts the quadratic lightness
+condition into a linear sum of positive semidefinite matrices, and the leverage bounds
+(Section~\ref{sec:basics}).
+\item[(C)] We prove the bound is \emph{order-optimal} by computing the complete graph \emph{exactly}:
+in $K_n$ the largest $\eps$-light set has size exactly $\lfloor\eps n\rfloor$, so no constant $c>1$ is
+possible (Proposition~\ref{prop:Kn}). We also prove the two free constructions (single vertex;
+independent set).
+\item[(D)] We give a precise, correct reduction of the full theorem to the matrix form of Weaver's
+$\mathrm{KS}_r$ theorem (Marcus--Spielman--Srivastava), and we identify exactly the one step we could
+\emph{not} complete: controlling edges of large effective resistance. We are explicit that, because
+of this gap, the universal constant $c$ is \emph{not} fully established here
+(Remark~\ref{rem:gap}).
+\end{itemize}
+
+Throughout, ``$A\psd$'' and ``$A\preceq B$'' denote the Loewner order, and $\lambda_{\max}(A)$ is the
+largest eigenvalue of a symmetric matrix $A$.
+
+%======================================================================
+\section{Algebraic preliminaries and the decoupling inequality}\label{sec:basics}
+
+For each edge $e=\{u,v\}\in E$ fix an orientation and set $b_e=\mathbf 1_u-\mathbf 1_v\in\bR^V$ (the
+matrix $b_eb_e^\top$ is independent of the orientation). Then
+\begin{equation}\label{eq:Ldecomp}
+L=\sum_{e\in E} b_e b_e^\top,
+\qquad
+L_S=\sum_{e=\{u,v\}\in E}\mathbf 1[u\in S]\,\mathbf 1[v\in S]\,b_e b_e^\top .
+\end{equation}
+Both are positive semidefinite; the missing terms in $L_S$ are positive semidefinite, so
+\begin{equation}\label{eq:LSleqL}
+0\preceq L_S\preceq L\qquad\text{for every }S\subseteq V .
+\end{equation}
+In particular $\ker L\subseteq\ker L_S$, $S=V$ is $1$-light, and any independent set $S$ has $L_S=0$
+and is $\eps$-light for all $\eps\ge0$.
+
+Let $L^{+}$ be the Moore--Penrose pseudoinverse and $\Pi=L^{+/2}LL^{+/2}$ the orthogonal projection
+onto $\operatorname{range}(L)$, where $L^{+/2}\psd$ is the square root of $L^{+}$. For an edge $e$,
+its \emph{effective resistance} is
+\begin{equation}\label{eq:resistance}
+r_e:=b_e^\top L^{+}b_e=\big\|L^{+/2}b_e\big\|^2 .
+\end{equation}
+
+\begin{lemma}[Standard resistance facts]\label{lem:resfacts}
+$0\le r_e\le 1$ for every $e\in E$, and $\sum_{e\in E}r_e=\rank(L)=n-k_0\le n-1$, where $k_0\ge1$ is
+the number of connected components of $G$.
+\end{lemma}
+\begin{proof}
+Nonnegativity is clear from $r_e=\|L^{+/2}b_e\|^2$. For $r_e\le1$, write
+$L=b_eb_e^\top+R$ with $R=\sum_{f\ne e}b_fb_f^\top\psd$. Since $b_e\in\operatorname{range}(L)$ we have
+$LL^{+}b_e=\Pi b_e=b_e$, hence
+\[
+r_e=b_e^\top L^{+}b_e=(L^{+}b_e)^\top L (L^{+}b_e)
+=\big((L^{+}b_e)^\top b_e\big)^2+(L^{+}b_e)^\top R (L^{+}b_e)
+=r_e^2+(L^{+}b_e)^\top R (L^{+}b_e),
+\]
+using $(L^{+}b_e)^\top b_e=r_e$. As $R\psd$, $r_e\ge r_e^2$, so $r_e\le1$. For the sum, by
+\eqref{eq:Ldecomp} and cyclicity of the trace,
+$\sum_e r_e=\tr\!\big(L^{+}\sum_e b_eb_e^\top\big)=\tr(L^{+}L)=\tr(\Pi)=\rank(L)=n-k_0$.
+\end{proof}
+
+For $u\in V$ define the \emph{leverage load} $\tau_u:=\sum_{e:u\in e}r_e$. Counting each edge at its
+two endpoints and using Lemma~\ref{lem:resfacts},
+\begin{equation}\label{eq:tau}
+\sum_{u\in V}\tau_u=2\sum_{e\in E}r_e\le 2(n-1).
+\end{equation}
+
+\subsection*{The decoupling inequality}
+
+The lightness condition $L_S\preceq\eps L$ is \emph{quadratic} in the $0/1$ choice of vertices,
+since an edge survives in $L_S$ only when both endpoints are chosen. The next lemma replaces $L_S$ by
+a quantity that is \emph{linear} in the selection: a sum of positive semidefinite matrices, one per
+chosen vertex. This is the key reduction making partition methods applicable.
+
+Fix any assignment $\phi:E\to V$ with $\phi(e)\in e$ for all $e$, and set
+\begin{equation}\label{eq:Mu}
+M_u:=\sum_{e:\,\phi(e)=u} b_e b_e^\top\ \psd ,\qquad\text{so}\qquad \sum_{u\in V}M_u=L .
+\end{equation}
+
+\begin{lemma}[Decoupling]\label{lem:decouple}
+For every $S\subseteq V$, \ $\displaystyle L_S\ \preceq\ \sum_{u\in S} M_u .$
+\end{lemma}
+\begin{proof}
+By \eqref{eq:Ldecomp} and \eqref{eq:Mu},
+\[
+\sum_{u\in S}M_u-L_S
+=\sum_{e=\{u,v\}\in E}\Big(\mathbf 1[\phi(e)\in S]-\mathbf 1[u\in S]\,\mathbf 1[v\in S]\Big)b_eb_e^\top .
+\]
+For each $e=\{u,v\}$, $\phi(e)\in\{u,v\}$, so if both $u,v\in S$ then $\phi(e)\in S$; thus each scalar
+coefficient lies in $\{0,1\}$, in particular is $\ge0$. A nonnegative combination of positive
+semidefinite matrices is positive semidefinite.
+\end{proof}
+
+After congruence by $L^{+/2}$ (which preserves the Loewner order), with
+$A_u:=L^{+/2}M_uL^{+/2}\psd$ and $\sum_{u}A_u=L^{+/2}LL^{+/2}=\Pi\preceq I$, Lemma~\ref{lem:decouple}
+gives
+\begin{equation}\label{eq:decouple-norm}
+L^{+/2}L_S L^{+/2}\ \preceq\ \sum_{u\in S}A_u\qquad(S\subseteq V).
+\end{equation}
+
+\begin{lemma}\label{lem:Aunorm}
+$\|A_u\|\le\tau_u$ for every $u\in V$.
+\end{lemma}
+\begin{proof}
+$A_u=\sum_{e:\phi(e)=u}(L^{+/2}b_e)(L^{+/2}b_e)^\top$ is a sum of rank-one positive semidefinite
+matrices, so $\|A_u\|\le\sum_{e:\phi(e)=u}\|L^{+/2}b_e\|^2=\sum_{e:\phi(e)=u}r_e\le\sum_{e:u\in e}
+r_e=\tau_u$.
+\end{proof}
+
+Finally we translate lightness into a spectral inequality.
+
+\begin{lemma}\label{lem:equiv}
+For $S\subseteq V$: $S$ is $\eps$-light $\iff$ $\lambda_{\max}\!\big(L^{+/2}L_SL^{+/2}\big)\le\eps$.
+\end{lemma}
+\begin{proof}
+Let $x\in\bR^V$, $x=x_0+x_1$ with $x_0\in\ker L$, $x_1\in\operatorname{range}(L)$. By
+\eqref{eq:LSleqL}, $\ker L\subseteq\ker L_S$, so $L_S x_0=0=Lx_0$; hence $x^\top L_S x=x_1^\top L_S x_1$
+and $x^\top L x=x_1^\top L x_1$. Write $x_1=L^{+/2}y$ with $y\in\operatorname{range}(L)$ (possible since
+$L^{+/2}$ is a bijection on $\operatorname{range}(L)$). Then $x^\top L_S x=y^\top(L^{+/2}L_SL^{+/2})y$
+and $x^\top Lx=y^\top\Pi y=\|y\|^2$. Thus $\eps L-L_S\psd$ on $\bR^V$ iff
+$y^\top(L^{+/2}L_SL^{+/2})y\le\eps\|y\|^2$ for all $y\in\operatorname{range}(L)$; since
+$L^{+/2}L_SL^{+/2}$ vanishes on $\ker L=\operatorname{range}(L)^\perp$, this is equivalent to
+$\lambda_{\max}(L^{+/2}L_SL^{+/2})\le\eps$.
+\end{proof}
+
+%======================================================================
+\section{Two free constructions and the exact complete-graph bound}\label{sec:tight}
+
+\begin{proposition}[Free lower bounds]\label{prop:free}
+For every graph $G$ and every $\eps\ge0$:
+(a) every singleton $S=\{v\}$ is $\eps$-light; (b) every independent set $S$ is $\eps$-light; in
+particular there is an $\eps$-light set of size $\alpha(G)$, the independence number.
+\end{proposition}
+\begin{proof}
+In both cases $E(S,S)=\varnothing$, so $L_S=0$ and $\eps L-L_S=\eps L\psd$.
+\end{proof}
+
+These already settle two regimes: if $n\le 1/\eps$ then a singleton has size $1\ge\eps n$; and if
+$\alpha(G)\ge\eps n$ then an independent set works. The difficult case is dense graphs (small
+$\alpha$) with $n$ large.
+
+\begin{proposition}[Complete graph, exact]\label{prop:Kn}
+In $K_n$ a set $S$ with $|S|=k$ is $\eps$-light if and only if $k\le\eps n$. Hence the largest
+$\eps$-light set in $K_n$ has size $\max\{1,\lfloor\eps n\rfloor\}$. In particular the constant $c$ in
+the problem cannot exceed $1$, and the order $\Theta(\eps n)$ is correct.
+\end{proposition}
+\begin{proof}
+For $K_n$, $L=nI-J$ with $J$ the all-ones matrix. Take $S$ to be the first $k$ coordinates. The
+induced subgraph $G_S$ is $K_k$ on $S$, so $L_S=kP_S-J_S$, where $P_S$ is the diagonal $0/1$
+projection onto coordinates of $S$ and $J_S$ is the all-ones matrix on $S\times S$ (zero elsewhere).
+Thus
+\[
+M:=\eps L-L_S=\eps(nI-J)-(kP_S-J_S).
+\]
+We diagonalise $M$ exactly. Write $a:=\mathbf 1_S$ and $b:=\mathbf 1_{S^c}$ (the indicator vectors),
+so $\mathbf 1=a+b$, $\|a\|^2=k$, $\|b\|^2=n-k$, $a^\top b=0$, $J=(a+b)(a+b)^\top$, $J_S=aa^\top$, and
+$P_S a=a$, $P_S b=0$.
+
+\emph{Eigenspace 1.} If $x\in\bR^S$ with $a^\top x=0$ (so $x$ is supported on $S$ and orthogonal to
+$a$), then $Jx=(a+b)(a+b)^\top x=(a^\top x)(a+b)=0$, $P_S x=x$, $J_S x=a(a^\top x)=0$, hence
+$Mx=\eps n x-0-kx+0=(\eps n-k)x$. This subspace has dimension $k-1$, giving the eigenvalue
+$\eps n-k$ with multiplicity $k-1$.
+
+\emph{Eigenspace 2.} If $x\in\bR^{S^c}$ with $b^\top x=0$, then $Jx=0$, $P_Sx=0$, $J_Sx=0$, so
+$Mx=\eps n x$. This subspace has dimension $(n-k)-1$, giving eigenvalue $\eps n$ with multiplicity
+$n-k-1$.
+
+\emph{The $2$-dimensional remainder.} The orthogonal complement of the two eigenspaces above is
+$\operatorname{span}\{a,b\}$, which is $M$-invariant: indeed,
+\[
+Ma=\eps n a-\eps(a+b)(a^\top(a+b))-ka+a(a^\top a)
+=\eps n a-\eps k(a+b)-ka+ka=(\eps n-\eps k)a-\eps k\,b,
+\]
+\[
+Mb=\eps n b-\eps(a+b)(b^\top(a+b))-0+0
+=\eps n b-\eps(n-k)(a+b)=-\eps(n-k)a+\eps k\,b .
+\]
+In the basis $\{a,b\}$ the operator $M|_{\operatorname{span}\{a,b\}}$ has matrix
+\[
+\begin{pmatrix}\eps(n-k) & -\eps(n-k)\\[2pt] -\eps k & \eps k\end{pmatrix},
+\]
+whose characteristic polynomial is $\lambda^2-\eps n\,\lambda=\lambda(\lambda-\eps n)$ (trace
+$\eps(n-k)+\eps k=\eps n$, determinant $\eps^2 k(n-k)-\eps^2 k(n-k)=0$). Hence the two remaining
+eigenvalues are $0$ and $\eps n$.
+
+Collecting all $n$ eigenvalues, the spectrum of $M=\eps L-L_S$ is
+\[
+\{\,0\,\}\ \cup\ \{\,\eps n\ \text{with multiplicity}\ n-k\,\}\ \cup\ \{\,\eps n-k\ \text{with
+multiplicity}\ k-1\,\}.
+\]
+All eigenvalues except possibly $\eps n-k$ are $\ge0$. Therefore $M\psd$ iff $\eps n-k\ge0$, i.e. iff
+$k\le\eps n$. (When $k=1$ there is no eigenvalue $\eps n-k$, consistent with a singleton being light.)
+The largest $k$ with $k\le\eps n$ is $\lfloor\eps n\rfloor$ (and a singleton always works), giving the
+stated maximum size and the constant claims.
+\end{proof}
+
+\begin{remark}
+Proposition~\ref{prop:Kn} shows that if the answer is affirmative the best constant is exactly $c=1$
+(attained up to the floor by cliques in $K_n$), and that the order $\eps n$ cannot be improved.
+\end{remark}
+
+%======================================================================
+\section{Reduction of the full theorem and the remaining gap}\label{sec:reduce}
+
+\subsection*{The target reduction}
+
+Combining Lemma~\ref{lem:equiv} with the decoupling inequality \eqref{eq:decouple-norm}: if we can
+find $S\subseteq V$ of size $\ge c\eps n$ with
+\begin{equation}\label{eq:goal}
+\Big\|\sum_{u\in S}A_u\Big\|\le\eps,
+\end{equation}
+then $\lambda_{\max}(L^{+/2}L_SL^{+/2})\le\eps$ by \eqref{eq:decouple-norm}, so $S$ is $\eps$-light.
+Thus the problem reduces to finding a \emph{large} index set $S$ on which the partial sum of the
+positive semidefinite matrices $A_u$ (which satisfy $\sum_u A_u\preceq I$, and individually
+$\|A_u\|\le\tau_u$) has spectral norm $\le\eps$.
+
+The natural tool is the matrix form of Weaver's $\mathrm{KS}_r$ theorem.
+
+\begin{theorem}[Matrix $\mathrm{KS}_r$; Marcus--Spielman--Srivastava, \emph{Interlacing Families II},
+Ann.\ of Math.\ 182 (2015)]\label{thm:KS}
+Let $r\ge2$ and $\delta>0$. Let $B_1,\dots,B_m\psd$ be Hermitian $d\times d$ with $\sum_i B_i\preceq I$
+and $\|B_i\|\le\delta$ for all $i$. Then there is a partition $\{1,\dots,m\}=X_1\cup\cdots\cup X_r$
+with $\big\|\sum_{i\in X_j}B_i\big\|\le(\tfrac1{\sqrt r}+\sqrt\delta)^2$ for every $j$.
+\end{theorem}
+
+To reach the target \eqref{eq:goal} with $r=\Theta(1/\eps)$ blocks (so that some block has size
+$\ge|V'|/r=\Omega(\eps n)$ by averaging, after discarding the at most $2(n-1)/T$ vertices with
+$\tau_u\ge T$ for a constant $T$, which leaves a constant fraction of $V$ by \eqref{eq:tau}), one needs
+the per-matrix norm bound $\delta$ to satisfy $(\tfrac1{\sqrt r}+\sqrt\delta)^2\le\eps$. With
+$r\asymp 1/\eps$ the first term is $\Theta(\sqrt\eps)$, so this \emph{requires} $\delta=O(\eps)$: we
+must partition into atoms each of spectral norm $O(\eps)$.
+
+The atoms of $A_u=\sum_{e:\phi(e)=u}(L^{+/2}b_e)(L^{+/2}b_e)^\top$ are the rank-one matrices
+$(L^{+/2}b_e)(L^{+/2}b_e)^\top$ of norm $r_e$. Theorem~\ref{thm:KS} therefore applies to the
+\emph{edge atoms} with $\delta=\max_e r_e$.
+
+\begin{remark}[The remaining gap]\label{rem:gap}
+This reduction is rigorous, but it reaches the target only when every atom has norm $O(\eps)$, i.e.
+only for edges of effective resistance $r_e=O(\eps)$. Edges with $r_e>\eps$ (\emph{heavy} edges) are a
+genuine obstruction: a single atom of norm $r_e$ forces \emph{some} block of \emph{any} partition to
+have norm $\ge r_e>\eps$, so no partition into blocks of norm $\le\eps$ exists when heavy edges are
+present. To finish, one must dispose of heavy edges separately and recombine. I was not able to
+complete this step, and I record honestly that the two natural attempts fail:
+\begin{itemize}
+\item \emph{Independent set of the heavy subgraph.} The subgraph $H$ formed by heavy edges need not
+have a large independent set; explicit dense examples show $\alpha(H)$ can be a small constant fraction
+of $n$ (checked numerically), so the heavy part cannot be routed through Proposition~\ref{prop:free}.
+The simple count $|E(H)|\le(n-1)/\eps$ (from $\sum_e r_e\le n-1$) is too weak, since it may exceed $n$.
+\item \emph{Matrix concentration.} Independent vertex sampling with Tropp's matrix Chernoff inequality
+does \emph{not} help: with per-term norm $\|A_u\|\le T=O(1)$ and target $\eps<1$, the effective number
+of samples $\mu/T<1$ lies far below $\log d$ ($d=n$), so the dimensional union bound cannot be beaten
+unless the sampling rate is exponentially small in $1/\eps$, which destroys linear size. (In
+particular there is \emph{no} valid bound of the shape $\eps n/\log n$ from this route; a claim to that
+effect would be incorrect.)
+\end{itemize}
+Resolving the heavy edges appears to require applying the interlacing-families method directly to the
+original \emph{vertex} selection (a quadratic, higher-degree variant of $\mathrm{KS}_r$), which I could
+not carry out correctly here.
+\end{remark}
+
+\subsection*{Numerical evidence for the affirmative answer}
+
+Direct computation supports the affirmative answer with an absolute constant: for $K_n$ the optimal
+$\eps$-light set has size exactly $\lfloor\eps n\rfloor$ (Proposition~\ref{prop:Kn}); for dense
+Erd\H{o}s--R\'enyi graphs $G(n,1/2)$ and random regular graphs, randomly sampled vertex sets of rate
+$\Theta(\eps)$ are $\eps$-light with sizes $\Theta(\eps n)$ and ratios that remain bounded away from
+$0$ as $n$ grows (verified for $n$ up to a few hundred). No instance was found that drives the
+optimal ratio (size)$/(\eps n)$ to $0$.
+
+%======================================================================
+\section{Conclusion}\label{sec:concl}
+
+We have rigorously established: the algebraic framework and the decoupling inequality
+(Section~\ref{sec:basics}), reducing $\eps$-lightness of $S$ to the linear spectral bound
+\eqref{eq:goal}; the free constructions and the \emph{exact} extremal answer $\lfloor\eps n\rfloor$
+for the complete graph (Section~\ref{sec:tight}), which fixes the optimal constant at $c=1$ and
+confirms the order $\Theta(\eps n)$; and a correct reduction of the general theorem to the matrix
+$\mathrm{KS}_r$ theorem, isolating the single missing ingredient: control of edges of large effective
+resistance (Remark~\ref{rem:gap}).
+
+The expected answer to the problem is \textbf{Yes}. We are explicit, however, that a complete proof of
+the universal constant $c$ is \emph{not} achieved here, because of the gap in Remark~\ref{rem:gap}.
+\end{document}

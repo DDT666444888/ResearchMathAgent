@@ -1,0 +1,31 @@
+{
+  "id": "rm-12641-3",
+  "problem_id": "rm-12641",
+  "dataset": "algebra_rm14k",
+  "title": "Linearity of reduced group action on normalized coefficients asserted, not proved (Lemma 2.3)",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T10:45:48Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "evf6ae528c",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T10:45:48Z"
+    },
+    {
+      "id": "ca19b43a5",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "Lemma 2.3 claims $\\bar G\\le\\mathrm{GL}_n(k)$ acts **linearly** on $k[a_1,\\dots,a_n]$ for *every* stratum. The proof is explicit only for the hyperelliptic case; the general argument says $\\mathrm{Sym}^d$ is linear and the normalization 'cuts out an affine-linear slice $W_0$' on which the action is $\\rho(g)$ times a renormalizing scalar 'which in the classical strata is a root of unity'. Problems: (i) the slice obtained by fixing a prescribed subset of branch points (e.g. $0,\\infty$) is $\\bar G$-stable only if $\\bar G$ preserves that subset; for reduced groups $A_4,S_4,A_5$ (which DO occur for cyclic curves) there is no $\\bar G$-invariant 2-element subset of $B$, so the induced map on $(a_1,\\dots,a_n)$ is $\\rho(g)$ composed with a coordinate-dependent Möbius renormalization and is NOT linear; (ii) 'in the classical strata' silently restricts to the dihedral case; (iii) the explicit weights/permutation for general $(\\delta;m_i)$ are never derived (only $w_i=2i\\bmod(g+1)$ in the hyperelliptic case).",
+      "created_at": "2026-06-28T10:45:48Z"
+    }
+  ]
+}

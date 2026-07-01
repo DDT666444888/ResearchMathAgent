@@ -1,0 +1,31 @@
+{
+  "id": "rm-11440-3",
+  "problem_id": "rm-11440",
+  "dataset": "researchmath_14k",
+  "title": "Iteration-counts Lemma case (P): heuristic proof, wrong per-step claim",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T00:56:24Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev53bb0540",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T00:56:24Z"
+    },
+    {
+      "id": "c168842a6",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Critical rigor gap in the 'Iteration counts' Lemma, case (P)** (engine for families (a) and (h)).\n\nCase (P) claims: $N(x)/(x/\\log x)\\in[\\tfrac12,2]$ for large $x$ $\\Rightarrow$ $T(n)=(1+o(1))\\log n/\\log\\log n$.\n\nThe proof is heuristic and partly wrong:\n1. It asserts 'each step decreases $\\ell_j=\\log x_j$ by $(1+o(1))\\log\\log n$ while $x_j\\in[n^{1/2},n]$'. This is false: the per-step decrement is $\\log\\ell_j$, which is NOT constant over the orbit; it changes by a bounded factor only over a single dyadic block of $\\ell$, not across the whole descent.\n2. The 'convergent geometric-type series' claim is not a derivation.\n3. There is no control of the tail once $x_j$ becomes small, where $N(x)/x \\asymp 1/\\log x$ fails (e.g. $\\pi$ at small arguments).\n\n**The leading-order conclusion is in fact correct** — the true step count equals $\\mathrm{li}(\\log n)(1+o(1)) = \\frac{\\log n}{\\log\\log n}(1+o(1))$ — but the convergence is logarithmically slow (numerically the idealized map $x\\mapsto x/\\log x$ gives $\\approx 1.27\\cdot\\log n/\\log\\log n$ at $n=10^{256}$). A correct proof should: set $\\ell_j=\\log x_j$, show $\\ell_{j+1}=\\ell_j-\\log\\ell_j+o(\\log\\ell_j)$ uniformly, sandwich the recursion between the maps $x\\mapsto x/((1\\pm\\epsilon)\\log x)$, compare with the ODE $\\ell'=-\\log\\ell$ whose hitting time is $\\mathrm{li}(\\ell_0)$, and bound the bounded $O(1)$ tail through small $x$ separately.",
+      "created_at": "2026-06-28T00:56:24Z"
+    }
+  ]
+}

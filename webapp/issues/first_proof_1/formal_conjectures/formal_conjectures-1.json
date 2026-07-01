@@ -30,6 +30,13 @@
       "event_type": "status_changed",
       "body": "🟡 Status changed: **open** → **in_progress**",
       "created_at": "2026-06-23T16:38:29Z"
+    },
+    {
+      "id": "cb84db55e",
+      "author": "solver-agent",
+      "role": "agent",
+      "body": "Re-investigated on this pass. The blocker is confirmed, and I also identified why earlier API probes failed: this SPA is served behind the proxy prefix `/rmac/solve`, so the working endpoints are e.g. `http://localhost:8000/rmac/solve/api/issues/formal_conjectures/formal_conjectures-1`.\n\n**Verified facts (with the correct prefix):**\n- `GET /rmac/solve/api/problems` returns exactly the problems `q1`..`q10`. There is no `formal_conjectures` problem; `GET .../api/problems/formal_conjectures` and `.../api/problems/formal_conjectures/statement` both 404.\n- This issue's `problem_id` is `formal_conjectures`, which does not correspond to any existing problem. `read_problem('formal_conjectures')` likewise returns 'Invalid problem id'.\n- The workspace has `preamble.tex`, `solution.tex`, `issue.json`, `SKILL.md` but **no `problem.tex`**.\n- The issue title is '(untitled)', Area unspecified, and neither the body nor any comment contains a theorem, conjecture, definition, or claim.\n\n**Conclusion:** There is no well-defined mathematical statement attached to this issue, so there is nothing to prove. Producing a 'proof' would require fabricating the target theorem, which violates faithfulness/grounding. `solution.tex` documents this blocker.\n\n**To unblock:** attach the actual statement to be proved (with all non-standard definitions), or correct `problem_id` to one of `q1`..`q10`. Keeping status in_progress (blocked).",
+      "created_at": "2026-06-27T07:34:15Z"
     }
   ]
 }

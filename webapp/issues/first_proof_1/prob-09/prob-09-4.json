@@ -26,6 +26,36 @@
       "role": "agent",
       "body": "**Sub-lemma G3 (technical core).** Prove the four-part classification lemma for the Sagan–Swanson involution $\\phi$ acting on\n$$S_{n,\\ell,b}=\\bigcup_{c=0}^b\\{w\\in\\OSP(n,n-c)\\ :\\ \\inv(w)=\\ell-b-c\\}.$$\n\nEstablish first the standing window: $w\\in S_{n,\\ell,b}\\Rightarrow \\ell-2b\\le\\inv(w)\\le\\ell-b$ and $n-b\\le\\blocks(w)\\le n$ (from $0\\le c\\le b$).\n\nThen prove:\n- **(i)** If $w$ is type I (mergeable) with $\\inv(w)=\\ell-2c$ then $c=b$, and $\\phi$ lowers $\\inv$ by $1$ to $\\ell-2b-1$, so $\\phi(w)\\notin S_{n,\\ell,b}$.\n- **(ii)** Otherwise-type-I $w$ has $c<b$; then $\\inv(\\phi(w))=\\ell-b-c-1\\ge\\ell-2b$ and $\\phi(w)\\in S_{n,\\ell,b}$.\n- **(iii)** Type II (splittable) $w$ has $\\blocks(w)<n$ so $c>0$, hence $\\inv(w)<\\ell-b$, so $\\inv(\\phi(w))\\le\\ell-b$ and $\\phi(w)\\in S_{n,\\ell,b}$.\n- **(iv)** Type III is impossible: it forces $c=0,\\ \\ell=b$, contradicting $b\\le\\lfloor(\\ell-1)/2\\rfloor$ (using $\\ell\\ge1$).\n\n**Genuine subtlety to address in full.** $\\phi$ changes **both** $\\inv$ and $\\blocks$ simultaneously (merge: $-1$ block, $-1$ inv; split: $+1$ block, $+1$ inv). The target set $S_{n,\\ell,b}$ is a *union over strata* $\\OSP(n,n-c)$. The proof must verify that the image $\\phi(w)$ lands in the *correct* stratum $\\OSP(n,n-c')$ with $0\\le c'\\le b$ (not merely that $\\inv$ stays in range). The current text checks $\\inv$ ranges but the joint membership-after-$\\phi$ across strata deserves explicit treatment, since $\\inv(\\phi(w))=\\ell-b-c'$ must hold for the *new* block count $c'=c\\pm1$.\n\n**Status:** the resulting pairing has been verified numerically ($n\\le6$). The gap is a fully rigorous joint $(\\inv,\\blocks)$ argument.",
       "created_at": "2026-06-23T02:11:50Z"
+    },
+    {
+      "id": "c3c2296e6",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Re-review against current draft (partially open — GAP B residue).**\n\nThe cross-stratum $(\\inv,\\blocks)$ classification (`lem:classify`) and the survivor\n/ sign reconciliation (`lem:survivors`) are now written out in full and are\ncorrect (I verified the resulting pairing and the survivor count numerically for\n$n\\le6$, and reproduced the $n=4$ table exactly). What remains is the *underlying*\nfact they depend on:\n\nIn `lem:phi-props`, the claim that a merge/split changes $\\inv$ by **exactly** $1$\nis justified only by the parenthetical \"$M$ created precisely the inversion with\nthe following block and none thereafter, by maximality of $M$.\" This is true\n(I verified $\\Delta\\inv=\\pm1$ directly on the $\\Inv$-sets for all $w$, $n\\le6$) but\nis **not derived** from the definition $\\Inv(w)=\\{(s,S_j):s\\in S_i,\\ i<j,\\ s\\ge\\min S_j\\}$.\nA complete argument for a type-I merge of $S_i=\\{M\\}$ into $S_{i+1}$ must show:\n1. $(M,S_{i+1})\\in\\Inv(w)$ (removed): holds since $M>\\max S_{i+1}\\ge\\min S_{i+1}$;\n2. **no** $(M,S_j)$ with $j>i+1$ — this is the non-obvious step and requires\n   maximality of $M$ among splittable/mergeable maxima, *which must be argued*;\n3. the merge creates no new inversions and leaves $\\min S_{i+1}$ unchanged\n   (again using $M>\\max S_{i+1}$), so $\\Delta\\inv=-1$ exactly.\n\nCleanest fix: cite the exact Sagan–Swanson lemma in \\cite[Section 5.1]{SaganSwanson2024}\ngiving $\\Delta\\inv=\\pm1$ (with its statement number), turning this into an\ninvocation; otherwise supply steps 1–3 explicitly. This is a load-bearing F3 step\nfor `lem:classify`/`lem:survivors`/the main theorem.",
+      "created_at": "2026-06-27T02:56:05Z"
+    },
+    {
+      "id": "c7b781727",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "## Independent Critic Review (critic-agent, fresh pass)\n\nI re-derived and **numerically/symbolically verified** the entire solution. Summary: the combinatorial core is correct and, in the current draft, rigorous. No *new* genuine mathematical gaps were found beyond those already tracked. I did not re-open the resolved Reduction issue (prob-09-2).\n\n### Verification performed (all passed)\n- **Main theorem** $c_{(a,1^b)}(n)=\\#\\{w\\in\\OSP(n,n-b):\\inv(w)=a,\\ \\text{type I}\\}$: full OSP enumeration for $n=1,\\dots,5$ reproduces the Rhoades–Wilson super-Schur expansion exactly (`diff = 0` for every $n\\le5$).\n- **Lemma `lem:large-values`** (position of values $>M$): 0 violations over all OSPs, $n\\le5$.\n- **Lemma `lem:phi-props`** ($\\phi$ involution; merge $\\Rightarrow\\Delta\\inv=-1,\\Delta\\blocks=-1$; split $\\Rightarrow+1,+1$): 0 violations over all OSPs, $n\\le5$.\n- **Lemma `lem:schur-1-1`** (hook super-Schur $=q^au^b+q^{a-1}u^{b+1}$, non-hook vanishing, $s_\\varnothing=1$): confirmed symbolically from the stated definition $s_\\lambda(q/u)=\\sum_{\\nu\\subseteq\\lambda}s_\\nu(q)s_{\\lambda'/\\nu'}(u)$.\n- **$m=1$ consistency:** $1+\\sum_{a\\ge1}c_{(a)}(n)q^a=[n]_q!$ for $n\\le5$ (confirms $c_\\varnothing(n)=1$ is correctly separated).\n- **$n=4$ example table:** every coefficient and every listed OSP reproduced exactly.\n\n### Status of the open issues (this issue prob-09-4 included)\n- **prob-09-4 residue now CLOSED in the current draft.** The earlier concern was that `lem:phi-props`'s $\\Delta\\inv=\\pm1$ was justified only by a parenthetical. The current `lem:phi-props` contains a *complete* proof: it introduces the crossing form $\\inv(w)=\\sum_{a<b}\\operatorname{cr}(S_a,S_b)$ (Lemma `lem:inv-cross`), uses `lem:large-values` to kill the $P$–block contribution ($\\#\\{s\\in S_1\\cup\\dots\\cup S_{i-1}:s\\ge M\\}=0$), splits the merged-block contributions exactly, and isolates the single pair $(\\{M\\},B)$ with $\\operatorname{cr}(\\{M\\},B)=1$, giving $\\Delta\\inv=-1$. I verified $\\Delta\\inv=\\mp1$ directly with zero violations. The `lem:classify` four-part bookkeeping it depends on is then correct.\n- **prob-09-3, prob-09-5, prob-09-6** were already marked ADDRESSED by the prior pass; I concur after independent recomputation.\n\n### Remaining honest caveat (already tracked & resolved under prob-09-2)\nThe Reduction section invokes Bergeron (arXiv:2005.00924) and Lentfer's diagonal supersymmetry (arXiv:2505.14885) via \"hypothesis-check\" prose rather than verbatim numbered-theorem citations. This is a *citation-rigor* matter, not open mathematics, and was already raised and **resolved** in prob-09-2, so I leave it. For the record, the one substantive risk there — a super-Schur convention mismatch between Lentfer's theorem and `lem:schur-1-1` — is *empirically excluded*: the $(1,1)$ specialization matches Rhoades–Wilson under the convention used here for all $n\\le5$.\n\n**Conclusion:** The proof is mathematically correct and, in its current form, complete up to the (resolved) external-citation caveat. Full details in the attached *Critic Analysis* document.",
+      "created_at": "2026-06-27T10:26:45Z"
+    },
+    {
+      "id": "ev94874474",
+      "author": "agent",
+      "role": "event",
+      "event_type": "doc_generated",
+      "body": "Document generated: **Critic Analysis**",
+      "created_at": "2026-06-27T10:26:49Z"
+    }
+  ],
+  "documents": [
+    {
+      "title": "Critic Analysis",
+      "path": "questions/prob-09/analysis.md",
+      "created_at": "2026-06-27T10:26:49Z",
+      "created_by": "agent"
     }
   ]
 }

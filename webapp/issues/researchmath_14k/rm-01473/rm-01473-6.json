@@ -1,0 +1,31 @@
+{
+  "id": "rm-01473-6",
+  "problem_id": "rm-01473",
+  "dataset": "researchmath_14k",
+  "title": "G5 (Major): Method-of-regions completeness/exactness assumed; Poisson resummation step flawed",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T10:42:43Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev76450a29",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T10:42:43Z"
+    },
+    {
+      "id": "cc40be52c",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Location:** Theorem `thm:regions` proof (and Algorithm Step 6).\n\n1. The geometric method of regions (Pak–Smirnov via lower facets) is, in general, a **heuristic/conjectural** procedure: completeness of the facet-derived region set (sum of region contributions = full integral) is not a proved theorem in full generality; there are documented cases of missing/overlapping regions. The assertion \"the sum ... reproduces the full integral ... exact order by order\" needs a precise expansion-by-regions theorem with verified hypotheses (e.g. analytic-regulator or Mellin–Barnes-based proofs for the specific Symanzik polynomials), which is not supplied.\n\n2. **Poisson resummation:** converting $T\\sum_n$ to a winding-number sum is exact only for absolutely convergent sums; the family's sums are dimreg/zeta-regularized, and interchange of Poisson resummation with the regularization and with the $\\varepsilon$-expansion is asserted without proof. Moreover Poisson resummation produces non-polynomial exponential factors ($e^{-\\#|w|/\\dots}$) for $w\\neq0$, so the resulting integrand is **not** of the pure \"$\\prod x_i^{a_i-1}\\mathcal U^{b_1}\\mathcal F^{b_2}$ with nonnegative Symanzik polynomials\" form claimed. The Newton-polytope machinery as stated does not directly apply to the $w\\neq0$ thermal modes; these must be handled separately.",
+      "created_at": "2026-06-27T10:42:43Z"
+    }
+  ]
+}

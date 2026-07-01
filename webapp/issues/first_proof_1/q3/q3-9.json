@@ -1,0 +1,46 @@
+{
+  "id": "q3-9",
+  "problem_id": "q3",
+  "dataset": "first_proof_1",
+  "title": "thm:G general case (merge move) is hand-waved; only the decrement case is proven/used",
+  "status": "resolved",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T04:30:52Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev75475b43",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T04:30:52Z"
+    },
+    {
+      "id": "c4701f24b",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "Theorem thm:G has TWO regimes. (1) The DECREMENT case phi(i)=max(i-1,0) is fully proven via the weight-preserving bijection lem:decrement, and is the ONLY case used by thm:main (stated in the Remark after the proof). (2) The GENERAL case (arbitrary weakly order-preserving deflating phi) is NOT rigorously proven:\n\n - The factorization of phi into elementary moves (i) gap-decrement, (ii) merge is justified only by 'verified exhaustively by direct computation for value sets {0,2,3},{0,2,4},{0,2,3,4},{0,2,3,5}'. This certifies the COMBINATORIAL factorization, not the weight identity eq:fiberwt.\n - For the MERGE move (ii), the proof asserts the fiber re-expanding one level into two has total weight e*_{lambda'_{v-1}} e*_{lambda'_v} / e*_{kappa'_{phi(v)}} 'by the single-row Pieri identity [AMW Lem 5.4][BDW Lem 5.6]'. But a ONE-row Pieri identity (adds k balls, factor e*_k) does not obviously deliver a RATIO for a 2->1 level merge, and merging changes column cases (b>a becomes b=a, weight x_k -> x_k - t^{-(n-1)}) — exactly the new interpolation content. This is asserted, not proved.\n\nIMPACT: non-blocking for thm:main (decrement case suffices). RECOMMENDATION: either prove move (ii)'s fiber identity honestly, or restate thm:G as the decrement case only (its sole use). Flagging for completeness since thm:G is stated as a general theorem.",
+      "created_at": "2026-06-27T04:30:52Z"
+    },
+    {
+      "id": "cf9785380",
+      "author": "solver-agent",
+      "role": "agent",
+      "body": "**Resolution (took the critic's option (b): restate thm:G as the decrement case; isolate and honestly flag the merge move).**\n\nI removed the hand-waved merge argument. Concretely:\n\n1. **thm:G is now exactly the decrement case** phi(i)=max(i-1,0), which is the *only* case used by thm:main (via cor:rec). It is proved unconditionally by the complete weight-preserving bijection lem:decrement (Lemma strict guarantees no column case ever changes), plus the telescoping P*_lambda/P*_kappa = e*_{lambda'_1} = e*_k. No reliance on any Pieri ratio for a 2->1 merge.\n\n2. **The general projection identity is now a separate Proposition (prop:general), explicitly titled 'merge move unproven'.** Its proof is split into:\n   - (A) Reduction. Upgraded the factorization-into-elementary-moves claim from 'verified exhaustively by computation' to a genuine proof: the greedy lower-the-smallest-block procedure terminates (monovariant sum_w (g(w)-phi(w)) strictly decreases), so EVERY deflating order-preserving phi factors into moves (i)/(ii). The machine check is now described as a sanity confirmation, not the proof.\n   - (B) Gap-decrement move (i): PROVED in full, reusing lem:decrement(a)-(b) (W1/W2 + single-row rule for the base instance only).\n   - (C) Merge move (ii): NOT PROVED. I wrote the exact required identity eq:mergewt and simplified the claimed ratio e*_{lambda'_{v-1}} e*_{lambda'_v} / e*_{kappa'_{phi(v)}} = e*_{lambda'_v} (using kappa'_{phi(v)} = lambda'_{v-1}). I then state precisely the two obstructions the critic identified: (a) it is a 1->2 re-expansion, whereas the single-row Pieri rule [AMW Lem 5.4 / BDW Lem 5.6] inserts ONE row over a FIXED lower config and yields a single e*_m, not a ratio; (b) the merge changes a b>a column to b=a (weight x_k -> x_k - t^{-(n-1)}), so the lower level v-1 is itself modified and cannot be held fixed. I explicitly write 'we have not found ... and we do not assert one', recording eq:mergewt as the missing ingredient (plausible since the ordinary x_k-only analogue eq:AMWproj = AMW Prop 6.1 is a theorem).\n\n3. **Downstream consistency.** Updated the post-proof remark, the 'two certified instances' remark (now points at prop:general(C)/eq:mergewt instead of claiming a Pieri fiber resolution supplies the factor), cor:rec, and the lifted-result paragraph (removed the overclaim that the projection 'nonetheless preserves total weight after summing the fiber' for the general case).\n\n**What I actually established:** the decrement case (= thm:G, the only case thm:main needs) is fully and unconditionally proven; the reduction (A) and gap-decrement move (B) of the general case are now proven; the merge move (C) / eq:mergewt is honestly left as an unproven, clearly-isolated conjecture. **What I did NOT do:** prove eq:mergewt. I attempted to derive it (reducing the ratio to e*_{lambda'_v} and analyzing the re-expansion) but could not produce an honest weight-preserving bijection accounting for the case changes; I therefore did not assert it.\n\nAll environments balanced, all ref/eqref resolve. No LaTeX toolchain available to compile, but structural checks pass.\n\nSince thm:main is fully self-contained on the decrement case (which is now rigorous) and the previously hand-waved assertion has been removed/correctly demoted, the proof-gap flagged in this issue is resolved. The merge identity remains open but is now correctly presented as such and is unused.",
+      "created_at": "2026-06-27T04:44:36Z"
+    },
+    {
+      "id": "ev9d4bd44d",
+      "author": "system",
+      "role": "event",
+      "event_type": "status_changed",
+      "body": "✅ Status changed: **open** → **resolved**",
+      "created_at": "2026-06-27T04:44:36Z"
+    }
+  ]
+}

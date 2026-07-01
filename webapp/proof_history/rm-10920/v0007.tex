@@ -1,0 +1,538 @@
+\documentclass{amsart}
+\usepackage{amsmath,amssymb,amsthm,hyperref}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+
+\begin{document}
+
+\title{The Drop-The-Larger-Hopeless policy is not constant-competitive:
+$R=\infty$}
+\maketitle
+
+\begin{abstract}
+We determine the worst-case ratio
+$R=\sup_\omega \mathrm{Miss}_{\mathrm{DTLH}}(\omega)/\mathrm{Miss}_{\mathrm{OPT}}(\omega)$
+for the Drop-The-Larger-Hopeless (DTLH) online deadline-scheduling policy
+against the clairvoyant offline optimum. After formalizing the model we prove
+$R=\infty$: DTLH is \emph{not} constant-competitive. The witness is an explicit,
+elementary one-parameter family $F_r$ of $r+1$ jobs sharing a single
+release/deadline window, on which $\mathrm{Miss}_{\mathrm{OPT}}=1$ while a legal
+DTLH execution drops $r-1$ jobs; letting $r\to\infty$ forces the ratio to
+infinity. We also record two positive results (DTLH never drops a job when the
+input is schedulable; the evict-largest deterministic variant is exactly optimal
+on a single window) and discuss the deterministic case.
+\end{abstract}
+
+\section{Formalization of the model}
+
+We make the informal statement precise.
+
+\begin{definition}[Instance]
+An \emph{instance} is a finite multiset
+$\omega=\{(a_j,s_j,d_j)\}_{j=1}^{n}$ of jobs, where $a_j\in\mathbb{R}_{\ge 0}$
+is the arrival (release) time, $s_j>0$ the size, and $d_j\ge a_j+s_j$ the
+deadline of job $j$. A single server processes work at unit rate and may
+preempt at no cost.
+\end{definition}
+
+\begin{definition}[Feasibility]\label{def:feas}
+Fix a time $t$ and a finite set $Q$ of jobs, each job $j\in Q$ carrying a
+\emph{remaining size} $r_j>0$ and a deadline $d_j\ge t$. We say $Q$ is
+\emph{feasible at time $t$} if there is a unit-rate single-server schedule of
+$Q$ on $[t,\infty)$ completing every $j\in Q$ by $d_j$. Equivalently, by the
+exchange (earliest-deadline-first) argument, $Q$ is feasible at $t$ iff, listing
+$Q=\{j_1,\dots,j_m\}$ with $d_{j_1}\le\cdots\le d_{j_m}$,
+\begin{equation}\label{eq:edf}
+t+\sum_{i=1}^{\ell} r_{j_i}\ \le\ d_{j_\ell}\qquad\text{for every }\ell=1,\dots,m.
+\end{equation}
+A job is \emph{hopeless} at $t$ if it cannot be completed by its deadline under
+any continuation, i.e.\ already $t+r_j>d_j$.
+\end{definition}
+
+Throughout, the server is allowed to realize \emph{any} feasible schedule of its
+currently admitted set; ``feasible'' always refers to
+Definition~\ref{def:feas}. (The phrase ``serves in FCFS order'' in the prompt is
+only the default tie-break used by DTLH to decide \emph{which jobs are present};
+the admission test and the completion guarantee use the feasibility relation
+\eqref{eq:edf}, as the prompt itself states: a set is feasible if there
+\emph{exists} a schedule meeting all deadlines. Since the admitted set is kept
+feasible at every admission epoch, an EDF server completes all admitted jobs on
+time, by Horn's/Jackson's theorem on the optimality of EDF for single-machine
+preemptive feasibility with release times; the FCFS phrasing is immaterial to
+the miss count.)
+
+\begin{definition}[The DTLH policy]\label{def:dtlh}
+DTLH maintains an \emph{admitted set} $A$ that is feasible at all times; an
+admitted job is guaranteed completion, a non-admitted job is \emph{dropped} and
+counts as one miss. Decisions are made online at arrival epochs. When job $j$
+arrives at time $t=a_j$, let $A^-$ be the set of admitted, not-yet-completed
+jobs at $t$ (with their remaining sizes). DTLH acts as in
+Algorithm~\ref{alg:dtlh}.
+\end{definition}
+
+\begin{remark}[The size used in the eviction test]\label{rem:sizeconv}
+The prompt says DTLH ``compares the new job's size with the \emph{sizes} of
+currently queued jobs,'' where size $=$ service requirement $s_j$. We take the
+eviction comparison in line~4 to use the jobs' \emph{original} sizes $s_k,s_j$.
+For our main theorem (Section~\ref{sec:main}) this distinction is irrelevant:
+the witness family lives in a single common window, where no job is ever served
+before all admission decisions are made, so original size $=$ remaining size at
+every decision. We adopt the original-size reading throughout because it is the
+literal meaning of ``size $=$ service requirement'' and because ``size'' is a
+fixed attribute known at admission. The \emph{feasibility} test (lines~1 and~4)
+necessarily uses remaining work $r_k$, since it concerns whether the surviving
+set can still be completed.
+\end{remark}
+
+\begin{algorithm}[h]
+\caption{DTLH admission decision at the arrival of job $j$ at time $t$}
+\label{alg:dtlh}
+\begin{algorithmic}[1]
+\Require current admitted, not-yet-completed set $A^-$ (remaining sizes $r_k$, original sizes $s_k$), arriving job $j=(s_j,d_j)$, time $t$
+\Ensure updated admitted set and the miss count increment
+\If{$A^-\cup\{j\}$ is feasible at $t$ (test \eqref{eq:edf} on remaining sizes)}
+  \State admit $j$: \ $A^-\gets A^-\cup\{j\}$
+\Else
+  \State $L\gets\{k\in A^- : s_k> s_j \text{ and } (A^-\setminus\{k\})\cup\{j\}\text{ is feasible at }t\}$
+  \If{$L\neq\varnothing$}
+    \State pick any $k^\star\in L$; drop $k^\star$, admit $j$: \ $A^-\gets(A^-\setminus\{k^\star\})\cup\{j\}$; one miss ($k^\star$)
+  \Else
+    \State drop $j$; one miss ($j$)
+  \EndIf
+\EndIf
+\State \Return $A^-$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{remark}[The policy is underspecified; we measure its worst case]
+\label{rem:tiebreak}
+Algorithm~\ref{alg:dtlh} contains two genuine sources of nondeterminism: the
+order in which simultaneous arrivals (same $a_j$) are processed, and the choice
+of victim $k^\star\in L$ in line~5. The prompt fixes neither --- it says
+``drops \emph{such} a larger queued job.'' We therefore regard DTLH as a
+\emph{family} of policies indexed by these tie-breaks, and define
+\[
+\mathrm{Miss}_{\mathrm{DTLH}}(\omega)
+=\max\{\text{number of jobs dropped over all legal DTLH tie-break choices on }\omega\},
+\]
+the \emph{worst-case} behaviour of the rule. This is the correct quantity for
+the competitive ratio of a policy that is specified only up to tie-breaks: a
+single legal execution achieving many misses already witnesses that the rule, as
+stated, is not better than the ratio so obtained. Every lower-bound instance
+below is presented together with the explicit legal execution realizing the
+stated miss count, so all bounds hold for this worst-case reading (and a
+fortiori for the supremum over the policy class). The deterministic case is
+discussed in Section~\ref{sec:det}.
+\end{remark}
+
+\begin{definition}[Benchmarks]
+For an instance $\omega$, $\mathrm{Miss}_{\mathrm{DTLH}}(\omega)$ is as in
+Remark~\ref{rem:tiebreak}. Let
+\begin{equation}\label{eq:opt}
+\mathrm{Miss}_{\mathrm{OPT}}(\omega)
+=\min\Big\{\,|\omega\setminus S|\ :\ S\subseteq\omega \text{ is feasible respecting release times}\,\Big\},
+\end{equation}
+the minimum number of jobs that any policy must miss; $S$ is feasible respecting
+release times iff its preemptive single-machine EDF schedule completes every job
+by its deadline (EDF optimality for fixed job sets with release times,
+Horn/Jackson). This $\mathrm{Miss}_{\mathrm{OPT}}$ is the clairvoyant offline
+optimum, a lower bound on the misses of every (online or offline) admissible
+policy; using it in the denominator \emph{upper-bounds} the achievable
+competitive ratio, the strongest way to test optimality of DTLH.
+\end{definition}
+
+The headline quantity is
+\[
+R \;=\; \sup_{\omega:\ \mathrm{Miss}_{\mathrm{OPT}}(\omega)>0}
+\frac{\mathrm{Miss}_{\mathrm{DTLH}}(\omega)}{\mathrm{Miss}_{\mathrm{OPT}}(\omega)} .
+\]
+
+\section{Two positive structural facts}
+
+\begin{lemma}[No needless drops]\label{lem:nowaste}
+If $\omega$ is feasible respecting release times, i.e.\
+$\mathrm{Miss}_{\mathrm{OPT}}(\omega)=0$, then \emph{every} legal DTLH execution
+drops nothing: $\mathrm{Miss}_{\mathrm{DTLH}}(\omega)=0$.
+\end{lemma}
+
+\begin{proof}
+We show by induction over arrival epochs that DTLH's admitted set equals the set
+of all already-arrived, not-yet-completed jobs (no drop has occurred) and is
+feasible at the current time. Initially $A=\varnothing$. Suppose at the arrival
+of job $j$ at $t=a_j$ the admitted, not-yet-completed set $A^-$ consists of
+exactly the arrived-but-uncompleted jobs. Because $\omega$ is feasible
+respecting release times, the EDF schedule of $\omega$ completes all of $\omega$;
+restricting that schedule to $[t,\infty)$ yields a feasible completion at time
+$t$ of all jobs that have arrived by $t$ and are not yet finished \emph{together
+with} $j$ (each such job is in $\omega$, has deadline $\ge t$, and meets its
+deadline in the global EDF schedule). Hence $A^-\cup\{j\}$ is feasible at $t$, so
+DTLH executes line~2 and admits $j$ without any drop, independently of any
+tie-break. The invariant is preserved, and by induction no drop ever occurs.
+\end{proof}
+
+Lemma~\ref{lem:nowaste} shows the ratio is nontrivial only when
+$\mathrm{Miss}_{\mathrm{OPT}}(\omega)\ge 1$; it also rules out the degenerate
+``divide by zero'' regime.
+
+\begin{lemma}[Single common window: the \emph{evict-largest} rule is optimal]
+\label{lem:onewindow}
+Suppose all jobs share one release time $a$ and one deadline $d$, so feasibility
+of a set $T$ is the single constraint $a+\sum_{j\in T}s_j\le d$, i.e.\ total size
+at most the capacity $C:=d-a$. Consider the deterministic DTLH variant
+$\mathrm{DTLH}_{\max}$ that, on every swap, evicts a victim of \emph{largest}
+original size among the eligible set $L$, processing simultaneous arrivals in any
+fixed order. Then $\mathrm{DTLH}_{\max}$ keeps a maximum-cardinality feasible
+subset, so its miss count equals $\mathrm{Miss}_{\mathrm{OPT}}(\omega)$.
+\end{lemma}
+
+\begin{proof}
+List the jobs $j_1,\dots,j_n$ in the order $\mathrm{DTLH}_{\max}$ processes them.
+In a single window the test \eqref{eq:edf} is ``total admitted size $\le C$'' and
+the comparison $s_k>s_{j_i}$ is just ``a strictly larger admitted job exists.''
+Let $A_i$ be the multiset of admitted sizes after $j_1,\dots,j_i$ and
+$S_i=\{s_{j_1},\dots,s_{j_i}\}$.
+
+\emph{Invariant.} For every $i$, $A_i$ equals the set of the $k_i:=|A_i|$
+smallest elements of $S_i$, where $k_i$ is the maximum cardinality of a feasible
+subset of $S_i$ (equivalently, $A_i$ is the smallest-first greedy solution on
+$S_i$).
+
+The invariant holds for $i=0$. Assume it for $i-1$; write $s:=s_{j_i}$. If
+$\sum A_{i-1}+s\le C$, $\mathrm{DTLH}_{\max}$ admits $j_i$. The smallest-first
+greedy on $S_i$ takes the same elements: $A_{i-1}$ is the $k_{i-1}$ smallest of
+$S_{i-1}$ with sum $\le C$, and appending $s$ keeps a smallest-first greedy
+(greedy is order-independent), so $A_i=A_{i-1}\cup\{s\}$ is the $(k_{i-1}{+}1)$
+smallest with sum $\le C$, i.e.\ the greedy optimum on $S_i$. If
+$\sum A_{i-1}+s>C$ but some admitted element exceeds $s$ and removing the
+\emph{largest} such element $M$ restores feasibility, then
+$A_i=(A_{i-1}\setminus\{M\})\cup\{s\}$ replaces the current largest kept element
+by the strictly smaller $s$; this is exactly the smallest-first greedy update
+when $s$ is among the new $k_{i-1}$ smallest of $S_i$ (inserting $s$ and dropping
+the largest kept element), so $A_i$ remains the greedy optimum. If no admitted
+element exceeds $s$, then $s$ is at least every kept element, hence not among the
+$k_{i-1}$ smallest of $S_i$, the greedy optimum is unchanged, and
+$\mathrm{DTLH}_{\max}$ correctly drops $j_i$. In all cases $A_i$ is the
+smallest-first greedy solution on $S_i$, which is a maximum-cardinality feasible
+subset (a standard exchange argument: among feasible subsets, the smallest-first
+greedy has maximum cardinality). The invariant is preserved.
+
+By induction $A_n$ is a maximum-cardinality feasible subset of all $n$ jobs, so
+$\mathrm{DTLH}_{\max}$ misses $n-|A_n|=\mathrm{Miss}_{\mathrm{OPT}}(\omega)$.
+\end{proof}
+
+\begin{remark}[The worst-case tie-break is \emph{not} optimal, already in one
+window]\label{rem:onewindowbad}
+Lemma~\ref{lem:onewindow} concerns the \emph{evict-largest} rule only. For the
+worst-case quantity $\mathrm{Miss}_{\mathrm{DTLH}}$ of
+Remark~\ref{rem:tiebreak} the conclusion \emph{fails}, even in a single window:
+choosing a non-largest eligible victim wastes a slot. With capacity $C=5$
+(all $a=0$, $d=5$) and sizes $3,2,1,2$ processed in that order, DTLH admits $3,2$
+(total $5$); the size-$1$ arrival overflows and the worst-case tie-break evicts
+the \emph{smaller} eligible job $2$ (admitted $\{3,1\}$, miss \#1); the final
+size-$2$ overflows and evicts $3$ (admitted $\{1,2\}$, miss \#2). Thus the
+worst-case run drops $2$ while OPT keeps $\{1,2,2\}$ and drops only the size-$3$
+job, $\mathrm{Miss}_{\mathrm{OPT}}=1$. (Verified by exhaustive enumeration of all
+legal tie-breaks: drop count ranges over $\{1,2\}$.) This pinpoints the source of
+DTLH's loss --- the victim choice in the swap rule --- and shows it is visible
+already in one window. The next section amplifies this single-window phenomenon
+into an \emph{unbounded} loss.
+\end{remark}
+
+\section{Main theorem: $R=\infty$}\label{sec:main}
+
+We resolve the headline question: DTLH is not constant-competitive.
+
+\begin{definition}[The witness family]\label{def:family}
+For an integer $r\ge 2$ let
+\[
+X_r=\tfrac{3r(r-1)}{2},\qquad C_r=X_r+2r,
+\]
+and define the single-window instance $F_r$ consisting of $r+1$ jobs, all with
+arrival $a=0$ and deadline $d=C_r$ (so the only feasibility constraint is total
+admitted size $\le C_r$):
+\[
+F_r=\Big\{\ X_r\ \Big\}\ \cup\ \big\{\,m_i:=2r+1-i\ :\ i=1,\dots,r\,\big\}.
+\]
+Thus $F_r$ has one ``big'' job of size $X_r$ and $r$ ``medium'' jobs of strictly
+decreasing sizes $m_1=2r,\ m_2=2r-1,\ \dots,\ m_r=r+1$.
+\end{definition}
+
+We record the elementary size identities used below; all are exact integer
+arithmetic.
+
+\begin{lemma}[Arithmetic of $F_r$]\label{lem:arith}
+For every $r\ge 2$:
+\begin{enumerate}
+\item[(i)] $\sum_{i=1}^{r} m_i = C_r$ (the medium sizes sum to exactly the
+capacity);
+\item[(ii)] $X_r+m_1=C_r$;
+\item[(iii)] $m_i+m_{i+1}>2r$ for $i=1,\dots,r-1$, equivalently
+$X_r+m_i+m_{i+1}>C_r$;
+\item[(iv)] $X_r+m_i\le C_r$ for $i=1,\dots,r$;
+\item[(v)] $m_i>m_{i+1}$ for $i=1,\dots,r-1$.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+$\sum_{i=1}^r m_i=\sum_{i=1}^r(2r+1-i)=r(2r+1)-\tfrac{r(r+1)}2
+=\tfrac{r(3r+1)}2=\tfrac{3r(r-1)}2+2r=X_r+2r=C_r$, proving (i). For (ii),
+$X_r+m_1=X_r+2r=C_r$. For (iii), $m_i+m_{i+1}=(2r+1-i)+(2r-i)=4r+1-2i$, and for
+$i\le r-1$ this is $\ge 4r+1-2(r-1)=2r+3>2r$; since $C_r=X_r+2r$, adding $X_r$
+gives $X_r+m_i+m_{i+1}=X_r+(m_i+m_{i+1})>X_r+2r=C_r$. For (iv),
+$m_i=2r+1-i\le 2r=m_1$, so $X_r+m_i\le X_r+m_1=C_r$ by (ii). Finally (v) is
+immediate from $m_i=2r+1-i$ strictly decreasing in $i$.
+\end{proof}
+
+\begin{proposition}[Offline optimum]\label{prop:family-opt}
+$\mathrm{Miss}_{\mathrm{OPT}}(F_r)=1$ for every $r\ge 2$. Indeed dropping the
+single big job $X_r$ leaves all $r$ medium jobs, which are feasible, and no
+feasible subset of $F_r$ has more than $r$ jobs.
+\end{proposition}
+
+\begin{proof}
+The medium jobs have total size $C_r$ by Lemma~\ref{lem:arith}(i), so the set
+$\{m_1,\dots,m_r\}$ is feasible (total $=C_r\le C_r$); hence
+$\mathrm{Miss}_{\mathrm{OPT}}(F_r)\le 1$. Conversely, $F_r$ has $r+1$ jobs of
+total size $X_r+\sum m_i=X_r+C_r>C_r$, so the whole set is infeasible; any
+feasible subset omits at least one job and so has at most $r$ jobs. Therefore the
+maximum feasible cardinality is exactly $r$ and
+$\mathrm{Miss}_{\mathrm{OPT}}(F_r)=(r+1)-r=1$.
+\end{proof}
+
+\begin{proposition}[DTLH worst-case]\label{prop:family-dtlh}
+For every $r\ge 2$ there is a legal DTLH execution on $F_r$ that drops $r-1$
+jobs; hence $\mathrm{Miss}_{\mathrm{DTLH}}(F_r)\ge r-1$.
+\end{proposition}
+
+\begin{proof}
+Process the arrivals (all at $t=0$, a legal tie-break ordering of simultaneous
+arrivals) in the order
+\[
+X_r,\ m_1,\ m_2,\ \dots,\ m_r,
+\]
+and at each swap choose the victim specified below; we verify each step satisfies
+the preconditions of Algorithm~\ref{alg:dtlh}. Because all jobs share the window,
+feasibility is ``total admitted size $\le C_r$'' and original size $=$ remaining
+size throughout (no service precedes any admission decision).
+
+\emph{Admit $X_r$:} total $0\le C_r$, admit; admitted $\{X_r\}$, total $X_r$.
+
+\emph{Admit $m_1$:} total $X_r+m_1=C_r\le C_r$ by
+Lemma~\ref{lem:arith}(ii), admit; admitted $\{X_r,m_1\}$, total $C_r$.
+
+\emph{Step $i$ for $i=2,\dots,r$ (arrival $m_i$).} Inductively the admitted set
+before this step is $\{X_r,m_{i-1}\}$ with total $X_r+m_{i-1}$. Adding $m_i$
+gives total $X_r+m_{i-1}+m_i>C_r$ by Lemma~\ref{lem:arith}(iii)
+(with index $i-1$), so the set is infeasible and line~3 fires. The eligible
+victim set is
+\[
+L=\{k\in\{X_r,m_{i-1}\}:\ s_k>m_i\ \text{ and removing }k\text{ restores
+feasibility}\}.
+\]
+We claim $m_{i-1}\in L$: by Lemma~\ref{lem:arith}(v), $m_{i-1}>m_i$, and after
+removing $m_{i-1}$ the admitted total is $X_r+m_i\le C_r$ by
+Lemma~\ref{lem:arith}(iv), so feasibility is restored. Hence $L\neq\varnothing$,
+and we (legally) pick $k^\star=m_{i-1}$: DTLH drops $m_{i-1}$ and admits $m_i$.
+The admitted set becomes $\{X_r,m_i\}$ with total $X_r+m_i\le C_r$, and one miss
+is charged. This completes the induction for step $i$.
+
+Over steps $i=2,\dots,r$ this drops exactly the $r-1$ distinct jobs
+$m_1,m_2,\dots,m_{r-1}$. No further arrivals occur, the final admitted set
+$\{X_r,m_r\}$ is feasible, and so no further miss is incurred. Thus this legal
+DTLH execution drops $r-1$ jobs.
+\end{proof}
+
+\begin{theorem}[DTLH is not constant-competitive]\label{thm:main}
+$\displaystyle R=\sup_{\omega:\ \mathrm{Miss}_{\mathrm{OPT}}(\omega)>0}
+\frac{\mathrm{Miss}_{\mathrm{DTLH}}(\omega)}{\mathrm{Miss}_{\mathrm{OPT}}(\omega)}
+=\infty.$
+\end{theorem}
+
+\begin{proof}
+By Propositions~\ref{prop:family-opt} and~\ref{prop:family-dtlh}, for every
+$r\ge 2$,
+\[
+\frac{\mathrm{Miss}_{\mathrm{DTLH}}(F_r)}{\mathrm{Miss}_{\mathrm{OPT}}(F_r)}
+\ \ge\ \frac{r-1}{1}\ =\ r-1 .
+\]
+Letting $r\to\infty$ shows the supremum is unbounded, i.e.\ $R=\infty$.
+Equivalently, no constant $c$ satisfies
+$\mathrm{Miss}_{\mathrm{DTLH}}(\omega)\le c\cdot\mathrm{Miss}_{\mathrm{OPT}}(\omega)$
+for all $\omega$.
+\end{proof}
+
+\begin{remark}[Mechanism]\label{rem:mechanism}
+The construction isolates exactly why DTLH fails. The clairvoyant optimum removes
+a \emph{single} ``linchpin'' --- the one big job $X_r$ --- after which all $r$
+mediums fit perfectly (their sizes sum to the capacity). DTLH instead keeps the
+big job throughout and, on each successive medium arrival, its myopic swap rule
+evicts the previously admitted medium (a strictly larger feasible job) to admit
+the new, slightly smaller medium. Each arrival thus wastes one medium, producing
+$r-1$ drops while preserving the very job OPT would have discarded. The loss is
+unbounded because the number of mediums is unbounded while the offline fix stays
+a single deletion. This is the single-window slot-wasting phenomenon of
+Remark~\ref{rem:onewindowbad}, scaled up.
+\end{remark}
+
+\begin{remark}[An additive lower bound, and the gap to OPT]
+Since $\mathrm{Miss}_{\mathrm{OPT}}(F_r)=1$ and
+$\mathrm{Miss}_{\mathrm{DTLH}}(F_r)\ge r-1$, the family also shows the
+\emph{additive} gap $\mathrm{Miss}_{\mathrm{DTLH}}-\mathrm{Miss}_{\mathrm{OPT}}$
+is unbounded (it is $\ge r-2$ on $F_r$), so DTLH admits neither a multiplicative
+nor an additive constant guarantee against the clairvoyant optimum. By contrast
+Lemma~\ref{lem:nowaste} shows it never errs on schedulable inputs.
+\end{remark}
+
+\section{The deterministic evict-largest rule}\label{sec:det}
+
+Theorem~\ref{thm:main} concerns the underspecified policy \emph{class}
+(Remark~\ref{rem:tiebreak}): the witness $F_r$ realizes $r-1$ drops only under
+the adversarial victim choice (evict the smaller eligible medium). It is natural
+to ask whether the unboundedness is merely a tie-break artifact. We record what
+is and is not known for the canonical deterministic instantiation
+\[
+\mathrm{DTLH}_{\max}:\quad
+\text{process simultaneous arrivals in increasing original size,}\
+\text{and on every swap evict an eligible victim of maximum original size.}
+\]
+
+\begin{proposition}[$\mathrm{DTLH}_{\max}$ is single-window optimal but not
+constant-competitive overall]\label{prop:det}
+$\mathrm{DTLH}_{\max}$ is exactly optimal on every single common
+release/deadline window (Lemma~\ref{lem:onewindow}). In particular it drops only
+$1$ job on each $F_r$, so $F_r$ does \emph{not} witness unboundedness for
+$\mathrm{DTLH}_{\max}$. Nonetheless $\mathrm{DTLH}_{\max}$ is not optimal across
+multiple windows: there are explicit instances on which it loses a factor (a
+verified instance with $\mathrm{Miss}_{\mathrm{OPT}}=1$ and
+$\mathrm{Miss}_{\mathrm{DTLH}_{\max}}=5$ is given in Appendix~\ref{app:omega}).
+\end{proposition}
+
+\begin{proof}
+Single-window optimality is Lemma~\ref{lem:onewindow}; applied to $F_r$ it gives
+$\mathrm{Miss}_{\mathrm{DTLH}_{\max}}(F_r)=\mathrm{Miss}_{\mathrm{OPT}}(F_r)=1$.
+The multi-window instance and the value $5$ are machine-verified, see
+Appendix~\ref{app:omega}.
+\end{proof}
+
+\begin{remark}[Status of the deterministic ratio]\label{rem:detopen}
+Theorem~\ref{thm:main} settles the headline question $R=\infty$ for DTLH as
+literally stated (a rule specified only up to tie-breaks). For the single
+\emph{fixed} deterministic rule $\mathrm{DTLH}_{\max}$ we have proved a lower
+bound of $5$ (Appendix~\ref{app:omega}) but \emph{not} a closed-form unbounded
+multi-window family; a local search over instances with
+$\mathrm{Miss}_{\mathrm{OPT}}=1$ produced $\mathrm{DTLH}_{\max}$ miss counts up
+to $5$ without exposing a constant ceiling, but we do not assert
+$\mathrm{DTLH}_{\max}$ is non-constant-competitive as a theorem. This is the one
+remaining open sub-question; it does not affect $R=\infty$ for the policy as
+posed.
+\end{remark}
+
+\section{Summary}
+
+\begin{itemize}
+\item (Theorem~\ref{thm:main}) $R=\infty$: DTLH is not constant-competitive
+against the clairvoyant offline optimum. The witness is the elementary
+single-window family $F_r$ with $\mathrm{Miss}_{\mathrm{OPT}}=1$ and a legal DTLH
+execution dropping $r-1$ jobs; the additive gap is likewise unbounded.
+\item (Lemma~\ref{lem:nowaste}) DTLH is optimal whenever the input is
+schedulable: $\mathrm{Miss}_{\mathrm{OPT}}=0\Rightarrow
+\mathrm{Miss}_{\mathrm{DTLH}}=0$, for every tie-break.
+\item (Lemma~\ref{lem:onewindow}) On any single common release/deadline window
+the deterministic \emph{evict-largest} rule $\mathrm{DTLH}_{\max}$ is exactly
+optimal --- but this fails for the worst-case tie-break
+(Remark~\ref{rem:onewindowbad}), and it is the worst-case victim choice that
+drives the unbounded loss in $F_r$.
+\item (Section~\ref{sec:det}) The unbounded loss in Theorem~\ref{thm:main} uses
+the adversarial tie-break; for the fixed deterministic rule
+$\mathrm{DTLH}_{\max}$ we prove only a lower bound of $5$, leaving its exact
+competitive ratio open.
+\end{itemize}
+
+\appendix
+\section{A multi-window deterministic instance with ratio $5$}\label{app:omega}
+
+This appendix supplies the witness used in Proposition~\ref{prop:det}; it is not
+needed for the main theorem.
+
+\begin{proposition}\label{prop:omega}
+Let (triples $(a,s,d)$)
+\[
+\omega^\star=\big\{(8,4,21),(4,5,11),(9,1,16),(8,3,14),(5,2,16),
+(1,4,16),(9,1,13),(10,1,13),(7,3,18),(8,5,25)\big\}.
+\]
+Then $\mathrm{Miss}_{\mathrm{OPT}}(\omega^\star)=1$, and the deterministic rule
+$\mathrm{DTLH}_{\max}$ (and also a legal worst-case DTLH execution) drops $5$
+jobs, so $\mathrm{Miss}_{\mathrm{DTLH}_{\max}}(\omega^\star)=5$.
+\end{proposition}
+
+\begin{proof}[Verification]
+\emph{Offline optimum.} Deleting $(4,5,11)$ leaves nine jobs whose preemptive EDF
+schedule meets all deadlines, e.g.
+\[
+\begin{array}{ll}
+[1,5]\ (1,4,16) & [11,13]\ (8,3,14)\\
+[5,7]\ (5,2,16) & [13,14]\ (9,1,16)\\
+[7,8]\ (7,3,18) & [14,16]\ (7,3,18)\\
+[8,9]\ (8,3,14) & [16,20]\ (8,4,21)\\
+[9,10]\ (9,1,13)& [20,25]\ (8,5,25)\\
+[10,11]\ (10,1,13)&
+\end{array}
+\]
+(each job completes by its deadline), so $\mathrm{Miss}_{\mathrm{OPT}}\le 1$; the
+full ten-job set is EDF-infeasible (a single deadline is missed, optimal by
+Horn's theorem), so $\mathrm{Miss}_{\mathrm{OPT}}(\omega^\star)=1$. \emph{DTLH.}
+Running $\mathrm{DTLH}_{\max}$ (advance the admitted set by EDF between epochs;
+at each arrival apply Algorithm~\ref{alg:dtlh} with increasing-size arrival order
+and largest-eligible victim, original-size eviction) drops the five jobs
+$(4,5,11),(8,5,25),(1,4,16),(8,4,21),(8,3,14)$; this is a finite deterministic
+simulation. Both computations are elementary and machine-verified.
+\end{proof}
+
+\section{Reproducibility of the machine-verified claims}\label{app:verify}
+
+The main theorem (Theorem~\ref{thm:main}) is proved by hand in
+Section~\ref{sec:main}; Lemmas~\ref{lem:arith}, \ref{lem:nowaste},
+\ref{lem:onewindow} and Propositions~\ref{prop:family-opt},
+\ref{prop:family-dtlh} require no computation beyond the displayed arithmetic.
+For completeness we list the auxiliary numerical checks (used only for the
+illustrative Remark~\ref{rem:onewindowbad}, Proposition~\ref{prop:det}, and
+Appendix~\ref{app:omega}).
+
+\paragraph{What is computed.}
+\begin{itemize}
+\item $\mathrm{Miss}_{\mathrm{OPT}}(\omega)$: enumerate subsets of $\omega$ in
+increasing number of deletions, returning the first cardinality for which some
+surviving subset is schedulable; schedulability is decided by simulating
+preemptive EDF and checking all deadlines (correct by Horn's theorem).
+\item $\mathrm{Miss}_{\mathrm{DTLH}}(\omega)$ (worst case): depth-first search
+over all legal tie-breaks (every order of simultaneous arrivals; at every swap,
+every admissible victim $k$ with $s_k>s_j$ whose removal restores feasibility),
+advancing the admitted set by EDF between epochs, returning the maximum (and
+minimum) number of drops.
+\item $\mathrm{DTLH}_{\max}$: a single deterministic simulation (increasing-size
+arrival order, largest-eligible victim, original-size eviction).
+\end{itemize}
+
+\paragraph{Outcomes (all confirmed).}
+\[
+\begin{array}{lccc}
+\text{instance} & \mathrm{Miss}_{\mathrm{OPT}} & \min_{\text{t.b.}}\mathrm{Miss}_{\mathrm{DTLH}} & \max_{\text{t.b.}}\mathrm{Miss}_{\mathrm{DTLH}}\\\hline
+F_2,\dots,F_6\ (\text{Def.~\ref{def:family}}) & 1 & 1 & 1,2,3,4,5\\
+\text{one window }3,2,1,2\ (\text{Rem.~\ref{rem:onewindowbad}}) & 1 & 1 & 2\\
+\omega^\star\ (\text{Prop.~\ref{prop:omega}}) & 1 & 2 & 5
+\end{array}
+\]
+The $\max_{\text{t.b.}}$ column for $F_r$ confirms the hand proof
+(Proposition~\ref{prop:family-dtlh}): the worst-case DTLH miss count on $F_r$ is
+exactly $r-1$, matching the constructed execution, while
+$\mathrm{Miss}_{\mathrm{OPT}}(F_r)=1$.
+
+\end{document}

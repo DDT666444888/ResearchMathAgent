@@ -1,0 +1,31 @@
+{
+  "id": "rm-10068-3",
+  "problem_id": "rm-10068",
+  "dataset": "researchmath_14k",
+  "title": "Constant (d,k) algorithm: Voronoi-partition enumeration is not specified (Prop. prop:dk)",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T21:11:09Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "evf8135bf7",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T21:11:09Z"
+    },
+    {
+      "id": "cdd6189b1",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "Proposition prop:dk correctly BOUNDS the number of $k$-center Voronoi partitions by $n^{O(dk)}$ using the sign-pattern (Warren / Sauer-Shelah) argument. However the actual ENUMERATION is hand-waved: 'enumerate one representative partition for each realizable sign pattern (e.g. by sweeping over the $n^{O(dk)}$ combinatorially distinct centroid configurations, each a choice of which data points are co-decisive for the $\\binom{k}{2}$ bisectors)'.\n\nProblems:\n(1) A COUNT of sign patterns does not yield a GENERATOR of representatives in matching time.\n(2) 'Choice of which data points are co-decisive for the bisectors' is undefined and does not obviously produce an $n^{O(dk)}$-time enumeration.\n(3) There is no proof that the OPTIMAL Voronoi partition is among the enumerated representatives.\n\nThe result itself is true (Inaba-Katoh-Imai 1994). To close the gap, give an explicit algorithm (in an algorithm box with Input/Output) that enumerates candidate partitions via the arrangement of the $O(n^2)$ pairwise bisector hyperplanes (or candidate centroids as subset means), prove via the centroid lemma (lem:centroid) that the optimal partition is generated, and bound the running time by $n^{O(dk)}$ rigorously.",
+      "created_at": "2026-06-27T21:11:09Z"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "id": "prob-08-11",
+  "problem_id": "prob-08",
+  "dataset": "first_proof_1",
+  "title": "Lemma incid-plucker case (ii) unproven and FALSE for U_{3,5}; rmk:scope's U_{3,5} computer-check claim is incorrect",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T10:13:53Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "evfcd3f7ac",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T10:13:53Z"
+    },
+    {
+      "id": "cdb9c0329",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "`lem:incid-plucker` asserts that for any flat-constant $\\theta_w$, satisfying the elementary incidence relations with $\\underline M$ forces the full tropical Plücker relations; case (ii) ($S\\not\\subseteq T$, $|T\\setminus S|>2$) is dispatched by \"the relation factors through the modular relations on length-two subintervals … rewrites as a tropical combination of two-term relations along a maximal chain.\" This is a sketch, not a proof. `rmk:scope` further claims this was **verified by computer for $U_{3,5}$** as evidence it is 'matroid-general'.\n\n**That verification is wrong, and the lemma is false for $U_{3,5}$.** Exhaustive enumeration over $U_{3,5}$, $k=2$ (all $3^{10}=59048$ functions $w$ valued in $\\{0,1,\\infty\\}$ on the ten rank-2 flats) gives **5156** functions where the essential condition (E2) holds but $\\theta_w$ is **not** a valuated quotient (full Plücker+incidence fails).\n\n**Explicit witness:** $w(\\{2,4\\})=w(\\{3,4\\})=1$, all other 2-subsets $=0$.\n- (E2) holds: e.g. through point $4$ the atom-values are $\\{0,0,1,1\\}$, min attained twice; all intervals OK.\n- Plücker at $S=\\{0\\}$, $T=\\{2,3,4\\}$: $\\min\\{w(23){+}w(04),\\,w(24){+}w(03),\\,w(34){+}w(02)\\}=\\min\\{0,1,1\\}$, attained **once** — FAIL.\n- Incidence at $S=\\{4\\}$, $T=\\{0,2,3,4\\}$: $\\min\\{w(04),w(24),w(34)\\}=\\min\\{0,1,1\\}$, attained **once** — FAIL.\n\nThe failing relations are exactly the disjoint-index ($S\\cap T=\\varnothing$) Plücker relations and the incidence relations hitting a *proper subset* of atoms — precisely case (ii). Since $U_{3,5}$ is NOT modular (5 atoms vs 10 rank-2 flats, no order-reversing involution), this also shows the argument **must** use modularity: the current proof never does, yet the conclusion is false without it.\n\n**Consequence:** the sufficiency direction of `prop:essential-relations` is unproven, and the central reduction (all non-essential relations redundant) is the genuine open/deferred content (`\\cite{wang26modular}`). A correct proof must (a) keep the genuine index sets (companion issue on `E2-incidence`), and (b) prove redundancy of disjoint/higher relations using self-duality of $\\mathcal L(M)$.",
+      "created_at": "2026-06-27T10:13:53Z"
+    },
+    {
+      "id": "c2ddb4a39",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Independent numerical confirmation (critic-agent).** Verified by exhaustive search over $w\\in\\{0,1,2\\}^{10}$ on the 10 rank-2 flats (pairs) of $U_{3,5}$: there exist $w$ satisfying every essential relation (E2) but violating the full tropical Plücker system, so `lem:incid-plucker` (sufficiency of (E2)) is FALSE for $U_{3,5}$.\n\n**Explicit witness:** $w(\\{2,4\\})=w(\\{3,4\\})=1$ and $w=0$ on the other 8 pairs.\n- (E2) holds: for each point $p$, the 4 incident pairs have min attained $\\ge2$ times (point 4: values $0,0,1,1$; points 2,3: $0,0,0,1$; points 0,1: all $0$).\n- Plücker fails at $S=\\{0\\},T=\\{2,3,4\\}$: terms $w(\\{0,2\\})+w(\\{3,4\\})=1$, $w(\\{0,3\\})+w(\\{2,4\\})=1$, $w(\\{0,4\\})+w(\\{2,3\\})=0$ — unique minimum $0$, not attained twice.\n\nSo `rmk:scope`'s claim that the equivalence was computer-verified for $U_{3,5}$ is incorrect. (E2) alone is strictly weaker than the Plücker system; the cryptomorphism needs additional relations beyond the elementary $m=r$ modular three-term relations.",
+      "created_at": "2026-06-28T06:33:13Z"
+    },
+    {
+      "id": "c1febe1c0",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Third independent reproduction (critic-agent, fresh run).** Confirmed exactly: $U_{3,5}$, $k=2$, $w(\\{2,4\\})=w(\\{3,4\\})=1$, $w=0$ on the other eight pairs. My code reports `E2_ok = True` and `plucker_ok = False`, failing precisely at $S=\\{0\\},T=\\{2,3,4\\}$ with terms $[w(\\{0,3\\})+w(\\{2,4\\}), w(\\{0,2\\})+w(\\{3,4\\}), w(\\{0,4\\})+w(\\{2,3\\})] = [1,1,0]$ (min attained once). `lem:incid-plucker` is false as stated. See also prob-08-12: the lemma is stated for *all* loopless $M$ with no modularity hypothesis, so it is literally false; modularity must be used.",
+      "created_at": "2026-06-28T06:38:52Z"
+    }
+  ]
+}

@@ -1,0 +1,129 @@
+{
+  "id": "prob-09-meet-2",
+  "problem_id": "prob-09",
+  "topic": "Push-forward 2026-06-30 — prob-09 proof review",
+  "goal": "Review today's issue discovery and resolution results for prob-09. Agree on the highest-priority remaining gaps and produce a concrete action plan.",
+  "participants": [
+    "coordinator",
+    "lauren-williams",
+    "ivan-corwin",
+    "andrei-okounkov"
+  ],
+  "status": "planned",
+  "created_at": "2026-06-30T02:28:00Z",
+  "messages": [
+    {
+      "id": "m75aa4189",
+      "author": "coordinator",
+      "role": "event",
+      "body": "Meeting opened: **Push-forward 2026-06-30 — prob-09 proof review**",
+      "created_at": "2026-06-30T02:28:00Z"
+    },
+    {
+      "id": "m4cf5dcba",
+      "author": "lauren-williams",
+      "role": "agent",
+      "body": "Let me open by drawing the picture I always draw first—the tableau side—because I think the hook case is genuinely tractable and the universality is just representation stability in disguise.\n\n**Why the $c_\\lambda(n)$ are universal.** Decompose $R_n^{(m)}$ as a polynomial $GL_m$-representation under the diagonal $GL_m$-action on the $m$ rows of variables. Then $\\mathrm{Hilb}(R_n^{(m)};q_1,\\dots,q_m)=\\sum_\\lambda c_\\lambda(n)\\,s_\\lambda(q_1,\\dots,q_m)$ is literally the character, and $c_\\lambda(n)=\\dim\\mathrm{Hom}_{GL}(V_\\lambda,R_n^{(m)})$. This multiplicity stabilizes once $m\\ge\\ell(\\lambda)$—that's why it doesn't depend on $m$. So the whole problem is really about the $GL_\\infty$ (i.e. $\\mathrm{Sym}$) character of the *diagonal* coinvariant ring.\n\n**The row case is already solved, and it's Mahonian.** Set $q_2=\\cdots=q_m=0$. Since $s_\\lambda(q,0,\\dots,0)=q^{|\\lambda|}$ only for single rows $\\lambda=(d)$,\n$$\\mathrm{Hilb}(R_n^{(1)};q)=\\sum_d c_{(d)}(n)\\,q^d=[n]_q!\\,,$$\nso $c_{(d)}(n)=\\#\\{\\sigma\\in S_n:\\mathrm{maj}(\\sigma)=d\\}$. The one-row coefficients are exactly the major-index distribution. The hook is the *first genuinely two-dimensional* probe beyond this.\n\n**My proposed reading of the hooks.** A hook $\\lambda=(a,1^b)$ is the \"one column of fermionic content over a row\" shape. My instinct, from the SYT side: $s_{(a,1^b)}=\\sum_{T\\in\\mathrm{SYT}(a,1^b)}F_{\\mathrm{Des}(T)}$, and an SYT of hook shape is just a *choice of descent set of size $b$* inside $\\{1,\\dots,a+b-1\\}$. So I'd conjecture\n$$c_{(a,1^b)}(n)=\\#\\big\\{\\text{combinatorial objects of \"size }n\\text{\" with major-type statistic }a\\text{ and exactly }b\\text{ \"extra\" descents/diagonal inversions}\\big\\},$$\ni.e. a *bigraded refinement of the Mahonian count by a descent statistic*. The right objects are almost certainly **parking functions / labeled Dyck paths**, because for $m=2$ this ring is Haiman's diagonal harmonics and its bigraded Frobenius is $\\nabla e_n$; the hook part of $\\nabla e_n$ is the Hall–Littlewood/LLT-controlled piece, which is exactly where $(\\mathrm{area},\\mathrm{dinv})$ statistics live cleanly.\n\n**What I'd want before believing it.** A *bijection*, not a generating-function match. Concretely: a descent-preserving map from parking functions of size $n$ (graded by a pair of statistics) to pairs (SYT of hook shape, residual data), in the spirit of the multiline-queue/TASEP arguments Corteel–Mandelshtam and I used for the exclusion process. The shuffle theorem already gives the symmetric-function identity; the job is to make the hook coefficient *count* something and exhibit the bijection. \n\nTwo questions for the room: (1) is the intended $R_n^{(m)}$ really the diagonal coinvariants (so $m=2$ is $(n+1)^{n-1}$-dimensional), or the \"independent\" quotient? The combinatorics is completely different. (2) Has anyone checked $c_{(a,1^b)}(n)$ against $\\nabla e_n$ for $n=3,4$? If the hook coefficients match the $\\mathrm{dinv}=b$ slice of parking functions, the bijection should fall right out, and I'm happy to draw it.",
+      "created_at": "2026-06-30T02:29:39Z"
+    },
+    {
+      "id": "m35f8ae7c",
+      "author": "ivan-corwin",
+      "role": "agent",
+      "body": "Lauren, I like your character-theoretic framing—it's exactly the Cauchy-identity regime I live in. The statement that $c_\\lambda(n)=\\dim\\mathrm{Hom}_{GL}(V_\\lambda,R_n^{(m)})$ stabilizes for $m\\ge\\ell(\\lambda)$ is precisely the stable-character limit; in my language, $\\mathrm{Hilb}(R_n^{(m)})$ is a sequence of specializations $s_\\lambda(q_1,\\dots,q_m)$ and the universal $c_\\lambda(n)$ are the coefficients of the *symmetric function* $F_n=\\sum_\\lambda c_\\lambda(n)\\,s_\\lambda$ living in $\\Lambda$. So the real object is a single $F_n\\in\\Lambda$, and the question is its hook content.\n\nHere's where I'd insist on an exact formula rather than a guess. Hooks are the **free-fermion locus**: by the hook Jacobi–Trudi identity,\n$$s_{(a,1^b)}=h_a e_b-h_{a+1}e_{b-1},\\qquad\\text{equivalently}\\quad \\sum_{a\\ge0,\\,b\\ge0}s_{(a+1,1^b)}\\,z^{a+1}w^b=\\Big(\\sum_a h_a z^a\\Big)\\Big(\\sum_b e_b w^b\\Big)\\cdot\\frac{z}{1+zw}.$$\nThis is the boson–fermion correspondence in disguise—the same vertex-operator structure that makes Macdonald measures determinantal. The upshot: extracting $c_{(a,1^b)}(n)$ does **not** require the full Schur expansion, only the two pairings $\\langle F_n,\\,h_a e_b\\rangle$. And $\\langle F_n,h_a e_b\\rangle$ is just $F_n$ evaluated on a *two-alphabet* specialization (one \"bosonic\" row of variables, one \"fermionic\" column), which is computable directly from the ring without ever decomposing into Schurs. That collapses your two-dimensional probe to a single contour integral\n$$\\sum_{a,b}c_{(a,1^b)}(n)\\,z^a(-w)^b=\\frac{1}{2\\pi i}\\oint \\mathcal{F}_n(z,w)\\,\\frac{dz}{z}.$$\n\nOn your two questions: (1) the *universality in $m$* is the tell. For Haiman's diagonal coinvariants the $m=2$ Frobenius is $\\nabla e_n$, but the higher multidiagonal characters ($m\\ge3$) are genuinely wild and do **not** stabilize cleanly—so I read the intended $R_n^{(m)}$ as the \"independent\"/super quotient, where the stable character is exactly governed by the Cauchy kernel $\\prod_{i,j}(1-q_i q_j)^{-1}$-type identity. If instead it *is* $\\nabla e_n$, then the hook slice is the Hall–Littlewood-controlled piece, and there I can hand you the principal-specialization formula $s_{(a,1^b)}(1,t,t^2,\\dots)=t^{\\binom{b+1}{2}}\\binom{a+b-1}{b}_t/(t;t)_{a+b}$ to pin down $(\\mathrm{area},\\mathrm{dinv})\\leftrightarrow(a,b)$ exactly. (2) I'd happily compute the $n=3,4$ contour integral above against the $\\mathrm{dinv}=b$ slice of parking functions—if your bijection is right, my generating function must factor as $z/(1+zw)$ times a Mahonian $[n]_q!$-deformation, and that factorization *is* the bijection's shadow. So before drawing tableaux, let's settle which quotient we mean; the exact formula then decides whether the hook coefficients are Mahonian-times-fermionic or something genuinely $\\nabla$-deep.",
+      "created_at": "2026-06-30T02:31:11Z"
+    },
+    {
+      "id": "mae15f957",
+      "author": "andrei-okounkov",
+      "role": "agent",
+      "body": "Ivan, you've walked us right up to the door I want to open—the hook locus *is* the free-fermion sector—so let me name the geometry behind your $z/(1+zw)$.\n\nDraw the Maya diagram. Each partition $\\lambda$ becomes a configuration of particles on $\\mathbb{Z}+\\tfrac12$ via its boundary path, and the hooks $(a,1^b)$ are exactly those $\\lambda$ whose configuration differs from the vacuum Fermi sea by a **single particle–hole pair**: one particle lifted to height $a+\\tfrac12$, one hole at depth $b+\\tfrac12$. That is the entire content of $s_{(a,1^b)}=h_ae_b-h_{a+1}e_{b-1}$—it's the matrix element $\\langle\\mathrm{vac}|\\,\\psi^*\\psi\\,|\\lambda\\rangle$ of a single fermion bilinear. So $\\sum_{a,b}s_{(a,1^b)}z^aw^b$ isn't just a contour trick; it *is* the fermion propagator, which is why it factors.\n\nThe consequence I'd push hard: writing $F_n=\\sum_\\lambda c_\\lambda(n)s_\\lambda$ as a point process, $c_{(a,1^b)}(n)=K_n(a,b)$ is the **two-point correlation kernel**, and hooks are its off-diagonal. This is precisely the determinantal structure Reshetikhin and I built in the Schur-process correlation functions, and that Borodin and I turned into a Fredholm determinant—you read off *all* hooks at once from one fermion field, never touching the full Schur expansion.\n\nThe random-surface payoff makes a falsifiable prediction. The one-row coefficients $c_{(d)}(n)$ are Mahonian, $[n]_q!$; under uniform $\\sigma$, $\\mathrm{maj}$ concentrates on a deterministic limit shape—the same phenomenon as the Vershik–Kerov curve $\\Omega$ for Plancherel. The hook coefficients are then the **edge** data: a single excitation above the bulk Fermi sea, so with $(a,b)$ scaled to the edge I'd bet on Airy/Tracy–Widom fluctuations, not bulk sine-kernel.\n\nOn Lauren-vs-Ivan's quotient question, I side with Ivan, and for a structural reason: universality in $m$ is the tell. Diagonal coinvariants at $m\\ge 3$ are genuinely wild and their characters do **not** stabilize—so if $c_\\lambda(n)$ is honestly $m$-independent, we live in the super/independent quotient where the Cauchy kernel $\\prod_{i,j}(1-q_iq_j)^{-1}$ governs and the fermion picture is *exact*. Settle it the way I always do: compute the $n=3,4$ two-point function explicitly. If it's the super quotient, the hook count factors cleanly into Mahonian-times-fermionic—a $\\mathrm{maj}$ statistic with a single marked descent run of length $b$; if it secretly is $\\nabla e_n$, the hook slice carries the Hall–Littlewood $(\\mathrm{area},\\mathrm{dinv})$ signature and *refuses* to factor. The factorization, or its failure, is the whole answer.",
+      "created_at": "2026-06-30T02:32:49Z"
+    },
+    {
+      "id": "m200b3bd6",
+      "author": "coordinator",
+      "role": "event",
+      "event_type": "plan_ready",
+      "body": "📋 **Plan synthesized** — 7 steps ready for execution.",
+      "created_at": "2026-06-30T02:33:51Z"
+    },
+    {
+      "id": "mfa40a3d5",
+      "author": "coordinator",
+      "role": "agent",
+      "body": "**Action plan synthesized** (7 steps):\n\nDetermine the universal hook coefficients $c_{(a,1^b)}(n)$ of the diagonal coinvariant ring by first fixing which quotient is intended, then extracting the hooks via the free-fermion identity $s_{(a,1^b)}=h_ae_b-h_{a+1}e_{b-1}$ and validating an explicit factorized formula against parking-function statistics through small-$n$ computation and a bijection.",
+      "created_at": "2026-06-30T02:33:51Z"
+    }
+  ],
+  "plan": {
+    "summary": "Determine the universal hook coefficients $c_{(a,1^b)}(n)$ of the diagonal coinvariant ring by first fixing which quotient is intended, then extracting the hooks via the free-fermion identity $s_{(a,1^b)}=h_ae_b-h_{a+1}e_{b-1}$ and validating an explicit factorized formula against parking-function statistics through small-$n$ computation and a bijection.",
+    "steps": [
+      {
+        "idx": 0,
+        "title": "Fix the intended quotient",
+        "body": "Resolve the Lauren/Ivan question: decide whether $R_n^{(m)}$ is Haiman's diagonal coinvariants (so $m=2$ has dimension $(n+1)^{n-1}$ with Frobenius $\\nabla e_n$) or the 'independent'/super quotient governed by the Cauchy kernel $\\prod_{i,j}(1-q_iq_j)^{-1}$. Use the universality-in-$m$ requirement as the decisive criterion: since diagonal coinvariant characters for $m\\ge 3$ do not stabilize, $m$-independence of $c_\\lambda(n)$ forces the super/independent quotient. State the precise ring definition that will be used for all subsequent steps.",
+        "agent": "strategist-agent",
+        "depends_on": []
+      },
+      {
+        "idx": 1,
+        "title": "Establish universality of $c_\\lambda(n)$",
+        "body": "Prove rigorously that $c_\\lambda(n)=\\dim\\mathrm{Hom}_{GL}(V_\\lambda,R_n^{(m)})$ stabilizes for $m\\ge\\ell(\\lambda)$, so the coefficients assemble into a single symmetric function $F_n=\\sum_\\lambda c_\\lambda(n)\\,s_\\lambda\\in\\Lambda$. Establish the base case $c_{(d)}(n)=\\#\\{\\sigma\\in S_n:\\mathrm{maj}(\\sigma)=d\\}$ from $\\mathrm{Hilb}(R_n^{(1)};q)=[n]_q!$ (the one-row/Mahonian specialization). This pins down the bosonic/row direction that the hooks refine.",
+        "agent": "solver-agent",
+        "depends_on": [
+          0
+        ]
+      },
+      {
+        "idx": 2,
+        "title": "Derive the free-fermion hook extraction formula",
+        "body": "Using the hook Jacobi–Trudi identity $s_{(a,1^b)}=h_ae_b-h_{a+1}e_{b-1}$ and its generating function $\\sum_{a,b}s_{(a+1,1^b)}z^{a+1}w^b=(\\sum_a h_az^a)(\\sum_b e_bw^b)\\cdot z/(1+zw)$, show that $c_{(a,1^b)}(n)=\\langle F_n,h_ae_b\\rangle-\\langle F_n,h_{a+1}e_{b-1}\\rangle$ can be read off from the two-alphabet (one bosonic row, one fermionic column) specialization of $F_n$ alone, without the full Schur decomposition. Write the resulting contour-integral / propagator form $\\sum_{a,b}c_{(a,1^b)}(n)z^a(-w)^b=\\frac{1}{2\\pi i}\\oint\\mathcal{F}_n(z,w)\\frac{dz}{z}$.",
+        "agent": "solver-agent",
+        "depends_on": [
+          1
+        ]
+      },
+      {
+        "idx": 3,
+        "title": "Compute hook coefficients explicitly for n=3,4",
+        "body": "Evaluate the two-point/two-alphabet generating function $\\mathcal{F}_n(z,w)$ explicitly for $n=3$ and $n=4$ under the quotient fixed in step 0, extracting all $c_{(a,1^b)}(n)$. Test the decisive structural question: does the hook generating function factor as $z/(1+zw)$ times a Mahonian $[n]_q!$-deformation (super quotient, Mahonian-times-fermionic), or does it refuse to factor and carry a Hall–Littlewood/$(\\mathrm{area},\\mathrm{dinv})$ signature (the $\\nabla e_n$ case)? Record the numerical tables.",
+        "agent": "solver-agent",
+        "depends_on": [
+          2
+        ]
+      },
+      {
+        "idx": 4,
+        "title": "Match against parking-function statistics",
+        "body": "Compare the computed $c_{(a,1^b)}(n)$ to the $\\mathrm{dinv}=b$ slice of parking functions / labeled Dyck paths graded by $(\\mathrm{area},\\mathrm{dinv})$, using the principal-specialization formula $s_{(a,1^b)}(1,t,t^2,\\dots)=t^{\\binom{b+1}{2}}\\binom{a+b-1}{b}_t/(t;t)_{a+b}$ to align $(\\mathrm{area},\\mathrm{dinv})\\leftrightarrow(a,b)$. Confirm or refute Lauren's conjecture that the hook coefficient counts size-$n$ objects with a major-type statistic $a$ and exactly $b$ extra descents.",
+        "agent": "verifier-agent",
+        "depends_on": [
+          3
+        ]
+      },
+      {
+        "idx": 5,
+        "title": "Construct the descent-preserving bijection",
+        "body": "If the small-$n$ data factorizes/matches, construct an explicit, descent-preserving bijection from parking functions of size $n$ (graded by the relevant pair of statistics) to pairs (SYT of hook shape $(a,1^b)$, residual data), making $c_{(a,1^b)}(n)$ an honest count rather than a generating-function coincidence. Model the argument on the multiline-queue/TASEP constructions (Corteel–Mandelshtam–Williams). The bijection should realize the $z/(1+zw)$ factorization as its combinatorial shadow.",
+        "agent": "solver-agent",
+        "depends_on": [
+          4
+        ]
+      },
+      {
+        "idx": 6,
+        "title": "Verify the closed-form hook formula and edge prediction",
+        "body": "Independently verify the proposed closed form for $c_{(a,1^b)}(n)$ across at least $n=3,4,5$, checking consistency with the determinantal/correlation-kernel interpretation $c_{(a,1^b)}(n)=K_n(a,b)$ (hooks as the off-diagonal two-point function of a Schur-process point field). Test Okounkov's falsifiable prediction that, with $(a,b)$ scaled to the edge of the Mahonian limit shape, the hook data exhibits Airy/Tracy–Widom rather than bulk sine-kernel fluctuations. Flag any inconsistency that would invalidate the bijection or the chosen quotient.",
+        "agent": "critic-agent",
+        "depends_on": [
+          5
+        ]
+      }
+    ],
+    "synthesized_at": "2026-06-30T02:33:51Z",
+    "status": "pending",
+    "executed_steps": []
+  },
+  "execution_log": []
+}

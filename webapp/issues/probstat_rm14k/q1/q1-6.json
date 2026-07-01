@@ -1,0 +1,31 @@
+{
+  "id": "q1-6",
+  "problem_id": "q1",
+  "dataset": "probstat_rm14k",
+  "title": "Faithfulness: fix a rigorous construction of $\\mu$ / construction-independence",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T03:32:19Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev019c3dbf",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T03:32:19Z"
+    },
+    {
+      "id": "c74e74fad",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Sub-lemma (GAP 5) — faithfulness.** The problem does not pin down a construction of the $\\Phi^4_3$ measure $\\mu$. A complete proof must either (i) fix one explicit rigorous construction (e.g. the invariant measure of the renormalized $\\Phi^4_3$ dynamics via regularity structures / paracontrolled calculus, or the Barashkov–Gubinelli variational measure) and state its support ($C^{-1/2-\\kappa}(\\mathbb{T}^3)$), Cameron–Martin space ($H^1$), and renormalization constants; or (ii) prove the equivalence statement is independent of the (mutually equivalent) constructions.\n\n**Why it matters.** All later steps (Wick powers, counterterms, tail estimates, Girsanov drift) depend on the precise definition. Silently switching between constructions mid-proof is a definitional-drift failure. Also confirm the elementary point that smooth $\\psi\\not\\equiv0$ lies in the Cameron–Martin space $H^1(\\mathbb{T}^3)$ so the Gaussian exponent $\\langle\\psi,u\\rangle_{CM}-\\tfrac12\\|\\psi\\|_{CM}^2$ is finite and nondegenerate — and as a sanity check that at $\\lambda=0$ the density reduces exactly to the GFF Cameron–Martin density.",
+      "created_at": "2026-06-27T03:32:19Z"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "id": "rm-05492-5",
+  "problem_id": "rm-05492",
+  "dataset": "rmac",
+  "title": "Guard: respect non-compactness of B^(H) (no termwise SV product)",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T19:17:51Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev0bd0dbe9",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T19:17:51Z"
+    },
+    {
+      "id": "c2d38f553",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Conceptual consistency / definitional-drift guard.** The problem statement asserts $B^{(H)}$ is bounded but **non-compact**. Indeed $(B^{(H)})(B^{(H)})^*=\\mathcal H$, the Hilbert matrix $\\mathcal H_{ij}=1/(i+j-1)$, which has $\\|\\mathcal H\\|=\\pi$ and purely continuous spectrum $[0,\\pi]$ with no eigenvalues (Magnus/Rosenblum); hence the singular values of $B^{(H)}$ do NOT tend to $0$.\n\nAny proof step that implicitly treats $B^{(H)}$ as compact — e.g. multiplying singular-value sequences of $B^{(H)}$ and $J$ termwise, or asserting $\\sigma_i(A)=\\sigma_i(B^{(H)})\\sigma_i(J)$ — is INVALID. The smoothing in $A$ comes entirely from $J$ (whose smooth range consists of analytic functions $(1-t^i)/i$), and the correct conclusion (severe ill-posedness) arises precisely because the moment operator amplifies these analytic functions. Verify every step respects non-compactness of $B^{(H)}$.\n\n**Difficulty:** conceptual; it is a trap that must be avoided rather than an estimate to prove, but is a genuine logical requirement of any correct argument.",
+      "created_at": "2026-06-27T19:17:51Z"
+    }
+  ]
+}

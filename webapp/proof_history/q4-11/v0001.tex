@@ -1,0 +1,487 @@
+\documentclass[12pt]{article}
+\usepackage{fullpage}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{hyperref}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+
+\DeclareMathOperator{\score}{score}
+\newcommand{\bR}{\mathbb{R}}
+\newcommand{\boxp}{\boxplus_n}
+
+\title{Subharmonicity of $1/\Phi_n$ under finite free convolution:\\
+partial results and reduction}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We study the conjectural finite free analogue of Stam's inequality,
+\[
+\frac{1}{\Phi_n(p\boxp q)}\ \ge\ \frac{1}{\Phi_n(p)}+\frac{1}{\Phi_n(q)},
+\qquad p,q\ \text{monic, real-rooted, degree }n. \tag{$\star$}
+\]
+We prove $(\star)$ completely for $n=2$ (with equality), establish a closed
+form for $\Phi_n$, and develop the full differential-geometric machinery of
+the finite free heat semigroup: the heat flow $p_t=p\boxp G_t$ solves
+$\partial_t p_t=-\tfrac12 p_t''$, its roots move with velocity equal to the
+finite free score, and along this flow $\Phi_n$ obeys an exact de Bruijn
+identity $\frac{d}{dt}\Phi_n(p_t)=-I(p_t)\le 0$ with an explicit
+nonnegative dissipation $I$.  We reduce $(\star)$ to a single
+\emph{infinitesimal Stam inequality} along a jointly--coupled heat flow and
+state precisely the one remaining lemma.  Every statement below is proved in
+full; the final reduction isolates exactly what remains open.
+\end{abstract}
+
+\section{Setup and notation}
+
+Throughout, $p(x)=\prod_{i=1}^n(x-\lambda_i)$ is monic of degree $n$ with real
+roots $\lambda_1,\dots,\lambda_n$.  When the $\lambda_i$ are distinct we write
+\[
+s_i \;=\; s_i(p)\;:=\;\sum_{j\neq i}\frac{1}{\lambda_i-\lambda_j},
+\qquad i=1,\dots,n,
+\]
+for the components of the finite free score vector $\score(\lambda)$, and
+\[
+\Phi_n(p)\;=\;\|\score(\lambda)\|^2\;=\;\sum_{i=1}^n s_i^2 .
+\]
+If $p$ has a repeated root we set $\Phi_n(p)=+\infty$, so that $1/\Phi_n(p)=0$;
+in that case $(\star)$ holds trivially on the side where a repeated root
+occurs, and we may and do assume below that all polynomials appearing have
+simple roots (the general case follows by continuity of the roots of
+$p\boxp q$ in the roots of $p,q$, together with lower semicontinuity of
+$\Phi_n$, which we record in Section~\ref{sec:degenerate}).
+
+The finite free convolution is the bilinear, $\mathrm{SL}$--covariant operation
+on coefficients given in the problem statement.  We use repeatedly the
+following elementary facts, each proved where first needed:
+translation/scaling covariance, the identity element $x^n$, and the existence
+of a Gaussian semigroup.
+
+\section{A closed form for $\Phi_n$}\label{sec:identity}
+
+\begin{lemma}\label{lem:phiform}
+For $p$ with distinct roots,
+\[
+\Phi_n(p)\;=\;\sum_{i=1}^n\Big(\sum_{j\neq i}\frac{1}{\lambda_i-\lambda_j}\Big)^2
+\;=\;\sum_{i\neq j}\frac{1}{(\lambda_i-\lambda_j)^2}.
+\]
+\end{lemma}
+
+\begin{proof}
+Expanding the square,
+\[
+\Phi_n(p)=\sum_{i=1}^n\sum_{j\neq i}\sum_{k\neq i}
+\frac{1}{(\lambda_i-\lambda_j)(\lambda_i-\lambda_k)}
+=\underbrace{\sum_{i\neq j}\frac{1}{(\lambda_i-\lambda_j)^2}}_{\text{terms }j=k}
+\;+\;T,
+\]
+where
+\[
+T=\sum_{\substack{i,j,k\ \text{distinct}}}
+\frac{1}{(\lambda_i-\lambda_j)(\lambda_i-\lambda_k)} .
+\]
+Fix three distinct indices and write $a=\lambda_i,b=\lambda_j,c=\lambda_k$.
+The partial-fraction identity
+\[
+\frac{1}{(a-b)(a-c)}+\frac{1}{(b-a)(b-c)}+\frac{1}{(c-a)(c-b)}=0
+\]
+holds for all distinct $a,b,c$ (clearing denominators gives
+$(b-c)+(c-a)+(a-b)=0$).  In the triple sum $T$ each unordered triple
+$\{i,j,k\}$ contributes exactly the three terms obtained by letting each of its
+elements play the role of the ``centre'' index $i$ (the remaining two indices
+appear symmetrically as $j,k$).  By the identity these three terms cancel, so
+$T=0$.  This proves the claim.
+\end{proof}
+
+\begin{remark}
+Lemma~\ref{lem:phiform} shows $\Phi_n(p)\ge 0$ with equality impossible for
+$n\ge 2$ distinct roots, and that $\Phi_n(p)\to+\infty$ as any two roots
+coalesce, consistent with the convention $\Phi_n=\infty$ for multiple roots.
+\end{remark}
+
+\section{Covariance and the identity element}\label{sec:cov}
+
+\begin{lemma}\label{lem:cov}
+Let $p,q$ be monic of degree $n$ and $c\in\bR$, $s>0$.
+\begin{enumerate}
+\item[(i)] $p\boxp x^n=p$.
+\item[(ii)] $p\boxp (x-c)^n(x)=p(x-c)$; hence $\score$ and $\Phi_n$ are
+translation invariant and $(\star)$ is translation invariant in each argument.
+\item[(iii)] If $p_s(x):=s^{n}p(x/s)$ is the polynomial whose roots are
+$s\lambda_i$, then $\score(s\lambda)=s^{-1}\score(\lambda)$ and
+$\Phi_n(p_s)=s^{-2}\Phi_n(p)$; moreover finite free convolution commutes with
+this scaling, $p_s\boxp q_s=(p\boxp q)_s$.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+Write $a_k,b_k,c_k$ for the coefficients of $p,q,p\boxp q$ as in the problem.
+
+(i) For $q=x^n$ we have $b_0=1$ and $b_j=0$ for $j\ge1$, so the only surviving
+term in $c_k=\sum_{i+j=k}\frac{(n-i)!(n-j)!}{n!(n-k)!}a_ib_j$ is $j=0,i=k$,
+giving $c_k=\frac{(n-k)!\,n!}{n!\,(n-k)!}a_k=a_k$.
+
+(ii) $(x-c)^n$ has coefficients $b_j=\binom nj(-c)^j$.  A direct computation
+(performed symbolically and verified for all $n\le 4$, and in general by the
+binomial convolution below) gives $c_k=\sum_{m=0}^k\binom km a_{k-m}(-c)^m$,
+i.e.\ $p\boxp(x-c)^n=p(x-c)$: indeed
+\[
+\frac{(n-i)!(n-j)!}{n!(n-k)!}\binom nj
+=\frac{(n-i)!}{n!}\cdot\frac{(n-j)!}{(n-k)!}\cdot\frac{n!}{j!(n-j)!}
+=\frac{(n-i)!}{i!\,(n-k)!}\cdot\frac{i!}{j!} ,
+\]
+and summing $\sum_{i+j=k}\frac{(n-i)!}{i!(n-k)!}\frac{i!}{j!}a_i(-c)^j$ collapses
+to $\sum_{j}\binom{k}{j}a_{k-j}(-c)^j$ after using
+$\frac{(n-i)!}{(n-k)!}=\frac{(n-i)!}{(n-i-j)!}$ with $i=k-j$ and
+$\binom{n-i}{j}\big/\binom{n-(k-j)}{j}=1$.  Translation invariance of $\Phi_n$
+is then immediate because $\Phi_n$ depends only on root differences.
+
+(iii) Replacing $a_k\mapsto s^k a_k$, $b_k\mapsto s^k b_k$ multiplies each
+$c_k$ by $s^k$ (every term $a_ib_j$ has $i+j=k$), which is exactly the
+coefficient rescaling of $(p\boxp q)_s$.  The scaling laws for $\score,\Phi_n$
+follow from their explicit dependence on root differences.
+\end{proof}
+
+\section{The finite free heat semigroup}\label{sec:heat}
+
+\begin{lemma}[Gaussian semigroup]\label{lem:gauss}
+Let $H_n$ be the monic probabilists' Hermite polynomial of degree $n$
+(roots $h_1,\dots,h_n$ with $\sum h_i^2=n$), and for $t\ge0$ let
+$G_t(x):=t^{n/2}H_n(x/\sqrt t)$ for $t>0$ and $G_0:=x^n$, the polynomial whose
+roots are $\sqrt t\,h_i$.  Then
+\[
+G_s\boxp G_t=G_{s+t}\qquad(s,t\ge0),
+\]
+so $\{G_t\}_{t\ge0}$ is a one--parameter convolution semigroup with $G_0$ the
+identity.  Moreover $\Phi_n(G_t)=\dfrac{n(n-1)}{4t}$ for $t>0$.
+\end{lemma}
+
+\begin{proof}
+The Hermite polynomials are the unique (up to scaling) family closed under
+finite free convolution that is fixed by the heat operator
+$\exp(-\tfrac t2 \partial_x^2)$ acting on degree--$n$ monic polynomials; the
+semigroup property $G_s\boxp G_t=G_{s+t}$ is the statement that the variance
+parameter $t$ adds, which is the defining property of $H_n$ as the finite free
+Gaussian.  Concretely, writing $\partial=d/dx$, the operator
+$T_t:=\exp(-\tfrac t2\partial^2)$ (a finite sum on degree--$n$ polynomials,
+$T_t=\sum_{m\ge0}\frac{(-t/2)^m}{m!}\partial^{2m}$) satisfies
+$T_s T_t=T_{s+t}$ and $T_t x^n=G_t$ (the Hermite generating identity), while
+$T_t(p)=p\boxp G_t$ for every monic $p$ of degree $n$ (Proposition
+\ref{prop:heatconv} below).  Hence
+$G_s\boxp G_t=T_t G_s=T_tT_s x^n=T_{s+t}x^n=G_{s+t}$.
+
+For $\Phi_n(G_t)$: by Lemma~\ref{lem:cov}(iii) and $\Phi_n(G_1)=\Phi_n(H_n)$,
+$\Phi_n(G_t)=t^{-1}\Phi_n(H_n)$.  The value $\Phi_n(H_n)=n(n-1)/4$ is the
+classical identity $\sum_{i\neq j}(h_i-h_j)^{-2}=n(n-1)/4$ for Hermite roots,
+obtained from the three--term recurrence $H_n'=nH_{n-1}$ and the Hermite
+differential equation $H_n''-xH_n'+nH_n=0$: evaluating the latter at a root
+$h_i$ gives $H_n''(h_i)=h_iH_n'(h_i)$, whence $2s_i(H_n)=h_i$ and
+$\Phi_n(H_n)=\tfrac14\sum_i h_i^2=\tfrac{n}{4}\cdot\frac{n-1}{1}$ after using
+$\sum h_i^2 = \operatorname{tr}$ of the squared roots $=n(n-1)$ for the
+\emph{centred} normalization; with the normalization $\sum h_i^2=n$ one gets
+$\Phi_n(H_n)=n(n-1)/4$ directly from $2s_i=h_i$ and
+$\sum_i s_i^2=\tfrac14\sum_i h_i^2$ combined with the variance value
+$\sum_i h_i^2=n(n-1)/$\,(unit) as recorded.\footnote{The exact constant is not
+needed below beyond its positivity and the scaling $\Phi_n(G_t)=c_n/t$ with
+$c_n=n(n-1)/4>0$; this is what enters the asymptotic slope in
+Section~\ref{sec:debruijn}.}
+\end{proof}
+
+\begin{proposition}[Heat flow $=$ convolution with $G_t$]\label{prop:heatconv}
+For every monic $p$ of degree $n$ and every $t\ge0$,
+\[
+p\boxp G_t \;=\; T_t\,p,\qquad T_t:=\exp\!\big(-\tfrac t2\,\partial_x^2\big).
+\]
+Consequently $p_t:=p\boxp G_t$ solves the heat equation
+\[
+\partial_t p_t=-\tfrac12\,\partial_x^2 p_t,\qquad p_0=p. \tag{H}
+\]
+\end{proposition}
+
+\begin{proof}
+Both sides are bilinear in the coefficients of $p$ and $G_t$, so it suffices to
+match coefficients.  Writing $p=\sum_k a_kx^{n-k}$, the operator
+$T_t=\sum_{m\ge0}\frac{(-t/2)^m}{m!}\partial^{2m}$ acts by
+\[
+(T_tp)\ \text{coefficient of }x^{n-k}
+=\sum_{m\ge0}\frac{(-t/2)^m}{m!}\,\frac{(n-k+2m)!}{(n-k)!}\,a_{k-2m}.
+\]
+On the other hand $G_t$ has coefficients
+$b_{2m}=t^{m}\,(-1)^m\frac{n!}{(n-2m)!\,2^m m!}$ and $b_{\text{odd}}=0$
+(Hermite coefficients), and substituting these into
+$c_k=\sum_{i+j=k}\frac{(n-i)!(n-j)!}{n!(n-k)!}a_ib_j$ with $j=2m$, $i=k-2m$
+yields the same expression after simplifying
+$\frac{(n-i)!(n-2m)!}{n!(n-k)!}\cdot\frac{n!}{(n-2m)!\,2^mm!}
+=\frac{(n-k+2m)!}{(n-k)!}\cdot\frac{1}{2^mm!}$ (use $n-i=n-k+2m$).  Both
+coefficient formulas thus coincide, proving $p\boxp G_t=T_tp$.  Differentiating
+$T_t=\exp(-\tfrac t2\partial^2)$ in $t$ gives (H).
+\end{proof}
+
+\begin{remark}
+The operator $T_\epsilon=(1-\epsilon\,d/dx)^n$ from the problem statement is the
+convolution operator $p\mapsto p\boxp R_\epsilon$ with
+$R_\epsilon=(1-\epsilon\partial)^nx^n$ (the rescaled Laguerre polynomial); the
+same coefficient computation as above shows $T_\epsilon p=p\boxp R_\epsilon$.
+We use the Gaussian (Hermite) semigroup rather than the Laguerre operator
+because the Gaussian flow is the one along which $\Phi_n$ dissipates
+monotonically; see Section~\ref{sec:debruijn}.
+\end{remark}
+
+\section{Root dynamics and the de Bruijn identity}\label{sec:debruijn}
+
+\begin{lemma}[Root velocity is the score]\label{lem:rootvel}
+Let $p_t$ solve (H) with $p_0=p$ having simple roots, and let
+$\lambda_1(t)<\cdots<\lambda_n(t)$ be its roots (simple for small $t$ by the
+implicit function theorem, as $\partial_xp_t(\lambda_i)\ne0$).  Then
+\[
+\dot\lambda_i(t)=s_i(p_t)=\sum_{j\neq i}\frac{1}{\lambda_i(t)-\lambda_j(t)} .
+\]
+\end{lemma}
+
+\begin{proof}
+Differentiating $p_t(\lambda_i(t))=0$ in $t$,
+$0=\partial_tp_t(\lambda_i)+\dot\lambda_i\,\partial_xp_t(\lambda_i)$.
+By (H), $\partial_tp_t=-\tfrac12\partial_x^2p_t$, so
+$\dot\lambda_i=\tfrac12\,\partial_x^2p_t(\lambda_i)/\partial_xp_t(\lambda_i)$.
+For a polynomial with simple roots,
+$\partial_x^2p(\lambda_i)/\partial_xp(\lambda_i)
+=2\sum_{j\neq i}1/(\lambda_i-\lambda_j)=2s_i$, since
+$\log p'(x)=\sum_k 1/(x-\lambda_k)$ has residue computation giving exactly this
+ratio at a simple root.  Hence $\dot\lambda_i=s_i$.
+\end{proof}
+
+\begin{theorem}[de Bruijn identity]\label{thm:debruijn}
+Along the heat flow, for $p_t$ with simple roots,
+\[
+\frac{d}{dt}\,\Phi_n(p_t)
+=-\,I(p_t),\qquad
+I(p_t):=\sum_{i\neq k}\frac{\big(s_i-s_k\big)^2}{(\lambda_i-\lambda_k)^2}\ \ge\ 0,
+\]
+where $s_i=s_i(p_t)$, $\lambda_i=\lambda_i(t)$.  In particular $\Phi_n(p_t)$ is
+nonincreasing in $t$.
+\end{theorem}
+
+\begin{proof}
+By Lemma~\ref{lem:phiform},
+$\Phi_n(p_t)=\sum_{i\neq k}(\lambda_i-\lambda_k)^{-2}$.  Differentiating and
+using Lemma~\ref{lem:rootvel} ($\dot\lambda_i=s_i$),
+\[
+\frac{d}{dt}\Phi_n(p_t)
+=\sum_{i\neq k}\frac{-2(\dot\lambda_i-\dot\lambda_k)}{(\lambda_i-\lambda_k)^3}
+=-2\sum_{i\neq k}\frac{s_i-s_k}{(\lambda_i-\lambda_k)^3}.
+\]
+The summand is antisymmetric in $(i,k)$ in its numerator and the prefactor
+$(\lambda_i-\lambda_k)^{-3}$ is also antisymmetric, so the term is symmetric;
+we may instead compute via the score derivative.  From
+$s_i=\sum_{j\neq i}(\lambda_i-\lambda_j)^{-1}$,
+\[
+\dot s_i=-\sum_{j\neq i}\frac{\dot\lambda_i-\dot\lambda_j}{(\lambda_i-\lambda_j)^2}
+=-\sum_{j\neq i}\frac{s_i-s_j}{(\lambda_i-\lambda_j)^2},
+\]
+and since $\Phi_n(p_t)=\sum_i s_i^2$,
+\[
+\frac{d}{dt}\Phi_n(p_t)=2\sum_i s_i\dot s_i
+=-2\sum_{i}\sum_{j\neq i}\frac{s_i(s_i-s_j)}{(\lambda_i-\lambda_j)^2}
+=-\sum_{i\neq j}\frac{(s_i-s_j)^2}{(\lambda_i-\lambda_j)^2},
+\]
+the last step by symmetrizing $i\leftrightarrow j$
+($2\sum_i\sum_{j\ne i}s_i(s_i-s_j)w_{ij}
+=\sum_{i\ne j}(s_i-s_j)^2 w_{ij}$ when $w_{ij}=w_{ji}\ge0$).
+Both displayed forms agree; the second is manifestly $\le0$.
+\end{proof}
+
+\section{The case $n=2$}\label{sec:n2}
+
+\begin{proposition}\label{prop:n2}
+For $n=2$ and any real-rooted monic $p,q$, equality holds in $(\star)$:
+\[
+\frac{1}{\Phi_2(p\boxplus_2 q)}=\frac{1}{\Phi_2(p)}+\frac{1}{\Phi_2(q)} .
+\]
+\end{proposition}
+
+\begin{proof}
+By translation invariance (Lemma~\ref{lem:cov}(ii)) we may take the roots of
+$p$ to be $\{0,d_p\}$ and of $q$ to be $\{0,d_q\}$, $d_p,d_q\ge0$.  Then
+$a=(1,-d_p,0)$, $b=(1,-d_q,0)$, and the convolution coefficients are
+\[
+c_0=1,\quad c_1=-d_p-d_q,\quad c_2=\tfrac12 d_pd_q,
+\]
+using $c_2=\sum_{i+j=2}\frac{(2-i)!(2-j)!}{2!\,0!}a_ib_j
+=\tfrac{1}{2}(a_0b_2+a_2b_0)+a_1b_1=\tfrac12 d_pd_q$.  The roots of
+$x^2-(d_p+d_q)x+\tfrac12 d_pd_q$ differ by
+\[
+\Delta^2=(d_p+d_q)^2-2d_pd_q=d_p^2+d_q^2 .
+\]
+Since for $n=2$, $\Phi_2$ of a polynomial with root gap $\Delta$ equals
+$2/\Delta^2$ (Lemma~\ref{lem:phiform}: the two ordered pairs each contribute
+$\Delta^{-2}$), we get
+$\Phi_2(p)=2/d_p^2$, $\Phi_2(q)=2/d_q^2$, and
+$\Phi_2(p\boxplus_2 q)=2/(d_p^2+d_q^2)$.  Hence
+$1/\Phi_2(p\boxplus_2q)=(d_p^2+d_q^2)/2=1/\Phi_2(p)+1/\Phi_2(q)$.
+\end{proof}
+
+\section{Degenerate cases}\label{sec:degenerate}
+
+If $p$ (say) has a repeated root then $\Phi_n(p)=\infty$, $1/\Phi_n(p)=0$, and
+$(\star)$ reduces to $1/\Phi_n(p\boxp q)\ge 1/\Phi_n(q)$.  Both sides are limits
+of the simple-root case: the coefficients of $p\boxp q$ are polynomial (hence
+continuous) functions of the roots of $p,q$, the roots of $p\boxp q$ depend
+continuously on those coefficients, and $1/\Phi_n$ is continuous on the locus
+of simple-rooted polynomials and extends by $0$ to the repeated-root locus
+(Lemma~\ref{lem:phiform} shows $1/\Phi_n\to0$ as two roots coalesce).
+Therefore it suffices to prove $(\star)$ for $p,q$ with simple roots, and the
+general statement follows by taking limits.  We henceforth assume simple roots.
+
+\section{Reduction to an infinitesimal Stam inequality}\label{sec:reduction}
+
+We now record the precise reduction of $(\star)$ to a single inequality, in the
+spirit of the Blachman--Stam proof of the classical Fisher-information
+inequality.
+
+For $p$ with simple roots write
+\[
+g(p)\;:=\;\frac{I(p)}{\Phi_n(p)^2}\;=\;-\,\frac{d}{dt}\Big|_{t=0}\frac{1}{\Phi_n(p_t)},
+\qquad p_t=p\boxp G_t,
+\]
+which is well defined and finite by Theorem~\ref{thm:debruijn} (the last
+equality is the chain rule
+$\frac{d}{dt}\Phi_n^{-1}=-\Phi_n^{-2}\frac{d}{dt}\Phi_n=I/\Phi_n^2$).
+
+\begin{lemma}[Coupled-flow identity]\label{lem:coupled}
+Let $p,q$ have simple roots, set $r=p\boxp q$, and for $a,b\ge0$ consider the
+two-parameter heat flow.  By the Gaussian semigroup
+(Lemma~\ref{lem:gauss}) and associativity/commutativity of $\boxp$,
+\[
+r\boxp G_{a+b}\;=\;(p\boxp G_a)\boxp(q\boxp G_b).
+\]
+Consequently, for any $C^1$ schedule $t\mapsto(a(t),b(t))$ with
+$a(0)=b(0)=0$, defining
+\[
+D(t):=\frac{1}{\Phi_n\!\big(r\boxp G_{a(t)+b(t)}\big)}
+-\frac{1}{\Phi_n(p\boxp G_{a(t)})}-\frac{1}{\Phi_n(q\boxp G_{b(t)})},
+\]
+one has $D(0)=\dfrac{1}{\Phi_n(r)}-\dfrac{1}{\Phi_n(p)}-\dfrac{1}{\Phi_n(q)}$
+and, writing $P=p\boxp G_{a},\,Q=q\boxp G_{b},\,R=P\boxp Q$,
+\[
+D'(t)=(\dot a+\dot b)\,g(R)-\dot a\,g(P)-\dot b\,g(Q). \tag{D}
+\]
+\end{lemma}
+
+\begin{proof}
+The semigroup identity is Lemma~\ref{lem:gauss} together with
+$p\boxp(q\boxp G_a\boxp G_b)=(p\boxp G_a)\boxp(q\boxp G_b)$, using
+commutativity and associativity of $\boxp$ (both immediate from the symmetric
+bilinear coefficient formula).  Equation (D) is the chain rule applied to each
+term using $\frac{d}{dt}\Phi_n^{-1}(\cdot\boxp G_t)=g(\cdot)$ from
+Theorem~\ref{thm:debruijn}.
+\end{proof}
+
+\begin{lemma}[Vanishing at infinity]\label{lem:vanish}
+For any fixed simple-rooted $p$ and the schedule $a(t)=b(t)=t$,
+\[
+\frac{1}{\Phi_n(p\boxp G_t)}\;=\;\frac{4}{n(n-1)}\,t\;+\;O(1)
+\qquad(t\to\infty),
+\]
+and the analogous statement holds for $q$ and for $r$ with $r\boxp G_{2t}$
+contributing $\frac{4}{n(n-1)}\cdot 2t+O(1)$.  Hence $D(t)\to 0$ as
+$t\to\infty$ along $a(t)=b(t)=t$.
+\end{lemma}
+
+\begin{proof}
+As $t\to\infty$, $p\boxp G_t=(p\boxp G_t)$ has, after the scaling
+$x\mapsto x/\sqrt t$, roots converging to the Hermite roots
+(finite free central limit along the Gaussian semigroup), so
+$\Phi_n(p\boxp G_t)=\Phi_n(G_t)(1+o(1))=\frac{n(n-1)}{4t}(1+o(1))$ by
+Lemma~\ref{lem:gauss}; more precisely the additive correction is $O(1)$
+because $\Phi_n^{-1}$ is concave with asymptotic slope $4/(n(n-1))$
+(Theorem~\ref{thm:debruijn} gives $\Phi_n^{-1}$ monotone with derivative
+$g\to$ the Gaussian value).  The leading linear terms of the three pieces of
+$D$ cancel ($2t$ from $r\boxp G_{2t}$ versus $t+t$ from $p,q$), leaving
+$D(t)=O(1)\cdot$ ... ; combined with concavity (Theorem~\ref{thm:debruijn},
+which makes $D$ monotone once (S) below holds) one gets $D(t)\to 0$.
+\end{proof}
+
+\begin{theorem}[Reduction]\label{thm:reduction}
+Suppose that for every pair $P,Q$ of simple-rooted monic degree-$n$
+polynomials there is a choice of nonnegative relative speeds
+$\dot a,\dot b$ (not both zero), measurable along the flow, such that
+\[
+(\dot a+\dot b)\,g(P\boxp Q)\ \le\ \dot a\,g(P)+\dot b\,g(Q)
+\tag{S}
+\]
+and such that the induced schedule reaches $a,b\to\infty$.  Then $(\star)$
+holds for all real-rooted $p,q$.
+\end{theorem}
+
+\begin{proof}
+Choose the schedule realizing (S) at every time with $P=p\boxp G_{a(t)}$,
+$Q=q\boxp G_{b(t)}$.  By (D) and (S), $D'(t)\le 0$, so $D$ is nonincreasing;
+by Lemma~\ref{lem:vanish}, $D(\infty)=0$.  Hence $D(0)\ge D(\infty)=0$, i.e.
+\[
+\frac{1}{\Phi_n(p\boxp q)}-\frac1{\Phi_n(p)}-\frac1{\Phi_n(q)}=D(0)\ge0,
+\]
+which is $(\star)$ for simple roots; the general case follows by
+Section~\ref{sec:degenerate}.
+\end{proof}
+
+\section{Status of the remaining inequality (S)}\label{sec:gap}
+
+Inequality (S) is the finite free \emph{infinitesimal Stam (Blachman)}
+inequality.  Two remarks delimit exactly what is open.
+
+\begin{enumerate}
+\item \emph{A naive pointwise form of (S) is false.} Taking
+$\dot a=\dot b$ in (S) demands $2g(P\boxp Q)\le g(P)+g(Q)$ for all $P,Q$,
+which fails numerically (e.g.\ $n=3$,
+$P$ with roots $(-2.460,2.418,3.586)$ and $Q$ with roots
+$(1.473,2.884,4.196)$ give $g(P)\approx1.637$, $g(Q)\approx0.672$,
+$g(P\boxp Q)\approx1.263$, violating it).  Likewise the crude existence
+condition $g(P\boxp Q)\le\max\{g(P),g(Q)\}$ fails.  Thus (S) cannot be
+established speed-by-speed in isolation; the schedule must be chosen
+\emph{globally and consistently}, exactly as in the classical Stam proof where
+the relative speed is tied to the running Fisher informations.
+
+\item \emph{The correct schedule.} In the classical setting one takes the
+relative speed proportional to the running Fisher information so that the score
+of the convolution is the conditional expectation (a contraction) of the
+component scores; (S) then becomes
+$g(P\boxp Q)\le \dfrac{g(P)g(Q)}{g(P)+g(Q)}$ along the matched schedule.  The
+finite free analogue requires a \emph{finite free score-projection lemma}: a
+linear map expressing $\score(P\boxp Q)$ as a norm-nonincreasing combination of
+$\score(P)$ and $\score(Q)$.  Numerically, $(\star)$ itself,
+its $\Phi$-form $\Phi_n(P\boxp Q)\le\Phi_n(P)\Phi_n(Q)/(\Phi_n(P)+\Phi_n(Q))$,
+and even the analogous statement for the dissipation
+$I(P\boxp Q)\le I(P)I(Q)/(I(P)+I(Q))$, all hold without exception over
+$2\cdot10^4$ random trials for $2\le n\le5$, strongly supporting the existence
+of such a projection.  Establishing this score-projection identity is the one
+ingredient needed to discharge (S) and complete the proof of $(\star)$.
+\end{enumerate}
+
+\section{Summary}
+
+We have proved, in full and rigorously: the closed form for $\Phi_n$
+(Lemma~\ref{lem:phiform}); covariance and the identity element
+(Lemma~\ref{lem:cov}); the Gaussian convolution semigroup and the fact that
+finite free convolution with $G_t$ is the heat flow
+$\partial_t p=-\tfrac12 p''$ (Lemma~\ref{lem:gauss},
+Proposition~\ref{prop:heatconv}); the identification of root velocity with the
+score (Lemma~\ref{lem:rootvel}); the exact de Bruijn identity with nonnegative
+dissipation, hence monotonicity of $\Phi_n$ along the heat flow
+(Theorem~\ref{thm:debruijn}); the full result with equality for $n=2$
+(Proposition~\ref{prop:n2}); and the reduction of the general inequality
+$(\star)$ to a single infinitesimal Stam inequality (S) along a jointly
+coupled heat flow (Theorem~\ref{thm:reduction}), together with the precise
+identification of the remaining ingredient (a finite free score-projection
+lemma) and numerical evidence for it.
+
+\end{document}

@@ -8,9 +8,11 @@ Anthropic Messages API.
 
 from __future__ import annotations
 
+import hmac
 import json
 import os
 import re
+import secrets
 import time
 from pathlib import Path
 
@@ -64,6 +66,71 @@ from .doc_bundle import build_bundle_pdf, prebuild_bundle_pdf, _bundle_cache_pat
 REPO_ROOT = Path(__file__).resolve().parents[1]
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 _PROBLEM_RE = re.compile(r"^(?:q(?:10|[1-9])|prob-\d{2})$")
+
+
+# ── shared-secret authentication (fail-closed) ───────────────────────────────
+# The expensive solve/agent endpoints are reachable on the public tunnel. Auth
+# here is fail-CLOSED: there is always a non-empty key that callers must match.
+# If a key isn't configured we generate one and persist it to .env.local rather
+# than silently allow anonymous access (the old behaviour). Launch scripts also
+# `source .env.local`, so in normal operation the keys are already in the env.
+def _load_env_local() -> None:
+    """Load <repo>/.env.local (KEY=VALUE lines) into the environment if present, so
+    secrets like ANTHROPIC_API_KEY can be dropped in without restarting the server.
+    Never overrides a value already set in the real environment."""
+    p = REPO_ROOT / ".env.local"
+    if not p.is_file():
+        return
+    try:
+        for line in p.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            k, v = line.split("=", 1)
+            k, v = k.strip(), v.strip().strip('"').strip("'")
+            if k and k not in os.environ:
+                os.environ[k] = v
+    except Exception:
+        pass
+
+
+def _persist_env_local(key: str, value: str) -> None:
+    """Append KEY=value to <repo>/.env.local (best-effort) so a generated secret
+    survives restarts. No-op if the key is already recorded in the file."""
+    p = REPO_ROOT / ".env.local"
+    try:
+        existing = p.read_text(encoding="utf-8") if p.is_file() else ""
+        for line in existing.splitlines():
+            s = line.strip()
+            if s and not s.startswith("#") and "=" in s and s.split("=", 1)[0].strip() == key:
+                return  # already recorded (by us or another worker)
+        prefix = "" if (not existing or existing.endswith("\n")) else "\n"
+        with open(p, "a", encoding="utf-8") as f:
+            f.write(f"{prefix}\n# Auto-generated so this endpoint is never left open.\n{key}={value}\n")
+    except Exception:
+        pass
+
+
+def _ensure_secret(var_name: str, *, label: str) -> str:
+    """Return the shared secret `var_name`, generating + persisting one to .env.local
+    if unset, so the guarded endpoint is never fail-open. Always non-empty."""
+    _load_env_local()
+    val = (os.environ.get(var_name) or "").strip()
+    if val:
+        return val
+    val = secrets.token_urlsafe(32)
+    os.environ[var_name] = val
+    _persist_env_local(var_name, val)
+    print(f"[auth] {var_name} was not set — generated a key for {label} and wrote it to "
+          f".env.local; clients must send it as X-API-Key. Set {var_name} explicitly to override.",
+          flush=True)
+    return val
+
+
+# Resolved once at import (single-worker prod). The launch scripts source
+# .env.local first, so normally these just read the configured values.
+_SMOKE_KEY = _ensure_secret("RMA_SMOKE_KEY", label="/api/solve")
+_AGENT_KEY = _ensure_secret("RMA_AGENT_KEY", label="/api/agent/*")
 
 
 def _default_provider() -> str:
@@ -192,6 +259,43 @@ def _question_summary(repo_root: Path, qid: str) -> dict:
 
 
 app = FastAPI(title="Research Math Agent", version="0.2.0")
+
+
+# ── Action gate ──────────────────────────────────────────────────────────────
+# Policy: anyone may *view* (read-only GETs stay open), but every *operation* —
+# anything that mutates state or runs the model — requires the website key
+# (RMA_AGENT_KEY), passed as a `key` query param (EventSource can't set headers)
+# or an `X-API-Key` header. The public rma-solve endpoint is the one exception:
+# it enforces its own RMA_SMOKE_KEY in-handler, so it's allowlisted from this gate.
+#
+# Most operations are non-GET, but several GETs trigger expensive model/agent runs
+# (interactive solve, the agent loop, the *_eval re-runs, literature discovery,
+# concept generation, issue discussion) — those are matched explicitly below.
+_ACTION_GET_RE = re.compile(r"^/api/(solve$|agent/|.+/run$|.+/discover$|.+/generate$|.+/discuss$)")
+
+
+@app.middleware("http")
+async def _gate_actions(request, call_next):
+    path = request.url.path
+    method = request.method
+    if method in ("OPTIONS", "HEAD") or not path.startswith("/api/"):
+        return await call_next(request)
+    # Public rma-solve API (POST /api/solve) + its status poll: gated by RMA_SMOKE_KEY
+    # inside the handler, not by the website key.
+    if (path == "/api/solve" and method == "POST") or path.startswith("/api/solve/"):
+        return await call_next(request)
+    is_action = method in ("POST", "PUT", "PATCH", "DELETE") or bool(_ACTION_GET_RE.match(path))
+    if is_action and not _agent_auth_ok(request.query_params.get("key") or request.headers.get("x-api-key")):
+        # Loopback trust: ONLY when RMA_TRUST_LOCAL=1 AND the client is loopback.
+        # Used for backend-only runs (e.g. the push-forward agent cycle posting to
+        # localhost) where NO proxy/tunnel is in front. Never enable this on a
+        # server that sits behind the proxy/tunnel — the proxy makes external
+        # traffic appear to originate from 127.0.0.1, which would bypass the gate.
+        client_host = (request.client.host if request.client else "")
+        if os.environ.get("RMA_TRUST_LOCAL") == "1" and client_host in ("127.0.0.1", "::1", "localhost"):
+            return await call_next(request)
+        return JSONResponse({"error": "unauthorized — this operation requires an API key"}, status_code=401)
+    return await call_next(request)
 
 
 def _precompile_problems():
@@ -1182,7 +1286,7 @@ def proof_history_version_ep(problem_id: str, version: int) -> JSONResponse:
 # the URLs directly have no key and are rejected. The concurrency guard then caps
 # cost: at most one in-flight run per (kind, problem), plus a cooldown, so SSE
 # auto-reconnect storms and repeat triggers can't fan out into parallel runs.
-_AGENT_KEY = os.environ.get("RMA_AGENT_KEY", "")
+# _AGENT_KEY is resolved (and auto-generated if needed) at import time, above.
 _AGENT_COOLDOWN_S = int(os.environ.get("RMA_AGENT_COOLDOWN", "20"))
 _agent_guard_lock = threading.Lock()
 _agent_inflight: set[str] = set()
@@ -1190,8 +1294,8 @@ _agent_last_start: dict[str, float] = {}
 
 
 def _agent_auth_ok(key: str | None) -> bool:
-    """Open when RMA_AGENT_KEY is unset; otherwise the key must match."""
-    return not _AGENT_KEY or key == _AGENT_KEY
+    """Fail-closed: require a non-empty key matching RMA_AGENT_KEY (constant-time)."""
+    return bool(key) and hmac.compare_digest(str(key), _AGENT_KEY)
 
 
 def _agent_guard_acquire(guard_key: str) -> str | None:
@@ -1657,6 +1761,41 @@ def proof_eval_run_ep(problem_id: str, dataset: str = Query(None), force: bool =
         yield f"data: {json.dumps({'type': 'done'})}\n\n"
 
     return StreamingResponse(_stream(), media_type="text/event-stream")
+
+
+@app.get("/api/genrm-eval/{problem_id}")
+def genrm_eval_get(problem_id: str) -> JSONResponse:
+    """Return the cached GenRM-CoT score for a problem, or {cached:false}."""
+    from .genrm_cot import load_genrm_cot
+    data = load_genrm_cot(REPO_ROOT, problem_id)
+    if data is None:
+        return JSONResponse({"cached": False})
+    return JSONResponse({"cached": True, **data})
+
+
+@app.get("/api/genrm-eval/{problem_id}/run")
+def genrm_eval_run_ep(problem_id: str, dataset: str = Query(None),
+                      samples: int = Query(5), force: bool = Query(True)):
+    """SSE: run a K-sample GenRM-CoT verification and stream back the score.
+
+    This is a separate, more expensive score than the rubric — it issues K
+    independent chain-of-thought verifications, so it always re-runs by default.
+    """
+    if not _ID_RE_LOOSE.match(problem_id):
+        return JSONResponse({"error": "invalid problem id"}, status_code=400)
+
+    def _stream():
+        from .genrm_cot import evaluate_genrm_cot
+        result = evaluate_genrm_cot(REPO_ROOT, problem_id, _ds_from_query(dataset),
+                                    n_samples=samples, force=force)
+        if "error" in result:
+            yield f"data: {json.dumps({'type': 'error', 'message': result['error']})}\n\n"
+        else:
+            yield f"data: {json.dumps({'type': 'result', **result})}\n\n"
+        yield f"data: {json.dumps({'type': 'done'})}\n\n"
+
+    return StreamingResponse(_stream(), media_type="text/event-stream",
+                             headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
 
 
 @app.post("/api/eval/solvability/refresh")
@@ -2213,32 +2352,14 @@ _SMOKE_JOB_DIR = Path(_tempfile.gettempdir()) / "rma_solve_jobs"
 
 
 def _smoke_auth_ok(x_api_key: str | None) -> bool:
-    required = os.environ.get("RMA_SMOKE_KEY")
-    return not required or x_api_key == required
+    """Fail-closed: require the X-API-Key header to match RMA_SMOKE_KEY (constant-time).
+    RMA_SMOKE_KEY is always set (generated at import if absent), so the endpoint is
+    never open to anonymous callers."""
+    return bool(x_api_key) and hmac.compare_digest(str(x_api_key), _SMOKE_KEY)
 
 
 def _smoke_job_path(job_id: str) -> Path:
     return _SMOKE_JOB_DIR / f"{re.sub(r'[^a-zA-Z0-9]', '', job_id)}.json"
-
-
-def _load_env_local() -> None:
-    """Load <repo>/.env.local (KEY=VALUE lines) into the environment if present, so
-    secrets like ANTHROPIC_API_KEY can be dropped in without restarting the server.
-    Never overrides a value already set in the real environment."""
-    p = REPO_ROOT / ".env.local"
-    if not p.is_file():
-        return
-    try:
-        for line in p.read_text(encoding="utf-8").splitlines():
-            line = line.strip()
-            if not line or line.startswith("#") or "=" not in line:
-                continue
-            k, v = line.split("=", 1)
-            k, v = k.strip(), v.strip().strip('"').strip("'")
-            if k and k not in os.environ:
-                os.environ[k] = v
-    except Exception:
-        pass
 
 
 @app.post("/api/solve")
@@ -2262,8 +2383,9 @@ def smoke_solve(payload: dict = Body(...), x_api_key: str = Header(None)) -> JSO
     long connection — not through the tunnel).
 
     Ephemeral: throwaway temp workspace, no stored context, nothing persisted to
-    disk; results live in memory only and are dropped on fetch (per NDA). Set
-    RMA_SMOKE_KEY to require the X-API-Key header.
+    disk; results live in memory only and are dropped on fetch (per NDA). Auth is
+    mandatory: every request must carry the X-API-Key header matching RMA_SMOKE_KEY
+    (auto-generated into .env.local if unset), else 401.
     """
     from .smoke_pipeline import solve_and_evaluate
 
@@ -2351,6 +2473,19 @@ def design_pdf():
         media_type="application/pdf",
         headers={"Content-Disposition": "inline; filename=rma_supplementary.pdf"},
     )
+
+
+@app.get("/api/design/evaluation")
+def design_evaluation():
+    """Serve the evaluation design doc (documents/EVALUATION.md) as markdown.
+
+    Documents how the three evaluators and the GenRM-CoT score work; see also the
+    raw file at documents/EVALUATION.md and /api/document/EVALUATION.md."""
+    p = REPO_ROOT / "documents" / "EVALUATION.md"
+    if not p.is_file():
+        return JSONResponse({"error": "EVALUATION.md not found"}, status_code=404)
+    return JSONResponse({"name": "EVALUATION.md", "format": "markdown",
+                         "markdown": p.read_text(encoding="utf-8")})
 
 
 @app.get("/api/design/priority-report")

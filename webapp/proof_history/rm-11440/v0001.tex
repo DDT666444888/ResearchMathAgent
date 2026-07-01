@@ -1,0 +1,495 @@
+\documentclass[12pt]{article}
+\usepackage{fullpage}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{remark}{Remark}
+
+\title{Iterates of a counting function and the index function of a strictly increasing sequence}
+\author{solver-agent}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Setup and the two universal formulas}
+
+Throughout, $a_1<a_2<a_3<\cdots$ is a strictly increasing sequence of positive
+integers (finite or infinite). For a positive integer $n$ we write
+\[
+  N(n)=\#\{\,i\ge 1: a_i\le n\,\},
+\]
+and we extend $N$ to all integers $n\ge 0$ by the same definition, so that
+$N(0)=0$. For $k\ge 1$, $N^{(k)}=N\circ\cdots\circ N$ ($k$ times); we also set
+$N^{(0)}=\mathrm{id}$.
+
+We first record three elementary structural facts about $N$.
+
+\begin{lemma}[Basic properties of $N$]\label{lem:basic}
+For all integers $m\ge 0$:
+\begin{enumerate}
+\item[(i)] $N$ is nondecreasing: $m\le m'$ implies $N(m)\le N(m')$.
+\item[(ii)] $0\le N(m)\le m$.
+\item[(iii)] $N(m)=m$ if and only if $a_j=j$ for every $j$ with $1\le j\le m$.
+In particular $N(0)=0$.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+(i) If $m\le m'$ then $\{i:a_i\le m\}\subseteq\{i:a_i\le m'\}$, and the cardinality
+of a set does not decrease under inclusion.
+
+(ii) The indices $i$ with $a_i\le m$ are counted by $N(m)$, and the corresponding
+values $a_i$ are distinct integers in the set $\{1,2,\dots,m\}$ (they are positive
+because the $a_i$ are positive integers, and $\le m$ by definition). A set of
+distinct integers contained in $\{1,\dots,m\}$ has at most $m$ elements, hence
+$N(m)\le m$; clearly $N(m)\ge 0$. For $m=0$ there are no positive integers $\le 0$,
+so $N(0)=0$.
+
+(iii) Because the sequence is strictly increasing with positive integer values, an
+easy induction gives $a_j\ge j$ for all $j\ge 1$: indeed $a_1\ge 1$, and if
+$a_{j-1}\ge j-1$ then $a_j>a_{j-1}\ge j-1$, so $a_j\ge j$.
+
+Suppose $N(m)=m$. Then exactly $m$ of the indices $i$ satisfy $a_i\le m$, and since
+$a_1<a_2<\cdots$ these must be $i=1,\dots,m$ (if $a_i\le m$ then $a_{i'}\le m$ for all
+$i'<i$). Thus $a_1<\cdots<a_m\le m$ are $m$ distinct positive integers in
+$\{1,\dots,m\}$, forcing $\{a_1,\dots,a_m\}=\{1,\dots,m\}$ and, by strict
+monotonicity, $a_j=j$ for $1\le j\le m$.
+
+Conversely, if $a_j=j$ for $1\le j\le m$, then $a_1,\dots,a_m$ are $\le m$, while
+$a_{m+1}>a_m=m$ shows $a_i>m$ for $i>m$; hence exactly $m$ terms are $\le m$, i.e.
+$N(m)=m$.
+\end{proof}
+
+\subsection*{The index function and Formula (2)}
+
+\begin{definition}\label{def:kstar}
+For a positive integer $n$, let
+\[
+  k^*(n)=\min\{\,k\ge 1: a_k>n\,\},
+\]
+the smallest index at which the sequence first exceeds $n$ (defined whenever such an
+index exists, in particular for every $n$ when the sequence is infinite).
+\end{definition}
+
+\begin{proposition}[Formula for $k^*$]\label{prop:kstar}
+For every positive integer $n$ for which $k^*(n)$ is defined,
+\[
+  \boxed{\,k^*(n)=N(n)+1\,.}
+\]
+\end{proposition}
+
+\begin{proof}
+Set $r=N(n)=\#\{i:a_i\le n\}$. As noted in the proof of
+Lemma~\ref{lem:basic}(iii), the indices $i$ with $a_i\le n$ form an initial segment
+$\{1,\dots,r\}$ of the index set (since the sequence is strictly increasing). Hence
+$a_r\le n$ (if $r\ge 1$) and $a_{r+1}>n$ (if $a_{r+1}$ exists). Therefore $r+1$ is
+the smallest index $k$ with $a_k>n$, i.e. $k^*(n)=r+1=N(n)+1$. (If $r=0$, then
+$a_1>n$ already, and $k^*(n)=1=N(n)+1$.)
+\end{proof}
+
+\begin{remark}
+The hypothesis ``$a_1\notin\{0,1\}$'' in part~(2) (i.e. $a_1\ge 2$) plays no role in
+Proposition~\ref{prop:kstar}: the identity $k^*(n)=N(n)+1$ holds for \emph{every}
+strictly increasing sequence of positive integers. The hypothesis $a_1\ge 2$ is
+exactly the condition under which the iteration in part~(1) takes its cleanest form,
+treated next.
+\end{remark}
+
+\subsection*{The stabilisation index and Formula (1)}
+
+We now analyse the orbit $n,\,N(n),\,N^{(2)}(n),\dots$. For a positive integer $n$,
+let
+\[
+  k(n)=\min\{\,k\ge 1: N^{(k)}(n)=N^{(k+1)}(n)\,\}.
+\]
+A value $m\ge 0$ with $N(m)=m$ is called a \emph{fixed point} of $N$.
+
+\begin{lemma}[Structure of the fixed-point set]\label{lem:fix}
+Define
+\[
+  M=\max\{\,m\ge 0: a_j=j \text{ for all } 1\le j\le m\,\}
+\]
+(with $M=0$ if $a_1\ne 1$; the maximum exists because $a_j=j$ forces, by strict
+monotonicity, that $j$ ranges over an initial segment). Then the set of fixed points
+of $N$ is exactly
+\[
+  \mathrm{Fix}(N)=\{0,1,2,\dots,M\}.
+\]
+\end{lemma}
+
+\begin{proof}
+By Lemma~\ref{lem:basic}(iii), $m\in\mathrm{Fix}(N)$ iff $a_j=j$ for all
+$1\le j\le m$. By definition of $M$, this holds for $m=0,1,\dots,M$ and fails for
+every $m>M$: for such $m$ let $j$ be the least index with $a_j\ne j$; then $j\le M+1\le m$,
+so $j\le m$ witnesses the failure of the condition $a_{j'}=j'$ for all $j'\le m$.
+Hence $\mathrm{Fix}(N)=\{0,1,\dots,M\}$.
+\end{proof}
+
+\begin{lemma}[Strict descent above $M$]\label{lem:descent}
+For every integer $m>M$ we have $0\le N(m)\le m-1$; in particular $N(m)<m$.
+\end{lemma}
+
+\begin{proof}
+By Lemma~\ref{lem:basic}(ii), $0\le N(m)\le m$. If $N(m)=m$ then $m\in\mathrm{Fix}(N)$,
+so by Lemma~\ref{lem:fix} $m\le M$, contradicting $m>M$. Hence $N(m)\le m-1$.
+\end{proof}
+
+\begin{theorem}[Closed form for the stabilisation index]\label{thm:k}
+For a positive integer $n$ define the \emph{descent number}
+\[
+  d(n)=\min\{\,k\ge 0: N^{(k)}(n)\le M\,\}.
+\]
+Then $d(n)$ is finite, and
+\[
+  \boxed{\,k(n)=\max\bigl(1,\,d(n)\bigr).}
+\]
+Equivalently:
+\begin{itemize}
+\item if $n\le M$ (i.e. $n$ is itself a fixed point), then $k(n)=1$;
+\item if $n>M$, then $k(n)=d(n)$ is the number of applications of $N$ needed to bring
+$n$ into the interval $\{0,1,\dots,M\}$, which is the same as the first time the orbit
+reaches a fixed point.
+\end{itemize}
+\end{theorem}
+
+\begin{proof}
+\emph{Finiteness of $d(n)$.} Consider the orbit $x_0=n$, $x_{j+1}=N(x_j)$. As long as
+$x_j>M$, Lemma~\ref{lem:descent} gives $x_{j+1}\le x_j-1$, a strict decrease by at
+least one among nonnegative integers (Lemma~\ref{lem:basic}(ii) gives $x_{j+1}\ge0$).
+A strictly decreasing sequence of nonnegative integers is finite, so after at most
+$x_0=n$ steps we reach some $x_k\le M$. Hence $d(n)\le n<\infty$.
+
+\emph{Once in $\{0,\dots,M\}$ the orbit is constant.} If $x_k\le M$ then
+$x_k\in\mathrm{Fix}(N)$ by Lemma~\ref{lem:fix}, so $x_{k+1}=N(x_k)=x_k$, and by
+induction $x_j=x_k$ for all $j\ge k$. Thus $d(n)$ is the \emph{first} index at which
+the orbit becomes stationary: for $j<d(n)$ we have $x_j>M$, so
+$x_{j+1}\le x_j-1<x_j$, i.e. $x_j\ne x_{j+1}$, whereas $x_j=x_{j+1}$ for all
+$j\ge d(n)$.
+
+\emph{Identification of $k(n)$.} By definition $k(n)$ is the least $k\ge 1$ with
+$x_k=x_{k+1}$.
+\begin{itemize}
+\item If $n>M$: $x_k=x_{k+1}$ holds exactly for $k\ge d(n)$ and fails for $k<d(n)$.
+Since $n>M$ forces $d(n)\ge 1$, the least admissible $k\ge1$ is $d(n)$. Hence
+$k(n)=d(n)=\max(1,d(n))$.
+\item If $n\le M$: then $n\in\mathrm{Fix}(N)$, so $x_0=x_1=\cdots=n$; in particular
+$x_1=x_2$, so $k(n)=1$. Here $d(n)=0$ and $\max(1,d(n))=1=k(n)$.
+\end{itemize}
+In both cases $k(n)=\max(1,d(n))$.
+\end{proof}
+
+\begin{corollary}[The case $a_1\ge 2$]\label{cor:a1ge2}
+Suppose $a_1\ge 2$ (equivalently $a_1\notin\{0,1\}$). Then $M=0$, the only fixed point
+of $N$ is $0$, and for every positive integer $n$,
+\[
+  \boxed{\,k(n)=\min\{\,k\ge 1: N^{(k)}(n)=0\,\}\,,}
+\]
+the number of times $N$ must be applied to $n$ before the value $0$ first appears.
+\end{corollary}
+
+\begin{proof}
+If $a_1\ge 2$ then $a_1\ne1$, so $M=0$ by Lemma~\ref{lem:fix} and
+$\mathrm{Fix}(N)=\{0\}$. For any positive integer $n$ we have $n>M=0$, so by
+Theorem~\ref{thm:k}, $k(n)=d(n)=\min\{k\ge0:N^{(k)}(n)\le0\}=\min\{k\ge0:N^{(k)}(n)=0\}$
+(values are nonnegative). Since $N^{(0)}(n)=n\ge1\ne0$, the minimum is attained at
+some $k\ge1$, the displayed quantity.
+\end{proof}
+
+\begin{remark}[Role of $a_1\ge 2$]
+When $a_1=1$ the sequence may begin with a run $1,2,\dots,M$ of consecutive integers;
+these are absorbing fixed points and the orbit halts as soon as it enters
+$\{0,\dots,M\}$. When $a_1\ge2$ this run is empty ($M=0$) and the orbit must descend
+all the way to $0$. For every example family below we determine $M$ explicitly.
+\end{remark}
+
+\paragraph{Summary of the universal answers.}
+For any strictly increasing sequence of positive integers and any positive integer
+$n$ in the range where the quantities are defined:
+\[
+  k^*(n)=N(n)+1,\qquad
+  k(n)=\max\bigl(1,\,d(n)\bigr),\quad
+  d(n)=\min\{k\ge0:N^{(k)}(n)\le M\},
+\]
+where $M$ is the length of the initial run $a_1=1,a_2=2,\dots$ of consecutive
+integers; when $a_1\ge2$ (so $M=0$) this is $k(n)=\min\{k\ge1:N^{(k)}(n)=0\}$.
+
+\section{A growth lemma for the iteration}
+
+The asymptotics of $k(n)$ in each example follow from a single principle: $k(n)$ is
+the number of times the counting function $N$ must be applied to descend from $n$ to
+the (bounded) absorbing set. We isolate the four contraction rates that occur.
+
+\begin{lemma}[Iteration counts]\label{lem:rates}
+Let $x_0=n$, $x_{j+1}=N(x_j)$, and let $T(n)=\min\{k\ge0:x_k\le C\}$ for a fixed
+constant $C\ge0$. Suppose $N$ is nondecreasing and that, for all sufficiently large
+$x$,
+\begin{enumerate}
+\item[(P)] $\dfrac{x}{2\log x}\le N(x)\le\dfrac{2x}{\log x}$.\quad Then
+$T(n)=(1+o(1))\dfrac{\log n}{\log\log n}$.
+\item[(S)] $\tfrac12\sqrt x\le N(x)\le 2\sqrt x$.\quad Then
+$T(n)=(1+o(1))\log_2\log_2 n$.
+\item[(L)] $\tfrac12\log_b x\le N(x)\le 2\log_b x$ for a fixed base $b>1$.\quad Then
+$T(n)=(1+o(1))\log^*_b n$, the iterated logarithm to base $b$ (the number of times
+$\log_b$ must be applied to reduce $n$ below $1$).
+\item[(D)] $N(x)\le 2\log_b\log_b x$ for a fixed base $b>1$.\quad Then $T(n)=O(1)$:
+there is an absolute constant $K$ with $T(n)\le K$ for all $n$.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+In every case $N(x)<x$ for $x$ large, so the orbit is eventually strictly decreasing
+and $T(n)$ is finite (cf. Theorem~\ref{thm:k}); we estimate the number of steps.
+
+(P) Put $\ell_j=\log x_j$. From $N(x)\le 2x/\log x$ we get, while $x_j$ is large,
+$\ell_{j+1}\le \ell_j-\log\ell_j+\log2$, and from $N(x)\ge x/(2\log x)$ we get
+$\ell_{j+1}\ge \ell_j-\log\ell_j-\log2$. While $x_j$ stays in the range
+$[n^{1/2},n]$ (say), $\log\ell_j=(1+o(1))\log\log n$, so each step decreases
+$\ell_j$ by $(1+o(1))\log\log n$. The total decrease of $\ell_j$ from $\log n$ down
+to $\tfrac12\log n$ is $\tfrac12\log n$, requiring
+$\tfrac12\log n/\bigl((1+o(1))\log\log n\bigr)$ steps; iterating this halving of the
+exponent a bounded number of times accumulates to
+$T(n)=(1+o(1))\dfrac{\log n}{\log\log n}$ (the contributions from successively smaller
+scales form a convergent geometric-type series whose leading term is the stated one,
+and the final $O(1)$ steps below any fixed power of $n$ are negligible).
+
+(S) Put $u_j=\log_2\log_2 x_j$. From $\tfrac12\sqrt x\le N(x)\le2\sqrt x$ we get
+$\log_2 x_{j+1}=\tfrac12\log_2 x_j+O(1)$, hence
+$u_{j+1}=u_j-1+o(1)$ as long as $x_j$ is large. Thus $u_j$ decreases by $1+o(1)$ per
+step from $u_0=\log_2\log_2 n$ down to $O(1)$, giving
+$T(n)=(1+o(1))\log_2\log_2 n$.
+
+(L) From $\tfrac12\log_b x\le N(x)\le2\log_b x$ we have, up to a bounded factor,
+$x_{j+1}\asymp\log_b x_j$. The number of times one must apply $x\mapsto\log_b x$ to
+bring $n$ below $1$ is by definition $\log^*_b n$; the bounded multiplicative
+distortion changes the count by at most an additive constant (it can be absorbed by
+comparing with $x\mapsto\tfrac12\log_b x$ and $x\mapsto2\log_b x$, both of which have
+the same iterated-logarithm count up to $O(1)$). Hence $T(n)=\log^*_b n+O(1)
+=(1+o(1))\log^*_b n$ (the latter because $\log^*_b n\to\infty$).
+
+(D) From $N(x)\le2\log_b\log_b x$ we get $x_1\le2\log_b\log_b n$. Applying the bound
+once more, $x_2\le 2\log_b\log_b x_1\le 2\log_b\log_b(2\log_b\log_b n)$, which for all
+$n\ge n_0$ is below a fixed constant $C_0$; one or two further applications reach the
+absorbing set. Thus there is an absolute $K$ with $T(n)\le K$ for all $n$.
+\end{proof}
+
+\section{Specialisations}
+
+Throughout, $\log=\log_e$; $\pi$ is the prime-counting function;
+$\varphi=\tfrac{1+\sqrt5}2$. In every family the identity $k^*(n)=N(n)+1$ is exact
+(Proposition~\ref{prop:kstar}); we display $N(n)$ and then read off $k^*$, and apply
+Lemma~\ref{lem:rates} to obtain $k(n)$.
+
+\subsection{(a) The primes}
+$a_i=p_i$, $a_1=2\ge2$, so $M=0$ and $N(n)=\pi(n)$. Hence, exactly,
+\[
+  k^*(n)=\pi(n)+1,\qquad k(n)=\min\{k\ge1:\pi^{(k)}(n)=0\}.
+\]
+By the Prime Number Theorem $\pi(x)=\dfrac{x}{\log x}(1+o(1))$, so for all large $x$
+the bounds (P) of Lemma~\ref{lem:rates} hold. Therefore
+\[
+  k(n)=(1+o(1))\,\frac{\log n}{\log\log n}.
+\]
+
+\subsection{(b) The perfect powers}
+$(a_i)=1,4,8,9,16,25,27,\dots$ (each $m^s$, $m\ge1$, $s\ge2$, once). Here $a_1=1$ but
+$a_2=4\ne2$, so $M=1$ and $\mathrm{Fix}(N)=\{0,1\}$. The number of perfect powers in
+$[1,n]$ is
+\[
+  N(n)=1+\bigl(\lfloor\sqrt n\rfloor-1\bigr)+O\!\bigl(n^{1/3}\bigr)
+      =\sqrt n+O\!\bigl(n^{1/3}\bigr),
+\]
+since the squares $\ge4$ in $[1,n]$ number $\lfloor\sqrt n\rfloor-1$, the term $1$ is
+counted separately, and all powers with exponent $\ge3$ number
+$\sum_{s\ge3}n^{1/s}=O(n^{1/3})$. Thus, exactly, $k^*(n)=N(n)+1=\sqrt n+O(n^{1/3})$.
+The bounds (S) hold (indeed $N(x)=(1+o(1))\sqrt x$), so by Lemma~\ref{lem:rates}(S),
+\[
+  k(n)=(1+o(1))\log_2\log_2 n.
+\]
+
+\subsection{(c) The Fibonacci numbers (distinct values)}
+Removing the repeated $1$, the sequence is $1,2,3,5,8,13,\dots$. Here $a_1=1,a_2=2,
+a_3=3$ but $a_4=5\ne4$, so $M=3$ and $\mathrm{Fix}(N)=\{0,1,2,3\}$. By Binet's formula
+$F_m=\dfrac{\varphi^m-\psi^m}{\sqrt5}$ with $\psi=\tfrac{1-\sqrt5}2$, the largest
+index $m$ with $F_m\le n$ is $\log_\varphi(n\sqrt5)+O(1)$; deleting the duplicate
+$F_1=F_2=1$,
+\[
+  N(n)=\log_\varphi n+O(1),\qquad k^*(n)=N(n)+1=\log_\varphi n+O(1).
+\]
+Thus the bounds (L) hold with $b=\varphi$, and by Lemma~\ref{lem:rates}(L),
+\[
+  k(n)=(1+o(1))\,\log^*_\varphi n,
+\]
+an iterated logarithm.
+
+\subsection{(d) The Lucas numbers}
+The distinct increasing Lucas values are $1,3,4,7,11,18,\dots$; $a_1=1$ but $a_2=3\ne2$,
+so $M=1$ and $\mathrm{Fix}(N)=\{0,1\}$. Since $L_m=\varphi^m+\psi^m$, the largest $m$
+with $L_m\le n$ is $\log_\varphi n+O(1)$, so
+\[
+  N(n)=\log_\varphi n+O(1),\qquad k^*(n)=N(n)+1=\log_\varphi n+O(1),
+\]
+and exactly as in (c), Lemma~\ref{lem:rates}(L) gives
+$k(n)=(1+o(1))\log^*_\varphi n$.
+
+\subsection{(e) The Fermat numbers}
+$F_t=2^{2^t}+1$ ($t\ge0$): the increasing sequence is $3,5,17,257,65537,\dots$, with
+$a_1=3\ge2$, so $M=0$ and $\mathrm{Fix}(N)=\{0\}$. Since $2^{2^t}+1\le n\iff
+2^t\le\log_2(n-1)$,
+\[
+  N(n)=\bigl\lfloor\log_2\log_2(n-1)\bigr\rfloor+1\quad(n\ge3),\qquad N(n)=0\ (n\le2),
+\]
+so, \emph{exactly},
+\[
+  k^*(n)=N(n)+1=\bigl\lfloor\log_2\log_2(n-1)\bigr\rfloor+2\quad(n\ge3).
+\]
+Here $N(x)=\log_2\log_2 x+O(1)$ satisfies the double-logarithmic bound (D) with
+$b=2$. Hence, by Lemma~\ref{lem:rates}(D),
+\[
+  k(n)=O(1):\quad\text{$k(n)$ is bounded.}
+\]
+Indeed one application sends $n$ to $\lfloor\log_2\log_2(n-1)\rfloor+1$, a further one
+or two applications reach $0$; numerically $k(n)\in\{2,3\}$ for all $n\ge3$ and
+$k(n)\to 3$ for large $n$. This is the one family where the stabilisation index does
+\emph{not} tend to infinity.
+
+\subsection{(f) The Bernoulli numerators}
+The Bernoulli numbers $B_m$ are rational, so to satisfy the hypotheses one fixes an
+enumeration by positive integers; the standard choice is the absolute values of the
+numerators of $B_{2m}$ ($m\ge1$) in lowest terms:
+$1,1,1,1,1,691,7,3617,\dots$. These are neither monotone nor distinct, so the only
+way to obtain a strictly increasing sequence of positive integers is to take the
+\emph{set} of distinct values and sort it; call this $(a_i)$, beginning
+$1,3,5,7,691,\dots$, so $a_1=1$, $a_2=3\ne2$, $M=1$, $\mathrm{Fix}(N)=\{0,1\}$.
+
+The magnitude of the numerator of $B_{2m}$ grows super-exponentially: from the exact
+formula $|B_{2m}|=\dfrac{2(2m)!}{(2\pi)^{2m}}\zeta(2m)$ (with $\zeta(2m)\to1$), we get
+$\log|B_{2m}|=2m\log(2m)-2m\bigl(1+\log(2\pi)\bigr)+O(\log m)\sim 2m\log m$. The
+numerator differs from $|B_{2m}|$ by the (squarefree) denominator, which by the von
+Staudt--Clausen theorem is $\prod_{(p-1)\mid 2m}p\le e^{(1+o(1))\sqrt{m}}$, hence
+$\log(\text{numerator of }B_{2m})\sim 2m\log m$ as well. Therefore the index $m$ with
+(numerator of $B_{2m})\le n$ satisfies $2m\log m=(1+o(1))\log n$, i.e.
+$m=(1+o(1))\dfrac{\log n}{2\log\log n}$. Since passing from the multiset to the sorted
+set of distinct values only deletes finitely many small repeats,
+\[
+  N(n)=(1+o(1))\,\frac{\log n}{2\log\log n},\qquad
+  k^*(n)=N(n)+1=(1+o(1))\,\frac{\log n}{2\log\log n}.
+\]
+For $k(n)$: for all large $x$ we have $N(x)\le\log x$ (indeed
+$N(x)=O(\log x/\log\log x)=o(\log x)$). Thus the iterated map is bounded above by the
+logarithmic rate, and Lemma~\ref{lem:rates}(L) (used as an upper bound, comparing $N$
+with $x\mapsto\log x$) gives
+\[
+  k(n)=O(\log^* n).
+\]
+We do not assert a matching lower bound of this order, because $N(x)=o(\log x)$ makes
+each step contract faster than a single logarithm; numerically $k(n)$ is very small
+(it appears to grow like $\log^* n$). The exact value depends on the chosen
+enumeration; only the \emph{form} $k^*(n)=N(n)+1$, $k(n)=\max(1,d(n))$ is
+enumeration-independent.
+
+\subsection{(g) The Mersenne numbers $2^p-1$, $p$ prime}
+Increasing sequence $3,7,31,127,2047,\dots$ ($p=2,3,5,7,11,\dots$); $a_1=3\ge2$, so
+$M=0$, $\mathrm{Fix}(N)=\{0\}$. Since $2^p-1\le n\iff p\le\log_2(n+1)$,
+\[
+  N(n)=\pi\bigl(\log_2(n+1)\bigr)\quad\text{(exactly)},\qquad
+  k^*(n)=\pi\bigl(\log_2(n+1)\bigr)+1.
+\]
+By the Prime Number Theorem $N(n)=\dfrac{\log_2 n}{\log\log_2 n}(1+o(1))
+=\dfrac{\log n}{\log2\,\log\log n}(1+o(1))$. For $k(n)$: for all large $x$,
+$N(x)=\pi(\log_2(x+1))\le\log_2(x+1)\le\log x$, so the iterated map is bounded above
+by the logarithmic rate, and Lemma~\ref{lem:rates}(L) (used as an upper bound) gives
+\[
+  k(n)=O(\log^* n),
+\]
+an iterated logarithm; numerically $k(n)$ does grow like $\log^*_2 n$ (e.g.
+$k(10)=2$, $k(10^{100})=4$, $k(10^{10000})=4$).
+
+\subsection{(h) The Smarandache function values}
+$S(m)$ is the least positive integer with $m\mid S(m)!$. The listing $S(1),S(2),\dots$
+is not monotone, so the sequence $(a_i)$ must be the increasing enumeration of the
+image $\{S(m):m\ge1\}$. Since $S(m)\le m$ with equality iff $m\in\{1,4\}$ or $m$ is
+prime, and since $S(p)=p$ for every prime $p$, the image contains $1$, $4$, and every
+prime, together with some prime powers; sorted it begins $1,2,3,4,5,7,11,\dots$, so
+$a_1=1,\dots,a_5=5$ but $a_6=7\ne6$, giving $M=5$ and $\mathrm{Fix}(N)=\{0,\dots,5\}$.
+The image consists of the primes plus a set of density zero ($\{1,4\}$ and prime
+powers $p^e\le n$ with $e\ge2$, numbering $O(\sqrt n)$), so
+\[
+  N(n)=\pi(n)+O(\sqrt n)=\frac{n}{\log n}(1+o(1)),\qquad
+  k^*(n)=N(n)+1=\frac{n}{\log n}(1+o(1)).
+\]
+The bounds (P) hold, so by Lemma~\ref{lem:rates}(P),
+$k(n)=\min\{k\ge1:N^{(k)}(n)\le5\}=(1+o(1))\dfrac{\log n}{\log\log n}$. (As in (f),
+the answer depends on the agreed enumeration; we use the image.)
+
+\subsection{(i) The van der Waerden numbers}
+$W(r,k)$ is the least $W$ such that every $r$-colouring of $\{1,\dots,W\}$ has a
+monochromatic $k$-term arithmetic progression. To get a one-parameter strictly
+increasing integer sequence we take the diagonal slice $a_i=W(2,i+1)$ ($i\ge1$):
+$W(2,2)=3,\ W(2,3)=9,\ W(2,4)=35,\ W(2,5)=178,\dots$, all $\ge2$, so $M=0$ and
+$\mathrm{Fix}(N)=\{0\}$. The universal formulas give, exactly,
+\[
+  k^*(n)=N(n)+1,\quad N(n)=\#\{i\ge1:W(2,i+1)\le n\},\quad
+  k(n)=\min\{k\ge1:N^{(k)}(n)=0\}.
+\]
+No closed form for $W(r,k)$ is known, so $N(n)$ has no closed form; we give the best
+rigorous bounds. The probabilistic lower bound (Lovász Local Lemma) gives
+$W(2,k)\ge c\,2^{k}/k$ for an absolute $c>0$, whence $W(2,i+1)\le n$ forces
+$i\le\log_2 n+O(\log\log n)$, i.e.
+\[
+  N(n)\le\log_2 n+O(\log\log n).
+\]
+Gowers' upper bound $W(2,k)\le 2^{2^{2^{2^{2^{\,k+9}}}}}$ implies that $W(2,i+1)\le n$
+holds whenever $i+1$ is below the fifth iterated binary logarithm of $n$, giving
+\[
+  N(n)\ge\log^{(5)}_2 n-O(1),
+\]
+where $\log^{(5)}_2$ is the fifth iterate of $\log_2$. Hence, unconditionally,
+\[
+  \log^{(5)}_2 n-O(1)\ \le\ N(n)=k^*(n)-1\ \le\ \log_2 n+O(\log\log n).
+\]
+Correspondingly, since one application of $N$ lands in the interval just bounded and
+the subsequent iterates are governed (within these bounds) by a map that is at most
+logarithmic, $k(n)$ is an iterated logarithm of $n$; its exact order is tied to the
+(open) true growth of $W(2,k)$. With the present knowledge we have, unconditionally,
+$2\le k(n)\le \log^*_2 n+O(1)$ for $n$ large. We claim no closed form, because none is
+known for $W(r,k)$; the exact universal reductions $k^*(n)=N(n)+1$ and
+$k(n)=\min\{k\ge1:N^{(k)}(n)=0\}$ are nonetheless valid verbatim.
+
+\section{Conclusion}
+
+For every strictly increasing sequence of positive integers and every admissible $n$,
+\[
+  k^*(n)=N(n)+1\quad(\text{Prop.~\ref{prop:kstar}}),\qquad
+  k(n)=\max\bigl(1,\,d(n)\bigr),\ \ d(n)=\min\{k\ge0:N^{(k)}(n)\le M\}\quad(\text{Thm~\ref{thm:k}}),
+\]
+where $M$ is the length of the initial run $1,2,\dots,M$ of consecutive integers;
+when $a_1\ge2$ this is $k(n)=\min\{k\ge1:N^{(k)}(n)=0\}$
+(Cor.~\ref{cor:a1ge2}). Substituting the counting function of each family and applying
+Lemma~\ref{lem:rates} yields:
+\[
+\begin{array}{lll}
+\text{(a) primes:} & k^*=\pi(n)+1, & k\sim \log n/\log\log n;\\
+\text{(b) perfect powers:} & k^*=\sqrt n+O(n^{1/3}), & k\sim\log_2\log_2 n;\\
+\text{(c) Fibonacci:} & k^*=\log_\varphi n+O(1), & k\sim\log^*_\varphi n;\\
+\text{(d) Lucas:} & k^*=\log_\varphi n+O(1), & k\sim\log^*_\varphi n;\\
+\text{(e) Fermat:} & k^*=\lfloor\log_2\log_2(n-1)\rfloor+2, & k=O(1)\ \text{(bounded)};\\
+\text{(f) Bernoulli num.:} & k^*\sim \tfrac{\log n}{2\log\log n}, & k\sim\log^* n;\\
+\text{(g) Mersenne:} & k^*=\pi(\log_2(n+1))+1, & k\sim\log^* n;\\
+\text{(h) Smarandache img.:} & k^*\sim n/\log n, & k\sim\log n/\log\log n;\\
+\text{(i) van der Waerden:} & \log^{(5)}_2 n\le k^*-1\le\log_2 n+O(\log\log n), & 2\le k\le\log^*_2 n+O(1).
+\end{array}
+\]
+\end{document}

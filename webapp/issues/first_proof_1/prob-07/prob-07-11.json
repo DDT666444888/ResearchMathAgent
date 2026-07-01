@@ -1,0 +1,31 @@
+{
+  "id": "prob-07-11",
+  "problem_id": "prob-07",
+  "dataset": "first_proof_1",
+  "title": "G5: W2 (lem:splice) region-merge ignores coincident sectors R_2=R_4 (and R_1=R_3)",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T06:21:06Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev73487553",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T06:21:06Z"
+    },
+    {
+      "id": "ccd99bbbd",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "The proof of W2 / coherence-preservation (`lem:splice`, ssec:W2) uses the \"standard planar effect\" of a smoothing: for $a{=}0$, sectors $S_{-+},S_{+-}$ (regions $R_2,R_4$) **merge** into $R_{24}$ while $R_1,R_3$ persist, and the frontier of $R_{24}$ is the single cyclic walk $\\alpha^+\\to\\beta^+\\to\\alpha^-\\to\\beta^-\\to\\alpha^+$.\n\nDefinition `def:corners` itself flags that $R_1,R_2,R_3,R_4$ are \"a priori not all distinct.\" The degenerate cases are **not analyzed**:\n- If $R_2=R_4$ already in $M$ (the two opposite sectors lie in one region), the smoothing does NOT merge two distinct regions; it can instead **split** $R_{24}$ into two, or change the frontier-walk structure. The cyclic-walk identification, and the conclusion that every component of $R_{24}$ has opposite-type ends, must be re-derived in this case.\n- Similarly $R_1=R_3$ affects the persisting-region analysis.\n- Coincidences like $R_1=R_2$ are excluded by transversality, but $R_2=R_4$ (opposite sectors) is genuinely possible and is exactly the situation where smoothing changes the Euler characteristic of the region complex / can create a closed-loop boundary.\n\n**Why it matters.** Lemma `lem:splice` also claims \"no circle component arises\"; in the coincident-sector case a smoothing is precisely the move that *can* create an arc-only closed loop, so this is exactly where the no-loop conclusion needs scrutiny.\n\n**Suggested fix.** Either (i) explicitly enumerate the coincidence cases among $R_1,R_2,R_3,R_4$ and verify the frontier/inverse-end conclusion in each (using bigon-freeness and that $M$ has only $5$ arcs); or (ii) for this specific $w$, bypass general W2 by checking coherence of every resolution target directly (the targets $T_m\\to E_k\\to Q_i$ are finite and are already listed in sec:attach — promote that finite verification to a proof of coherence-preservation for the cells that actually occur).",
+      "created_at": "2026-06-28T06:21:06Z"
+    }
+  ]
+}

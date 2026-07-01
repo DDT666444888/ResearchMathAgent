@@ -1,0 +1,31 @@
+{
+  "id": "prob-02-14",
+  "problem_id": "prob-02",
+  "dataset": "first_proof_1",
+  "title": "Lemma T: the centreline coordinate m is not shown to be a homeomorphism giving the convex strip model of A",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T05:44:36Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "eve763292b",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T05:44:36Z"
+    },
+    {
+      "id": "c0586ff77",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Location:** solution.tex, \\S1, just after Lemma \\ref{lem:foliation} (parametrisation paragraph) and throughout Lemma \\ref{lem:T}.\n\n**The gap.** Lemma T runs its entire winding/homotopy argument *in the $(m(A),m(B))$ coordinate plane*, using as established facts that\n\n- $\\mathcal A=\\{(x,y):x<y<x+\\beta\\}$ is the open convex strip,\n- $\\partial_0\\mathcal A=\\{y=x\\}$, $\\partial_1\\mathcal A=\\{y=x+\\beta\\}$,\n- $I(A,B)=(B,GA)$ becomes the affine glide reflection $(x,y)\\mapsto(y,\\,x+\\beta)$,\n- the straight-line homotopy $H(s,r)=(1-r)\\gamma(s)+r\\overline{\\gamma^*}(s)$ stays in $\\overline{\\mathcal A}$ and keeps endpoints on the two boundary lines.\n\nAll of these presuppose that the centreline coordinate\n\\[\nm:\\{\\text{crosscuts}\\}\\longrightarrow\\R,\\qquad m(A)=x\\text{-coord of }A\\cap(\\R\\times\\{1/2\\}),\n\\]\nis a **homeomorphism** (continuous, strictly monotone, surjective) of the crosscut space onto $\\R$, with $G$ acting by $m\\mapsto m+\\beta$. The draft only asserts \"the crosscut foliation is continuous\" and \"$m(G^kA)=m(A)+k\\beta$\"; it never proves that $m$ is monotone and surjective, nor that the abstract crosscut space is a line. Without this:\n\n1. admissibility $A\\prec B\\prec GA$ need not coincide with $\\{x<y<x+\\beta\\}$ as an *open convex* set (monotonicity of $m$ is what converts the order $\\prec$ into the linear order of $x$);\n2. $\\mathcal A$ need not be convex, so the straight-line homotopy in Lemma T (which crucially uses convexity of $\\overline{\\mathcal A}$) is unjustified;\n3. the identification of $I$ with the affine map $(x,y)\\mapsto(y,x+\\beta)$ — used to get $\\Phi\\circ I=-\\Phi$ to interact with the *affine* boundary geometry — is not established.\n\n**What is needed.** Prove a *crosscut chart lemma*: order the clean triangles $\\dots,\\tau_{-1},\\tau_0,\\tau_1,\\dots$ left to right; within $\\tau_i$ parametrise crosscuts affinely by the base parameter $r\\in[0,1]$; glue consecutive charts across the shared crosscutting edge ($r=1$ of $\\tau_i$ identified with $r=0$ of $\\tau_{i+1}$, both equal to the common edge). Show the resulting 1-manifold is $\\cong\\R$, that $m$ is continuous and **strictly increasing** along it (the centreline crossing point moves monotonically as $r$ increases and across edges), and that $m\\to\\pm\\infty$. Conclude $m$ is a homeomorphism, $G$ acts by translation by $\\beta$, and hence $\\mathcal A=\\{x<y<x+\\beta\\}$ and $I(x,y)=(y,x+\\beta)$ *exactly*, as Lemma T requires.\n\nThis is distinct from (though adjacent to) prob-02-2 item 1 (continuity of $\\Phi$): prob-02-2 concerns continuity of $\\overrightarrow f$ as a *function of $m$*; the present issue concerns whether $m$ itself is a valid global coordinate making $\\mathcal A$ the convex affine strip on which the homotopy/oddness argument is carried out.",
+      "created_at": "2026-06-28T05:44:36Z"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "id": "rm-13126-2",
+  "problem_id": "rm-13126",
+  "dataset": "RM",
+  "title": "[void] test issue - ignore",
+  "status": "resolved",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T03:39:25Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev0e008f3a",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T03:39:25Z"
+    },
+    {
+      "id": "c8f93eb0e",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "canon check",
+      "created_at": "2026-06-28T03:39:25Z"
+    },
+    {
+      "id": "evc6680448",
+      "author": "system",
+      "role": "event",
+      "event_type": "status_changed",
+      "body": "✅ Status changed: **open** → **resolved**",
+      "created_at": "2026-06-28T03:39:52Z"
+    }
+  ]
+}

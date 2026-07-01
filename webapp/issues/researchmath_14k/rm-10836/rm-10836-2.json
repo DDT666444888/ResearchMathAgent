@@ -1,0 +1,32 @@
+{
+  "id": "rm-10836-2",
+  "problem_id": "rm-10836",
+  "dataset": "researchmath_14k",
+  "title": "Variance bound is vacuous in the delta->0 regime; uniform variance control unproven",
+  "status": "open",
+  "labels": [
+    "proof-gap",
+    "variance"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T22:21:24Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "evee3ce675",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T22:21:24Z"
+    },
+    {
+      "id": "c93681fd0",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Location:** Proposition `prop:bdd` (eq. `varN`), the \"decisive contrast\" paragraph, and Theorem `thm:main` schedule.\n\n**Claim under review:** $\\Var(\\widehat G)\\le(1/\\delta+1/T)^2$, \"uniformly in $T$,\" presented as the resolution of the naive estimator's variance blow-up that the problem demands be avoided.\n\n**Gap.** The bound is the trivial `variance <= (sup)^2` for a random variable supported on $[0,(n+1)/T]=[0,1/\\delta+1/T]$. It is uniform in $T$ ONLY at fixed mesh $\\delta$. But the consistency theorem (`thm:main`) **requires $\\delta\\to0$**, and in that regime the bound **blows up like $1/\\delta^2$**. Thus the solution does not actually establish that the estimator's variance avoids blow-up; it trades a $T$-blow-up for a $\\delta$-blow-up *in the bound*, exactly where the problem wants control.\n\n**Evidence it is loose / the real property is unproven.** Numerically (Brownian, $T=10$, fixed grid refined): empirical $\\mathrm{sd}(\\widehat G)$ runs $0.187,0.216,0.237,0.253,0.264$ as $\\delta=0.5,0.25,0.125,0.0625,0.03125$ — i.e. it stays $O(1)$ and converges, while the proven bound $1/\\delta+1/T$ runs $2.1,4.1,8.1,16.1,32.1$. So the genuinely desirable property (bounded variance under refinement) holds empirically but is **never proved**.\n\n**What is needed.** A $\\delta$- and $T$-uniform variance bound, e.g. $\\Var(\\widehat G)\\le C$ with $C$ independent of $\\delta,T$. Concretely, prove $\\mathbb E_{\\PP_j}\\big[(\\max_i e^{W_i}/\\sum_k e^{W_k})^2\\big]\\le C\\delta$, so that $\\mathbb E[X^2]=(n+1)^2\\cdot\\frac1{n+1}\\sum_j \\mathbb E_{\\PP_j}[\\cdot]\\le C(n+1)\\delta=O(T)$ and $\\Var(\\widehat G)=O(1/T)$. The denominator's $\\Theta(1/\\delta)$ \"cluster mass\" near the pivot makes the ratio $\\Theta(\\delta)$ — this is the DY variance-reduction analysis and is the load-bearing claim the problem asks for.",
+      "created_at": "2026-06-27T22:21:24Z"
+    }
+  ]
+}

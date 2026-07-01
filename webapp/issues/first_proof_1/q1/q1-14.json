@@ -1,0 +1,31 @@
+{
+  "id": "q1-14",
+  "problem_id": "q1",
+  "dataset": "first_proof_1",
+  "title": "CONSTRUCTIVE: cube observable cannot separate; need the resonance-bracket functional",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T03:46:35Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev9b78147b",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T03:46:35Z"
+    },
+    {
+      "id": "ceeba5377",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Location:** `prop:ctvar`, `rem:event` (constructive follow-up to the FATAL gap q1-13).\n\nThe solution's own eq. (Fshift) proves that the renormalized **cube** observable cannot\nseparate $\\mu$ from $T_\\psi^*\\mu$: a single smooth insertion into the 3d resonance,\n$\\mathbf q_N\\circ\\psi_N$, is convergent. Hence the distinguishing functional must be a\n**different** object — in HKN / Hairer–Peroni it is the **resonance bracket / renormalized\nquadratic-variation** observable, where the surviving deterministic divergence comes from the\n**mismatch between the renormalization constant adapted to $u$ and the one adapted to $u+\\psi$**,\naccumulated over the truncation flow.\n\n**Concrete requirement.** Produce $\\Phi_N(u)$ (e.g.\n$\\Phi_N(u)=\\langle \\mathbf q_N\\circ P_Nu - (\\text{counterterm}),\\psi\\rangle$ or the\nrenormalized energy bracket) such that:\n- (under $\\mu$) by stationarity, ALL random $c_{N,2}$-divergences cancel, so\n  $(\\log N)^{-\\gamma}\\Phi_N(u)\\to0$ $\\mu$-a.s. for $\\tfrac12<\\gamma<1$;\n- (under the shift) $\\Phi_N(u+\\psi)-\\Phi_N(u)$ contains a deterministic\n  $\\sim c_{N,2}\\langle\\psi,\\psi\\rangle$ divergence ($c_{N,2}\\sim\\log N$) that NO\n  $\\psi$-independent counterterm removes, so $(\\log N)^{-\\gamma}\\Phi_N(u+\\psi)\\to\\infty$.\n\nThen $B_\\gamma=\\{u:(\\log N)^{-\\gamma}\\Phi_N(u)\\to0\\}$ has $\\mu(B_\\gamma)=1$,\n$(T_\\psi^*\\mu)(B_\\gamma)=0$, giving singularity.\n\nThis is the genuinely novel part of Hairer–Peroni and must be written explicitly (or cited at\nlemma granularity). The current draft fixes only the *ingredient* (counterterm variable is\n$\\mathbf l$, not $u$) and stops short of the assembly.\n\n**Numerical pre-check suggested:** verify the constant-mismatch cancellation at the level of\nleading frequency sums (as $c_{N,2}\\sim\\log N$ was verified) before committing to a functional.",
+      "created_at": "2026-06-27T03:46:35Z"
+    }
+  ]
+}

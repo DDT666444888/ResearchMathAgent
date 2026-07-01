@@ -1,0 +1,31 @@
+{
+  "id": "rm-12641-5",
+  "problem_id": "rm-12641",
+  "dataset": "rmac",
+  "title": "Theorem 3.4(c): effective degree bound stated but only finiteness proved",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T01:59:10Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev92ea8c4a",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T01:59:10Z"
+    },
+    {
+      "id": "c85aae5ea",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Location:** Theorem 3.4(c).\n\nThe statement asserts $I$ is generated in degree 'at most a constant depending only on $N$ and $\\max_j d_j$.' The proof, however, establishes only finiteness/termination of Buchberger's algorithm and explicitly says 'We do not need the optimal bound, only finiteness.' A bound depending only on $N$ and $\\max d_j$ is a substantive effective claim that is not supplied (and is not obviously available at this generality).\n\n**Fix:** either weaken (c) to 'finitely generated', or prove a genuine effective bound — e.g. via Castelnuovo–Mumford regularity of $R$ as a graded $k$-algebra, or via Markov/Gröbner degree bounds for the lattice ideal in the diagonal (toric) case.",
+      "created_at": "2026-06-28T01:59:10Z"
+    }
+  ]
+}

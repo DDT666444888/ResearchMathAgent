@@ -1,0 +1,31 @@
+{
+  "id": "rm-05936-2",
+  "problem_id": "rm-05936",
+  "dataset": "researchmath_14k",
+  "title": "Central gap: T^1_A ≅ coker(J) is asserted, not proved (faithfulness + smooth-base LS formula)",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T10:00:20Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev4b87b781",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T10:00:20Z"
+    },
+    {
+      "id": "cee6173d4",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Location.** solution.tex eq. (eq:LS) and the paragraph beginning \"Indeed, this is the standard model…\".\n\nThe entire reduction of the problem to linear algebra rests on the isomorphism\n$$T^1_A \\;\\cong\\; \\operatorname{coker}(J),\\qquad J\\colon A^n \\to \\operatorname{Hom}_A(I/I^2,A),\\quad J(\\theta)([f])=\\sum_i \\pi(\\partial f/\\partial x_i)\\,\\theta_i,$$\nwhich is only **asserted** (\"this is the standard model\", \"is the content of the Lichtenbaum–Schlessinger construction\"). This is an unjustified key step (Type F3). Two logically distinct facts are folded together and neither is proved:\n\n**(1a) Faithfulness to the problem's definition.** The problem *defines* $T^1_\\Gamma$ as the module of iso-classes of flat first-order deformations of $A$ over $k[\\varepsilon]/(\\varepsilon^2)$. The proof silently replaces this with the cotangent/André–Quillen module $T^1(A/k,A)$. The bijection\n$$\\{\\text{first-order deformations of }\\operatorname{Spec}A\\} \\;\\longleftrightarrow\\; T^1(A/k,A)$$\nis the substantive deformation-theoretic content and must be cited precisely (Hartshorne, *Deformation Theory* GTM 257, Thm 5.1; or Sernesi, *Deformations of Algebraic Schemes*, Thm 1.1.10) with hypotheses verified, or proved directly.\n\n**(1b) The cokernel formula requires a smooth base.** The clean identity $T^1(A/k,A)\\cong\\operatorname{coker}(J)$ holds because $R$ here is (essentially) smooth over $k$; it is **not** valid for an arbitrary presentation. The text claims it holds \"for any presentation,\" which is false in general — for a non-smooth $R$ the term $T^2$/relations-among-relations enters. The hypothesis \"$R$ smooth\" is never stated or checked.\n\n**Why it matters.** The whole proof is correct *given* this isomorphism, but as written the deepest input is unsupported. \n\n**How to close.**\n- Cite the deformation-classification theorem (Hartshorne Thm 5.1 / Sernesi 1.1.10) and verify $\\operatorname{Spec}A$ affine, $k$ a field.\n- Cite the smooth-base LS formula (Lichtenbaum–Schlessinger 1967; Stacks Project tag `08UZ`/`08S2`) and verify $R$ is formally smooth over $k$ (a localization of a polynomial ring over a field is regular and has free $\\Omega$).\n- Alternatively, give the elementary relation-lifting derivation: parametrize flat deformations by deformed relations $f_i\\mapsto f_i+\\varepsilon g_i$ ($g_i\\in A$), modulo coordinate changes $x_i\\mapsto x_i+\\varepsilon\\theta_i$ — this yields $\\operatorname{coker}(J)$ directly from the problem's definition.",
+      "created_at": "2026-06-28T10:00:20Z"
+    }
+  ]
+}

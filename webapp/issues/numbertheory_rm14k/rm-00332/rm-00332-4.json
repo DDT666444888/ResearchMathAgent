@@ -1,0 +1,31 @@
+{
+  "id": "rm-00332-4",
+  "problem_id": "rm-00332",
+  "dataset": "numbertheory_rm14k",
+  "title": "Parts (iii),(iv): third-order Bernoulli/Euler supercongruences cited, not proved",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T15:13:35Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev1dcf2868",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T15:13:35Z"
+    },
+    {
+      "id": "cb594959f",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Location:** Section 6, Theorem `thm:iiiiv` and items (R0)–(R3) (\"these are supercongruences of Z.-W. Sun ... beyond a short self-contained treatment\").\n\n**Gap.** Parts (iii) and (iv) of the problem are NOT proved. The third-order congruences\n$$\\Sigma_a\\equiv p^a\\bigl(1+\\tfrac76 p^3 B_{p-3}\\bigr)\\pmod{p^{a+3}},\\qquad \\sum_{k=0}^{(p-1)/2}\\tfrac{(3k+1)\\binom{2k}{k}^3}{16^k}\\equiv p+2\\bigl(\\tfrac{-1}{p}\\bigr)p^3E_{p-3}\\pmod{p^4}$$\nare stated and only verified numerically; the supplied (R0)–(R3) are correct consistency checks and a sketch (the $\\Gamma_p$/WZ skeleton, the Glaisher congruence $\\sum_{k=1}^{(p-1)/2}k^{-3}\\equiv-2B_{p-3}\\pmod p$), but no derivation of the cubic coefficients $\\tfrac76 B_{p-3}$ and $2(\\tfrac{-1}{p})E_{p-3}$ is given.\n\n**What must be proved.** Derive the $p^3$ correction terms. Route: write $\\binom{2k}{k}/16^k=\\Gamma_p(\\tfrac12+k)/(\\Gamma_p(\\tfrac12)k!)\\cdot u_k$, expand $\\log\\Gamma_p$ to third order, and use the Glaisher congruence and its odd analogue (which produces $E_{p-3}$) to pin the constants $7/6$ and $2$. The $a\\ge2$ case of (iii) additionally needs a Dwork-type lift across $p$-power truncations. Numerics confirm (iii) ($a=1$) and (iv) are TRUE mod $p^4$ for $7\\le p\\le 23$.",
+      "created_at": "2026-06-27T15:13:35Z"
+    }
+  ]
+}

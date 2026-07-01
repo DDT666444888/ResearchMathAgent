@@ -1,0 +1,346 @@
+\documentclass{amsart}
+\usepackage{amsmath,amssymb,amsthm,hyperref}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\newtheorem{proposition}{Proposition}
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+
+\begin{document}
+
+\title{An independence bound for planar graphs without the Four Color Theorem}
+\maketitle
+
+\begin{center}\textbf{Honest status of the target claim}\end{center}
+
+The problem asks to prove that every planar graph on $n$ vertices has an
+independent set of size at least $n/4$, \emph{without} invoking the Four Color
+Theorem (4CT). I must report at the outset, with full mathematical honesty, that
+the bound $n/4$ in this unconditional, 4CT-free form is \textbf{not known to be
+provable by elementary means}: the best published lower bound on the independence
+ratio of planar graphs that does not use the 4CT is $3/13 = 0.2307\ldots < 1/4$
+(Cranston--Rabern, 2016), improving Albertson's $2/9 = 0.2222\ldots$ (1976). The
+bound $n/4$ is tight (the icosahedron has $n=12$ and $\alpha = 3 = n/4$), and
+obtaining it unconditionally is regarded as comparable in difficulty to the 4CT
+itself. Fabricating a proof of $n/4$ would violate the requirement of grounded,
+gap-free reasoning, so I do not do so.
+
+Instead I give two fully complete, self-contained results that genuinely avoid the
+4CT, and I delineate precisely (Section~\ref{sec:gap}) where every elementary
+method stops short of $n/4$ and why that is the genuine obstruction:
+\begin{itemize}
+\item[(A)] $\alpha(G)\ge n/5$ for \emph{every} planar graph $G$
+  (Theorem~\ref{thm:main}), via the Five Color Theorem proved from first
+  principles;
+\item[(B)] $\alpha(G)\ge n/4$ for every \emph{$3$-degenerate} planar graph
+  (Proposition~\ref{prop:3deg}), in particular for every planar graph of girth
+  at least $6$ (Corollary~\ref{cor:girth}); this recovers the exact target bound
+  on a broad subclass.
+\end{itemize}
+
+\bigskip
+
+Throughout, $G=(V,E)$ is a finite simple graph with $n=|V|$ vertices and $m=|E|$
+edges, $\alpha(G)$ denotes the maximum size of an independent set, and
+$\chi(G)$ denotes the chromatic number. For a vertex $v$, $N(v)$ is its set of
+neighbours, $\deg(v)=|N(v)|$, and $N[v]=N(v)\cup\{v\}$. The \emph{girth} of a
+graph with a cycle is the length of a shortest cycle. We fix a plane embedding of
+the planar graph $G$ when one is needed.
+
+\section{Pigeonhole reduction from colouring to independence}
+
+\begin{lemma}\label{lem:pigeon}
+If a graph $G$ on $n$ vertices satisfies $\chi(G)\le k$, then
+$\alpha(G)\ge n/k$.
+\end{lemma}
+
+\begin{proof}
+By definition of $\chi(G)\le k$ there is a proper colouring
+$c\colon V\to\{1,\dots,k\}$, i.e.\ $c(u)\ne c(v)$ whenever $uv\in E$. For each
+colour $i\in\{1,\dots,k\}$ let $C_i=c^{-1}(i)=\{v\in V: c(v)=i\}$. The sets
+$C_1,\dots,C_k$ partition $V$, so $\sum_{i=1}^{k}|C_i|=n$. By the pigeonhole
+principle there is an index $j$ with $|C_j|\ge n/k$. Each $C_i$ is independent:
+if $u,v\in C_i$ then $c(u)=c(v)=i$, and properness forces $uv\notin E$. Hence
+$C_j$ is an independent set with $|C_j|\ge n/k$, giving $\alpha(G)\ge n/k$.
+\end{proof}
+
+Thus it suffices to prove $\chi(G)\le 5$ for every planar graph $G$. (The 4CT is
+the statement $\chi(G)\le 4$; we deliberately avoid it and prove the weaker,
+elementary Five Color Theorem, which yields the $n/5$ bound.)
+
+\section{Euler's formula, edge counts, and low-degree vertices}
+
+\begin{lemma}\label{lem:edges}
+If $G$ is a simple planar graph with $n\ge 3$ vertices and $m$ edges, then
+$m\le 3n-6$. More generally, if $G$ is a simple planar graph with $n\ge3$
+vertices, $m$ edges, and girth at least $g\ge3$ (in particular $G$ contains a
+cycle), then
+\begin{equation}\label{eq:girth-edges}
+   m \;\le\; \frac{g}{g-2}\,(n-2).
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+We first prove \eqref{eq:girth-edges} for connected $G$ that contains a cycle.
+Fix a plane embedding and let $f$ denote the number of faces (including the
+unbounded one). Euler's formula for connected plane graphs states
+\begin{equation}\label{eq:euler}
+   n - m + f = 2 .
+\end{equation}
+Counting incidences between faces and edge-sides, each edge borders at most two
+faces, so
+\[
+   \sum_{\text{faces } \phi}\operatorname{len}(\partial\phi)\;\le\;2m .
+\]
+Since $G$ is connected, simple, with girth $\ge g$, and contains a cycle, every
+face boundary walk has length at least $g$. Indeed, in a connected plane graph
+the boundary walk of a bounded face encloses a region, so it must traverse a
+cycle of $G$, and the unbounded face's boundary walk likewise traverses the outer
+cycle of $G$; either way each boundary walk contains a cycle of $G$, whose length
+is $\ge g$ (and lengths $1$ and $2$ are excluded by simplicity). Bridges, when
+present, are traversed twice in the boundary walk of the single face they border,
+which only lengthens that walk and does not lower the bound. Therefore
+\[
+   g\,f \;\le\; \sum_{\text{faces }\phi}\operatorname{len}(\partial\phi)\;\le\;2m,
+   \qquad\text{so}\qquad f\le \tfrac{2m}{g}.
+\]
+Substituting into \eqref{eq:euler},
+\[
+   2 = n-m+f \le n - m + \tfrac{2m}{g} = n - m\Bigl(1-\tfrac{2}{g}\Bigr)
+       = n - m\,\tfrac{g-2}{g},
+\]
+which rearranges to $m\,\tfrac{g-2}{g}\le n-2$, i.e.\
+$m\le \tfrac{g}{g-2}(n-2)$.
+
+Taking $g=3$ gives, for connected $G$ with a cycle, $m\le 3(n-2)=3n-6$. If a
+connected $G$ has no cycle it is a tree, so $m=n-1\le 3n-6$ for $n\ge3$. For a
+disconnected simple planar graph one may add edges between distinct components
+(preserving planarity and simplicity, strictly increasing $m$, fixing $n$) until
+connected; the maximiser of $m$ for fixed $n$ is thus connected, and the bound
+$m\le 3n-6$ for it dominates the original. This proves the first statement
+$m\le3n-6$ for all simple planar $G$ with $n\ge3$. (For \eqref{eq:girth-edges}
+with $g>3$ we will only invoke it for connected graphs containing a cycle, the
+case just established.)
+\end{proof}
+
+\begin{lemma}\label{lem:mindeg}
+Every simple planar graph $G$ has a vertex of degree at most $5$.
+\end{lemma}
+
+\begin{proof}
+If $n\le2$ this is immediate ($\deg(v)\le n-1\le1\le5$). Assume $n\ge3$ and
+suppose, for contradiction, that every vertex has degree at least $6$. Then by the
+handshake identity $2m=\sum_{v}\deg(v)\ge 6n$, so $m\ge 3n$. This contradicts
+Lemma~\ref{lem:edges}, which gives $m\le 3n-6<3n$. Hence some vertex has degree
+$\le5$.
+\end{proof}
+
+\begin{lemma}\label{lem:girth6deg}
+Every simple planar graph $H$ of girth at least $6$ has a vertex of degree at
+most $2$. Consequently every planar graph of girth at least $6$ is
+$2$-degenerate.
+\end{lemma}
+
+\begin{proof}
+Let $H$ have $n'$ vertices and $m'$ edges. We prove $m' \le \tfrac32(n'-1)$ for
+every simple planar $H$ of girth $\ge6$; then the average degree is
+$2m'/n' \le 3(n'-1)/n' < 3$, so some vertex has degree at most $2$.
+
+It suffices to prove $m'\le\tfrac32(n'-1)$ for connected $H$: if $H$ has
+components $H_1,\dots,H_t$ with $|V(H_i)|=n_i'$ and $|E(H_i)|=m_i'$, then summing
+$m_i'\le\tfrac32(n_i'-1)$ over $i$ gives
+$m'=\sum_i m_i'\le \tfrac32\sum_i(n_i'-1)=\tfrac32(n'-t)\le\tfrac32(n'-1)$, using
+$t\ge1$.
+
+So let $H$ be connected. If $H$ is a tree then $m'=n'-1\le\tfrac32(n'-1)$. If $H$
+contains a cycle then $n'\ge6\ge3$ and \eqref{eq:girth-edges} with $g=6$ gives
+$m'\le \tfrac{6}{4}(n'-2)=\tfrac32(n'-2)\le\tfrac32(n'-1)$. In all cases
+$m'\le\tfrac32(n'-1)$, as claimed.
+
+Finally, every subgraph of a planar graph of girth $\ge6$ is itself planar of
+girth $\ge6$ (removing vertices or edges cannot create shorter cycles and cannot
+destroy planarity), so each subgraph has a vertex of degree $\le2$; this is the
+definition of $2$-degeneracy.
+\end{proof}
+
+\section{The Five Color Theorem}
+
+\begin{theorem}[Five Color Theorem]\label{thm:five}
+Every planar graph $G$ satisfies $\chi(G)\le 5$.
+\end{theorem}
+
+\begin{proof}
+We argue by induction on $n=|V(G)|$. If $n\le5$, assign distinct colours from
+$\{1,\dots,5\}$ to the at most five vertices; this is a proper $5$-colouring.
+
+\emph{Inductive step.} Let $n\ge6$ and assume every planar graph on fewer than
+$n$ vertices is $5$-colourable. Fix a plane embedding of $G$. By
+Lemma~\ref{lem:mindeg}, $G$ has a vertex $v$ with $\deg(v)\le5$. The graph $G-v$
+is planar (deleting a vertex preserves planarity) and has $n-1$ vertices, so by
+induction it has a proper $5$-colouring $c\colon V(G)\setminus\{v\}\to
+\{1,\dots,5\}$. We extend $c$ to $v$.
+
+\medskip
+\noindent\emph{Case 1: $\deg(v)\le 4$, or the neighbours of $v$ use at most $4$
+distinct colours.} Then at least one colour, say $a$, appears on no neighbour of
+$v$. Set $c(v)=a$. Since $a$ differs from the colour of every neighbour of $v$
+and $c$ was proper on $G-v$, the extension is a proper $5$-colouring of $G$.
+
+\medskip
+\noindent\emph{Case 2: $\deg(v)=5$ and the five neighbours of $v$ receive five
+\emph{distinct} colours.} Let the neighbours, listed in the cyclic order in which
+the edges $vv_i$ leave $v$ in the plane embedding, be $v_1,v_2,v_3,v_4,v_5$, and
+relabel colours so that $c(v_i)=i$ for $i=1,\dots,5$.
+
+Consider colours $1$ and $3$. Let $H_{1,3}$ be the subgraph of $G-v$ induced by
+all vertices coloured $1$ or $3$, and let $K$ be the connected component of
+$H_{1,3}$ containing $v_1$.
+
+\emph{Subcase 2a: $v_3\notin K$.} Recolour, \emph{within $K$ only}, by swapping
+colours $1$ and $3$ (each vertex of $K$ coloured $1$ becomes $3$ and vice versa).
+Call the new colouring $c'$. We verify $c'$ is a proper colouring of $G-v$. The
+only edges whose endpoints might conflict are those with exactly one endpoint in
+$K$. Let $xy$ be such an edge with $x\in K$, $y\notin K$. As $x\in K\subseteq
+H_{1,3}$, we have $c(x)\in\{1,3\}$. If $y$ had colour $1$ or $3$, then $y\in
+H_{1,3}$ and, being adjacent to $x\in K$, $y$ would lie in the same component
+$K$, contradicting $y\notin K$. Hence $c(y)\in\{2,4,5\}$. The swap gives
+$c'(x)\in\{1,3\}$ and leaves $c'(y)=c(y)\in\{2,4,5\}$, so $c'(x)\ne c'(y)$. Edges
+with both endpoints in $K$ keep proper colours (both endpoints swap $1\leftrightarrow3$
+consistently), and edges with both endpoints outside $K$ are untouched. Hence
+$c'$ is a proper $5$-colouring of $G-v$. Under $c'$, $v_1\in K$ now has colour
+$3$, while $v_3\notin K$ keeps colour $3$; thus the neighbours of $v$ now use the
+colours $3,2,3,4,5$, so colour $1$ appears on no neighbour of $v$. Set $c'(v)=1$
+to obtain a proper $5$-colouring of $G$.
+
+\emph{Subcase 2b: $v_3\in K$.} Then $v_1$ and $v_3$ lie in the same component of
+$H_{1,3}$, so there is a path $P_{1,3}$ from $v_1$ to $v_3$ whose internal
+vertices are all coloured $1$ or $3$. Adjoining the edges $vv_1$ and $vv_3$ to
+$P_{1,3}$ yields a cycle $C$ drawn in the plane. By the Jordan curve theorem,
+the closed curve $C$ separates the plane into a bounded interior and an unbounded
+exterior. Because the embedding fixes the cyclic order $v_1,v_2,v_3,v_4,v_5$ of
+edges around $v$, the neighbour $v_2$ lies in the cyclic sector strictly between
+$v_1$ and $v_3$, whereas $v_4$ (and $v_5$) lie in the complementary sector;
+consequently $v_2$ and $v_4$ lie in different regions determined by $C$ -- one
+strictly inside $C$ and the other strictly outside. (This is exactly where
+planarity is used.)
+
+Now consider colours $2$ and $4$: let $H_{2,4}$ be the subgraph of $G-v$ induced
+by vertices coloured $2$ or $4$, and $K'$ the component of $H_{2,4}$ containing
+$v_2$. A path from $v_2$ to $v_4$ inside $H_{2,4}$ uses only vertices coloured
+$2$ or $4$ and never uses $v$; since the curve $C$ consists solely of $v$ and
+vertices coloured $1$ or $3$, such a path is disjoint from $C$ and hence cannot
+cross from the interior to the exterior of $C$. As $v_2$ and $v_4$ lie on
+opposite sides of $C$, no $\{2,4\}$-coloured path joins them, so $v_4\notin K'$.
+We now repeat the swap of Subcase~2a with the colour pair $(2,4)$ and component
+$K'$: swapping colours $2$ and $4$ on $K'$ produces a proper $5$-colouring $c''$
+of $G-v$ (by the identical verification as in Subcase~2a, with $\{1,3\}$ replaced
+by $\{2,4\}$) under which $v_2$ becomes colour $4$ while $v_4$ retains colour $4$.
+Then colour $2$ appears on no neighbour of $v$, and setting $c''(v)=2$ gives a
+proper $5$-colouring of $G$.
+
+In every case $G$ admits a proper $5$-colouring, completing the induction.
+\end{proof}
+
+\section{The independence bound (A)}
+
+\begin{theorem}\label{thm:main}
+Every planar graph $G$ on $n$ vertices contains an independent set of size at
+least $n/5$; that is, $\alpha(G)\ge n/5$. This argument does not use the Four
+Color Theorem.
+\end{theorem}
+
+\begin{proof}
+By Theorem~\ref{thm:five}, $\chi(G)\le5$. Applying Lemma~\ref{lem:pigeon} with
+$k=5$ gives $\alpha(G)\ge n/5$. The only colouring input is the Five Color
+Theorem, whose proof uses only Euler's formula, the existence of a low-degree
+vertex, and Kempe-chain recolouring; the Four Color Theorem is never invoked.
+\end{proof}
+
+\section{The exact bound \texorpdfstring{$n/4$}{n/4} on \texorpdfstring{$3$}{3}-degenerate
+planar graphs (B)}\label{sec:3deg}
+
+A graph $G$ is \emph{$d$-degenerate} if every (vertex-induced) subgraph of $G$
+contains a vertex of degree at most $d$.
+
+\begin{proposition}\label{prop:3deg}
+If $G$ is a $3$-degenerate graph on $n$ vertices, then $\alpha(G)\ge n/4$.
+\end{proposition}
+
+\begin{proof}
+We argue by induction on $n$. If $n=0$ the empty set is independent and
+$0\ge 0/4$. If $1\le n\le4$, any single vertex forms an independent set of size
+$1\ge n/4$. Now let $n\ge5$ and assume the statement for all $3$-degenerate
+graphs on fewer than $n$ vertices. Since $G$ is $3$-degenerate (taking the whole
+graph as the subgraph), there is a vertex $v$ with $\deg_G(v)\le3$. Let
+$G'=G-N[v]$, the graph obtained by deleting $v$ together with its at most three
+neighbours; thus $|V(G')|\ge n-4$. Every subgraph of $G'$ is a subgraph of $G$,
+hence contains a vertex of degree $\le3$, so $G'$ is again $3$-degenerate. By the
+induction hypothesis $\alpha(G')\ge |V(G')|/4\ge (n-4)/4$. Let $I'$ be a maximum
+independent set of $G'$. No vertex of $I'$ is adjacent to $v$ (all neighbours of
+$v$ were deleted in forming $G'$), and $v\notin V(G')$, so $I:=I'\cup\{v\}$ is an
+independent set of $G$ with $|I|=|I'|+1\ge (n-4)/4+1 = n/4$. Hence
+$\alpha(G)\ge n/4$.
+\end{proof}
+
+\begin{corollary}\label{cor:girth}
+Every planar graph $G$ of girth at least $6$ satisfies $\alpha(G)\ge n/4$.
+\end{corollary}
+
+\begin{proof}
+By Lemma~\ref{lem:girth6deg}, $G$ is $2$-degenerate, hence $3$-degenerate.
+Proposition~\ref{prop:3deg} then gives $\alpha(G)\ge n/4$.
+\end{proof}
+
+\section{Where the elementary method stops short of \texorpdfstring{$n/4$}{n/4}}
+\label{sec:gap}
+
+For transparency we record exactly why the elementary toolkit yields $n/5$ for
+all planar graphs and the exact $n/4$ only on restricted classes.
+
+\medskip
+\noindent\textbf{(i) The colouring route caps at $n/5$.}
+Lemma~\ref{lem:pigeon} turns a $k$-colouring into an independent set of size
+$n/k$. Without the 4CT the best elementary colouring bound is $\chi\le5$
+(Theorem~\ref{thm:five}), giving exactly $n/5$. The 4CT would give $\chi\le4$ and
+hence $n/4$, but $\chi\le4$ for planar graphs \emph{is} the 4CT, which is
+forbidden here.
+
+\medskip
+\noindent\textbf{(ii) The greedy/degeneracy route caps at $n/6$ in general.}
+A planar graph is $5$-degenerate (every subgraph has a vertex of degree $\le5$ by
+Lemma~\ref{lem:mindeg}), which yields only $\alpha\ge n/(5+1)=n/6$ by the standard
+greedy elimination $\alpha(G)\ge n/(d+1)$ for $d$-degenerate $G$. The improvement
+to $n/4$ in Proposition~\ref{prop:3deg} requires $3$-degeneracy, which not every
+planar graph has.
+
+\medskip
+\noindent\textbf{(iii) The obstruction is genuine.}
+The recursion of Proposition~\ref{prop:3deg} recovers $n/4$ exactly when a
+degree-$\le3$ vertex keeps appearing after each closed-neighbourhood removal.
+There exist planar graphs of minimum degree $\ge4$ that are \emph{not}
+$3$-degenerate; for them a closed-neighbourhood removal can delete $\ge5$
+vertices, destroying the ``one independent vertex per $4$ deleted'' budget. The
+icosahedron ($5$-regular, $n=12$, $\alpha=3=n/4$) is the canonical tight
+obstruction: being $5$-regular it has no vertex of degree $\le3$, so the
+recursion never starts, yet it still meets $n/4$ with equality.
+
+\medskip
+\noindent\textbf{(iv) State of the art.}
+Closing the gap unconditionally is, to current knowledge, open. The best
+published independence ratio for planar graphs avoiding the 4CT is
+$3/13=0.2307\ldots<1/4$ (Cranston--Rabern, 2016), improving Albertson's
+$2/9=0.2222\ldots$ (1976); both exceed the $1/5$ of Theorem~\ref{thm:main} but
+remain below $1/4$. The Albertson--Berman conjecture -- that every planar graph
+has an induced forest on $\ge n/2$ vertices, which would yield $\alpha\ge n/4$
+because a forest is bipartite -- remains unproven. Accordingly, a fully
+unconditional elementary proof of the exact bound $n/4$ for \emph{all} planar
+graphs is not currently available, and producing one here would require an
+unjustified leap. The strongest complete, gap-free results obtainable by
+self-contained means are recorded above: $\alpha(G)\ge n/5$ for all planar $G$
+(Theorem~\ref{thm:main}), and $\alpha(G)\ge n/4$ for all $3$-degenerate planar
+$G$ (Proposition~\ref{prop:3deg}), in particular for all planar graphs of girth
+$\ge6$ (Corollary~\ref{cor:girth}).
+
+\end{document}

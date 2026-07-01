@@ -1,0 +1,38 @@
+{
+  "id": "rm-05346-11",
+  "problem_id": "rm-05346",
+  "dataset": "researchmath_14k",
+  "title": "NG5: Branch-source uniqueness Claim is under-proven for targets on an incident edge (breaks Case A)",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-29T17:42:04Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev94dc2492",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-29T17:42:04Z"
+    },
+    {
+      "id": "c666f9a9f",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Location:** solution.tex, proof of Theorem 1, the *Claim (branch source)*, lines 153-164 (logically prior to Case A / Case B).\n\n**The gap (new; distinct location from NG1 = rm-05346-7).** The Claim asserts: for every branch vertex $\\alpha$ and every vertex $q$, the shortest $\\alpha$-$q$ path in $G'(x)$ is unique. For $q$ internal on $f=cd$ at offset $s$, the proof writes $d(\\alpha,q)=\\min(D(\\alpha,c)+s,\\;D(\\alpha,d)+(x_f-s))$ and excludes a tie by invoking \"(G)/(I) for edge $f$, offset $s$, branch target $q':=\\alpha$.\" But (G) is **defined only for targets $q$ that do NOT lie on the edge** (Definition, lines 102-109). When $\\alpha$ is an **endpoint of $f$** -- i.e. $q$ is internal on an edge incident to $\\alpha$ -- $\\alpha$ lies ON $f$, so (G) imposes nothing and the cited exclusion is vacuous.\n\n**Explicit failure, consistent with (U) and (G).** Take $\\alpha=c$. Then $D(c,c)=0$ and\n$$d(c,q)=\\min\\big(s,\\;R_f+(x_f-s)\\big),\\qquad R_f:=D^x(c,d)\\ \\text{over $c$-$d$ $H$-paths AVOIDING $f$}.$$\nIf $f$ is redundant ($R_f<x_f$) -- which (U) permits, requiring only that the minimum-weight $c$-$d$ path be unique -- then the tie $s=R_f+(x_f-s)$, i.e. $2s=R_f+x_f$, produces TWO distinct shortest $c$-$q$ paths: the direct on-edge segment (length $s$) and the wrap $c\\to\\pi\\to d\\to q$ (length $R_f+x_f-s$), $\\pi$ the unique min-weight $c$-$d$ path. This is a genuine non-geodeticity that (U) AND (G), as literally written, fail to exclude.\n\n**Consequence.** The branch-source Claim underpins the WHOLE sufficiency proof: Case A truncates a same-direction double geodesic to \"two shortest $a$-$q$ paths, contradicting the Claim,\" and Case B also leans on it. So the hole is not confined to the same-edge $p,q$ subcase of NG1 -- it already breaks the Claim and hence Case A. Same root cause as NG1 (the off-edge restriction in (G)) but at an earlier, more elementary step the prior pass did not flag.\n\n**To close (also closes NG1).** Extend the quantifier in (G) to ALL targets $q$, including $q$ on $e$ (endpoints and interior), via a closed-form on-edge clause: for each edge $e=ab$ with $R:=D^x(a,b)$ realised by an $H$-path avoiding $e$, forbid\n$$R<x_e \\ \\wedge\\ x_e+R\\ \\text{even}\\ \\wedge\\ R\\le x_e-2$$\n(from eq. (8): $R=2(r'-r)-x_e$ with $1\\le r<r'\\le x_e-1$; the endpoint case relaxes the offset range). With (G) so extended, the Claim's exclusion is valid for endpoint targets, Case A is airtight, and sufficiency needs no appeal to check.py.",
+      "created_at": "2026-06-29T17:42:04Z"
+    },
+    {
+      "id": "c23199184",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Update for the current (revised) solution.tex — NG5 persists, and the fix is now one line.**\n\nConfirmed: the *Claim (branch source)* (current lines 183–194) still excludes the tie $D(\\alpha,c)+s=D(\\alpha,d)+(x_f-s)$ for $q$ internal on $f=cd$ by citing \"(G) for branch target $\\alpha$\" — invalid when $\\alpha\\in\\{c,d\\}$ (then $\\alpha$ lies on $f$ and (G) imposes nothing). This breaks **Case A** (line 206) whenever the global target $q$ sits on an edge incident to $a$.\n\n**The revision makes the fix trivial.** The offending regime is precisely Lemma 4's: $\\alpha=c$, $d(c,q)=\\min(s,\\,R_f+(x_f-s))$, and a tie means $2s=R_f+x_f$, i.e. $f$ **redundant** with $x_f+R_f$ **even**. The newly-added **Lemma 4 (No redundant balanced edge)** then yields an off-edge branch-target (G)-violation — a contradiction with (G). So the Claim is *true* under (U)∧(G); the writeup just needs to add, in the $\\alpha\\in\\{c,d\\}$ sub-case, the same Lemma-4 citation already used to patch Case B (NG1, lines 217–236). The author patched Case B but forgot the parallel branch-source Claim.\n\n**Recommended edit.** In the Claim's proof, split on $\\alpha\\notin\\{c,d\\}$ (existing (G) citation valid) vs $\\alpha\\in\\{c,d\\}$ (cite Lemma 4).",
+      "created_at": "2026-06-30T02:30:52Z"
+    }
+  ]
+}

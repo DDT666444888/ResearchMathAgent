@@ -145,6 +145,21 @@
       "event_type": "status_changed",
       "body": "✅ Status changed: **open** → **resolved**",
       "created_at": "2026-06-18T14:54:24Z"
+    },
+    {
+      "id": "c54925572",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "## Mathematical Review (critic-agent, fresh pass)\n\nNo `solution.tex` present in the current workspace. The three open issues **q6-17 (core spectral domination)**, **q6-18 (quantifier order)**, **q6-20 (dense/worst-case scaling)** already form a complete, well-specified decomposition of the key sub-lemmas (with q6-1..q6-16, q6-19, q6-21 resolved). I am **not** opening duplicate issues. Full analysis attached as *Critic Analysis*.\n\n### Restated claim\n$\\exists c>0\\ \\forall G\\ \\forall\\varepsilon\\in(0,1)\\ \\exists S\\subseteq V$ with BOTH (i) $\\varepsilon L-L_S\\succeq0$ and (ii) $|S|\\ge c\\varepsilon|V|$. Expected answer **YES**. With $\\widetilde L_S=L^{+/2}L_SL^{+/2}$ (well-defined since $\\ker L\\subseteq\\ker L_S$ from $0\\preceq L_S\\preceq L$), lightness $\\iff\\lambda_{\\max}(\\widetilde L_S)\\le\\varepsilon$.\n\n### Key sub-lemmas (= the open issues)\n- **q6-17 (hard core):** exhibit $S$ with $L_S\\preceq\\varepsilon L$. Under i.i.d. vertex inclusion at rate $p$, $\\mathbb E[L_S]=p^2L$, so $p=\\sqrt\\varepsilon$ matches the mean — but per-instance lightness FAILS because edge terms sharing a vertex are correlated (dependence is degree-2 in vertex indicators), so edge-wise matrix Chernoff is invalid. Needs decoupling (matrix Efron–Stein / Hanson–Wright in Loewner form) or a deterministic BSS barrier with leverage + Foster budget.\n- **q6-18 (quantifier order, F4):** a SINGLE $S$ must satisfy both (i) and (ii); proving \"large set exists\" + \"light set exists\" separately is invalid. Use positive-probability (joint union bound) or alteration (delete offenders, quantify size loss via downward closure $S'\\subseteq S\\Rightarrow L_{S'}\\preceq L_S$).\n- **q6-20 (worst case / dense):** the $\\Theta(\\varepsilon n)$ bound must be met on cliques/expanders with the same universal $c$.\n\n### Numerically verified calibration (this pass)\n1. **Clique tightness $\\Rightarrow c\\le1$.** For $K_n$, $\\varepsilon L_{K_n}\\succeq L_{K_k}\\iff\\varepsilon\\ge k/n$, so the largest $\\varepsilon$-light set in $K_n$ is exactly $\\lfloor\\varepsilon n\\rfloor$ (verified $K_{12},K_{16}$ at $\\varepsilon\\in\\{.25,.5,.75\\}\\to 3,6,9$ and $4,8,12$). Scaling $\\Theta(\\varepsilon n)$ is tight.\n2. **$p=\\sqrt\\varepsilon$ sampling fails per-instance:** on $K_{40}$, $\\varepsilon=0.5$, lightness in only ~1% of 200 trials despite $\\mathbb E[L_S]=\\varepsilon L$. Mean control is insufficient — confirms the dependence obstruction in q6-17.\n3. **$p=\\Theta(\\varepsilon)$ sampling succeeds:** $p\\in\\{0.3\\varepsilon,0.4\\varepsilon\\}$ on $K_{40}$, $\\varepsilon=0.5$ gives lightness in 100% of trials with $\\mathbb E|S|\\approx pn=\\Theta(\\varepsilon n)$. The correct rate is $\\Theta(\\varepsilon)$, not $\\sqrt\\varepsilon$.\n\n### Recommended route\nDeterministic BSS barrier in $L$-geometry on $\\widetilde L_S$: add vertices greedily, bound each increment by summed induced-edge leverage $\\tau_{uv}=b_{uv}^\\top L^+b_{uv}$ via Sherman–Morrison/Woodbury, and use Foster $\\sum_{(u,v)\\in E}\\tau_{uv}=\\operatorname{rank}L\\le n-1$ to guarantee $\\Omega(\\varepsilon n)$ cheap vertices before $\\lambda_{\\max}$ crosses $\\varepsilon$. Honor the pitfalls from resolved issues: verify $\\ker L\\subseteq\\ker L_S$ before any $L^+$ step (q6-12); apply Ky Fan subadditivity only to symmetrized PSD pieces (q6-1, q6-9); do not invoke the Ky Fan maximum principle when only subadditivity holds (q6-5, q6-15); prove the barrier-update/Woodbury lemma fully (q6-2, q6-11); use Foster in the $n-(\\#\\text{components})$ form (q6-13).",
+      "created_at": "2026-06-27T06:54:24Z"
+    },
+    {
+      "id": "evdf9c8995",
+      "author": "agent",
+      "role": "event",
+      "event_type": "doc_generated",
+      "body": "Document generated: **Critic Analysis (fresh pass)**",
+      "created_at": "2026-06-27T06:54:28Z"
     }
   ],
   "documents": [
@@ -158,6 +173,12 @@
       "title": "Critic Analysis",
       "path": "questions/q6/analysis.md",
       "created_at": "2026-06-18T01:42:21Z",
+      "created_by": "agent"
+    },
+    {
+      "title": "Critic Analysis (fresh pass)",
+      "path": "questions/q6/analysis.md",
+      "created_at": "2026-06-27T06:54:28Z",
       "created_by": "agent"
     }
   ]

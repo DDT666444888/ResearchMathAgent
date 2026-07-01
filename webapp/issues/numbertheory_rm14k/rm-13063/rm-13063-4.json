@@ -1,0 +1,38 @@
+{
+  "id": "rm-13063-4",
+  "problem_id": "rm-13063",
+  "dataset": "numbertheory_rm14k",
+  "title": "No-local-obstruction lemma is neither stated nor proved (needed before any impossibility attempt)",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T02:43:10Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev78b14c99",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T02:43:10Z"
+    },
+    {
+      "id": "c788a5cb5",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "For the non-existence direction, the first thing to settle is whether a congruence (mod $m$) obstruction exists. The document does not address this. I verified numerically that for EVERY modulus $m\\le 600$ the congruence $\\sum_{i=1}^5 x_i^6\\equiv z^6\\pmod m$ is solvable, so there is NO local obstruction.\n\nImportant subtlety: if one wrongly requires the bases coprime to $m$, then $m=3$ and $m=7$ APPEAR to obstruct (mod 7: $x^6\\equiv1$ for $7\\nmid x$ by Fermat, so five terms sum to $5$, while $z^6\\in\\{0,1\\}$, and $5\\notin\\{0,1\\}\\pmod7$). But the bases are arbitrary positive integers and MAY be divisible by 3 or 7, giving residue 0; then $0+0+0+0+z^6\\equiv z^6$ is always solvable. So any future 'mod 7 / mod 3 impossibility' argument is INVALID, and local methods cannot prove non-existence. A rigorous write-up should prove this no-obstruction lemma (finite per prime power, lifted by CRT) to document why the elementary impossibility route is closed.",
+      "created_at": "2026-06-28T02:43:10Z"
+    },
+    {
+      "id": "cfbb109da",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "Confirming this gap remains OPEN in the current solution.tex (N=220 revision): no no-local-obstruction lemma is present. Independent verification (this review): the congruence $\\sum_{i=1}^5 x_i^6\\equiv z^6\\pmod m$ is solvable for EVERY modulus $2\\le m\\le 600$ with bases allowed divisible by $m$. Hence there is no elementary congruence obstruction, and any nonexistence proof must use a non-local argument. The mod-7 'coprime trap' (Fermat gives $x^6\\equiv1$ for $7\\nmid x$, so five coprime terms give $5\\notin\\{0,1\\}\\pmod 7$) is illusory because bases may be multiples of 7. This should be stated and proved explicitly to frame the difficulty.",
+      "created_at": "2026-06-28T03:27:53Z"
+    }
+  ]
+}

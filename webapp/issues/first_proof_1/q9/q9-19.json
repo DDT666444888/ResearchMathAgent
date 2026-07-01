@@ -1,0 +1,31 @@
+{
+  "id": "q9-19",
+  "problem_id": "q9",
+  "dataset": "first_proof_1",
+  "title": "Sub-lemma C (necessity): F=0 implies lambda is a product on non-identical cells, via local-to-global gluing on the punctured grid",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T04:36:00Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev3556cbf1",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T04:36:00Z"
+    },
+    {
+      "id": "c052bc7a7",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Claim ($\\Rightarrow$).** If $\\mathbf F(\\lambda_c Q^{(c)})=0$ then there exist $u,v,w,x\\in(\\mathbb R^*)^n$ with $\\lambda_{\\alpha\\beta\\gamma\\delta}=u_\\alpha v_\\beta w_\\gamma x_\\delta$ on all non-identical cells.\n\n**What must be proved.** (a) Vanishing of all the $2\\times2$-minor-type relations of Sub-lemma A on the *punctured* index grid (diagonal/all-equal cells removed). (b) A local-to-global / connectivity argument: form a graph on indices whose edges are cells where a nonzero relation pins a ratio, show it is connected enough to glue local ratios into global factors. (c) The factors lie in $(\\mathbb R^*)^n$ (no zeros) — derive nonvanishing propagation from the support hypothesis $\\lambda_c\\ne0$ on all non-identical $c$. (d) Removal of the diagonal must not break the gluing.\n\n**Why hard.** Reconstruction from rank-one binomial relations on a grid with deletions; ensuring global consistency and nowhere-zero factors is the most delicate part of the theorem.",
+      "created_at": "2026-06-28T04:36:00Z"
+    }
+  ]
+}

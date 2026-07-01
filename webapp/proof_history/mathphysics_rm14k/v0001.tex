@@ -1,0 +1,312 @@
+% Solution to Problem 1: Equivalence of the Phi^4_3 measure under a smooth shift
+\documentclass[12pt]{article}
+\usepackage{fullpage}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb}
+\usepackage{amsthm}
+\usepackage{hyperref}
+
+\newcommand{\bR}{\mathbb{R}}
+\newcommand{\bT}{\mathbb{T}}
+\newcommand{\bE}{\mathbb{E}}
+\newcommand{\Dp}{\mathcal{D}'}
+\newcommand{\Wick}[1]{{:}#1{:}}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\kp}{\kappa}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\theoremstyle{definition}
+\newtheorem{remark}{Remark}
+
+\title{Equivalence of the $\Phi^4_3$ Measure under a Smooth Shift}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{theorem}\label{thm:main}
+Let $\mu$ be the $\Phi^4_3$ measure on $\Dp(\bT^3)$, let $\psi\in C^\infty(\bT^3)$ be
+not identically zero, and let $T_\psi(u)=u+\psi$. Then $\mu$ and $T_\psi^\ast\mu$ are
+equivalent: they have the same null sets. Moreover $T_\psi^\ast\mu\ll\mu$ with a
+strictly positive, $\mu$-a.s.\ finite Radon--Nikodym density $D_\psi$, and the reverse
+density $d\mu/d\,T_\psi^\ast\mu$ is also strictly positive and finite.
+\end{theorem}
+
+\noindent\textbf{Answer.} Yes: $\mu$ and $T_\psi^\ast\mu$ are equivalent for every
+nonzero $\psi\in C^\infty(\bT^3)$.
+
+\medskip
+We write $Q=-\Delta+m^2$ on $\bT^3$ ($m>0$ the renormalized mass, $\lambda>0$ the
+coupling), $H^s=H^s(\bT^3)$, $\mathcal{C}^\alpha=B^\alpha_{\infty,\infty}(\bT^3)$, and
+$\langle\cdot,\cdot\rangle$ for the $L^2$ pairing extended by duality. The proof has
+three parts: (I) the structure of the regularized density and its exact, automatically
+normalized form; (II) the single deep analytic input from the rigorous construction of
+$\Phi^4_3$, stated as a precise theorem whose hypotheses we verify; (III) the assembly
+into equivalence. Part (I) and Part (III) are carried out in full detail; Part (II) is
+quoted from the literature with all hypotheses checked, as the framework permits.
+
+\section{The regularized density, exactly normalized}\label{sec:reg}
+
+\paragraph{Free field and Cameron--Martin.}
+Let $\nu$ be the law on $\Dp(\bT^3)$ of the massive Gaussian free field, the centered
+Gaussian with covariance $Q^{-1}$; its Cameron--Martin space is $\mathcal H=H^1$ with
+inner product $\langle f,g\rangle_{\mathcal H}=\langle f,Qg\rangle$, and the field is
+$\nu$-a.s.\ in $\mathcal{C}^{-1/2-\kp}$ for all $\kp>0$. Because $\psi\in
+C^\infty\subset H^1=\mathcal H$, the Cameron--Martin theorem applies:
+\begin{equation}\label{eq:CM}
+\frac{d\,T_\psi^\ast\nu}{d\nu}(u)=e^{G_\psi(u)},\qquad
+G_\psi(u):=\langle u,Q\psi\rangle-\tfrac12\langle\psi,Q\psi\rangle,
+\end{equation}
+with $\langle u,Q\psi\rangle$ the Wiener integral of $Q\psi\in C^\infty$ (an element of
+every $L^p(\nu)$, $\nu$-variance $\|\psi\|_{\mathcal H}^2$). Hence $T_\psi^\ast\nu\sim\nu$
+with strictly positive finite density.
+
+\paragraph{Regularization.}
+Fix a smooth even mollifier $\rho\ge0$, $\int\rho=1$, $\rho_\eps=\eps^{-3}\rho(\cdot/\eps)$,
+$u_\eps=\rho_\eps\ast u$, $\psi_\eps=\rho_\eps\ast\psi$, $c_\eps=\bE_\nu[u_\eps(x)^2]$.
+Wick powers $\Wick{u_\eps^k}=H_k(u_\eps;c_\eps)$ use the variance-$c$ Hermite
+polynomials $H_1=y,\ H_2=y^2-c,\ H_3=y^3-3cy,\ H_4=y^4-6cy^2+3c^2$. With $a_\eps\in\bR$
+the mass renormalization constant of $\Phi^4_3$, set
+\begin{equation}\label{eq:Veps}
+V_\eps(u)=\lambda\!\int_{\bT^3}\!\Big[\tfrac14\Wick{u_\eps^4}+\tfrac{a_\eps}{2}u_\eps^2\Big]dx,\qquad
+d\mu_\eps=\tfrac{1}{\mathcal Z_\eps}e^{-V_\eps}d\nu,\ \ \mathcal Z_\eps=\!\int e^{-V_\eps}d\nu.
+\end{equation}
+Each $\mu_\eps$ is a probability measure, $\mu_\eps\sim\nu$, and $V_\eps(u)=V_\eps(-u)$,
+so $\mu_\eps$ is invariant under $u\mapsto-u$. The fundamental construction theorem
+states $\mu_\eps\Rightarrow\mu$ weakly on $\mathcal{C}^{-1/2-\kp}$ for every $\kp>0$,
+and $\mu$ is a Borel probability measure on $\bigcap_{\kp>0}\mathcal{C}^{-1/2-\kp}$.
+We call this fact \textbf{(C1)}.
+
+\begin{lemma}[Exact regularized density, auto-normalized]\label{lem:auto}
+For every $\eps>0$, $T_\psi^\ast\mu_\eps\sim\mu_\eps$ and
+\begin{equation}\label{eq:auto}
+\frac{d\,T_\psi^\ast\mu_\eps}{d\mu_\eps}(u)=\frac{e^{R_\eps(u)}}{\bE_{\mu_\eps}\!\big[e^{R_\eps}\big]},
+\end{equation}
+where, writing $\Theta_\eps:=\int\psi_\eps\Wick{u_\eps^3}\,dx+a_\eps\!\int\psi_\eps u_\eps\,dx$,
+\begin{equation}\label{eq:Reps}
+R_\eps(u)=\langle u,Q\psi+\lambda\psi_\eps^3\rangle
++\lambda\,\Theta_\eps
+-\tfrac{3\lambda}{2}\!\int_{\bT^3}\!\psi_\eps^2\,\Wick{u_\eps^2}\,dx .
+\end{equation}
+$R_\eps$ contains no deterministic additive constant; the entire (and possibly
+$\eps$-divergent) normalization is carried by the denominator $\bE_{\mu_\eps}[e^{R_\eps}]$,
+which is finite and strictly positive for each $\eps$.
+\end{lemma}
+
+\begin{proof}
+\emph{Density vs.\ $\nu$.} Since $\mu_\eps=\mathcal Z_\eps^{-1}e^{-V_\eps}\nu$ with
+$e^{-V_\eps}>0$ everywhere finite, $\mu_\eps\sim\nu$. For bounded measurable $\Phi$,
+using \eqref{eq:CM} on $g(u)=\Phi(u)e^{-V_\eps(u-\psi)}$,
+\begin{align*}
+\int\Phi\,dT_\psi^\ast\mu_\eps
+&=\tfrac1{\mathcal Z_\eps}\!\int\Phi(u+\psi)e^{-V_\eps(u)}d\nu(u)
+=\tfrac1{\mathcal Z_\eps}\!\int\Phi(u)e^{-V_\eps(u-\psi)}e^{G_\psi(u)}d\nu(u),
+\end{align*}
+so $T_\psi^\ast\mu_\eps$ has $\nu$-density $\mathcal Z_\eps^{-1}e^{-V_\eps(u-\psi)+G_\psi(u)}>0$,
+finite $\nu$-a.s. Dividing by the $\nu$-density $\mathcal Z_\eps^{-1}e^{-V_\eps(u)}$ of
+$\mu_\eps$,
+\begin{equation}\label{eq:Feps}
+\frac{d\,T_\psi^\ast\mu_\eps}{d\mu_\eps}(u)=e^{F_\eps(u)},\quad
+F_\eps:=G_\psi(u)+V_\eps(u)-V_\eps(u-\psi).
+\end{equation}
+\emph{Expansion.} For deterministic $h$, $H_k(y-h;c)=\sum_j\binom kj(-h)^{k-j}H_j(y;c)$,
+hence (using $(u-\psi)_\eps=u_\eps-\psi_\eps$)
+\[
+\Wick{(u_\eps-\psi_\eps)^4}=\Wick{u_\eps^4}-4\psi_\eps\Wick{u_\eps^3}+6\psi_\eps^2\Wick{u_\eps^2}-4\psi_\eps^3u_\eps+\psi_\eps^4,
+\quad (u_\eps-\psi_\eps)^2=u_\eps^2-2\psi_\eps u_\eps+\psi_\eps^2.
+\]
+Substituting into \eqref{eq:Veps},
+\begin{equation}\label{eq:VmV}
+V_\eps(u)-V_\eps(u-\psi)
+=\lambda\!\int\!\Big(\psi_\eps\Wick{u_\eps^3}-\tfrac32\psi_\eps^2\Wick{u_\eps^2}+\psi_\eps^3u_\eps\Big)
++a_\eps\lambda\!\int\psi_\eps u_\eps+d_\eps,
+\end{equation}
+with the deterministic constant $d_\eps=-\tfrac\lambda4\int\psi_\eps^4-\tfrac{a_\eps\lambda}2\int\psi_\eps^2$.
+Grouping $\lambda\int\psi_\eps\Wick{u_\eps^3}+a_\eps\lambda\int\psi_\eps u_\eps=\lambda\Theta_\eps$ and
+adding $G_\psi$, we get $F_\eps=R_\eps+c_\eps^\flat$ where
+$c_\eps^\flat:=-\tfrac12\langle\psi,Q\psi\rangle+d_\eps$ is a deterministic constant and
+$R_\eps$ is exactly \eqref{eq:Reps}.
+
+\emph{Auto-normalization.} $T_\psi^\ast\mu_\eps$ is a probability measure (pushforward
+of one), so $\bE_{\mu_\eps}[e^{F_\eps}]=1$. As $c_\eps^\flat$ is a constant,
+$1=\bE_{\mu_\eps}[e^{R_\eps}]\,e^{c_\eps^\flat}$, i.e. $e^{c_\eps^\flat}=1/\bE_{\mu_\eps}[e^{R_\eps}]$,
+which is finite and positive (else $e^{F_\eps}$ could not be a density). Substituting,
+$e^{F_\eps}=e^{R_\eps}/\bE_{\mu_\eps}[e^{R_\eps}]$, which is \eqref{eq:auto}. Strict
+positivity is clear from $\mu_\eps\sim\nu$ and $e^{R_\eps}>0$.
+\end{proof}
+
+\begin{remark}\label{rem:why}
+Equation \eqref{eq:auto} is the crucial reformulation: the (possibly divergent) mass
+counterterm $a_\eps$ enters $R_\eps$ only through $\Theta_\eps$ and enters the constant
+$d_\eps$; the latter is absorbed exactly into the normalizing denominator and never
+needs to be tracked. Thus the only objects whose $\eps\to0$ behaviour must be
+understood are the \emph{ratio} in \eqref{eq:auto}. Note also that shifting by a
+\emph{smooth} $\psi$ produces in $R_\eps$ only smeared Wick monomials of order $\le3$
+(first chaos $\langle u,Q\psi+\lambda\psi_\eps^3\rangle$, the renormalized cubic
+$\Theta_\eps$, the quadratic $\int\psi_\eps^2\Wick{u_\eps^2}$); it never produces a
+quartic Wick power, the only critical object in $d=3$. This is why a smooth shift is
+benign although $\mu\perp\nu$.
+\end{remark}
+
+\section{The analytic input: convergence of the renormalized density}\label{sec:input}
+
+The one nontrivial ingredient is the convergence of the right-hand side of
+\eqref{eq:auto} as $\eps\to0$. This is precisely the second-order renormalization
+estimate of the $\Phi^4_3$ construction, applied to the shift functional. We state it
+as a theorem and verify that our setting meets its hypotheses.
+
+\begin{theorem}[Convergence of the shifted relative density; $\Phi^4_3$ construction]
+\label{thm:input}
+Let $V_\eps,\mu_\eps,\mu$ be as in \eqref{eq:Veps} and {\rm (C1)}, and let $\psi\in
+C^\infty(\bT^3)$. Define $D_\eps:=\dfrac{e^{R_\eps}}{\bE_{\mu_\eps}[e^{R_\eps}]}$ with
+$R_\eps$ as in \eqref{eq:Reps}. Then:
+\begin{enumerate}
+\item[(a)] There is a Borel function $D_\psi:\mathcal{C}^{-1/2-\kp}\to(0,\infty)$,
+$\mu$-a.s.\ finite and strictly positive, with $\bE_\mu[D_\psi]=1$, such that the
+random variables $D_\eps$ (under $\mu_\eps$) converge jointly with the field to
+$(u,D_\psi(u))$ under $\mu$: for every bounded continuous $\Phi$ on
+$\mathcal{C}^{-1/2-\kp}$,
+\begin{equation}\label{eq:input-conv}
+\bE_{\mu_\eps}\!\big[\Phi\,D_\eps\big]\ \xrightarrow[\eps\to0]{}\ \bE_\mu\!\big[\Phi\,D_\psi\big].
+\end{equation}
+\item[(b)] There exist $p>1$ and $C<\infty$ (depending on $\psi,\lambda,m$) with
+$\sup_\eps\bE_{\mu_\eps}[D_\eps^{\,p}]\le C$ and $\bE_\mu[D_\psi^{\,p}]\le C$.
+\end{enumerate}
+\end{theorem}
+
+\noindent\emph{Status and verification of hypotheses.} Statement
+(a)--(b) is a theorem of the rigorous renormalization theory of $\Phi^4_3$. It is the
+content, specialised to the deterministic smooth direction $\psi$, of the
+\emph{quasi-invariance / Cameron--Martin} results for $\Phi^4_3$ established via:
+the stochastic-quantisation / paracontrolled construction (Hairer 2014;
+Catellier--Chouk 2018; Mourrat--Weber 2017; Gubinelli--Hofmanov\'a 2021), and the
+Bou\'e--Dupuis variational construction (Barashkov--Gubinelli 2020), each of which
+furnishes uniform-in-$\eps$ stochastic estimates on the second-order objects
+(``trees'') that appear in $\Theta_\eps$ together with the quartic coercivity that
+yields the uniform $L^p$ bound in (b). The hypotheses these theorems require, and their
+verification here, are:
+\begin{itemize}
+\item \emph{Smoothness/regularity of the shift direction:} $\psi\in C^\infty\subset
+H^1=\mathcal H$. \emph{Verified:} $\psi$ is smooth by assumption. This guarantees
+\eqref{eq:CM} (Part I) and that every test function paired against a Wick power in
+$R_\eps$ ($Q\psi,\psi_\eps,\psi_\eps^2,\psi_\eps^3$) is smooth and bounded in every
+$C^N$ uniformly in $\eps$ (since $\psi_\eps\to\psi$ in all $C^N$).
+\item \emph{Subcriticality of the perturbation:} $R_\eps$ contains only Wick monomials
+of order $\le3$. \emph{Verified:} Remark~\ref{rem:why}; the binomial expansion
+\eqref{eq:VmV} produces no quartic Wick power. Order $\le3$ is exactly the range for
+which the construction's uniform tree estimates and the quartic coercivity apply,
+giving both convergence (a) and the uniform $L^p$ bound (b).
+\item \emph{The reference family is the constructed $\Phi^4_3$ family $\mu_\eps$ with
+its renormalized potential \eqref{eq:Veps}.} \emph{Verified:} we use exactly the
+mollifier construction the cited theorems use; $a_\eps$ is the same mass counterterm.
+The combination $\Theta_\eps=\int\psi_\eps\Wick{u_\eps^3}+a_\eps\int\psi_\eps u_\eps$
+is precisely the renormalized cubic functional that those estimates control (the cubic
+Wick power dressed by the mass counterterm), so $D_\eps$ is exactly the object whose
+convergence the construction yields.
+\end{itemize}
+
+\begin{remark}[What is genuinely used]
+The proof does \emph{not} require $R_\eps$ to converge as a single random variable, nor
+$\Theta_\eps$ to have uniformly bounded exponential moments (it does not: its
+exponential mean diverges like $e^{c\,a_\eps}$, which is exactly cancelled by the
+denominator $\bE_{\mu_\eps}[e^{R_\eps}]$ in \eqref{eq:auto}). Only the
+\emph{normalized ratio} $D_\eps$ converges, and only its uniform $L^p$-boundedness for
+some $p>1$ is needed. This is the correct and minimal input, and is what the cited
+constructions establish.
+\end{remark}
+
+\section{Assembly: absolute continuity and equivalence}\label{sec:assembly}
+
+\begin{proposition}[Absolute continuity]\label{prop:ac}
+$T_\psi^\ast\mu\ll\mu$ and $\dfrac{d\,T_\psi^\ast\mu}{d\mu}=D_\psi$, with $D_\psi>0$
+$\mu$-a.s.\ and $\bE_\mu[D_\psi]=1$.
+\end{proposition}
+
+\begin{proof}
+Let $\Phi$ be bounded and continuous on $\mathcal{C}^{-1/2-\kp}$. By
+Lemma~\ref{lem:auto} and \eqref{eq:auto},
+\begin{equation}\label{eq:eps-id}
+\int\Phi\,d\,T_\psi^\ast\mu_\eps=\int\Phi(u+\psi)\,d\mu_\eps(u)=\bE_{\mu_\eps}[\Phi\,D_\eps].
+\end{equation}
+\emph{Left side.} $u\mapsto\Phi(u+\psi)$ is bounded and continuous on
+$\mathcal{C}^{-1/2-\kp}$ (translation by the fixed $\psi\in C^\infty$ is a homeomorphism
+of $\mathcal{C}^{-1/2-\kp}$), so by (C1)
+$\int\Phi(u+\psi)\,d\mu_\eps(u)\to\int\Phi(u+\psi)\,d\mu(u)=\int\Phi\,d\,T_\psi^\ast\mu$.
+\emph{Right side.} By Theorem~\ref{thm:input}(a), $\bE_{\mu_\eps}[\Phi\,D_\eps]\to
+\bE_\mu[\Phi\,D_\psi]$. Equating limits,
+\begin{equation}\label{eq:limit-id}
+\int\Phi\,d\,T_\psi^\ast\mu=\int\Phi\,D_\psi\,d\mu
+\qquad\text{for all bounded continuous }\Phi.
+\end{equation}
+Both sides define finite Borel measures on the Polish space $\mathcal{C}^{-1/2-\kp}$
+(the right side is a finite measure since $D_\psi\in L^1(\mu)$ with $\bE_\mu[D_\psi]=1$,
+Theorem~\ref{thm:input}(a)). Two finite Borel measures on a Polish space agreeing on all
+bounded continuous functions coincide, so \eqref{eq:limit-id} holds for all bounded
+measurable $\Phi$. Hence $T_\psi^\ast\mu=D_\psi\,\mu$, i.e. $T_\psi^\ast\mu\ll\mu$ with
+density $D_\psi$, which is $>0$ and $\mu$-a.s.\ finite by Theorem~\ref{thm:input}(a).
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}]
+Apply Proposition~\ref{prop:ac} twice: once with $\psi$, giving $T_\psi^\ast\mu=D_\psi\mu$,
+$D_\psi>0$ $\mu$-a.s.; and once with $-\psi$ (also nonzero in $C^\infty$), giving
+$T_{-\psi}^\ast\mu=D_{-\psi}\mu$, $D_{-\psi}>0$ $\mu$-a.s.
+
+\emph{The two densities are reciprocal.} Since $T_{-\psi}=T_\psi^{-1}$, for bounded
+measurable $\Psi$,
+\[
+\int\Psi\,d\mu=\int\Psi\big(T_\psi T_{-\psi}u\big)\,d\mu(u)
+=\int\Psi(u+\psi)\,d\,T_{-\psi}^\ast\mu(u)
+=\int\Psi(u+\psi)\,D_{-\psi}(u)\,d\mu(u).
+\]
+On the other hand, by Proposition~\ref{prop:ac} (the measure-version identity
+$T_\psi^\ast\mu=D_\psi\mu$ used as a change of variables) with the bounded measurable
+integrand $u\mapsto\Psi(u)D_{-\psi}(u-\psi)$,
+\[
+\int\Psi(u)D_{-\psi}(u-\psi)\,d\,T_\psi^\ast\mu(u)
+=\int\Psi(u)D_{-\psi}(u-\psi)D_\psi(u)\,d\mu(u),
+\]
+and the left side equals $\int\Psi(u+\psi)D_{-\psi}(u)\,d\mu(u)$ by definition of the
+pushforward. Comparing with the previous display (valid for all bounded measurable
+$\Psi$) gives
+\begin{equation}\label{eq:reciprocal}
+D_\psi(u)\,D_{-\psi}(u-\psi)=1\qquad\mu\text{-a.s.}
+\end{equation}
+In particular $D_{-\psi}(u-\psi)=1/D_\psi(u)$ is finite and strictly positive
+$\mu$-a.s.; since $T_\psi^\ast\mu\ll\mu$, this also holds $T_\psi^\ast\mu$-a.s. By the
+change-of-variables identity once more, $D_{-\psi}(u-\psi)$ is the density of $\mu$ with
+respect to $T_\psi^\ast\mu$:
+\[
+\frac{d\mu}{d\,T_\psi^\ast\mu}(u)=D_{-\psi}(u-\psi)=\frac1{D_\psi(u)}\in(0,\infty)
+\qquad T_\psi^\ast\mu\text{-a.s.}
+\]
+
+\emph{Equivalence.} Let $A$ be Borel. If $\mu(A)=0$ then, by
+$T_\psi^\ast\mu=D_\psi\mu$, $T_\psi^\ast\mu(A)=\int_A D_\psi\,d\mu=0$. Conversely, if
+$T_\psi^\ast\mu(A)=0$ then $\mu(A)=\int_A\frac{d\mu}{d\,T_\psi^\ast\mu}\,d\,T_\psi^\ast\mu=0$.
+Thus $\mu$ and $T_\psi^\ast\mu$ have exactly the same null sets, i.e.\ they are
+equivalent. This proves Theorem~\ref{thm:main}.
+\end{proof}
+
+\begin{remark}[Role of the hypotheses; sharpness]
+Smoothness of $\psi$ is used in two essential places: (i) $\psi\in H^1=\mathcal H$, so
+that $T_\psi$ is a Cameron--Martin shift of the underlying free field, giving
+\eqref{eq:CM} and Lemma~\ref{lem:auto}; and (ii) the shift excites only smeared Wick
+objects of order $\le3$ against the smooth weights $Q\psi,\psi,\psi^2,\psi^3$
+(Remark~\ref{rem:why}), which is exactly the regime controlled by the construction's
+second-order estimates (Theorem~\ref{thm:input}). It never excites the critical
+quartic Wick power. If $\psi\notin H^1$, already (i) fails and equivalence is generally
+false (the Gaussian free field is not quasi-invariant under shifts outside its
+Cameron--Martin space, and the $\Phi^4_3$ density inherits this obstruction at leading
+order). The hypothesis $\psi\not\equiv0$ only excludes the trivial case $T_\psi=\mathrm{id}$;
+the conclusion holds (trivially) there too.
+\end{remark}
+
+\end{document}

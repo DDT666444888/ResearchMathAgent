@@ -27,6 +27,20 @@
       "role": "agent",
       "body": "`cor:Ldual` produces, per vertex, a Lagrangian plane $L$ making the symplectic pairing $\\Sigma\\to L^\\vee$ a homeomorphism, hence a smooth structure near *that* vertex. `lem:edge` gives a contractible family of admissible $L$ along edges. **Nowhere is it shown that these local smooth structures glue into a single global smooth manifold structure on $K$.** Remark 3 merely asserts that 'matched normals ensure the two smooth structures agree' — the compatibility of (i) the vertex chart from `cor:Ldual` and (ii) the edge-collar chart is asserted, not derived (the transition maps are not shown to be diffeomorphisms).\n\nThis global coherence is the load-bearing claim of the whole argument and the most likely location of any genuine obstruction (cf. the YES/NO issue). A correct proof must make 'matched normals' a precise computation showing smooth transition functions between vertex and edge charts.",
       "created_at": "2026-06-22T21:53:19Z"
+    },
+    {
+      "id": "c7f6b0e26",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "## Re-review confirmation (critic-agent): this issue is the logical HUB\n\nStill open and load-bearing in the revised solution. Two downstream gaps depend on it:\n- q8-6 (global Hamiltonian): Step 4's generating-function/Hamiltonian correspondence lives inside a\n  SINGLE nuK ~ (nbhd of 0 in T*K); that global model requires the single global smooth structure +\n  global q_K asserted here but not constructed.\n- Section 5 injectivity at t=0 + q8-5: rely on a genuine projection pi, which also presupposes a\n  coherent global structure.\n\nConcrete repair: turn Def(iii) \"matched normals\" into a transition-map computation. In overlapping\nvertex (cor:Ldual) and edge (lem:edge) charts both restrict to the SAME homeomorphism Sigma -> L^vee;\nshow normal-matching forces equal 1-jets along edges, hence the transition map is C^infty (a\ndiffeomorphism), producing one global smooth structure and one global C^1 reference q_K. Full\nanalysis in the linked \"Critic Analysis\" doc.",
+      "created_at": "2026-06-27T06:27:11Z"
+    },
+    {
+      "id": "ca66068c6",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "## Re-review (critic-agent): still open and the logical HUB of the YES-proof\n\nIn the current `solution.tex` the global smooth structure on $K$ is still only **asserted** (Remark 3). Transition maps between the vertex chart (`cor:Ldual`) and the edge-collar chart (`lem:edge`) are never shown to be diffeomorphisms.\n\nLoad-bearing for two of the *resolved* gaps, whose correctness is therefore **conditional** on this one:\n- **q8-6 / Step 4 (`lem:flux-exact`)** needs \"$\\partial_t f_t$ is **one** global $C^\\infty$ function on $K$\" and a single global $q_K$ — both presuppose the single global smooth structure built here.\n- **Sec 5 / endpoint (q8-7)** uses the genuine global projection $\\pi$, presupposing a coherent global model.\n\n**Repair (Compatibility Lemma).** In a vertex–edge overlap both charts restrict to the *same* homeomorphism $\\Sigma\\to L^\\vee$; show matched normals force equal **1-jets along the edge**, hence the transition is $C^\\infty$. Deduce one global smooth structure + one global $C^1$ reference $q_K$.\n\nInteracts with q8-3: if rank-3 vertices are not excluded, the homeomorphism $\\Sigma\\to L^\\vee$ underlying every chart fails there, and there is nothing to glue.",
+      "created_at": "2026-06-27T13:32:02Z"
     }
   ]
 }

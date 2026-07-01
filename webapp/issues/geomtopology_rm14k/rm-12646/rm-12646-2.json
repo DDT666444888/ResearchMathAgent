@@ -1,0 +1,31 @@
+{
+  "id": "rm-12646-2",
+  "problem_id": "rm-12646",
+  "dataset": "geomtopology_rm14k",
+  "title": "Stage C: adjunction reduction does not reach an Enriques minimal model (core gap)",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T11:03:29Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev3eb3a978",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T11:03:29Z"
+    },
+    {
+      "id": "c00fa8dfb",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Stage C (Lemma `lem:mmp`, Theorem `thm:adjterm`): the adjunction reduction does not produce an Enriques minimal model.**\n\nThe proof replaces the abstract MMP by the Sommese--Van de Ven / Beltrametti--Sommese *adjunction reduction* and asserts (last sentence of `thm:adjterm`, and in `lem:mmp`) that the terminal surface contains no $(-1)$-curve, hence is a minimal model equal to $\\mathbb{P}^2$ or $\\mathbb{F}_e$. **This is false.**\n\n- $\\Phi_{|K_S+H|}$ contracts only the $(-1)$-curves $E$ with $H\\cdot E=1$ (polarization-\"lines\"). $(-1)$-curves with $H\\cdot E\\ge 2$ are never contracted. The iterated adjunction process yields the *first reduction* (where $K+H$ is **nef**) -- the *polarized* minimal model, NOT the Enriques minimal model.\n\n- **Counterexample to the stated conclusion.** A Del Pezzo surface of degree $d\\le 7$ (e.g. $\\mathbb{P}^2$ blown up at $\\le 6$ general points) is rational, has $(-1)$-curves (not minimal), and is neither $\\mathbb{P}^2$ nor $\\mathbb{F}_e$. With $H=-K$ one gets $K+H=0$, so adjunction is degenerate and terminates immediately at a non-minimal, non-$(\\mathbb{P}^2/\\mathbb{F}_e)$ surface. Even for the embedding's own $H$ there is no argument equating the polarized reduction with the Enriques minimal model.\n\n- The trichotomy \"$\\mathbb{P}^2$/quadric/scroll\" in `thm:svdv` lists the cases where $\\Phi_{|K+H|}$ fails to be birational *at one step*; it is NOT the list of terminal surfaces of the iterated reduction. BS reduction theory stops at \"$K+H$ nef\" (with a further second reduction), which does not certify minimality.\n\n**Consequence.** The `while`-loop of Algorithm 1 may terminate at a non-minimal surface, and Stage D (which assumes $S_{\\min}\\in\\{\\mathbb{P}^2,\\mathbb{F}_e\\}$) is then unjustified. The core of Stage C is broken.\n\n**Repair options.** (i) Run the genuine Enriques MMP by finding/contracting an arbitrary $(-1)$-curve -- requires an effective $(-1)$-curve finder of a-priori-unbounded $H$-degree (the difficulty the solution itself flags at the start of Stage C). (ii) Reduce to a **conic bundle over $\\mathbb{P}^1$** (Schicho's method) and parametrize via Tsen, with a complete proof of the terminal-object trichotomy ($\\mathbb{P}^2$ / Del Pezzo / conic bundle). The conic-bundle reduction is only mentioned in the remark after `thm:mmp`, never carried out.",
+      "created_at": "2026-06-28T11:03:29Z"
+    }
+  ]
+}

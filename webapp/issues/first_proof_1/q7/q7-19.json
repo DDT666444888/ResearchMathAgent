@@ -1,0 +1,31 @@
+{
+  "id": "q7-19",
+  "problem_id": "q7",
+  "dataset": "first_proof_1",
+  "title": "Non-atomic case: resolved link boundary not equivariantly identified with the genuine slice frontier S(nu) for gluing",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T06:15:49Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev0f7bc787",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T06:15:49Z"
+    },
+    {
+      "id": "c4dc2d5f2",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Location.** `prop:induct` together with the assembly in `sec:global`.\n\n**The gap (non-atomic refinement of q7-10).** For a non-atomic stratum, `prop:induct` builds a **resolved** link $\\widehat L$ with only a *rational homology equivalence* $\\widehat L\\to L = S(V)/F$, and then fills $\\widehat L$ to obtain $V_F$ with $\\partial V_F=\\widehat L$ (and $\\partial W_F$ the corresponding cover).\n\nBut the global assembly in `sec:global` **deletes the cone neighborhood $N_F$ whose frontier is the genuine sphere bundle $S(\\nu)$** (resp. its quotient $L_F$), and then glues in $R_F$ along $\\partial R_F$. The text asserts \"$\\partial R_F = S(\\nu)$ matching $\\partial N_F$ $F$-equivariantly.\" For non-atomic strata this is **not justified**, because:\n- the model's boundary is the **resolved** object $\\widehat L$ (a surgered/modified link), whereas the frontier being matched is the **genuine** $S(\\nu)$ (an honest sphere bundle on which $F$ acts with fixed points);\n- a *rational homology equivalence* $\\widehat L\\to L$ is **not** an $F$-equivariant diffeomorphism, so it cannot be used to glue manifolds.\n\nNo explicit $F$-equivariant diffeomorphism $\\partial W_F \\cong_F S(\\nu)$ is produced in the non-atomic case, so the pieces cannot be inserted in place of the excised cones.\n\n**Fix.** Either (a) keep the boundary genuinely equal to $S(\\nu)$ throughout the inductive resolution (resolve the *interior*, never the frontier), or (b) prove that the resolved boundary is $F$-equivariantly diffeomorphic to the genuine frontier. This is the non-atomic version of the interface condition tracked in q7-10.",
+      "created_at": "2026-06-27T06:15:49Z"
+    }
+  ]
+}

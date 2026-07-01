@@ -1,0 +1,31 @@
+{
+  "id": "rm-02096-4",
+  "problem_id": "rm-02096",
+  "dataset": "researchmath_14k",
+  "title": "Transfer-entropy/MI rate identity ∫ ̇ℐ dt is heuristic and only Gaussian",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T17:14:34Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "evac0427ef",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T17:14:34Z"
+    },
+    {
+      "id": "cec6fbca6",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Severity: major.**\n\nThe boxed conclusion of Theorem 1 asserts $\\mathcal I_{[0,\\tau]} = \\int_0^\\tau \\dot{\\mathcal I}_t\\,dt$, relying on Remark 2 ('rate'), which states\n$$I_n = \\tfrac12\\log(1+\\mathrm{SNR}_n\\,\\Delta t) = \\tfrac12\\mathrm{SNR}_n\\,\\Delta t + o(\\Delta t),$$\ni.e. 'the per-step information saturates at the channel value'. Problems:\n1. This per-step formula is specific to **additive Gaussian** channels; no general-diffusion argument is given.\n2. The interchange $\\sum_n(\\cdot) \\to \\int(\\cdot)\\,dt$ requires **uniform** $o(\\Delta t)$ control across steps, which is not established.\n3. The remark conflates the **prediction** SNR with the **filtering** posterior variance; the rigorous rate (Duncan 1970; Kadota--Zakai--Ziv) is $\\dot{\\mathcal I}_t = P_t/(2R)$ with $P_t$ the *filtering* variance solving the Riccati ODE — exactly what the numerical Kalman check uses, but that is not proved in general.\n\n**Suggested fix:** make the rate identity a separate, fully proved proposition restricted to the linear-Gaussian (OU + linear channel) model: derive $I_n = \\tfrac12\\log(1+P_n^- \\Delta t/R)$ from the discrete Kalman recursion, then pass to $\\frac1{2R}\\int_0^\\tau P_t\\,dt$ via the Riccati ODE, citing Duncan's theorem for the general additive-Gaussian-channel mutual-information rate. Do not claim it for arbitrary diffusions without proof.",
+      "created_at": "2026-06-27T17:14:34Z"
+    }
+  ]
+}

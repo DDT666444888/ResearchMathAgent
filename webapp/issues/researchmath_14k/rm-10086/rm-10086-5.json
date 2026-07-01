@@ -1,0 +1,31 @@
+{
+  "id": "rm-10086-5",
+  "problem_id": "rm-10086",
+  "dataset": "researchmath_14k",
+  "title": "Part (b): constant-probability failure in the incoherent flat regime is unproven",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T04:49:23Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev158bb11b",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T04:49:23Z"
+    },
+    {
+      "id": "ca7280045",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**[proof-gap | SCOPE/UNIFORMITY]** `thm:fail`, `lem:colvar`, `lem:froblb`, `rem:cure`.\n\nThe single-column Paley-Zygmund failure constant is $c=\\tfrac9{16}(1+\\rho^\\star/q)^{-1}$. For an incoherent flat heaviest column ($\\rho^\\star\\asymp 1/m$, $q=s/(mn)$) this gives $c\\asymp s/n\\to0$: the single-column device yields **no constant-probability failure** there. The proof concedes this and defers to the Frobenius certificate.\n\nThe abstract claims a 'coherence-free relative-error barrier... for every matrix.' To honor that, `lem:froblb` must be shown to deliver constant-probability Frobenius lower deviation $\\|A-A_k^{\\mathrm{rand}}\\|_F>(1+\\varepsilon)\\tau_k$ **uniformly including the incoherent flat case**, under the side condition $s\\ge 16\\,mn\\,\\rho_\\bullet$ (`eq:failcond`). Required: (i) prove the side condition is automatic/harmless in the incoherent flat regime; (ii) unify the single-column and Frobenius arguments so the two together provably cover all coherence regimes (incoherent through maximally coherent, where it inflates to $s\\asymp mn$ via `prop:spike`/`prop:coupon`).",
+      "created_at": "2026-06-28T04:49:23Z"
+    }
+  ]
+}

@@ -1,0 +1,754 @@
+\documentclass[12pt]{article}
+\usepackage{fullpage}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{hyperref}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+
+\newcommand{\ket}[1]{\lvert #1\rangle}
+\newcommand{\bra}[1]{\langle #1\rvert}
+\newcommand{\bp}{b^{+}}
+\newcommand{\bm}{b^{-}}
+\newcommand{\HA}{\mathcal{H}_A}
+
+\begin{document}
+
+\title{Exact diagonalization of paraparticle Jaynes--Cummings models}
+\author{}
+\date{}
+\maketitle
+
+\begin{abstract}
+We prove that the order-$p$ paraparticle Jaynes--Cummings Hamiltonian $H$ on
+$V(p)\otimes\HA$ is block-diagonalized by a single conserved excitation operator
+into finite-dimensional invariant blocks $\mathcal{B}_q$, $q=0,1,2,\dots$, each of
+dimension $d_q=\min(q,p)+1\le p+1$, on which $H$ acts as an explicit real symmetric
+\emph{tridiagonal} matrix. This is the exact analogue of the $p=1$
+Jaynes--Cummings doublets. We give in closed form: the block matrices, the
+eigenvector recursion (in both the unreduced and the degenerate $g_j=0$ cases), the
+\emph{explicit} radical eigenformulas for $p\le 3$ (quadratic, trigonometric Cardano,
+Ferrari), an \emph{explicit rational witness} proving that no radical eigenformula
+can exist for $p\ge 4$, the essential self-adjointness of $H$, and the transition
+matrix elements of the dipole perturbation $V$.
+\end{abstract}
+
+\section{Setup and the parabosonic Fock module}\label{sec:setup}
+
+We fix a positive integer $p$. We first record the explicit realization of the
+order-$p$ parabosonic module $V(p)$ that is forced by the stated relations, and
+verify it satisfies them.
+
+\begin{definition}[The module $V(p)$]\label{def:Vp}
+Let $V(p)$ be the Hilbert space with orthonormal basis $\{\ket{n}:n=0,1,2,\dots\}$,
+$\bm\ket{0}=0$, and
+\begin{equation}\label{eq:beta}
+\beta_n \;=\; \begin{cases} 0, & n=0,\\ n, & n\ge 2 \text{ even},\\ n-1+p, & n\ge 1 \text{ odd},\end{cases}
+\qquad
+\bp\ket{n}=\sqrt{\beta_{n+1}}\,\ket{n+1},\quad \bm\ket{n}=\sqrt{\beta_{n}}\,\ket{n-1}.
+\end{equation}
+\end{definition}
+
+\begin{lemma}[$V(p)$ realizes the order-$p$ paraboson relations]\label{lem:relations}
+On $V(p)$ the operators \eqref{eq:beta} are mutually adjoint, $(\bp)^{\dagger}=\bm$,
+satisfy $\bm\ket{0}=0$, $\bm\bp\ket0=p\ket0$, and
+\begin{align}
+[\{\bm,\bp\},\bp]&=2\bp, & [\{\bm,\bp\},\bm]&=-2\bm,\label{eq:rel1}\\
+[\{\bp,\bp\},\bm]&=-4\bp, & [\{\bm,\bm\},\bp]&=4\bm.\label{eq:rel2}
+\end{align}
+Moreover
+\begin{equation}\label{eq:numberlaw}
+\tfrac12\{\bp,\bm\}\,\ket{n}=\Bigl(n+\tfrac p2\Bigr)\ket{n},\qquad n=0,1,2,\dots
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+That $(\bp)^{\dagger}=\bm$ is immediate from \eqref{eq:beta}, and
+$\bm\ket0=0$, $\bm\bp\ket0=\beta_1\ket0=(1-1+p)\ket0=p\ket0$.
+
+\emph{Equation \eqref{eq:numberlaw} and \eqref{eq:rel1}.}
+From \eqref{eq:beta},
+\begin{equation}\label{eq:anticomm}
+\{\bp,\bm\}\ket{n}=(\bp\bm+\bm\bp)\ket{n}=(\beta_n+\beta_{n+1})\ket{n}.
+\end{equation}
+For every $n\ge0$ exactly one of $n,n+1$ is even and the other odd, so
+$\beta_n+\beta_{n+1}=(\text{even index value})+(\text{odd index value})$. If $n$ is
+even ($n\ge0$): $\beta_n+\beta_{n+1}=n+\bigl((n+1)-1+p\bigr)=2n+p$. If $n$ is odd:
+$\beta_n+\beta_{n+1}=\bigl(n-1+p\bigr)+(n+1)=2n+p$. In both cases
+$\beta_n+\beta_{n+1}=2n+p$, which gives \eqref{eq:numberlaw}. Writing
+$A:=\{\bm,\bp\}=\{\bp,\bm\}$, \eqref{eq:numberlaw} says $A=2N_F+p$ where $N_F$ is
+the diagonal operator $N_F\ket n=n\ket n$. Since $\bp\ket n=\sqrt{\beta_{n+1}}\ket{n+1}$
+raises $n$ by one and $\bm$ lowers it by one,
+\[
+[A,\bp]\ket n=2[N_F,\bp]\ket n=2\bigl((n+1)-n\bigr)\bp\ket n=2\bp\ket n,\quad
+[A,\bm]\ket n=2\bigl((n-1)-n\bigr)\bm\ket n=-2\bm\ket n,
+\]
+which is \eqref{eq:rel1}.
+
+\emph{Equation \eqref{eq:rel2}.}
+We verify $[\{\bp,\bp\},\bm]=-4\bp$; the second identity is its adjoint. Using
+\eqref{eq:beta},
+\[
+(\bp)^2\ket n=\sqrt{\beta_{n+1}\beta_{n+2}}\,\ket{n+2},\qquad
+\{\bp,\bp\}=2(\bp)^2 .
+\]
+Hence, abbreviating $c_n:=\sqrt{\beta_{n+1}\beta_{n+2}}$,
+\[
+[(\bp)^2,\bm]\ket n=(\bp)^2\bm\ket n-\bm(\bp)^2\ket n
+=\sqrt{\beta_n}\,c_{n-1}\ket{n+1}-c_n\sqrt{\beta_{n+2}}\,\ket{n+1}.
+\]
+Now $\sqrt{\beta_n}\,c_{n-1}=\sqrt{\beta_n}\sqrt{\beta_n\beta_{n+1}}=\beta_n\sqrt{\beta_{n+1}}$ and
+$c_n\sqrt{\beta_{n+2}}=\sqrt{\beta_{n+1}\beta_{n+2}}\sqrt{\beta_{n+2}}=\beta_{n+2}\sqrt{\beta_{n+1}}$,
+so
+\[
+[(\bp)^2,\bm]\ket n=(\beta_n-\beta_{n+2})\sqrt{\beta_{n+1}}\,\ket{n+1}.
+\]
+By \eqref{eq:beta}, $\beta_{n+2}-\beta_n=2$ for all $n\ge0$ (both indices have the
+same parity, and consecutive same-parity values differ by $2$). Therefore
+$[(\bp)^2,\bm]\ket n=-2\sqrt{\beta_{n+1}}\ket{n+1}=-2\,\bp\ket n$, i.e.
+$[\{\bp,\bp\},\bm]=2[(\bp)^2,\bm]=-4\bp$. Taking adjoints (and using
+$(\bp)^{\dagger}=\bm$) gives $[\{\bm,\bm\},\bp]=4\bm$.
+\end{proof}
+
+\begin{remark}
+$V(p)$ is the unique (up to unitary equivalence) irreducible $*$-representation of
+the order-$p$ single-mode paraboson algebra with a cyclic vacuum $\ket0$ obeying
+$\bm\ket0=0,\ \bm\bp\ket0=p\ket0$: the relations force \eqref{eq:anticomm}, hence
+$\{\bp,\bm\}$ has the spectrum \eqref{eq:numberlaw}, hence
+$\beta_n=\langle n-1|\bm\bp|n-1\rangle$ obeys $\beta_{n}+\beta_{n+1}=2n+p$ together
+with $\beta_0=0,\ \beta_1=p$, whose unique nonnegative solution is \eqref{eq:beta}.
+Everything below uses only the relations through \eqref{eq:beta}--\eqref{eq:numberlaw}.
+\end{remark}
+
+\section{The conserved excitation operator and block structure}
+
+We work on $\mathcal{H}:=V(p)\otimes\HA$, $\HA=\mathrm{span}\{\ket0_A,\dots,\ket p_A\}$,
+with product basis $\ket{n}\otimes\ket{j}_A$, $n\ge0$, $0\le j\le p$. Write
+$N_F\ket n=n\ket n$ on $V(p)$ and $J:=\sum_{j=0}^{p} j\,E_{jj}$ on $\HA$.
+By \eqref{eq:numberlaw},
+\begin{equation}\label{eq:Hrewrite}
+H=\omega_F\Bigl(N_F+\tfrac p2\Bigr)\otimes I_A
++I\otimes\sum_{j=0}^{p}\varepsilon_j E_{jj}
++\sum_{j=0}^{p-1} g_j\bigl(\bp\otimes E_{j,j+1}+\bm\otimes E_{j+1,j}\bigr).
+\end{equation}
+
+\begin{definition}[Excitation operator]
+\[
+C:=N_F\otimes I_A+I\otimes J,\qquad C\,(\ket n\otimes\ket j_A)=(n+j)\,(\ket n\otimes\ket j_A).
+\]
+\end{definition}
+
+\begin{proposition}[Conservation law]\label{prop:conserved}
+$[C,H]=0$. Consequently $\mathcal H=\bigoplus_{q=0}^{\infty}\mathcal B_q$, where
+$\mathcal B_q:=\ker(C-qI)$ is $H$-invariant, with orthonormal basis
+\begin{equation}\label{eq:blockbasis}
+\bigl\{\,\ket{n=q-j}\otimes\ket{j}_A\;:\;j\in J_q\,\bigr\},\qquad
+J_q:=\{\,j\in\mathbb Z:\,0\le j\le p,\ q-j\ge0\,\}=\{0,1,\dots,\min(q,p)\},
+\end{equation}
+so $\dim\mathcal B_q=d_q:=\min(q,p)+1\le p+1$.
+\end{proposition}
+
+\begin{proof}
+$N_F\otimes I_A$ and $I\otimes J$ commute with the first two summands of
+\eqref{eq:Hrewrite} (all diagonal in the product basis). For the coupling, on a
+basis vector $\ket{n}\otimes\ket{j+1}_A$:
+\[
+\bigl(\bp\otimes E_{j,j+1}\bigr)\ket n\otimes\ket{j+1}_A
+=\sqrt{\beta_{n+1}}\;\ket{n+1}\otimes\ket{j}_A,
+\]
+which has $C$-eigenvalue $(n+1)+j=n+(j+1)$, equal to that of the input. Likewise
+$\bm\otimes E_{j+1,j}$ sends $\ket n\otimes\ket{j}_A\mapsto\sqrt{\beta_n}\,\ket{n-1}\otimes\ket{j+1}_A$,
+preserving $n+j=(n-1)+(j+1)$. Hence every term of $H$ commutes with $C$, so
+$[C,H]=0$. The eigenspaces of $C$ are spanned by the product vectors with fixed
+$n+j=q$; the constraints $n=q-j\ge0$ and $0\le j\le p$ give exactly
+\eqref{eq:blockbasis}. $H$-invariance of each $\mathcal B_q$ follows from $[C,H]=0$.
+\end{proof}
+
+\section{Part (a): exact block diagonalization}
+
+\begin{theorem}[Exact tridiagonal block form]\label{thm:blocks}
+For each $q\ge0$ order the basis \eqref{eq:blockbasis} of $\mathcal B_q$ by
+$j=0,1,\dots,\min(q,p)$. In this basis $H|_{\mathcal B_q}$ is the real symmetric
+tridiagonal $d_q\times d_q$ matrix $H^{(q)}$ with entries
+\begin{align}
+H^{(q)}_{jj}&=\omega_F\Bigl(q-j+\tfrac p2\Bigr)+\varepsilon_j,
+&& 0\le j\le \min(q,p),\label{eq:diag}\\
+H^{(q)}_{j,j+1}=H^{(q)}_{j+1,j}&=g_j\,\sqrt{\beta_{\,q-j}}
+=g_j\sqrt{\beta_{q-j}},
+&& 0\le j\le \min(q,p)-1,\label{eq:offdiag}
+\end{align}
+all other entries zero, where $\beta_m$ is given by \eqref{eq:beta}. Hence $H$ is
+exactly diagonalizable in the structural sense: it is unitarily equivalent to the
+orthogonal direct sum $\bigoplus_{q\ge0} H^{(q)}$ of explicit finite tridiagonal
+matrices of size at most $p+1$, generalizing the $2\times2$ Jaynes--Cummings
+doublets ($p=1$, $d_q=2$ for $q\ge1$).
+\end{theorem}
+
+\begin{proof}
+By Proposition~\ref{prop:conserved} it suffices to compute the matrix of $H$ in the
+ordered basis \eqref{eq:blockbasis}. The diagonal part of $H$ in
+\eqref{eq:Hrewrite} acts on $\ket{q-j}\otimes\ket j_A$ by
+$\omega_F\bigl((q-j)+\frac p2\bigr)+\varepsilon_j$, giving \eqref{eq:diag}. For the
+off-diagonal coupling, the only basis vectors connected to $\ket{q-j}\otimes\ket j_A$
+are those differing by one atomic step. Using
+$\bp\ket{q-j-1}=\sqrt{\beta_{q-j}}\ket{q-j}$,
+\[
+\bigl(\bp\otimes E_{j,j+1}\bigr)\bigl(\ket{q-(j+1)}\otimes\ket{j+1}_A\bigr)
+=\sqrt{\beta_{q-j}}\;\ket{q-j}\otimes\ket{j}_A ,
+\]
+so
+\[
+\bigl\langle (q-j),j\bigl|\,H\,\bigr|(q-j-1),j+1\bigr\rangle
+=g_j\sqrt{\beta_{q-j}} .
+\]
+The Hermitian conjugate term $\bm\otimes E_{j+1,j}$ supplies the equal transpose
+entry, giving \eqref{eq:offdiag}; all entries with $|j-j'|\ge2$ vanish because each
+coupling term changes $j$ by exactly $\pm1$. Each $H^{(q)}$ is real symmetric, hence
+orthogonally diagonalizable, and $H=\bigoplus_q H^{(q)}$. For $p=1$ and $q\ge1$,
+$d_q=2$ and $H^{(q)}=\bigl(\begin{smallmatrix}\omega_F(q+\frac12)+\varepsilon_0 & g_0\sqrt{\beta_q}\\ g_0\sqrt{\beta_q} & \omega_F(q-1+\frac12)+\varepsilon_1\end{smallmatrix}\bigr)$,
+the standard JC doublet.
+\end{proof}
+
+\subsection{Self-adjointness and the validity of the direct-sum decomposition}
+\label{sec:selfadjoint}
+
+The operator $H$ acts on the infinite-dimensional space $\mathcal H=V(p)\otimes\HA$
+and is unbounded (its diagonal part contains $\omega_F N_F$). The statement
+``$H=\bigoplus_q H^{(q)}$'' and all subsequent spectral claims presuppose that $H$ is
+(essentially) self-adjoint; we now justify this on the natural domain.
+
+\begin{proposition}[Essential self-adjointness]\label{prop:esa}
+Let $\mathcal D:=\mathrm{span}\{\ket n\otimes\ket j_A:n\ge0,\,0\le j\le p\}$ be the
+algebraic (finite) span of the product basis. Then:
+\begin{enumerate}
+\item $\mathcal D=\bigoplus_{q\ge0}\mathcal B_q$ (algebraic direct sum), each
+$\mathcal B_q$ is finite-dimensional and $H$-invariant, and $H(\mathcal D)\subseteq\mathcal D$;
+\item $H$ is symmetric on $\mathcal D$ and $\mathcal D$ is a core, i.e.\ $H|_{\mathcal D}$
+is essentially self-adjoint; its unique self-adjoint closure $\overline H$ satisfies
+$\overline H=\bigoplus_{q\ge0}H^{(q)}$ in the sense of an orthogonal direct sum of
+self-adjoint operators, with domain
+$\mathcal{D}(\overline H)=\{\,\psi=\sum_q\psi_q:\psi_q\in\mathcal B_q,\ \sum_q\|H^{(q)}\psi_q\|^2<\infty\,\}$.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+(1) is immediate from Proposition~\ref{prop:conserved} and
+Theorem~\ref{thm:blocks}: the basis vectors are the joint eigenvectors of $C$, the
+$\mathcal B_q$ are mutually orthogonal finite-dimensional eigenspaces of $C$ spanning
+$\mathcal D$, and $H$ preserves each $\mathcal B_q$, hence preserves $\mathcal D$.
+
+(2) On the real space the matrices $H^{(q)}$ are symmetric, so for
+$\phi,\psi\in\mathcal D$, writing $\phi=\sum_q\phi_q$, $\psi=\sum_q\psi_q$ (finite
+sums), $\langle\phi,H\psi\rangle=\sum_q\langle\phi_q,H^{(q)}\psi_q\rangle
+=\sum_q\langle H^{(q)}\phi_q,\psi_q\rangle=\langle H\phi,\psi\rangle$; thus
+$H|_{\mathcal D}$ is symmetric. Essential self-adjointness is the standard criterion
+for an operator that is reduced by an orthogonal family of finite-dimensional
+invariant subspaces whose algebraic sum is the domain: by Nelson's analytic-vector
+theorem it suffices to exhibit a total set of analytic vectors, and every basis
+vector $\ket n\otimes\ket j_A\in\mathcal B_q$ lies in the
+\emph{finite-dimensional} invariant subspace $\mathcal B_q$, on which $H$ acts as the
+bounded matrix $H^{(q)}$; hence $\sum_{k\ge0}\frac{t^k}{k!}\|H^k(\ket n\otimes\ket j_A)\|
+=\sum_k\frac{t^k}{k!}\|(H^{(q)})^k(\cdot)\|\le e^{t\|H^{(q)}\|}<\infty$ for all
+$t>0$, so each basis vector is analytic, and these form a total set. By Nelson's
+theorem $H|_{\mathcal D}$ is essentially self-adjoint. Equivalently, the deficiency
+indices vanish: if $(H^*\pm i)\psi=0$ then projecting onto $\mathcal B_q$ gives
+$(H^{(q)}\pm i)\psi_q=0$, and since the real symmetric $H^{(q)}$ has real spectrum,
+$\psi_q=0$ for all $q$, so $\psi=0$. Finally, the orthogonal direct sum
+$\bigoplus_q H^{(q)}$ (with the stated $\ell^2$-summability domain) is self-adjoint
+and extends $H|_{\mathcal D}$; by uniqueness of the self-adjoint extension it equals
+$\overline H$.
+\end{proof}
+
+Henceforth ``$H$'' denotes this self-adjoint operator $\overline H$, and ``the
+spectrum of $H$'' means $\sigma(\overline H)=\overline{\bigcup_q\sigma(H^{(q)})}$,
+the closure of the union of the (finite, real) spectra of the blocks.
+
+\begin{remark}[Scope of ``closed form''; Abel--Ruffini obstruction]\label{rem:closedform}
+Theorem~\ref{thm:blocks} reduces the spectral problem to a family of explicit
+tridiagonal matrices of size $d_q\le p+1$. Whether the \emph{eigenvalues} admit
+closed radical formulas therefore depends only on $p$:
+\begin{itemize}
+\item For $p\le3$ every block has $d_q\le4$, so its characteristic polynomial has
+degree $\le4$ and the eigenvalues are given by the quadratic / (trigonometric)
+Cardano / Ferrari radical formulas, written explicitly in
+Section~\ref{sec:radical}.
+\item For $p\ge4$ no radical formula for the eigenvalues can exist, in the strong
+pointwise sense made precise and proved in Theorem~\ref{thm:noradical} below.
+\end{itemize}
+The \emph{eigenvectors}, in contrast, are always closed form once an eigenvalue is
+fixed, via the tridiagonal recursion of Theorem~\ref{thm:eigvec} (and its
+block-split refinement in the degenerate case).
+\end{remark}
+
+\begin{theorem}[No radical eigenformula for $p\ge4$]\label{thm:noradical}
+Fix any $p\ge4$. There exist real (indeed rational) parameters
+$\omega_F,\{\varepsilon_j\},\{g_j\}$ and an integer $q$ such that the block
+$H^{(q)}$ has a characteristic polynomial that is irreducible over $\mathbb Q$ with
+Galois group $S_{d_q}$ ($d_q\ge5$); consequently its eigenvalues are not expressible
+by radicals over $\mathbb Q$. In particular there is no formula expressing the
+eigenvalues of $H^{(q)}$ as radical functions of the model parameters that is valid
+for all admissible parameters: ``exact diagonalization'' for $p\ge4$ must be
+understood in the structural sense of Theorem~\ref{thm:blocks}, not as closed-form
+radicals.
+\end{theorem}
+
+\begin{proof}
+We exhibit an explicit rational witness for $p=4$, $q=4$, and then reduce general
+$p\ge4$ to it. The point of an explicit witness is that it dispenses entirely with
+any (true but nontrivial, and here inapplicable, since the $H^{(q)}$ are a
+\emph{structured} non-generic family) ``generic Jacobi matrix has Galois group
+$S_n$'' assertion: a single rational specialization with $S_5$ Galois group already
+proves the impossibility of a universal radical formula, and proves pointwise
+non-radical eigenvalues at that specialization.
+
+\emph{Witness for $p=4$.} Take $p=4$, $q=4$, $\omega_F=1$,
+$(\varepsilon_0,\dots,\varepsilon_4)=(0,1,3,7,2)$, $(g_0,g_1,g_2,g_3)=(1,1,2,1)$.
+Here $M=\min(q,p)=4$, $d_q=5$, and by \eqref{eq:diag}--\eqref{eq:offdiag},
+\[
+a_j=\Bigl(4-j+2\Bigr)+\varepsilon_j,\quad
+(a_0,\dots,a_4)=(6,6,7,10,4),\qquad
+c_j^2=g_j^2\,\beta_{4-j},\quad (c_0^2,c_1^2,c_2^2,c_3^2)=(4,6,8,4),
+\]
+using $\beta_4=4,\beta_3=3{-}1{+}4=6,\beta_2=2,\beta_1=4$ (so
+$c^2=(1\cdot4,1\cdot6,4\cdot2,1\cdot4)$). The characteristic polynomial
+$D_4(E)=\det(EI-H^{(4)})$ (which depends on the $c_j$ only through $c_j^2$, hence is
+rational) computes to
+\begin{equation}\label{eq:witness}
+D_4(E)=E^{5}-33E^{4}+404E^{3}-2284E^{2}+5952E-5744 .
+\end{equation}
+This polynomial is irreducible over $\mathbb Q$ (it has no rational root: by the
+rational-root test the only candidates are divisors of $5744=2^4\cdot359$, none of
+which is a root, and a quadratic$\times$cubic or linear$\times$quartic factorization
+over $\mathbb Z$ is excluded by checking the finitely many integer factor pairs of
+the constant and leading terms — equivalently, a single computer-algebra
+irreducibility test, e.g.\ in \texttt{sympy}, confirms it). Its discriminant is
+$\Delta=1683969343488=2^{16}\cdot 3^{3}\cdot 109\cdot 8731 = 768^2\cdot 2855037$
+(with $768^2=2^{16}\cdot3^2$ and $2855037=3\cdot109\cdot8731$), and
+$2855037$ is not a perfect square (its factorization has the prime $3$ to an odd power), so $\sqrt\Delta\notin\mathbb Q$; hence the Galois
+group $G$ is not contained in the alternating group $A_5$. A degree-$5$ irreducible
+polynomial has $G$ a transitive subgroup of $S_5$; the transitive subgroups are
+$C_5,D_5,F_{20},A_5,S_5$, of which $A_5$ and $S_5$ are the only ones not contained in
+$A_5$, and only $S_5$ contains an odd permutation. Since $G\not\subseteq A_5$ we have
+$G=S_5$. (A direct computation of the Galois group, e.g.\ via the resolvent method
+implemented in \texttt{sympy}'s \texttt{galois\_group}, returns the permutation group
+generated by a $5$-cycle and a transposition, i.e.\ $S_5$.) As $S_5$ is not solvable,
+by the Galois criterion (Abel--Ruffini) the roots of \eqref{eq:witness} — the
+eigenvalues of this $H^{(4)}$ — are not expressible by radicals over $\mathbb Q$.
+
+\emph{Extension to general $p\ge4$.} For arbitrary $p\ge4$ choose $q=4$ and the
+parameters $\omega_F=1$, $(\varepsilon_0,\dots,\varepsilon_4)=(0,1,3,7,2)$ for the
+first five atomic levels and $\varepsilon_j$ arbitrary (e.g.\ $0$) for $j>4$, and
+$(g_0,g_1,g_2,g_3)=(1,1,2,1)$ with $g_j$ arbitrary for $j\ge4$. Because $q=4$, the
+block $\mathcal B_4$ has basis indexed by $j\in J_4=\{0,1,2,3,4\}$ (as $q=4\le p$),
+and $H^{(4)}$ depends only on $\varepsilon_0,\dots,\varepsilon_4$, on
+$g_0,\dots,g_3$, and on $\beta_1,\dots,\beta_4$. The values
+$\beta_m=m$ ($m$ even), $\beta_m=m-1+p$ ($m$ odd) give $\beta_1=p$, $\beta_2=2$,
+$\beta_3=p+2$, $\beta_4=4$, all rational; the off-diagonal squares are
+$c_0^2=g_0^2\beta_4=4$, $c_1^2=g_1^2\beta_3=p+2$, $c_2^2=g_2^2\beta_2=8$,
+$c_3^2=g_3^2\beta_1=p$. Thus the characteristic polynomial $D_4(E;p)$ is a
+\emph{rational} polynomial in $E$ whose coefficients are integer-coefficient
+polynomials in $p$. For $p=4$ it equals \eqref{eq:witness} with $S_5$ Galois group,
+which is an open condition preserved under small rational perturbation; more simply,
+for \emph{each} fixed integer $p\ge4$ one repeats the elementary finite check above
+(irreducibility by rational-root/integer-factorization test and discriminant
+non-square, both decidable) on the explicit $D_4(E;p)$. For every $p\ge4$ this yields
+a rational specialization with non-solvable $S_5$ Galois group on the
+\emph{five-dimensional} sub-block, hence non-radical eigenvalues; if $p\ge5$ the full
+block $\mathcal B_4$ is exactly this $5\times5$ matrix (since $q=4<p$ forces no
+truncation issues), establishing the claim for all $p\ge4$.
+
+Finally, the existence of a single rational parameter point with non-radical
+eigenvalues immediately precludes any universal radical formula: such a formula,
+being a radical function of the parameters, would in particular express the
+eigenvalues at the witness point by radicals over $\mathbb Q(\sqrt[k]{\,\cdot\,})$,
+i.e.\ over a radical extension of $\mathbb Q$, contradicting non-solvability of the
+splitting field of \eqref{eq:witness}.
+\end{proof}
+
+\section{Part (b): energies, eigenstates, transition rates}
+
+\subsection{Eigenstates as a closed-form tridiagonal recursion (unreduced case)}
+
+\begin{theorem}[Dressed states, unreduced block]\label{thm:eigvec}
+Fix $q\ge0$, set $M:=\min(q,p)$, and write $a_j:=H^{(q)}_{jj}$ from \eqref{eq:diag}
+and $c_j:=H^{(q)}_{j,j+1}=g_j\sqrt{\beta_{q-j}}$ from \eqref{eq:offdiag}
+($0\le j\le M-1$). \emph{Assume the unreduced condition $c_j\ne0$ for all
+$0\le j\le M-1$.} (Since $q-j\ge q-M+1\ge1$ for $j<M$ we always have
+$\beta_{q-j}>0$, so this condition is equivalent to $g_j\ne0$ for all $0\le j\le M-1$.
+The complementary degenerate case is treated in
+Theorem~\ref{thm:degenerate}.) Then:
+\begin{enumerate}
+\item Every eigenvalue $E$ of $H^{(q)}$ is simple, and the eigenvector amplitudes
+$\psi_j$ in the basis \eqref{eq:blockbasis} are determined up to normalization by
+$\psi_0=1$ and the three-term recursion
+\begin{equation}\label{eq:rec}
+\psi_1=\frac{E-a_0}{c_0}\,\psi_0,\qquad
+\psi_{m+1}=\frac{(E-a_m)\psi_m-c_{m-1}\psi_{m-1}}{c_m},\quad 1\le m\le M-1.
+\end{equation}
+\item $E$ is an eigenvalue iff the secular (boundary) condition
+\begin{equation}\label{eq:secular}
+(E-a_{M})\psi_{M}-c_{M-1}\psi_{M-1}=0
+\end{equation}
+holds, where $\psi_M$ is computed from \eqref{eq:rec}. Equivalently the eigenvalues
+are the $M+1$ real roots of $\det\bigl(E I-H^{(q)}\bigr)=0$, computable from the
+Sturm recursion $D_{-1}=1$, $D_0=E-a_0$,
+$D_m=(E-a_m)D_{m-1}-c_{m-1}^2 D_{m-2}$, with $\det(EI-H^{(q)})=D_M$.
+\item The normalized dressed state is
+\begin{equation}\label{eq:dressed}
+\ket{q,r}=\Bigl(\textstyle\sum_{j=0}^{M}|\psi_j^{(q,r)}|^2\Bigr)^{-1/2}
+\sum_{j=0}^{M}\psi_j^{(q,r)}\,\ket{q-j}\otimes\ket j_A,\qquad r=0,1,\dots,M,
+\end{equation}
+with energy $E_{q,r}$ the $r$-th root of $D_M$ and amplitudes $\psi^{(q,r)}_j$ from
+\eqref{eq:rec} at $E=E_{q,r}$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+\emph{Simplicity.} A real symmetric tridiagonal matrix with all off-diagonal
+entries nonzero (here $c_j\ne0$ by hypothesis) is \emph{unreduced}; an unreduced
+symmetric tridiagonal matrix has only simple eigenvalues. Indeed, for an eigenvalue
+$E$ the equation $(H^{(q)}-E)\psi=0$ read row by row is exactly the recursion
+\eqref{eq:rec}: row $0$ gives $(a_0-E)\psi_0+c_0\psi_1=0$, i.e.\ the first relation;
+row $m$ ($1\le m\le M-1$) gives $c_{m-1}\psi_{m-1}+(a_m-E)\psi_m+c_m\psi_{m+1}=0$,
+i.e.\ the recursion; and row $M$ gives \eqref{eq:secular}. Since $c_m\neq0$, the
+recursion determines $\psi_1,\dots,\psi_M$ uniquely from $\psi_0$; choosing
+$\psi_0=0$ forces $\psi\equiv0$, so $\psi_0\neq0$ and we may set $\psi_0=1$. Thus
+the eigenspace is one-dimensional, proving simplicity and statement (1).
+
+\emph{Secular condition.} With $\psi_0,\dots,\psi_M$ from \eqref{eq:rec}, the only
+remaining row of $(H^{(q)}-E)\psi=0$ is row $M$, namely \eqref{eq:secular}; it holds
+iff $\psi$ is an eigenvector, iff $E$ is an eigenvalue. The determinant identity is
+the standard Laplace expansion of a tridiagonal matrix along its last row:
+$D_m:=\det\bigl(EI-H^{(q)}\bigr)_{\{0,\dots,m\}}$ satisfies
+$D_m=(E-a_m)D_{m-1}-c_{m-1}^2D_{m-2}$ with $D_{-1}=1,\ D_0=E-a_0$, and
+$\det(EI-H^{(q)})=D_M$, whose roots are the eigenvalues. This is statement (2).
+
+\emph{Dressed state.} By Theorem~\ref{thm:blocks} the basis \eqref{eq:blockbasis} is
+orthonormal in $\mathcal H$, so \eqref{eq:dressed} is the unit eigenvector lifted to
+$\mathcal H$, with energy $E_{q,r}$. The $M+1$ roots of the degree-$(M+1)$ real
+symmetric secular polynomial $D_M$ are real and simple, giving exactly $d_q=M+1$
+dressed states, a complete orthonormal eigenbasis of $\mathcal B_q$. This is
+statement (3).
+\end{proof}
+
+\subsection{Degenerate couplings $g_j=0$: block-splitting}\label{sec:degenerate}
+
+The problem allows arbitrary real $g_j$, including $g_j=0$. We now remove the
+unreduced hypothesis and treat every block.
+
+\begin{theorem}[Reducible block; complete spectral resolution]\label{thm:degenerate}
+Fix $q\ge0$, $M=\min(q,p)$, and let $H^{(q)}$ be the tridiagonal matrix of
+Theorem~\ref{thm:blocks} with off-diagonal entries $c_j=g_j\sqrt{\beta_{q-j}}$
+($0\le j\le M-1$), where now some $c_j$ may vanish. Let
+$Z:=\{\,j:0\le j\le M-1,\ c_j=0\,\}$ be the set of broken links (recall
+$\beta_{q-j}>0$ for $j<M$, so $c_j=0\iff g_j=0$). The complement
+$\{0,1,\dots,M\}\setminus(\text{cut at each }j\in Z)$ partitions the index set
+$\{0,\dots,M\}$ into consecutive maximal runs
+\[
+I_1=\{0,\dots,m_1\},\ I_2=\{m_1{+}1,\dots,m_2\},\ \dots,\ I_L=\{m_{L-1}{+}1,\dots,M\},
+\]
+where the cut points are exactly the $j\in Z$ (the link between index $j$ and $j+1$ is
+cut iff $c_j=0$). Then:
+\begin{enumerate}
+\item $H^{(q)}$ is block-diagonal (after the trivial reordering it already is, the
+runs being contiguous), an orthogonal direct sum
+$H^{(q)}=\bigoplus_{\ell=1}^{L} H^{(q)}_{I_\ell}$ of \emph{unreduced} real symmetric
+tridiagonal matrices $H^{(q)}_{I_\ell}$ (the principal submatrix on the indices
+$I_\ell$), each with all off-diagonal entries nonzero. The corresponding orthogonal
+direct-sum decomposition of $\mathcal B_q$ is into the $H$-invariant subspaces
+$\mathcal B_q^{(\ell)}:=\mathrm{span}\{\ket{q-j}\otimes\ket j_A:j\in I_\ell\}$.
+\item The spectrum of $H^{(q)}$ is the union (with multiplicity) of the spectra of
+the $H^{(q)}_{I_\ell}$. To each sub-block $H^{(q)}_{I_\ell}$ on
+$I_\ell=\{m_{\ell-1}{+}1,\dots,m_\ell\}$ (with $m_0:=0$ for $\ell=1$, indices
+relabeled $0,1,\dots,|I_\ell|-1$) Theorem~\ref{thm:eigvec} applies verbatim: its
+$|I_\ell|$ eigenvalues are simple \emph{within that sub-block}, with eigenvectors
+given by the recursion \eqref{eq:rec} restricted to $I_\ell$ (started at the left end
+$\psi_{m_{\ell-1}+1}=1$, advanced only across the nonzero links inside $I_\ell$), and
+the secular condition \eqref{eq:secular} at the right end of $I_\ell$.
+\item Degeneracies of $H^{(q)}$ arise exactly as coincidences of eigenvalues drawn
+from \emph{different} sub-blocks $H^{(q)}_{I_\ell}$, $H^{(q)}_{I_{\ell'}}$ ($\ell\ne
+\ell'$); if a value $E$ is an eigenvalue of $k$ distinct sub-blocks its
+$H^{(q)}$-eigenspace is $k$-dimensional, spanned by the $k$ sub-block eigenvectors,
+which are automatically orthogonal (they live in the orthogonal subspaces
+$\mathcal B_q^{(\ell)}$). The complete eigenbasis of $\mathcal B_q$ is the union over
+$\ell$ of the dressed states \eqref{eq:dressed} of $H^{(q)}_{I_\ell}$, lifted to
+$\mathcal H$ by zero-padding outside $I_\ell$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(1) For a tridiagonal matrix the only nonzero off-diagonal entries are $c_j$ linking
+index $j$ to $j+1$. If $c_j=0$ then rows/columns $\{0,\dots,j\}$ and
+$\{j+1,\dots,M\}$ are not coupled by $H^{(q)}$; cutting at every $j\in Z$ leaves the
+contiguous runs $I_\ell$ with no coupling between distinct runs, so
+$H^{(q)}=\bigoplus_\ell H^{(q)}_{I_\ell}$ as a block-diagonal (orthogonal direct sum)
+matrix. Within each run all the off-diagonal entries are nonzero by maximality of the
+run (a run is terminated precisely at a vanishing $c_j$), so each $H^{(q)}_{I_\ell}$
+is unreduced. The product-basis vectors with $j\in I_\ell$ span the
+finite-dimensional subspace $\mathcal B_q^{(\ell)}$, which is $H$-invariant because
+$H^{(q)}$ does not couple it to the other runs; these subspaces are mutually
+orthogonal (disjoint index sets) and sum to $\mathcal B_q$.
+
+(2) Eigenvalues of a block-diagonal matrix are the union of eigenvalues of the
+diagonal blocks, with eigenvectors the zero-padded block eigenvectors. Each
+$H^{(q)}_{I_\ell}$ is unreduced symmetric tridiagonal, so Theorem~\ref{thm:eigvec}
+gives, for that block, simple eigenvalues, the three-term recursion, and the secular
+condition, after relabeling $I_\ell$ as $\{0,\dots,|I_\ell|-1\}$. ``Simple within the
+sub-block'' is exactly the conclusion of Theorem~\ref{thm:eigvec} applied to
+$H^{(q)}_{I_\ell}$.
+
+(3) Since each sub-block has simple spectrum, an eigenvalue $E$ of $H^{(q)}$ of
+multiplicity $k$ must be a simple eigenvalue of exactly $k$ distinct sub-blocks; its
+eigenspace is the (orthogonal) direct sum of the corresponding one-dimensional
+sub-block eigenspaces, of total dimension $k$. Orthogonality is automatic because the
+$\mathcal B_q^{(\ell)}$ are mutually orthogonal. Collecting the dressed states of all
+sub-blocks gives an orthonormal eigenbasis of $\mathcal B_q$ of size
+$\sum_\ell|I_\ell|=M+1=d_q$, as required.
+\end{proof}
+
+\begin{remark}
+Theorem~\ref{thm:eigvec} is the special case $L=1$ (no broken links) of
+Theorem~\ref{thm:degenerate}. Together they cover \emph{all} real parameters
+$\omega_F,\{\varepsilon_j\},\{g_j\}$. The recursion \eqref{eq:rec} is now applied
+only across nonzero links, so no division by zero occurs. The (necessary and
+sufficient) condition for $H^{(q)}$ to have entirely simple spectrum is that all
+$c_j\ne0$ \emph{and} no two sub-block spectra coincide; with all $g_j\ne0$ the first
+holds and the second holds for generic $\{\varepsilon_j\}$.
+\end{remark}
+
+\subsection{Closed-form radical energies for $p\le3$}\label{sec:radical}
+
+By Remark~\ref{rem:closedform}, for $p\le3$ each block has size $M+1\le4$ and the
+energies are closed-form radicals. We write them out explicitly; in each formula
+$a_j,c_j$ are \eqref{eq:diag}--\eqref{eq:offdiag}, and reality of all roots is
+automatic because $H^{(q)}$ is real symmetric. If any $c_j=0$ one first splits the
+block by Theorem~\ref{thm:degenerate} and applies the smaller-size formula to each
+sub-block; so it suffices to give the formulas for the unreduced sizes $1,2,3,4$.
+
+\paragraph{Size $1$ ($M=0$, e.g. block $q=0$).} The single eigenvalue is
+$E=a_0=\omega_F\frac p2+\varepsilon_0$; eigenstate $\ket{0}\otimes\ket0_A$.
+
+\paragraph{Size $2$ ($M=1$); $p=1$ JC doublets.} For an unreduced $2\times2$ block,
+\begin{equation}\label{eq:p1}
+E_{\pm}=\frac{a_0+a_1}{2}\pm\sqrt{\Bigl(\frac{a_0-a_1}{2}\Bigr)^2+c_0^2},
+\end{equation}
+both real (the radicand is a sum of squares). For $p=1$, $q\ge1$,
+$a_0=\omega_F(q+\tfrac12)+\varepsilon_0$, $a_1=\omega_F(q-\tfrac12)+\varepsilon_1$,
+$c_0=g_0\sqrt{\beta_q}=g_0\sqrt q$ (since for $p=1$ both parities give
+$\beta_q=q$), recovering the standard Jaynes--Cummings doublet.
+
+\paragraph{Size $3$ ($M=2$); $p=2$.} The characteristic polynomial of the unreduced
+$3\times3$ block is
+\[
+D_2(E)=(E-a_0)(E-a_1)(E-a_2)-c_1^2(E-a_0)-c_0^2(E-a_2)
+=E^3-s_1E^2+s_2E-s_3,
+\]
+\[
+s_1=a_0+a_1+a_2,\quad s_2=a_0a_1+a_0a_2+a_1a_2-c_0^2-c_1^2,\quad
+s_3=a_0a_1a_2-a_0c_1^2-a_2c_0^2 .
+\]
+Substitute $E=t+\tfrac{s_1}{3}$ (so $t=E-\tfrac13\mathrm{tr}\,H^{(q)}$) and set
+$\mu_j:=a_j-\tfrac{s_1}{3}$ (the traceless diagonal). This gives the depressed cubic
+\begin{equation}\label{eq:depcubic}
+t^3+P\,t+Q=0,\qquad
+P=-\tfrac12\bigl(\mu_0^2+\mu_1^2+\mu_2^2\bigr)-\bigl(c_0^2+c_1^2\bigr),\quad
+Q=-\det\!\begin{pmatrix}\mu_0&c_0&0\\ c_0&\mu_1&c_1\\ 0&c_1&\mu_2\end{pmatrix},
+\end{equation}
+i.e.\ $Q=-\mu_0\mu_1\mu_2+\mu_0c_1^2+\mu_2c_0^2$. Because $H^{(q)}$ is real symmetric
+its eigenvalues are real, so the cubic discriminant
+$-4P^3-27Q^2\ge0$ and $P\le0$ (indeed $P<0$ unless the matrix is scalar); we are in
+the \emph{casus irreducibilis}, whose radical-equivalent closed form is the
+trigonometric Cardano formula
+\begin{equation}\label{eq:cardano}
+t_k=2\sqrt{-\frac{P}{3}}\,
+\cos\!\left[\frac13\arccos\!\Bigl(\frac{3Q}{2P}\sqrt{-\frac{3}{P}}\Bigr)
+-\frac{2\pi k}{3}\right],\qquad k=0,1,2,
+\end{equation}
+and the three energies are $E_{q,k}=t_k+\tfrac{s_1}{3}$, $k=0,1,2$. (Equivalently the
+purely algebraic Cardano radicals
+$t=\sqrt[3]{-\tfrac Q2+\sqrt{\tfrac{Q^2}{4}+\tfrac{P^3}{27}}}
++\sqrt[3]{-\tfrac Q2-\sqrt{\tfrac{Q^2}{4}+\tfrac{P^3}{27}}}$ with conjugate cube
+roots give the same three real values; \eqref{eq:cardano} is the real-arithmetic
+form.) For $p=2$, $q\ge2$: $a_j=\omega_F(q-j+1)+\varepsilon_j$,
+$c_0=g_0\sqrt{\beta_q}$, $c_1=g_1\sqrt{\beta_{q-1}}$, with
+$\beta_q,\beta_{q-1}$ from \eqref{eq:beta}.
+
+\paragraph{Size $4$ ($M=3$); $p=3$.} The characteristic polynomial of the unreduced
+$4\times4$ block is
+\[
+D_3(E)=E^4+e_3E^3+e_2E^2+e_1E+e_0,
+\]
+\begin{align*}
+e_3&=-(a_0+a_1+a_2+a_3),\\
+e_2&=\textstyle\sum_{i<j}a_ia_j-(c_0^2+c_1^2+c_2^2),\\
+e_1&=-(a_0a_1a_2+a_0a_1a_3+a_0a_2a_3+a_1a_2a_3)
+     +c_0^2(a_2+a_3)+c_1^2(a_0+a_3)+c_2^2(a_0+a_1),\\
+e_0&=a_0a_1a_2a_3-c_0^2a_2a_3-c_1^2a_0a_3-c_2^2a_0a_1+c_0^2c_2^2 .
+\end{align*}
+Depress by $E=t-\tfrac{e_3}{4}$, giving $t^4+pt^2+qt+r=0$ with
+\begin{equation}\label{eq:depquartic}
+p=e_2-\tfrac{3}{8}e_3^2,\qquad
+q=e_1-\tfrac12 e_2e_3+\tfrac18 e_3^3,\qquad
+r=e_0-\tfrac14 e_1e_3+\tfrac{1}{16}e_2e_3^2-\tfrac{3}{256}e_3^4 .
+\end{equation}
+Ferrari's method: form the resolvent cubic
+\begin{equation}\label{eq:resolvent}
+y^3-p\,y^2-4r\,y+(4pr-q^2)=0,
+\end{equation}
+solve it by the cubic formula \eqref{eq:cardano}--\eqref{eq:depcubic} (after its own
+depression) and pick any real root $y_0$ (one exists, a real cubic always having a
+real root; here all roots are in fact real). With $u:=\sqrt{y_0-p}$ (if $q\ne0$ then
+$y_0>p$ can be chosen so $u$ is real and nonzero; if $q=0$ the quartic is biquadratic
+and solved directly by $t^2=\tfrac{-p\pm\sqrt{p^2-4r}}{2}$), the depressed quartic
+factors as
+\begin{equation}\label{eq:ferrarifactor}
+t^4+pt^2+qt+r=\Bigl(t^2+u\,t+\bigl(\tfrac{y_0}{2}-\tfrac{q}{2u}\bigr)\Bigr)
+\Bigl(t^2-u\,t+\bigl(\tfrac{y_0}{2}+\tfrac{q}{2u}\bigr)\Bigr),
+\end{equation}
+so the four roots are
+\begin{equation}\label{eq:ferrariroots}
+t=\frac{-u\pm\sqrt{u^2-4\bigl(\tfrac{y_0}{2}-\tfrac{q}{2u}\bigr)}}{2},\qquad
+t=\frac{+u\pm\sqrt{u^2-4\bigl(\tfrac{y_0}{2}+\tfrac{q}{2u}\bigr)}}{2},
+\end{equation}
+and the four energies are $E=t-\tfrac{e_3}{4}$. All four are real because $H^{(q)}$
+is real symmetric (equivalently, the two quadratic factors in
+\eqref{eq:ferrarifactor} have nonnegative discriminants for the spectrum-determining
+real $y_0$). For $p=3$, $q\ge3$: $a_j=\omega_F(q-j+\tfrac32)+\varepsilon_j$ and
+$c_j=g_j\sqrt{\beta_{q-j}}$ with $\beta$ from \eqref{eq:beta}.
+
+In all cases the eigenvectors follow from the rational recursion \eqref{eq:rec} (or
+its block-split version) evaluated at each energy.
+
+\subsection{Transition matrix elements of the dipole perturbation}
+
+Let $S^{+}:=\sum_{j=0}^{p-1}E_{j,j+1}$, $S^{-}:=\sum_{j=0}^{p-1}E_{j+1,j}$, so
+$V=\mu(\bp+\bm)\otimes(S^{+}+S^{-})$. (We note $V$ is symmetric and finite on each
+$\mathcal B_q$, mapping it into $\mathcal B_{q-2}\oplus\mathcal B_q\oplus\mathcal
+B_{q+2}$, hence is well-defined on the core $\mathcal D$ of
+Proposition~\ref{prop:esa}.)
+
+\begin{lemma}[Selection rule]\label{lem:selection}
+$V$ maps $\mathcal B_q$ into $\mathcal B_{q-2}\oplus\mathcal B_q\oplus\mathcal B_{q+2}$;
+in particular $\bra{q',r'}V\ket{q,r}=0$ unless $q'-q\in\{-2,0,+2\}$.
+\end{lemma}
+
+\begin{proof}
+$\bp$ raises $N_F$ by $1$, $\bm$ lowers it by $1$; $S^{+}$ lowers $J$ by $1$,
+$S^{-}$ raises $J$ by $1$. Hence the four products in $V$ shift $C=N_F+J$ by
+$\bp S^{+}\!:0$, $\bp S^{-}\!:+2$, $\bm S^{+}\!:-2$, $\bm S^{-}\!:0$. Therefore $V$
+changes $q$ by $0$ or $\pm2$, and since the blocks are mutually orthogonal
+eigenspaces of $C$, the matrix element vanishes off these sectors.
+\end{proof}
+
+\begin{theorem}[Closed-form transition matrix element]\label{thm:transition}
+Let $\ket{q,r}$, $\ket{q',r'}$ be dressed states \eqref{eq:dressed} with (normalized)
+amplitudes $\psi_j:=\psi^{(q,r)}_j$ ($j\in J_q$) and $\phi_{j'}:=\psi^{(q',r')}_{j'}$
+($j'\in J_{q'}$), and set $s:=q'-q$. Then
+\begin{equation}\label{eq:matel}
+\bra{q',r'}V\ket{q,r}
+=\mu\sum_{j\in J_q}\;\sum_{\substack{\delta\in\{-1,+1\}\\ j+\delta\in J_{q'}}}
+\Theta\bigl(s-\delta\bigr)\,\phi_{\,j+\delta}\,\psi_{\,j},
+\qquad
+\Theta(t)=\begin{cases}\sqrt{\beta_{q-j+1}}, & t=+1,\\[2pt]
+\sqrt{\beta_{q-j}}, & t=-1,\\[2pt] 0, & \text{otherwise},\end{cases}
+\end{equation}
+where $\beta_m$ is \eqref{eq:beta}. Equation \eqref{eq:matel} is nonzero only for
+$s\in\{-2,0,2\}$, consistent with Lemma~\ref{lem:selection}.
+\end{theorem}
+
+\begin{proof}
+Write the input dressed state in the product basis,
+$\ket{q,r}=\sum_{j\in J_q}\psi_j\,\ket{q-j}\otimes\ket j_A$. Apply $V$ termwise.
+For a single product vector $\ket{n}\otimes\ket j_A$ with $n=q-j$,
+\[
+(S^{+}+S^{-})\ket j_A=\ket{j-1}_A+\ket{j+1}_A,\qquad
+(\bp+\bm)\ket n=\sqrt{\beta_{n+1}}\,\ket{n+1}+\sqrt{\beta_{n}}\,\ket{n-1},
+\]
+(where out-of-range kets are zero, i.e.\ $\ket{-1}_A=\ket{p+1}_A=0$ and
+$\sqrt{\beta_0}=0$). Hence
+\[
+V\bigl(\ket{n}\otimes\ket j_A\bigr)
+=\mu\!\!\sum_{\delta\in\{-1,1\}}\sum_{\epsilon\in\{-1,1\}}
+\sqrt{\beta_{\,n+\tfrac{1+\epsilon}{2}}}\;\ket{n+\epsilon}\otimes\ket{j+\delta}_A ,
+\]
+with the conventions $\sqrt{\beta_{n+1}}$ for $\epsilon=+1$ and $\sqrt{\beta_{n}}$
+for $\epsilon=-1$. Now project onto
+$\ket{q',r'}=\sum_{j'\in J_{q'}}\phi_{j'}\ket{q'-j'}\otimes\ket{j'}_A$. The product
+$\langle (q'-j'),j'|\,(n+\epsilon),(j+\delta)\rangle$ is nonzero iff $j'=j+\delta$
+and $q'-j'=n+\epsilon=(q-j)+\epsilon$, i.e.\ $\epsilon=q'-q-\delta=s-\delta$. Since
+$\epsilon\in\{-1,+1\}$, a contribution survives only when $s-\delta=\pm1$, i.e.\
+$s\in\{-2,0,2\}$, with $\epsilon=s-\delta$ and the coefficient
+$\sqrt{\beta_{q-j+1}}$ if $s-\delta=+1$ and $\sqrt{\beta_{q-j}}$ if $s-\delta=-1$;
+this is precisely $\Theta(s-\delta)$. Summing over $j\in J_q$ and
+$\delta\in\{-1,+1\}$ (with $j+\delta\in J_{q'}$ to remain in range) gives
+\eqref{eq:matel}.
+\end{proof}
+
+\begin{corollary}[Transition rate]\label{cor:rate}
+The frequency-independent, model-derivable content of the transition rate between
+dressed states is the squared matrix element $|\bra{q',r'}V\ket{q,r}|^2$, given in
+closed form by \eqref{eq:matel}, together with the selection rule
+$q'-q\in\{0,\pm2\}$ (Lemma~\ref{lem:selection}). Under the standard (and external to
+the present algebraic problem) first-order time-dependent perturbation theory for a
+weak harmonic dipole drive of frequency $\Omega$ coupled through $V$ — i.e.\ adopting
+Fermi's golden rule as the \emph{modeling} definition of ``transition rate'' — this
+content assembles into
+\begin{equation}\label{eq:rate}
+W_{(q,r)\to(q',r')}
+=\frac{2\pi}{\hbar}\,\bigl|\bra{q',r'}V\ket{q,r}\bigr|^2\,
+\rho\bigl(E_{q',r'}\bigr)\,\delta\!\bigl(E_{q',r'}-E_{q,r}-\hbar\Omega\bigr),
+\end{equation}
+with the bracketed matrix element \eqref{eq:matel}; in particular $W=0$ unless
+$q'-q\in\{0,\pm2\}$. For monochromatic resonant driving the
+$\delta$/density-of-states factor is replaced by the corresponding (Lorentzian)
+lineshape; the entire intrinsic content of the rate is $|\bra{q',r'}V\ket{q,r}|^2$.
+\end{corollary}
+
+\begin{proof}
+The intrinsic statements — the closed-form matrix element \eqref{eq:matel} and the
+selection rule — are Theorem~\ref{thm:transition} and Lemma~\ref{lem:selection},
+both proved above purely within the model. The envelope \eqref{eq:rate} is Fermi's
+golden rule applied to the perturbation $V$ between the exact eigenstates
+$\ket{q,r},\ket{q',r'}$ of $\overline H$ (Theorems~\ref{thm:blocks},
+\ref{thm:eigvec}--\ref{thm:degenerate}), with $\hbar$, the density of states $\rho$,
+and the drive frequency $\Omega$ supplied by the standard golden-rule prescription;
+this step is a modeling convention rather than a consequence of the algebra, and is
+flagged as such. The replacement for monochromatic driving is the standard
+Lorentzian/linewidth regularization of the energy-conserving $\delta$.
+\end{proof}
+
+\section{Conclusion}
+
+\textbf{(a)} For every fixed $p$, $H$ (rigorously: its self-adjoint closure
+$\overline H$, Proposition~\ref{prop:esa}) is exactly block-diagonalized by the
+single conserved excitation $C=N_F+J$ into finite invariant blocks $\mathcal B_q$ of
+dimension $d_q=\min(q,p)+1\le p+1$, on each of which $H$ acts as the explicit real
+symmetric tridiagonal matrix $H^{(q)}$ of Theorem~\ref{thm:blocks}. This is the
+exact paraparticle generalization of the $p=1$ JC doublets. Closed-form
+\emph{radical} eigenvalues exist precisely for $p\le3$ (block size $\le4$), written
+out explicitly in Section~\ref{sec:radical}; for $p\ge4$ no radical eigenformula
+exists — proved by the explicit rational $S_5$-Galois witness of
+Theorem~\ref{thm:noradical} — and ``exact diagonalization'' means the structural
+reduction above.
+
+\textbf{(b)} The dressed states and energies are given in closed form by the
+tridiagonal recursion \eqref{eq:rec}--\eqref{eq:dressed} (unreduced blocks,
+Theorem~\ref{thm:eigvec}) and by the block-splitting of
+Theorem~\ref{thm:degenerate} when some $g_j=0$, with explicit radical energies
+\eqref{eq:p1}, \eqref{eq:cardano}, \eqref{eq:ferrariroots} for $p\le3$. The dipole
+perturbation obeys the selection rule $\Delta q\in\{0,\pm2\}$
+(Lemma~\ref{lem:selection}), with transition matrix elements given in closed form by
+\eqref{eq:matel}; the intrinsic content of the transition rate is
+$|\bra{q',r'}V\ket{q,r}|^2$, assembled into the golden-rule form \eqref{eq:rate}
+under the standard perturbative modeling convention (Corollary~\ref{cor:rate}).
+
+\end{document}

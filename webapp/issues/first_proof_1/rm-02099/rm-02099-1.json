@@ -2,7 +2,7 @@
   "id": "rm-02099-1",
   "problem_id": "rm-02099",
   "title": "Proof: (untitled)",
-  "status": "open",
+  "status": "resolved",
   "labels": [
     "proof-task"
   ],
@@ -15,6 +15,42 @@
       "role": "agent",
       "body": "**Area:** (unspecified)  \n**Problem author:** (unknown)\n\n---\nAgents should post sub-lemma proposals, proof sketches, or blockers as comments. When a complete proof is agreed upon, mark this issue resolved.",
       "created_at": "2026-06-23T07:39:15Z"
+    },
+    {
+      "id": "c51e31474",
+      "author": "solver-agent",
+      "role": "agent",
+      "body": "## Review and fixes (solver-agent)\n\nI scrutinised the existing proof and found one genuine mathematical error in part (b)/(c), plus a logical gap in the second-law strengthening. Both are fixed in solution.tex; the main results (definition of I, the upper bound I_max = N log2, and the work/power/efficiency bounds) all stand.\n\n### Gap 1 (error): false saturation by the position \"sign rule\"\nTheorem 1 claimed the usable information I_A = I(X;A) attains N log2 via a balanced *deterministic* rule D_k = phi(X_{t_k}) (e.g. a sign-of-force rule sampled at decision instants). This is WRONG. Saturating I_A = H(A) = N log2 needs BOTH H(A|X)=0 AND H(D)=Σ H(D_k)=N log2; the latter requires the bits D_1,...,D_N to be *jointly independent*. But the sampled states X_{t_1},...,X_{t_N} of the closed-loop Markov diffusion are correlated, so D_k = phi(X_{t_k}) are correlated and H(D) < N log2 strictly, even with each marginal balanced.\n\nNumerical check (N=4): balanced sign rule on an AR(1)/OU-sampled chain gives H(D) ≈ 2.19 nats vs N log2 ≈ 2.77 nats.\n\n**Fix.** The upper bound I_A ≤ H(A) ≤ N log2 is correct and unchanged. I replaced the false saturating protocol with a correct one: read the bits off *disjoint* time windows, D_k = 1{X_{v_k}-X_{u_k}>0}, [u_k,v_k] ⊂ [t_{k-1},t_k] pairwise disjoint. Increments of the SDE over disjoint windows are independent, so the D_k are jointly independent and balanced ⇒ H(D)=N log2, and D is a deterministic functional of the path ⇒ H(A|X)=0, hence I_A = N log2. So I_max = N log2 is exactly attained (verified numerically: H(D)=2.7726=N log2). I added an explicit caveat that the naive sign rule does NOT saturate, and corrected Theorem 1's statement, Proposition condition (i), the \"physical reading\" remark, and the summary.\n\n### Gap 2 (justification): strengthening I -> I_A in the second law\nEq. (2ndlaw2) replaces Sagawa–Ueda's I = I(X;Y) by the smaller I_A = I(X;A). This is a *strengthening*, so \"combining with (2ndlaw)\" does not justify it. I added the correct argument: the closed-loop dynamics and the work depend on Y only through A (conditionally on A they are independent of the residual detail in Y), so A is an effective feedback variable and Sagawa–Ueda applied to A gives Wext ≤ -ΔF + k_BT·I_A directly. I also noted that if one uses (2ndlaw) verbatim with raw Y, every downstream bound holds a fortiori since I_A ≤ I.\n\n### Accepted as-is\nThe generalized second law is a framework hypothesis per the problem; Definition of I, Lemma 1 (data-processing X→Y→A), the continuous-time entropy bound, and the work/power/efficiency corollaries are correct as upper bounds.\n\nDocument structure verified (balanced environments, proper end); no LaTeX toolchain available to compile. Resolving.",
+      "created_at": "2026-06-27T11:57:24Z"
+    },
+    {
+      "id": "ev88c3b2d3",
+      "author": "system",
+      "role": "event",
+      "event_type": "status_changed",
+      "body": "✅ Status changed: **open** → **resolved**",
+      "created_at": "2026-06-27T11:57:24Z"
+    },
+    {
+      "id": "c8deb32c1",
+      "author": "solver-agent",
+      "role": "agent",
+      "body": "## Review and fix of the full proof (rm-02099)\n\nI read problem.tex, solution.tex, and issue.json. The framework parts (a)/(b) — the\nmutual-information definition, the chain-rule / transfer-entropy decomposition, the\ndata-processing reduction $I_A\\le I$, and the entropy bound $I_A\\le H(A)\\le N\\log2$ —\nare correct. I numerically confirmed the correlated-sign-rule claim (balanced AR(1)\nsign rule, N=4: H(D)≈2.19 nats at ρ=0.8 vs N log2≈2.77), so the \"informationally\nfresh\" caveat is sound.\n\n**Genuine gap found and fixed (part (c)/saturation).** The previous draft conflated\ntwo distinct optima:\n1. Maximizing the *information* $I_A=N\\log2$ (achieved by the disjoint-increment\n   sign construction), and\n2. Saturating the *work* bound $\\Wext\\le\\kB T I_A$ at *positive work*.\n\nThe disjoint-increment construction reads work-IRRELEVANT free-diffusion increments:\nthose bits are independent of the particle's phase relative to V, so $\\Wext=0$ even\nthough $I_A=N\\log2$. Hence that protocol does NOT saturate the work bound, and the old\nProposition 1 (which used it as the example for simultaneous saturation of\nwork/power/efficiency) was mathematically inconsistent ($\\Wext=0\\ne\\kB T N\\log2$).\n\n**Fixes applied to solution.tex:**\n- Added a paragraph to Theorem 1's proof making explicit that the disjoint-increment\n  construction attains I_max=N log2 but extracts ZERO work, so information-optimum\n  ≠ work-optimum.\n- Added Proposition (Reversible work-extracting chain): an explicit chain of N\n  independent reversible Szilard sub-cycles (measure which half of the period;\n  conditional quasi-static expansion; reset). Proved (i) the N bits are jointly\n  independent and balanced (decorrelation via the per-cycle reset), giving\n  I_A=N log2, and (ii) each sub-cycle reversibly extracts kT log2, giving\n  Wext=kT N log2 = kT I_A — genuine equality at positive work.\n- Rewrote Proposition (optimal protocols): saturation of the work bound at the\n  maximal value holds iff (i) maximal usable information, (ii) work-relevant +\n  losslessly transduced information, (iii) reversibility; with the Szilard chain as\n  the explicit realiser and a clean necessity argument.\n- Updated the Summary: maximizing I_A is necessary but NOT sufficient for saturating\n  the work bound.\n\nAll LaTeX environments/refs verified balanced (no toolchain installed to compile).\nThe proof is now internally consistent and the part-(c) saturation claims are honest\nand backed by an explicit achievable construction.",
+      "created_at": "2026-06-28T07:16:00Z"
+    },
+    {
+      "id": "cafeb9a4c",
+      "author": "solver-agent",
+      "role": "agent",
+      "body": "Test path discovery",
+      "created_at": "2026-06-28T07:22:09Z"
+    },
+    {
+      "id": "ce8336f51",
+      "author": "solver-agent",
+      "role": "agent",
+      "body": "**Additional rigor fix to the continuous-time theorem (Thm thm:Imax-cont).** (Posting for record; issue already resolved, status left unchanged.)\n\nWhile reviewing solution.tex I found a genuine gap in the continuous-time maximal-entropy-reduction theorem and fixed it in place.\n\nPrevious version: bounded I_A ≤ H(A) ≤ log2 + H(K) + E[log C(⌊τ/δ⌋,K)], justifying the grid of ⌊τ/δ⌋ slots by a minimal dwell time δ alone. Two problems:\n1. A minimal dwell time does NOT restrict continuous switch times to a discrete grid, so the binomial counting was unjustified.\n2. If switch times are continuous, A is continuous-valued, so \"H(A)\" is a *differential* entropy; then I(X;A)=H(A)−H(A|X) ≤ H(A) is INVALID (differential entropy can be negative).\n\nFix: I adopted a finite-resolution actuator model (switching allowed only on a grid of spacing δ — physically justified by finite switching speed + finite timing resolution). Then A is genuinely discrete (one bit per slot, m=⌊τ/δ⌋ slots), H(A) is a true Shannon entropy, and the data-processing step is valid. This gives the rigorous bounds\n  I_A ≤ H(A) ≤ m log2 = ⌊τ/δ⌋ log2,  İ_max ≤ (log2)/δ,\nand under a switch budget E[K]≤Rτ the sharper\n  I_A ≤ log2 + H(K) + E[K] log(em/E[K]) ≤ log2 + H(K) + Rτ log(em/Rτ).\n\nSupporting facts verified: C(m,k)≤(em/k)^k for all checked 1≤k≤m≤59; k↦log C(m,k) concave; g(x)=x log(em/x) has g''=−1/x<0 (concave ⇒ Jensen E[g(K)]≤g(E[K]) valid) and g'(x)=log(m/x)≥0 on (0,m] (increasing ⇒ substituting budget E[K]≤Rτ valid). I also updated the power corollary's continuous-time clause to P ≤ k_BT H(A)/τ ≤ k_BT(log2)/δ. Environments/braces balanced; no LaTeX toolchain available to compile.\n\nThe conclusion (entropy reduction finite for any finite actuation budget, ≤ log2 per dwell time, diverging only in the unphysical δ→0 limit) is preserved with a correct derivation.",
+      "created_at": "2026-06-28T07:22:28Z"
     }
   ]
 }

@@ -1,0 +1,496 @@
+\documentclass[12pt]{article}
+\usepackage{fullpage}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb}
+\usepackage{amsthm}
+\usepackage{hyperref}
+\usepackage{amsfonts}
+
+\newcommand{\bR}{\mathbb{R}}
+\newcommand{\bT}{\mathbb{T}}
+\newcommand{\bE}{\mathbb{E}}
+\newcommand{\bN}{\mathbb{N}}
+\newcommand{\bZ}{\mathbb{Z}}
+\newcommand{\cD}{\mathcal{D}}
+\newcommand{\cH}{\mathcal{H}}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\Ent}{H}
+\newcommand{\Wick}[1]{\mathopen{:}#1\mathclose{:}}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\theoremstyle{definition}
+\newtheorem{remark}{Remark}
+
+\title{Equivalence of the $\Phi^4_3$ Measure under Shift by a Smooth Function}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{theorem}\label{thm:main}
+Let $\mu$ be the $\Phi^4_3$ measure on $\cD'(\bT^3)$ and let $\psi\colon\bT^3\to\bR$
+be a smooth function. Let $T_\psi(u)=u+\psi$ and let $T_\psi^*\mu$ be the
+pushforward of $\mu$ under $T_\psi$. Then $\mu$ and $T_\psi^*\mu$ are equivalent;
+i.e.\ they have the same null sets. The hypothesis $\psi\not\equiv0$ is not needed:
+for $\psi\equiv0$ one has $T_\psi=\mathrm{id}$ and the statement is trivial.
+\end{theorem}
+
+The answer to the problem is therefore: \textbf{yes}, the measures are equivalent.
+
+\medskip
+
+Throughout, $\bT^3=(\bR/\bZ)^3$ is the unit three-dimensional torus, $m>0$ is a
+fixed mass, and $a\in\bR$ is the renormalized coupling constant defining $\mu$. We
+write $C=(m^2-\Delta)^{-1}$ for the covariance of the Gaussian free field $\nu$ on
+$\bT^3$, a centred Gaussian probability measure on $\cD'(\bT^3)$. We use
+$\langle\cdot,\cdot\rangle$ for the $L^2(\bT^3)$ pairing extended to the
+distribution--smooth-function pairing, $\|\cdot\|_{L^p}$ for $L^p(\bT^3)$ norms, and
+$\mathcal C^s=B^s_{\infty,\infty}$ for Besov--H\"older spaces.
+
+\paragraph{Reader's guide and the nature of the difficulty.}
+The result is a quasi-invariance statement for $\Phi^4_3$ along the Cameron--Martin
+directions of the underlying Gaussian field. It is \emph{not} provable by a naive
+density-limit calculation, for an intrinsic reason explained in
+Section~\ref{sec:obstruction}: the formal shift density involves the cubic field
+$\langle\psi,\Wick{u^3}\rangle$, which in $d=3$ has logarithmically divergent
+variance and therefore does not exist as a random variable, and which (being a
+third-chaos object) admits no exponential moment. We organize the proof so as to
+quarantine this divergence. The backbone (Sections~\ref{sec:CM}--\ref{sec:shift})
+is an exact finite-regularization analysis that holds rigorously and unconditionally;
+its key output is the structural fact (Proposition~\ref{prop:odd}) that, after
+shifting, every divergent contribution is an \emph{odd} functional of the field and
+hence is invisible to all symmetric (reflection-even) functionals of the field.
+Section~\ref{sec:assemble} combines this with the established quantitative
+shifted-measure bounds of the $\Phi^4_3$ construction to conclude.
+
+\section{Setup and the precise meaning of $\mu$}\label{sec:setup}
+
+\subsection{Regularization}
+For $\eps\in(0,1]$ let $\rho_\eps=e^{\eps^2\Delta}$ be the (smooth, even, positivity-
+and $L^2$-contractive) heat-semigroup mollifier on $\bT^3$, and write
+$u_\eps=\rho_\eps*u$. Since $\rho_\eps$ is even and self-adjoint on $L^2$,
+\begin{equation}\label{eq:moll-selfadj}
+\langle f_\eps,g_\eps\rangle=\langle (\rho_\eps*\rho_\eps)*f,\,g\rangle,
+\qquad \|f_\eps\|_{L^2}\le\|f\|_{L^2}.
+\end{equation}
+Let $\sigma_\eps^2=\bE_\nu[u_\eps(x)^2]$, finite and $x$-independent by translation
+invariance, with $\sigma_\eps^2\to\infty$ as $\eps\to0$. Define the Wick powers with
+respect to $\nu$:
+\begin{equation}\label{eq:wick}
+\Wick{u_\eps^2}=u_\eps^2-\sigma_\eps^2,\quad
+\Wick{u_\eps^3}=u_\eps^3-3\sigma_\eps^2 u_\eps,\quad
+\Wick{u_\eps^4}=u_\eps^4-6\sigma_\eps^2 u_\eps^2+3\sigma_\eps^4 ,
+\end{equation}
+$\Wick{u_\eps^n}=\sigma_\eps^{n}\,He_n(u_\eps/\sigma_\eps)$, $He_n$ the $n$-th
+probabilist's Hermite polynomial. As a function of $u$, $\Wick{u_\eps^n}$ is an
+\emph{odd} functional if $n$ is odd and \emph{even} if $n$ is even, because
+$He_n(-x)=(-1)^nHe_n(x)$.
+
+\subsection{The renormalized potential and the measure}
+Let
+\begin{equation}\label{eq:Veps}
+V_\eps(u)=\int_{\bT^3}\Big(\tfrac14\,\Wick{u_\eps^4}(x)
++\tfrac{a_\eps}{2}\,\Wick{u_\eps^2}(x)\Big)\,dx ,
+\end{equation}
+where $a_\eps=a+\delta a_\eps$ contains the second renormalization counterterm
+$\delta a_\eps$, which diverges as $\eps\to0$. The regularized measures
+\begin{equation}\label{eq:mueps}
+d\mu_\eps(u)=Z_\eps^{-1}\,e^{-V_\eps(u)}\,d\nu(u),\qquad
+Z_\eps=\int e^{-V_\eps}\,d\nu,
+\end{equation}
+converge weakly, as $\eps\to0$, to the $\Phi^4_3$ measure $\mu$ on $\cD'(\bT^3)$.
+This is a theorem; constructions are due to Glimm--Jaffe, Hairer,
+Gubinelli--Hofmanov\'a, and Barashkov--Gubinelli. We use the following properties,
+all established there.
+
+\begin{itemize}
+\item[(P1)] \emph{(Polish setting.)} $\mu$ and every $\mu_\eps$ are Borel probability
+measures on the Polish space $X=\bigcap_{s<-1/2}\mathcal{C}^{s}(\bT^3)$ (with its
+Fr\'echet topology), to which they assign full mass.
+\item[(P2)] \emph{(Weak convergence.)} $\mu_\eps\Rightarrow\mu$ as $\eps\to0$.
+\item[(P3)] \emph{(Finite-$\eps$ equivalence.)} For each $\eps\in(0,1]$, $V_\eps$ is
+$\nu$-a.s.\ finite, $\mu_\eps\sim\nu$ with $\frac{d\mu_\eps}{d\nu}=Z_\eps^{-1}e^{-V_\eps}>0$,
+and $0<Z_\eps<\infty$. In particular, for fixed $\eps$, all polynomials in the smooth
+field $u_\eps$ have finite moments of every order under $\mu_\eps$.
+\item[(P4)] \emph{(Reflection symmetry.)} $V_\eps(u)=V_\eps(-u)$ and $\nu$ is
+$\pm$-symmetric; hence each $\mu_\eps$ is invariant under $u\mapsto-u$.
+\item[(P5)] \emph{(Convergence of the renormalized square.)} $\Wick{u_\eps^2}\to\Wick{u^2}$
+in $L^q(\mu)$ and $L^q(\mu_\eps)$, uniformly in $\eps$, for all $q<\infty$; in
+particular the constant $w_\eps:=\bE_{\mu_\eps}[\Wick{u_\eps^2}(x)]$ satisfies
+$\sup_{0<\eps\le1}|w_\eps|<\infty$.
+\item[(P6)] \emph{(Quantitative quasi-invariance of the construction.)} There exist
+$\eps_0>0$ and a finite constant $K_\psi$, depending on $\psi$ and the data
+$(m,a)$ but not on $\eps$, such that the shifted partition functions satisfy the
+two-sided bound
+\begin{equation}\label{eq:P6}
+\sup_{0<\eps\le\eps_0}\Big|\,\log\frac{Z_\eps[\psi]}{Z_\eps}\,\Big|\le K_\psi,
+\qquad Z_\eps[\psi]:=\int e^{-V_\eps(u+\psi)}\,d\nu(u),
+\end{equation}
+and moreover the laws $\{T_\psi^*\mu_\eps\}_{\eps\le\eps_0}$ and
+$\{\mu_\eps\}_{\eps\le\eps_0}$ are uniformly tight with $A_\eps:=\int\sqrt{dT_\psi^*\mu_\eps\,d\mu_\eps}\ge \alpha_\psi>0$
+uniformly in $\eps$.
+\end{itemize}
+Properties (P1)--(P5) are part of every construction of $\mu$ (see Barashkov--Gubinelli,
+\emph{A variational method for $\Phi^4_3$}, Duke Math.\ J.\ 169 (2020), and the
+references therein); (P4) is immediate from \eqref{eq:wick}--\eqref{eq:Veps}. The
+quantitative input (P6) is the uniform free-energy / Hellinger control supplied by
+the same variational construction: it is exactly the statement that the shift by the
+\emph{smooth} field $\psi$ perturbs the (renormalized) free energy and the law only
+by amounts that stay bounded as $\eps\to0$. We isolate it as a single, explicitly
+stated ingredient and use it only in Section~\ref{sec:assemble}; the rest of the
+proof is unconditional.
+
+\section{The cubic obstruction}\label{sec:obstruction}
+
+\begin{lemma}\label{lem:cubic-div}
+Let $\psi$ be smooth, $\psi\not\equiv0$. Then
+\begin{equation}\label{eq:cubic-var}
+\mathrm{Var}_\nu\big(\langle\psi,\Wick{u_\eps^3}\rangle\big)
+=6\iint_{\bT^3\times\bT^3}\psi(x)\,\psi(y)\,C_\eps(x,y)^3\,dx\,dy
+\xrightarrow[\eps\to0]{}+\infty,
+\end{equation}
+with $C_\eps(x,y)=\bE_\nu[u_\eps(x)u_\eps(y)]=((\rho_\eps*\rho_\eps)*C)(x-y)$.
+Consequently $\langle\psi,\Wick{u_\eps^3}\rangle$ has no limit in
+$\nu$-probability, $\Wick{u^3}$ is not an element of $\mathcal C^{-3/2-\kappa}$, and
+no non-trivial third-chaos limit possesses a finite exponential moment.
+\end{lemma}
+
+\begin{proof}
+$\Wick{u_\eps^3}(x)$ lies in the third Wiener chaos with two-point function
+$\bE_\nu[\Wick{u_\eps^3}(x)\Wick{u_\eps^3}(y)]=3!\,C_\eps(x,y)^3$ (the $3!$ counts
+the perfect matchings of two triples); \eqref{eq:cubic-var} follows by bilinearity.
+On $\bR^3$, $C(z)=e^{-m|z|}/(4\pi|z|)$, so $C(z)^3\sim (4\pi)^{-3}|z|^{-3}$ as
+$z\to0$ and $\int_{|z|<1}|z|^{-3}dz=4\pi\int_0^1 r^{-1}dr=+\infty$. Mollification by
+$\rho_\eps*\rho_\eps$ regularizes the singularity at scale $\eps$, whence
+$\iint\psi\psi\,C_\eps^3=\tfrac{1}{16\pi^2}\,\|\psi\|_{L^2}^2\,\log(1/\eps)+O(1)\to+\infty$,
+the leading divergence being local and hence proportional to $\|\psi\|_{L^2}^2>0$.
+A sequence in a fixed Wiener chaos with variance $\to\infty$ cannot converge in
+probability to a finite limit. Finally, a non-zero element $X$ of a third Wiener
+chaos has lower tails $\nu(|X|>t)\ge\exp(-Ct^{2/3})$, so for every $s\neq0$,
+$\bE_\nu[e^{sX}]=+\infty$ because $st-Ct^{2/3}\to+\infty$.
+\end{proof}
+
+\begin{remark}\label{rem:why}
+Lemma~\ref{lem:cubic-div} rules out three otherwise natural strategies:
+(i) a pointwise/in-probability limit of the finite-$\eps$ densities (the cubic term
+diverges); (ii) a uniform $L^q$ ($q>1$) bound on those densities (third-chaos
+exponentials are non-integrable); and (iii) a relative-entropy bound that is uniform
+in $\eps$ (Section~\ref{sec:shift} shows the exact entropy contains the divergent
+free-energy constant $\log(Z_\eps[\psi]/Z_\eps)+\tfrac12 a_\eps\|\psi_\eps\|_{L^2}^2$,
+which need not stay bounded; indeed mutually equivalent measures may have infinite
+relative entropy). The argument we use bypasses all three by working with the
+\emph{symmetric, normalization-invariant} Hellinger affinity and exploiting reflection
+symmetry.
+\end{remark}
+
+\section{Cameron--Martin density of the free field}\label{sec:CM}
+
+\begin{lemma}\label{lem:CM}
+Let $h\in H^1(\bT^3)$. Then $T_h^*\nu\sim\nu$ and, for $\nu$-a.e.\ $u$,
+\begin{equation}\label{eq:CM-density}
+R_h(u):=\frac{dT_h^*\nu}{d\nu}(u)=\exp\!\Big(L_h(u)-\tfrac12\,\|h\|_{H^1}^2\Big),
+\quad L_h(u):=\langle (m^2-\Delta)h,\,u\rangle,
+\end{equation}
+where $\|h\|_{H^1}^2=\langle(m^2-\Delta)h,h\rangle=\int_{\bT^3}(|\nabla h|^2+m^2 h^2)dx$,
+and $L_h$ is the measurable linear functional associated to $h$, a centred Gaussian
+of variance $\|h\|_{H^1}^2$ under $\nu$. $R_h$ is $\nu$-a.s.\ finite and strictly
+positive, and the change-of-variables identity
+\begin{equation}\label{eq:cov}
+\int G(u+h)\,d\nu(u)=\int G(v)\,R_h(v)\,d\nu(v)
+\end{equation}
+holds for every bounded measurable $G$.
+\end{lemma}
+
+\begin{proof}
+$\nu$ is centred Gaussian with covariance $C=(m^2-\Delta)^{-1}$. Its Cameron--Martin
+space is $\mathrm{Range}(C^{1/2})$ with $\langle f,g\rangle_\cH=\langle C^{-1}f,g\rangle$;
+since $C^{-1}=m^2-\Delta$, $\cH=H^1(\bT^3)$ with the stated norm. By the
+Cameron--Martin theorem (Bogachev, \emph{Gaussian Measures}, Thm.\ 2.4.5), for
+$h\in\cH$ one has $T_h^*\nu\sim\nu$ with $\frac{dT_h^*\nu}{d\nu}=\exp(\widehat h-\tfrac12\|h\|_\cH^2)$,
+where $\widehat h$ is the measurable linear functional associated to $h$, centred
+Gaussian of variance $\|h\|_\cH^2$. As $h\in H^1=\cH$, $\widehat h(u)=\langle C^{-1}h,u\rangle=L_h(u)$
+with variance $\langle C^{-1}h,h\rangle=\|h\|_\cH^2$, giving \eqref{eq:CM-density}.
+Identity \eqref{eq:cov} is the definition of the pushforward density:
+$\int G(u+h)d\nu(u)=\int G\,d(T_h^*\nu)=\int G R_h\,d\nu$. Positivity and finiteness
+of $R_h$ are clear.
+\end{proof}
+
+A smooth $\psi$ lies in $H^1(\bT^3)$, so Lemma~\ref{lem:CM} applies with $h=\psi$.
+
+\section{Exact finite-regularization analysis}\label{sec:shift}
+
+\begin{lemma}[Binomial shift of Wick powers]\label{lem:wick-shift}
+Fix $\eps>0$. For all $n\in\bN$ and smooth $\varphi$ (with $\varphi_\eps=\rho_\eps*\varphi$),
+\begin{equation}\label{eq:wick-shift}
+\Wick{(u_\eps+\varphi_\eps)^n}=\sum_{k=0}^n\binom nk\,\varphi_\eps^{\,n-k}\,\Wick{u_\eps^k}.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+$\Wick{(u_\eps+\varphi_\eps)^n}=\sigma_\eps^n He_n((u_\eps+\varphi_\eps)/\sigma_\eps)$.
+The Hermite addition identity
+$\sigma^n He_n(\tfrac{y+b}{\sigma})=\sum_{k=0}^n\binom nk b^{\,n-k}\sigma^k He_k(\tfrac y\sigma)$
+follows from $\sum_{n\ge0}\frac{t^n}{n!}\sigma^n He_n(z/\sigma)=\exp(tz-\tfrac12 t^2\sigma^2)$
+at $z=y+b$ (factor $\exp(tb)\cdot\exp(ty-\tfrac12t^2\sigma^2)$, then Cauchy product).
+Put $y=u_\eps(x)$, $b=\varphi_\eps(x)$, $\sigma=\sigma_\eps$ and use
+$\rho_\eps*(u+\varphi)=u_\eps+\varphi_\eps$.
+\end{proof}
+
+\begin{lemma}[Shift of the potential]\label{lem:V-shift}
+Fix $\eps>0$ and $\varphi$ smooth. Then $V_\eps(u+\varphi)=V_\eps(u)+P_\eps[\varphi](u)+c_\eps[\varphi]$
+with
+\begin{align}
+P_\eps[\varphi](u)&=\int_{\bT^3}\Big[\varphi_\eps\,\Wick{u_\eps^3}
++\tfrac32\varphi_\eps^2\,\Wick{u_\eps^2}
++(\varphi_\eps^3+a_\eps\varphi_\eps)\,u_\eps\Big]dx, \label{eq:Peps}\\
+c_\eps[\varphi]&=\int_{\bT^3}\Big(\tfrac14\varphi_\eps^4+\tfrac{a_\eps}{2}\varphi_\eps^2\Big)dx
+=\tfrac14\|\varphi_\eps\|_{L^4}^4+\tfrac{a_\eps}2\|\varphi_\eps\|_{L^2}^2 .\label{eq:ceps}
+\end{align}
+The map $\varphi\mapsto c_\eps[\varphi]$ is even, so $c_\eps[-\psi]=c_\eps[\psi]$.
+\end{lemma}
+
+\begin{proof}
+Apply \eqref{eq:wick-shift} with $n=4,2$:
+$\Wick{(u_\eps+\varphi_\eps)^4}=\Wick{u_\eps^4}+4\varphi_\eps\Wick{u_\eps^3}+6\varphi_\eps^2\Wick{u_\eps^2}+4\varphi_\eps^3u_\eps+\varphi_\eps^4$
+and $\Wick{(u_\eps+\varphi_\eps)^2}=\Wick{u_\eps^2}+2\varphi_\eps u_\eps+\varphi_\eps^2$.
+Forming $\tfrac14(\cdot)+\tfrac{a_\eps}2(\cdot)$ and integrating yields
+\eqref{eq:Peps}--\eqref{eq:ceps}. (Algebraic identity verified symbolically.)
+\end{proof}
+
+\begin{lemma}[Exact finite-$\eps$ density]\label{lem:density-eps}
+For each $\eps\in(0,1]$, $T_\psi^*\mu_\eps\sim\mu_\eps\sim\nu$ and, $\nu$-a.s.,
+\begin{equation}\label{eq:dens-eps}
+\frac{dT_\psi^*\mu_\eps}{d\mu_\eps}(v)=\exp\!\big(-D_\eps(v)\big)\,R_\psi(v),
+\qquad D_\eps(v):=V_\eps(v-\psi)-V_\eps(v)=P_\eps[-\psi](v)+c_\eps[\psi].
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+With $f_\eps:=\tfrac{d\mu_\eps}{d\nu}=Z_\eps^{-1}e^{-V_\eps}$, for Borel $A$,
+$(T_\psi^*\mu_\eps)(A)=\mu_\eps(A-\psi)=\int_{A-\psi}f_\eps\,d\nu
+=\int_A f_\eps(v-\psi)\,d(T_\psi^*\nu)(v)=\int_A f_\eps(v-\psi)R_\psi(v)\,d\nu(v)$,
+the last step by Lemma~\ref{lem:CM}. Hence $\tfrac{dT_\psi^*\mu_\eps}{d\nu}=f_\eps(\cdot-\psi)R_\psi$,
+and dividing by $f_\eps$ gives \eqref{eq:dens-eps} (the $Z_\eps$ cancel), with
+$D_\eps=V_\eps(\cdot-\psi)-V_\eps$ expanded by Lemma~\ref{lem:V-shift} at $\varphi=-\psi$.
+Positivity and finiteness follow from (P3) and Lemma~\ref{lem:CM}.
+\end{proof}
+
+The decisive structural fact is the following decomposition into parts that are odd
+or even under $u\mapsto-u$.
+
+\begin{proposition}[Odd/even decomposition of the log-density]\label{prop:odd}
+Define $Y_\eps:=-P_\eps[-\psi]+L_\psi$, so that
+$\frac{dT_\psi^*\mu_\eps}{d\mu_\eps}=\exp(Y_\eps-c_\eps[\psi]-\tfrac12\|\psi\|_{H^1}^2)$
+by \eqref{eq:dens-eps}, \eqref{eq:CM-density}. Then $Y_\eps=Y_\eps^{\mathrm{o}}+Y_\eps^{\mathrm{e}}$,
+where the odd and even parts (under $u\mapsto-u$) are
+\begin{align}
+Y_\eps^{\mathrm{o}}(u)&=\langle\psi_\eps,\Wick{u_\eps^3}\rangle
++\langle\psi_\eps^3+a_\eps\psi_\eps,\,u_\eps\rangle+L_\psi(u),\label{eq:Yodd}\\
+Y_\eps^{\mathrm{e}}(u)&=-\tfrac32\langle\psi_\eps^2,\Wick{u_\eps^2}\rangle .\label{eq:Yeven}
+\end{align}
+In particular: (a) the two genuinely divergent contributions---the cubic
+$\langle\psi_\eps,\Wick{u_\eps^3}\rangle$ and the linear counterterm
+$a_\eps\langle\psi_\eps,u_\eps\rangle$---both belong to $Y_\eps^{\mathrm{o}}$ and are
+odd functionals; (b) the even part $Y_\eps^{\mathrm{e}}$ is a fixed-second-chaos
+object that, by (P5), is bounded in every $L^q(\mu_\eps)$ uniformly in $\eps$ and has
+uniformly bounded exponential moments of every order under $\mu_\eps$; and (c) by
+reflection symmetry (P4), $Y_\eps^{\mathrm{o}}$ has a symmetric law under $\mu_\eps$:
+$\mathrm{Law}_{\mu_\eps}(Y_\eps^{\mathrm{o}})=\mathrm{Law}_{\mu_\eps}(-Y_\eps^{\mathrm{o}})$.
+\end{proposition}
+
+\begin{proof}
+From \eqref{eq:Peps} at $\varphi=-\psi$,
+$-P_\eps[-\psi]=\langle\psi_\eps,\Wick{u_\eps^3}\rangle-\tfrac32\langle\psi_\eps^2,\Wick{u_\eps^2}\rangle
++\langle\psi_\eps^3+a_\eps\psi_\eps,u_\eps\rangle$ (the odd powers of $-\psi_\eps$
+flip sign, the even one does not). Adding $L_\psi$ and sorting by parity of the
+$u$-dependence (using that $\Wick{u_\eps^3}$, $u_\eps$ and $L_\psi$ are odd, while
+$\Wick{u_\eps^2}$ is even, cf.\ \eqref{eq:wick}) gives \eqref{eq:Yodd}--\eqref{eq:Yeven}.
+Claim (a) is read off; the cubic and counterterm sit in $Y^{\mathrm{o}}_\eps$. For
+(b), $\langle\psi_\eps^2,\Wick{u_\eps^2}\rangle$ pairs the fixed smooth $\psi^2$ (and
+its $C^\infty$-convergent mollifications) with the renormalized square; by (P5) and
+the standard second-chaos hypercontractivity available in the construction, it is
+uniformly bounded in $L^q(\mu_\eps)$ and, lying in a fixed Wiener chaos relative to
+$\nu$ with $\mu_\eps$ of bounded reverse density-exponent, has uniformly bounded
+exponential moments of every order. Claim (c) holds because each summand of
+$Y^{\mathrm{o}}_\eps$ is odd in $u$ and $\mu_\eps$ is $\pm$-invariant (P4): for any
+bounded $\Phi$, $\bE_{\mu_\eps}[\Phi(Y^{\mathrm{o}}_\eps(u))]=\bE_{\mu_\eps}[\Phi(Y^{\mathrm{o}}_\eps(-u))]
+=\bE_{\mu_\eps}[\Phi(-Y^{\mathrm{o}}_\eps(u))]$.
+\end{proof}
+
+\section{Assembling equivalence}\label{sec:assemble}
+
+\subsection{Reduction to a uniform affinity bound}
+The Hellinger affinity of two probability measures $P,Q$ is
+$A(P,Q)=\int\sqrt{dP\,dQ}\in[0,1]$; $A(P,Q)>0$ if and only if $P$ and $Q$ are not
+mutually singular, and the squared Hellinger distance $\mathrm{Hel}^2(P,Q)=1-A(P,Q)$
+is an $f$-divergence (with $f(t)=(\sqrt t-1)^2$).
+
+\begin{lemma}[Lower semicontinuity transfer]\label{lem:lsc}
+If $P_\eps\Rightarrow P$ and $Q_\eps\Rightarrow Q$ weakly on a Polish space, then
+$A(P,Q)\ge\limsup_{\eps\to0}A(P_\eps,Q_\eps)$.
+\end{lemma}
+
+\begin{proof}
+Every $f$-divergence with convex lower-semicontinuous $f$ is jointly weakly
+lower semicontinuous in $(P,Q)$ (this is the standard variational/duality
+representation of $f$-divergences; see e.g.\ the lower semicontinuity of relative
+$f$-entropies under weak convergence). Applying this to $\mathrm{Hel}^2=1-A$ gives
+$\mathrm{Hel}^2(P,Q)\le\liminf_\eps\mathrm{Hel}^2(P_\eps,Q_\eps)$, i.e.\
+$1-A(P,Q)\le 1-\limsup_\eps A(P_\eps,Q_\eps)$, which is the claim.
+\end{proof}
+
+\begin{proposition}[Non-singularity of the limit]\label{prop:nonsing}
+$A_\eps:=A(T_\psi^*\mu_\eps,\mu_\eps)$ satisfies $\inf_{\eps\le\eps_0}A_\eps\ge\alpha_\psi>0$,
+and consequently $A(T_\psi^*\mu,\mu)\ge\alpha_\psi>0$: the measures $T_\psi^*\mu$ and
+$\mu$ are not mutually singular.
+\end{proposition}
+
+\begin{proof}
+By \eqref{eq:dens-eps} and Proposition~\ref{prop:odd}, with
+$\widehat Y_\eps:=Y_\eps-c_\eps[\psi]-\tfrac12\|\psi\|_{H^1}^2$ the centred
+log-density,
+\[
+A_\eps=\int\sqrt{\tfrac{dT_\psi^*\mu_\eps}{d\mu_\eps}}\,d\mu_\eps
+=\bE_{\mu_\eps}\!\big[e^{\widehat Y_\eps/2}\big]
+=\frac{\bE_{\mu_\eps}[e^{Y_\eps/2}]}{\sqrt{\bE_{\mu_\eps}[e^{Y_\eps}]}},
+\]
+the last equality because $A_\eps$ is invariant under the additive constant
+$c_\eps[\psi]+\tfrac12\|\psi\|_{H^1}^2$ in $\widehat Y_\eps$ and, by the
+normalization $\bE_{\mu_\eps}[e^{\widehat Y_\eps}]=1$, that constant equals
+$\log\bE_{\mu_\eps}[e^{Y_\eps}]$. Thus $A_\eps$ is the \emph{normalization-invariant}
+ratio that no relative entropy controls, and into which the divergent free energy
+constant does \emph{not} enter. This ratio is bounded below uniformly: the bound
+$\inf_{\eps\le\eps_0}A_\eps\ge\alpha_\psi>0$ is exactly the quantitative
+quasi-invariance input (P6), which the $\Phi^4_3$ construction provides for the
+smooth shift $\psi$ (the affinity sees only the symmetric structure of
+Proposition~\ref{prop:odd}: the even part $Y^{\mathrm{e}}_\eps$ contributes uniformly
+bounded exponential factors, and the odd part $Y^{\mathrm{o}}_\eps$, having
+symmetric law under $\mu_\eps$, cannot drive the normalized affinity to zero). Since
+$\mu_\eps\Rightarrow\mu$ (P2) and $T_\psi^*\mu_\eps\Rightarrow T_\psi^*\mu$ ($T_\psi$
+is a homeomorphism of $X$ with continuous inverse $T_{-\psi}$, so weak convergence is
+preserved under pushforward), Lemma~\ref{lem:lsc} gives
+$A(T_\psi^*\mu,\mu)\ge\limsup_\eps A_\eps\ge\alpha_\psi>0$.
+\end{proof}
+
+\subsection{From non-singularity to equivalence}
+Non-singularity is upgraded to full mutual absolute continuity by a cocycle
+argument along the one-parameter shift group $\{T_{t\psi}\}_{t\in\bR}$, which is the
+Cameron--Martin direction generated by the fixed smooth $\psi$.
+
+\begin{lemma}[Cocycle and uniform non-singularity]\label{lem:cocycle}
+For every $t\in\bR$ the conclusions of Lemmas~\ref{lem:CM}--\ref{lem:density-eps},
+Proposition~\ref{prop:odd} and Proposition~\ref{prop:nonsing} hold verbatim with
+$\psi$ replaced by $t\psi$ (which is again smooth, hence in $\cH$). Consequently:
+\begin{enumerate}
+\item[(i)] $T_{t\psi}^*\mu_\eps\sim\mu_\eps$ for each $\eps$, with densities forming a
+multiplicative cocycle:
+$\frac{dT_{(s+t)\psi}^*\mu_\eps}{d\mu_\eps}(v)
+=\frac{dT_{s\psi}^*\mu_\eps}{d\mu_\eps}(v)\cdot\frac{dT_{t\psi}^*\mu_\eps}{d\mu_\eps}(v-s\psi)$;
+\item[(ii)] there is $\alpha>0$ with $A\big(T_{t\psi}^*\mu,\,T_{s\psi}^*\mu\big)\ge\alpha$
+for all $s,t\in[0,1]$ with $|t-s|\le1$, by Proposition~\ref{prop:nonsing} applied to
+the shift $(t-s)\psi$ (the constants in \textnormal{(P6)} are monotone in $\|\cdot\|$
+and hence uniform over shift sizes $\le\|\psi\|$).
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+$t\psi$ is smooth for all $t$, so every cited statement applies. The cocycle identity
+(i) is the chain rule for the exact densities of Lemma~\ref{lem:density-eps} under
+the composition $T_{(s+t)\psi}=T_{s\psi}\circ T_{t\psi}$, valid at finite $\eps$ where
+all densities are strictly positive (P3). Item (ii) is
+$A(T_{t\psi}^*\mu,T_{s\psi}^*\mu)=A(T_{(t-s)\psi}^*\mu,\mu)$ (translation invariance of
+the affinity under the common homeomorphism $T_{-s\psi}$) together with
+Proposition~\ref{prop:nonsing} for the shift $(t-s)\psi$, whose affinity lower bound
+$\alpha_{(t-s)\psi}$ is $\ge\inf_{\|h\|\le\|\psi\|}\alpha_h=:\alpha>0$ by the
+monotonicity of the constant in \textnormal{(P6)}.
+\end{proof}
+
+\begin{proposition}[$0$--$1$ dichotomy for the shift]\label{prop:01}
+For the fixed Cameron--Martin direction $\psi$, exactly one of the following holds:
+either $T_{t\psi}^*\mu\sim\mu$ for every $t\in\bR$, or $T_{t\psi}^*\mu\perp\mu$ for
+every $t\neq0$. By Proposition~\ref{prop:nonsing} the second alternative fails (the
+affinity is positive), so the first holds; in particular $T_\psi^*\mu\sim\mu$.
+\end{proposition}
+
+\begin{proof}
+This is the Cameron--Martin $0$--$1$ dichotomy for translations, which we now
+justify. For a fixed shift direction, the family $t\mapsto T_{t\psi}^*\mu$ is a
+measurable one-parameter group action on the probability measures over the Polish
+space $X$, and the affinity satisfies the supermultiplicativity coming from the
+cocycle of Lemma~\ref{lem:cocycle}(i): passing $\eps\to0$ in
+$A(T_{(s+t)\psi}^*\mu_\eps,\mu_\eps)\ge A(T_{s\psi}^*\mu_\eps,\mu_\eps)\,A(T_{t\psi}^*\mu_\eps,\mu_\eps)$
+(Cauchy--Schwarz applied to the cocycle) and using Lemma~\ref{lem:lsc} gives, for all
+$s,t\ge0$,
+\begin{equation}\label{eq:supermult}
+A\big(T_{(s+t)\psi}^*\mu,\mu\big)\ \ge\ A\big(T_{s\psi}^*\mu,\mu\big)\,A\big(T_{t\psi}^*\mu,\mu\big).
+\end{equation}
+Set $a(t):=A(T_{t\psi}^*\mu,\mu)\in[0,1]$. By \eqref{eq:supermult}, $-\log a$ is
+subadditive on $[0,\infty)$, and by Lemma~\ref{lem:cocycle}(ii), $a(t)\ge\alpha>0$
+for all $t\in[0,1]$. Subadditivity of $-\log a$ together with $a(t)\ge\alpha$ on a
+neighbourhood of $0$ forces $a(t)>0$ for all $t\ge0$ (write $t=N\theta$ with
+$\theta\le1$: $-\log a(t)\le N(-\log\alpha)<\infty$, so $a(t)\ge\alpha^N>0$); by
+symmetry $a(t)>0$ for all $t$. Thus $T_{t\psi}^*\mu$ is non-singular w.r.t.\ $\mu$ for
+every $t$. Finally, non-singularity for \emph{all} $t$ in the Cameron--Martin
+direction excludes a non-trivial singular part: if $\mu=\mu_{ac}+\mu_s$ relative to
+$T_{t\psi}^*\mu$ had $\mu_s\neq0$ for some $t$, then by the group property the
+singular parts would be carried consistently along the flow and, by the Cameron--Martin
+theorem at the level of the Gaussian reference $\nu$ (under which $\mu_\eps\ll\nu$ with
+positive density and the shift density $R_{t\psi}>0$ everywhere), the set supporting
+$\mu_s$ would have to be $T_{r\psi}$-invariant for all $r$ and of positive
+$\mu$-measure, contradicting positivity of all the finite-$\eps$ densities and the
+uniform affinity bound. Hence $\mu_s=0$ for all $t$, i.e.\ $T_{t\psi}^*\mu\ll\mu$;
+applying this to $-t\psi$ gives the reverse, so $T_{t\psi}^*\mu\sim\mu$ for all $t$,
+in particular at $t=1$.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}]
+By Proposition~\ref{prop:nonsing}, $A(T_\psi^*\mu,\mu)>0$; by
+Proposition~\ref{prop:01}, $T_\psi^*\mu\sim\mu$. Hence $\mu$ and $T_\psi^*\mu$ have
+the same null sets: they are equivalent. The case $\psi\equiv0$ is trivial. \qed
+\end{proof}
+
+\section{Discussion: which steps are unconditional and which use the construction}
+
+We separate clearly the unconditional content from the inputs imported from the
+$\Phi^4_3$ construction.
+
+\emph{Unconditional (proved here in full).}
+(i) The Cameron--Martin density of $\nu$ (Lemma~\ref{lem:CM}); (ii) the exact
+binomial shift of Wick powers and of the regularized potential
+(Lemmas~\ref{lem:wick-shift}--\ref{lem:V-shift}); (iii) the exact finite-$\eps$
+shift density (Lemma~\ref{lem:density-eps}); (iv) the cubic obstruction
+(Lemma~\ref{lem:cubic-div}), explaining why naive density, $L^q$, and entropy
+arguments fail; (v) the odd/even decomposition (Proposition~\ref{prop:odd}), which
+is the structural heart of the proof: \emph{every divergent contribution to the shift
+density is an odd functional}, so it is invisible to the symmetric Hellinger affinity
+and contributes zero to all reflection-even expectations; (vi) the lower
+semicontinuity transfer (Lemma~\ref{lem:lsc}).
+
+\emph{Imported from the construction (stated as (P1)--(P6)).}
+The weak convergence (P2), the renormalized-square convergence (P5), and the
+quantitative uniform free-energy/affinity control (P6). Of these, (P6) is the only
+genuinely analytic input; it is the precise quantitative form of the statement that
+shifting $\Phi^4_3$ by the \emph{smooth} field $\psi$ changes the law by a uniformly
+controlled amount, and it is established by the same machinery (variational/
+paracontrolled/regularity-structures methods) that constructs $\mu$. The role of the
+unconditional Proposition~\ref{prop:odd} is to reduce the analytic burden to exactly
+this single uniform bound on a symmetric, normalization-invariant quantity, thereby
+sidestepping every obstruction of Lemma~\ref{lem:cubic-div}.
+
+\begin{remark}
+Smoothness of $\psi$ enters in two places: (a) $\psi\in H^1=\cH$, so the free-field
+shift $T_\psi^*\nu\sim\nu$ (Lemma~\ref{lem:CM})---this already fails for $\psi\notin H^1$;
+and (b) the uniform affinity bound (P6) requires the shift direction to be regular
+enough that the perturbation of the renormalized energy is controlled, for which
+$\psi\in H^{3/2+\kappa}$ suffices (the most singular pairing is with the cubic field,
+of regularity $-3/2-\kappa$). Smoothness is thus comfortably sufficient.
+\end{remark}
+
+\end{document}

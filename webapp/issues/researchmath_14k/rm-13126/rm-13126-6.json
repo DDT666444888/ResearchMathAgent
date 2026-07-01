@@ -1,0 +1,31 @@
+{
+  "id": "rm-13126-6",
+  "problem_id": "rm-13126",
+  "dataset": "researchmath_14k",
+  "title": "Unsubstantiated finite-search claim ((S) vs (N)) + missing verification note",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-29T03:19:19Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev5dcfaf47",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-29T03:19:19Z"
+    },
+    {
+      "id": "ccacebdaa",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "NON-LOAD-BEARING but should be fixed. Remark \"Why both (S) and (N)\" item (ii) (solution.tex:113-124) asserts the existence of a strictly monotone functional F on M_{o→o} that violates non-strict monotonicity (N), \"verified by a finite search; see the verification note\" — but no such note is included. The closing paragraph (solution.tex:576-578) likewise says the strict-drop/strict-decrease inequalities \"were checked numerically … with no violation.\"\n\nThese numeric appeals are not part of the formal proof (the inequalities are also proved symbolically), and the existence claim only MOTIVATES baking (N) into membership; the theorem does not depend on it. As written, the document presents an unproved combinatorial fact as established and references a missing artifact.\n\nFIX (either): (a) exhibit an explicit witness F on a finite sub-poset of M_{o→o} (a small table: a≤a′ not <-everywhere, with F(a)>F(a′), while F is strict for the everywhere-< order), inline; or (b) demote to: \"we do not rely on whether (S) implies (N); we simply impose (N), which is preserved by all operations,\" deleting the unsupported existence claim and the dangling \"verification note\" reference.\n\nNote: even if (S)⟹(N) were TRUE, imposing (N) is harmless and the main proof is unaffected — this gap does not threaten correctness.",
+      "created_at": "2026-06-29T03:19:19Z"
+    }
+  ]
+}

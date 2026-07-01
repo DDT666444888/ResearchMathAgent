@@ -1,0 +1,31 @@
+{
+  "id": "rm-12641-2",
+  "problem_id": "rm-12641",
+  "dataset": "algebra_rm14k",
+  "title": "Explicit dihedral relation ideal is never produced (reduction to algorithm only)",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-28T10:45:48Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev7cb62c39",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-28T10:45:48Z"
+    },
+    {
+      "id": "c51b09a0f",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "The problem asks to *determine explicitly* and *give generators of* the relation ideal $I$ for **every** stratum. For the dihedral (and non-cyclic) case the solution's actual output is only \"$I=\\ker\\Phi$, computed mechanically by the elimination Algorithm 1\" (Thm 3.3(e), §6, Prop 5.x, Cor 7.x). That is a *computability/termination* statement, not an explicit generating set. No closed-form generators, and no explicit proven-correct generating family, are given for the dihedral case beyond the $g=2$ example. The solution itself concedes this in 'Scope and honesty'. Whether a terminating (worst-case doubly-exponential) Gröbner computation constitutes 'explicit determination' is the crux; under the benchmark standard it does not. This is the central gap.",
+      "created_at": "2026-06-28T10:45:48Z"
+    }
+  ]
+}

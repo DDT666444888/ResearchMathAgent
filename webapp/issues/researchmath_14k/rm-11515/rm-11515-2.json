@@ -1,0 +1,31 @@
+{
+  "id": "rm-11515-2",
+  "problem_id": "rm-11515",
+  "dataset": "researchmath_14k",
+  "title": "Inductive step: Hilbert series of ker(pi-bar) (kernel identity)",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T14:31:09Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "eve8fe4707",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T14:31:09Z"
+    },
+    {
+      "id": "c9b4d245a",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Inductive step / kernel Hilbert series.**\n\nIn the reduction of the main identity $(\\star)$ to a recursion in $k$, the comparison surjection $\\pi:R^{k,\\ell}\\twoheadrightarrow R^{k-1,\\ell}$ (with $\\pi(e_i)=e_i$ for $i\\le k-1$, $\\pi(e_k)=0$, kernel $e_kR^{k,\\ell}$) respects the filtration and yields\n$$Q_{k,\\ell,m}(q)-Q_{k-1,\\ell,m}(q)=\\mathrm{Hilb}(\\ker\\overline\\pi;q),$$\nwhere $\\overline\\pi:R^{k,\\ell,m}/R^{k,\\ell,m-1}\\twoheadrightarrow R^{k-1,\\ell,m}/R^{k-1,\\ell,m-1}$ and\n$$\\ker\\overline\\pi\\cong\\{x\\in R^{k,\\ell,m}:\\pi(x)\\in R^{k-1,\\ell,m-1}\\}/R^{k,\\ell,m-1}.$$\n\n**To prove (currently only checked symbolically for $1\\le k,\\ell\\le5$):** for $1\\le m\\le\\ell$, $m<k$,\n$$\\mathrm{Hilb}(\\ker\\overline\\pi;q)=q^{\\,m+(k-m)(\\ell-m+1)}\\binom{\\ell}{m}_q\\binom{k-1}{m-1}_q.\\qquad(\\dagger)$$\n\nThis is the entire mathematical content of the inductive step: it produces the exact generating function, not merely the shape of a recursion. The reduction to $(\\dagger)$ is rigorous; the identity itself is unproved from first principles.\n\n**Why it is hard.**\n- $\\mathbb Q\\langle e_1,\\dots,e_m\\rangle\\subseteq R^{k,\\ell}$ is not a sub-Hopf-algebra; its Schur expansion is opaque, so the graded dimensions cannot be read off the Pieri rule directly.\n- The product $\\binom{\\ell}{m}_q\\binom{k-1}{m-1}_q$ strongly suggests the kernel is modeled by **pairs** $(\\nu,\\rho)$ with $\\nu\\subseteq m\\times(\\ell-m)$ and $\\rho\\subseteq(m-1)\\times(k-m)$. The crux is to construct an explicit basis / filtration realizing this product **with the exact degree shift** $m+(k-m)(\\ell-m+1)$.\n\n**Suggested attack.** Build a leading-term (Gröbner-style) basis of $R^{k,\\ell,m}/R^{k,\\ell,m-1}$ compatible with $\\pi$, ordering monomials $e_1^{a_1}\\cdots e_m^{a_m}$ and computing their leading Schur terms under the truncated vertical-strip Pieri rule. Show the new length-$k$ classes (those in $\\ker\\pi=e_kR^{k,\\ell}=\\mathrm{span}\\{\\overline{s_\\lambda}:\\ell(\\lambda)=k\\}$) reachable inside the $e_1,\\dots,e_m$ subalgebra are indexed exactly by such pairs $(\\nu,\\rho)$, with degree $m+(k-m)(\\ell-m+1)+|\\nu|+|\\rho|$. Use $\\binom{k-1}{m-1}_q=\\binom{k-1}{k-m}_q$ for a possible complementation bijection.\n\n**Status.** Critic re-verified $(\\star)$ (hence $(\\dagger)$ as its inductive increment) for all $1\\le k,\\ell\\le4$, $1\\le m\\le\\ell$, via truncated-Pieri row reduction: the target is correct; only a general-$k$ proof is missing.",
+      "created_at": "2026-06-27T14:31:09Z"
+    }
+  ]
+}

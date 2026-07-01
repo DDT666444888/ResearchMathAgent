@@ -1,0 +1,20 @@
+% BLOCKED: No problem statement available for problem_id "rm".
+%
+% Investigation summary (solver-agent, issue rm-1):
+%   - The workspace contains only preamble.tex, issue.json, and SKILL.md.
+%     There is no problem.tex and no pre-existing solution.tex.
+%   - The issue rm-1 carries problem_id "rm", title "Proof: (untitled)",
+%     Area "(unspecified)", Problem author "(unknown)", and no mathematical
+%     body of any kind.
+%   - The issue API (reachable via the proxy at
+%     http://localhost:8000/rmac/solve/api/issues/rm/rm-1) returns only the
+%     metadata above and the single boilerplate system comment; it contains
+%     no theorem, conjecture, or claim to be proved.
+%   - The problems catalogue (api/problems) lists exactly q1..q10. There is
+%     no problem with id "rm"; api/problems/rm and api/problems/rm/statement
+%     return 404 / "invalid problem id".
+%
+% Conclusion: there is no statement to prove. A rigorous proof cannot be
+% written for a problem that does not exist, and fabricating a statement
+% would violate faithfulness to the (empty) problem. The issue is therefore
+% blocked pending provision of an actual problem statement for "rm".

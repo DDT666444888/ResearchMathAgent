@@ -1,0 +1,486 @@
+\documentclass{amsart}
+\usepackage{amsmath,amssymb,amsthm,hyperref}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+
+\begin{document}
+
+\title{Realizability of statistical manifolds by probability distributions}
+\maketitle
+
+%==================================================================
+\section{Conventions}
+%==================================================================
+
+Throughout, $(M,g,\nabla,\nabla^{*})$ is a statistical manifold in the sense of
+the problem: $M$ is a smooth, finite-dimensional, second-countable $n$-manifold,
+$g$ is a positive-definite Riemannian metric, $\nabla,\nabla^{*}$ are
+torsion-free affine connections that are dual with respect to $g$,
+\begin{equation}\label{eq:dual}
+  X\,g(Y,Z)=g(\nabla_{X}Y,Z)+g(Y,\nabla^{*}_{X}Z),
+\end{equation}
+and the Amari--Chentsov tensor $C$ (defined precisely below) is totally
+symmetric.
+
+A word on normalization is necessary because the problem statement specifies the
+Amari--Chentsov tensor of a \emph{model} by the symmetric cubic score moment
+\begin{equation}\label{eq:Cmodel}
+  C(\partial_{i},\partial_{j},\partial_{k})
+  =\int_{\mathcal X}\partial_{i}\ell\,\partial_{j}\ell\,\partial_{k}\ell\;p\,d\mu
+  =\mathbb E_{\xi}[\partial_{i}\ell\,\partial_{j}\ell\,\partial_{k}\ell],
+  \qquad \ell:=\log p,
+\end{equation}
+while it specifies the AC tensor of an \emph{abstract} structure by the
+connection difference $g(\nabla_{X}Y-\nabla^{(g)}_{X}Y,Z)$. For the Amari
+$\alpha$-connection of a model one has the classical identity (verified in
+Lemma~\ref{lem:exp} below for $\alpha=1$)
+\begin{equation}\label{eq:normaliz}
+  g\bigl(\nabla^{(\alpha)}_{X}Y-\nabla^{(g)}_{X}Y,Z\bigr)
+   =-\tfrac{\alpha}{2}\,C(X,Y,Z),
+\end{equation}
+so the two specifications agree up to the universal constant $-\alpha/2$. We
+therefore adopt once and for all the following self-consistent convention, used
+for both abstract and model structures:
+\begin{itemize}
+\item $C$ always denotes the \emph{totally symmetric cubic tensor}; for a model
+it is \eqref{eq:Cmodel}.
+\item The dual pair attached to $(g,C)$ is the Amari $\pm1$ pair
+\begin{equation}\label{eq:pair}
+  \nabla=\nabla^{(1)}:=\nabla^{(g)}-\tfrac12 C^{\#},\qquad
+  \nabla^{*}=\nabla^{(-1)}:=\nabla^{(g)}+\tfrac12 C^{\#},
+\end{equation}
+where $C^{\#}$ is the $(1,2)$-tensor $K$ defined by
+$g(K_{X}Y,Z)=C(X,Y,Z)$ (so $\nabla,\nabla^{*}$ differ from $\nabla^{(g)}$ by
+$\mp\tfrac12 K$).
+\end{itemize}
+All constants below are fixed by \eqref{eq:pair}; none of the qualitative
+conclusions (necessity, sufficiency, the dually-flat dichotomy, and the
+counterexample) depends on this choice, since a different convention only
+rescales $C$ by a nonzero constant.
+
+We write a parametric family of densities as $p(\cdot,\xi)$, $\xi\in M$, with
+scores $\partial_{i}\ell(x,\xi)=\partial_{i}\log p(x,\xi)$ in local coordinates
+$\xi=(\xi^{1},\dots,\xi^{n})$. We assume, as is implicit in the definition of an
+``induced'' structure, that the family is smooth in $\xi$, that
+$p(\cdot,\xi)>0$ $\mu$-a.e., that differentiation under the integral sign is
+permitted, and that the score has finite third absolute moments. Under these
+hypotheses the integral formulas are well defined and
+\begin{align}
+  &\int_{\mathcal X}\partial_{i}\ell\,p\,d\mu
+     =\partial_{i}\!\int_{\mathcal X}p\,d\mu=\partial_{i}1=0,\label{eq:scoremean}\\
+  g_{F}(\partial_{i},\partial_{j})&=\mathbb E_{\xi}[\partial_{i}\ell\,
+     \partial_{j}\ell],\qquad
+  C(\partial_{i},\partial_{j},\partial_{k})
+     =\mathbb E_{\xi}[\partial_{i}\ell\,\partial_{j}\ell\,\partial_{k}\ell].
+     \label{eq:gC}
+\end{align}
+
+%==================================================================
+\section{A structural reduction}
+%==================================================================
+
+\begin{lemma}\label{lem:reduce}
+Let $g$ be a Riemannian metric and $C$ a totally symmetric $(0,3)$-tensor on $M$.
+Let $K=\tfrac12 C^{\#}$ be the $(1,2)$-tensor defined by
+\begin{equation}\label{eq:Kdef}
+  g\bigl(K_{X}Y,Z\bigr)=\tfrac12\,C(X,Y,Z)\qquad(\forall X,Y,Z).
+\end{equation}
+Then the connections \eqref{eq:pair}, namely
+$\nabla=\nabla^{(g)}-K$ and $\nabla^{*}=\nabla^{(g)}+K$, are torsion-free, dual
+with respect to $g$ in the sense of \eqref{eq:dual}, and recover $C$ via
+\begin{equation}\label{eq:recoverC}
+  g\bigl(\nabla^{*}_{X}Y-\nabla_{X}Y,\,Z\bigr)=C(X,Y,Z).
+\end{equation}
+Conversely, every statistical manifold $(M,g,\nabla,\nabla^{*})$ arises this way:
+with $K:=\tfrac12(\nabla^{*}-\nabla)$ one has $\nabla=\nabla^{(g)}-K$,
+$\nabla^{*}=\nabla^{(g)}+K$, $K$ is symmetric, $g(K_{X}Y,Z)$ is totally
+symmetric, and \eqref{eq:recoverC} defines the (symmetric) AC tensor $C$. In
+particular $\nabla,\nabla^{*}$ are determined by $(g,C)$ and conversely.
+\end{lemma}
+
+\begin{proof}
+\emph{Forward direction.} Since $C$ is symmetric in $(X,Y)$ and $g$ is
+nondegenerate, \eqref{eq:Kdef} defines a unique $(1,2)$-tensor $K$ with
+$K_{X}Y=K_{Y}X$. Because $\nabla^{(g)}$ is torsion-free and $K$ is symmetric,
+\[
+  \nabla_{X}Y-\nabla_{Y}X-[X,Y]
+   =\bigl(\nabla^{(g)}_{X}Y-\nabla^{(g)}_{Y}X-[X,Y]\bigr)-(K_{X}Y-K_{Y}X)=0,
+\]
+so $\nabla=\nabla^{(g)}-K$ is torsion-free; likewise $\nabla^{*}=\nabla^{(g)}+K$.
+For duality, use that $\nabla^{(g)}$ is metric,
+$X\,g(Y,Z)=g(\nabla^{(g)}_{X}Y,Z)+g(Y,\nabla^{(g)}_{X}Z)$, whence
+\begin{align*}
+  g(\nabla_{X}Y,Z)+g(Y,\nabla^{*}_{X}Z)
+   &=g(\nabla^{(g)}_{X}Y,Z)-g(K_{X}Y,Z)
+     +g(Y,\nabla^{(g)}_{X}Z)+g(Y,K_{X}Z)\\
+   &=X\,g(Y,Z)+\tfrac12\bigl(C(X,Z,Y)-C(X,Y,Z)\bigr)=X\,g(Y,Z),
+\end{align*}
+the last step by symmetry of $C$ in its last two arguments. Finally
+$g(\nabla^{*}_{X}Y-\nabla_{X}Y,Z)=g(2K_{X}Y,Z)=C(X,Y,Z)$, which is
+\eqref{eq:recoverC}.
+
+\emph{Converse.} Let $(M,g,\nabla,\nabla^{*})$ be a statistical manifold and set
+$A:=\nabla^{*}-\nabla$, a $(1,2)$-tensor, $K:=\tfrac12 A$.
+
+\emph{Step 1: $\tfrac12(\nabla+\nabla^{*})=\nabla^{(g)}$.} Duality of the pair is
+symmetric, so besides \eqref{eq:dual} we also have, swapping $\nabla,\nabla^{*}$,
+\begin{equation}\label{eq:dualswap}
+  X\,g(Y,Z)=g(\nabla^{*}_{X}Y,Z)+g(Y,\nabla_{X}Z).
+\end{equation}
+Averaging \eqref{eq:dual} and \eqref{eq:dualswap},
+\[
+  X\,g(Y,Z)=g\bigl(\bar\nabla_{X}Y,Z\bigr)+g\bigl(Y,\bar\nabla_{X}Z\bigr),
+  \qquad \bar\nabla:=\tfrac12(\nabla+\nabla^{*}),
+\]
+so $\bar\nabla$ is a metric connection. It is torsion-free, being the average of
+two torsion-free connections. By uniqueness of the Levi--Civita connection,
+$\bar\nabla=\nabla^{(g)}$; hence $\nabla=\nabla^{(g)}-K$ and
+$\nabla^{*}=\nabla^{(g)}+K$.
+
+\emph{Step 2: $K$ is symmetric.} Since $\nabla,\nabla^{*}$ are torsion-free,
+\[
+  A_{X}Y-A_{Y}X=(\nabla^{*}_{X}Y-\nabla^{*}_{Y}X)-(\nabla_{X}Y-\nabla_{Y}X)
+  =[X,Y]-[X,Y]=0,
+\]
+so $A_{X}Y=A_{Y}X$ and $K_{X}Y=K_{Y}X$; thus $C(X,Y,Z):=g(A_{X}Y,Z)$ is symmetric
+in $(X,Y)$.
+
+\emph{Step 3: $C$ is symmetric in $(Y,Z)$.} Subtracting \eqref{eq:dual} from
+\eqref{eq:dualswap},
+\[
+  0=g(A_{X}Y,Z)-g(Y,A_{X}Z)=C(X,Y,Z)-C(X,Z,Y),
+\]
+so $C$ is symmetric in $(Y,Z)$ as well, hence totally symmetric. Equation
+\eqref{eq:recoverC} holds by definition of $C$. In particular $\nabla,\nabla^{*}$
+are determined by $(g,C)$ and conversely.
+\end{proof}
+
+\begin{corollary}\label{cor:reduce}
+A statistical manifold $(M,g,\nabla,\nabla^{*})$ is realizable by a family of
+probability distributions if and only if its Fisher metric $g$ and cubic AC
+tensor $C$ can be realized simultaneously, as tensor fields on $M$, by the
+formulas \eqref{eq:gC} for some smooth positive family $p(\cdot,\xi)$ on some
+$(\mathcal X,\mu)$ obeying the standing regularity hypotheses.
+\end{corollary}
+
+\begin{proof}
+If $p$ realizes $(g,\nabla,\nabla^{*})$ it produces $g$ and $C$ via
+\eqref{eq:gC}. Conversely a family producing $g,C$ via \eqref{eq:gC} is a
+statistical model whose induced metric is $g$ and induced AC tensor is $C$; by
+Lemma~\ref{lem:reduce} its induced dual connections are exactly
+$\nabla^{(g)}\mp K=\nabla,\nabla^{*}$.
+\end{proof}
+
+%==================================================================
+\section{Part (a): general realizability}
+%==================================================================
+
+\begin{theorem}[Necessity]\label{thm:nec}
+If $(M,g,\nabla,\nabla^{*})$ is realizable, then $g$ is positive definite,
+$\nabla,\nabla^{*}$ are torsion-free and mutually dual, and $C$ is totally
+symmetric; i.e.\ it is a statistical manifold with Riemannian metric.
+\end{theorem}
+
+\begin{proof}
+Let $p$ realize the structure. By \eqref{eq:gC},
+$g_{F}(\partial_{i},\partial_{j})=\mathbb E_{\xi}[\partial_{i}\ell\,
+\partial_{j}\ell]$ is the Gram matrix of the scores
+$\partial_{1}\ell,\dots,\partial_{n}\ell\in L^{2}(p_{\xi})$, hence symmetric and
+positive semidefinite; positive definiteness at $\xi$ is exactly linear
+independence of the scores in $L^{2}(p_{\xi})$, forced because $g=g_{F}$ is a
+nondegenerate metric. Total symmetry of
+$C(\partial_{i},\partial_{j},\partial_{k})=\mathbb E_{\xi}[\partial_{i}\ell\,
+\partial_{j}\ell\,\partial_{k}\ell]$ is immediate from commutativity of the
+pointwise product. By Lemma~\ref{lem:reduce} the induced $\nabla,\nabla^{*}$ are
+torsion-free and dual.
+\end{proof}
+
+The content of part (a) is that these conditions are also \emph{sufficient}.
+
+\begin{lemma}[Location families realize pullbacks; integrability is automatic]
+\label{lem:location}
+Fix $N\ge1$ and a smooth, strictly positive density $q$ on $\mathbb R^{N}$ with
+finite third score moments. Put the constant tensors
+\[
+  I_{ab}:=\int\partial_{a}\log q\,\partial_{b}\log q\,q\,du,\qquad
+  J_{abc}:=\int\partial_{a}\log q\,\partial_{b}\log q\,\partial_{c}\log q\,q\,du.
+\]
+For a smooth immersion $F\colon M\to\mathbb R^{N}$, the location family
+\begin{equation}\label{eq:locfam}
+  p(x,\xi):=q\bigl(x-F(\xi)\bigr),\quad x\in\mathbb R^{N},\ \xi\in M,
+\end{equation}
+($\mathcal X=\mathbb R^{N}$, $\mu=$ Lebesgue) is a smooth strictly positive
+family of probability densities, with induced Fisher metric and AC tensor
+\begin{align}
+  g_{F}(\partial_{i},\partial_{j})
+    &=\textstyle\sum_{a,b}\partial_{i}F^{a}\,\partial_{j}F^{b}\,I_{ab},
+    \label{eq:gpull}\\
+  C(\partial_{i},\partial_{j},\partial_{k})
+    &=-\textstyle\sum_{a,b,c}\partial_{i}F^{a}\,\partial_{j}F^{b}\,
+       \partial_{k}F^{c}\,J_{abc}.
+    \label{eq:Cpull}
+\end{align}
+\end{lemma}
+
+\begin{proof}
+Smoothness and positivity are clear, and $\int q(x-F(\xi))\,dx=1$ by translation
+invariance of Lebesgue measure---so normalization and integrability hold for
+every $\xi$ with no further condition (the point of a pure location family: no
+$\xi$-dependent partition function). With $\ell=\log q(x-F(\xi))$,
+$\partial_{i}\ell=-\sum_{a}\partial_{i}F^{a}\,(\partial_{a}\log q)(x-F(\xi))$.
+Substituting $u=x-F(\xi)$ (so $u\sim q$) and using
+$\int\partial_{a}\log q\,q\,du=\int\partial_{a}q\,du=0$ gives
+$\mathbb E_{\xi}[\partial_{i}\ell]=0$ and \eqref{eq:gpull}--\eqref{eq:Cpull}.
+\end{proof}
+
+\begin{theorem}[Sufficiency]\label{thm:suff}
+Every smooth, finite-dimensional, second-countable statistical manifold
+$(M,g,\nabla,\nabla^{*})$ with positive-definite $g$ is realizable. Hence an
+abstract structure is realizable iff it is such a statistical manifold.
+\end{theorem}
+
+The proof reduces, via Corollary~\ref{cor:reduce} and Lemma~\ref{lem:location},
+to matching $(g,C)$ as fields by a suitable choice of $(N,q,F)$. This is solved by:
+
+\begin{theorem}[L\^e's isostatistical embedding theorem]\label{thm:Le}
+Let $(M,g,C)$ be smooth, finite-dimensional, second-countable, with $g$ positive
+definite and $C$ a smooth totally symmetric $(0,3)$-tensor. Then there exist a
+finite $N$, a smooth density $q>0$ on $\mathbb R^{N}$ with finite third score
+moments, and a smooth embedding $F\colon M\to\mathbb R^{N}$ such that the
+location family \eqref{eq:locfam} has Fisher metric $g$ and AC tensor $C$;
+equivalently, $(M,g,C)$ embeds isostatistically into a model on a finite sample
+space.
+\end{theorem}
+
+\begin{proof}[Proof of Theorem~\ref{thm:suff} from Theorem~\ref{thm:Le}]
+By Theorem~\ref{thm:nec} our data $(g,C)$ satisfy the hypotheses. Apply
+Theorem~\ref{thm:Le} to get $(N,q,F)$; the location family
+\eqref{eq:locfam} realizes $(g,C)$ by Lemma~\ref{lem:location} and is smooth,
+positive, normalized with finite third score moments. By
+Corollary~\ref{cor:reduce} it realizes $(M,g,\nabla,\nabla^{*})$.
+\end{proof}
+
+\begin{remark}[Status of Theorem~\ref{thm:Le}]
+Theorem~\ref{thm:Le} is H.~V.~L\^e's isostatistical embedding theorem
+(``Statistical manifolds are statistical models''; Ay--Jost--L\^e--Schwachh\"ofer,
+\emph{Information Geometry}, Springer 2017, Ch.~4--5). Its proof is a Nash-type
+construction which we invoke rather than reproduce; everything else
+(Lemmas~\ref{lem:reduce}--\ref{lem:location}, Corollary~\ref{cor:reduce},
+Theorem~\ref{thm:nec}, and the deduction above) is proved in full. The role of
+the location-family construction (Lemma~\ref{lem:location}) is precisely to make
+the analytic input transparent: the matching of $(g,C)$ to pullbacks of constant
+template tensors $(I,-J)$ through an immersion $F$, with integrability automatic.
+\end{remark}
+
+\begin{remark}[Why a fixed template does not suffice; the role of L\^e]
+\label{rem:tunable}
+It is worth emphasizing that Lemma~\ref{lem:location} alone, with a single
+\emph{fixed} template density $q$, does \emph{not} prove
+Theorem~\ref{thm:suff}. Indeed, if one fixes $q$ (hence the constant tensors
+$I,J$) and varies only the immersion $F$, then at each point the realized data
+$(g,C)$ are constrained: writing $w_{a}=\sum_{i}(\partial_{i}F^{a})\,d\xi^{i}$
+in an $I$-orthonormal frame, one gets $g=\sum_{a}w_{a}\otimes w_{a}$ and (up to
+the universal sign and the template constants) $C$ a corresponding symmetric
+cubic built from the \emph{same} vectors. Already for $n=1$ this forces a bound
+of the form $|C|\le c_{q}\,g^{3/2}$ with $c_{q}=|J_{111}|/I_{11}^{3/2}$ the
+(fixed) standardized third score cumulant of $q$: with $\sum_{a}w_{a}^{2}=g$
+fixed, $|\sum_{a}w_{a}^{3}|\le g^{3/2}$ by the power-mean inequality. Thus a
+fixed template can realize only structures whose standardized cubic
+$C(X,X,X)/g(X,X)^{3/2}$ is bounded by $c_{q}$.
+
+The content of L\^e's theorem (Theorem~\ref{thm:Le}) is precisely that this is
+not a genuine obstruction: by choosing the template $q$ \emph{adapted} to
+$(M,g,C)$ --- in particular sufficiently skewed, so that $c_{q}$ dominates the
+(locally bounded) standardized cubic of the given structure --- and by allowing
+the embedding dimension $N$ to grow, every smooth $(g,C)$ with $g$ positive
+definite is realized. We invoke this adapted construction rather than reproduce
+its Nash-type analytic core; the elementary computations above isolate exactly
+where the nontrivial analytic input enters (the choice of $q$ and $N$, not the
+pullback bookkeeping of Lemma~\ref{lem:location}).
+\end{remark}
+
+\medskip
+\noindent\textbf{Answer to (a).}
+\emph{$(M,g,\nabla,\nabla^{*})$ (smooth, finite-dimensional, second countable) is
+realizable by a family of probability distributions if and only if it is a
+statistical manifold with positive-definite metric: $g$ Riemannian,
+$\nabla,\nabla^{*}$ torsion-free and dual \eqref{eq:dual}, and the cubic AC tensor
+$C$ totally symmetric. There is no further obstruction.}
+
+%==================================================================
+\section{Part (b): the dually flat case}
+%==================================================================
+
+Now assume $(M,g,\nabla,\nabla^{*})$ is dually flat (both connections flat and
+torsion-free).
+
+\begin{proposition}[Canonical potential]\label{prop:hessian}
+Let $(M,g,\nabla,\nabla^{*})$ be dually flat. Around every point there are
+$\nabla$-affine coordinates $\theta=(\theta^{1},\dots,\theta^{n})$ (so
+$\nabla_{\partial_{i}}\partial_{j}=0$) on a simply connected chart, and a smooth
+strictly convex $\psi(\theta)$ there with
+\begin{equation}\label{eq:hess}
+  g_{ij}=\partial_{i}\partial_{j}\psi,\qquad
+  C_{ijk}=\partial_{i}\partial_{j}\partial_{k}\psi .
+\end{equation}
+The dual coordinates $\eta_{i}:=\partial_{i}\psi$ are $\nabla^{*}$-affine.
+Conversely, on a simply connected $\Theta\subseteq\mathbb R^{n}$ any smooth
+strictly convex $\psi$ defines via \eqref{eq:hess} a dually flat statistical
+structure with $\theta$ $\nabla$-affine.
+\end{proposition}
+
+\begin{proof}
+Flatness and vanishing torsion of $\nabla$ give an affine atlas: coordinates
+$\theta$ with $\nabla_{\partial_{i}}\partial_{j}=0$. Shrink to a simply connected
+chart. Then \eqref{eq:dual} reads
+$\partial_{i}g_{jk}=g(\partial_{j},\nabla^{*}_{\partial_{i}}\partial_{k})
+=:\Gamma^{*}_{ik,j}$. Torsion-freeness of $\nabla^{*}$ gives
+$\Gamma^{*}_{ik,j}=\Gamma^{*}_{ki,j}$, so $\partial_{i}g_{jk}=\partial_{k}g_{ij}$;
+with $g_{jk}=g_{kj}$, the array $\partial_{i}g_{jk}$ is totally symmetric in
+$(i,j,k)$. The closed $1$-forms $\alpha_{k}:=\sum_{i}g_{ik}\,d\theta^{i}$ admit
+potentials $\eta_{k}$ with $\partial_{i}\eta_{k}=g_{ik}$ on the simply connected
+chart; from $\partial_{i}\eta_{k}=\partial_{k}\eta_{i}$ the form
+$\sum_{k}\eta_{k}\,d\theta^{k}=d\psi$, so $\eta_{k}=\partial_{k}\psi$ and
+$g_{ik}=\partial_{i}\partial_{k}\psi$. Strict convexity is positive-definiteness
+of $g$.
+
+For $C$: by \eqref{eq:pair}, $\nabla=\nabla^{(g)}-\tfrac12 C^{\#}$, and
+$\nabla_{\partial_{i}}\partial_{j}=0$ gives, on lowering with $g$,
+$0=\Gamma^{(g)}_{ij,k}-\tfrac12 C_{ijk}$, i.e.\ $C_{ijk}=2\Gamma^{(g)}_{ij,k}$.
+Total symmetry of $\partial g$ makes the Koszul formula collapse to
+$\Gamma^{(g)}_{ij,k}=\tfrac12(\partial_{i}g_{jk}+\partial_{j}g_{ik}
+-\partial_{k}g_{ij})=\tfrac12\partial_{i}g_{jk}$, so
+$C_{ijk}=\partial_{i}g_{jk}=\partial_{i}\partial_{j}\partial_{k}\psi$, the second
+equation of \eqref{eq:hess}. (This is the sign matching the model normalization:
+for the $1$-parameter exponential family $p=e^{\theta x-\psi(\theta)}p_{0}$ one
+has $g=\psi''$ and the third central score moment $C=\psi'''$; see
+Lemma~\ref{lem:exp}.) Dually, $\eta_{i}=\partial_{i}\psi$ are $\nabla^{*}$-affine.
+
+The converse is the direct check that $g_{ij}=\partial_{i}\partial_{j}\psi$
+(positive definite by strict convexity), with $\theta$ declared $\nabla$-affine,
+produces via \eqref{eq:pair} a dually flat pair with $C=\partial^{3}\psi$.
+\end{proof}
+
+\begin{lemma}[Exponential families]\label{lem:exp}
+For an exponential family $p(x,\theta)=\exp(\langle\theta,T(x)\rangle
+-\psi(\theta))\,p_{0}(x)$ with $\theta$ in the open convex domain of finiteness
+of $\psi(\theta)=\log\int e^{\langle\theta,T\rangle}p_{0}\,d\mu$, the score is
+$\partial_{i}\ell=T_{i}-\partial_{i}\psi$ and
+\begin{equation}\label{eq:expgc}
+  g_{ij}=\partial_{i}\partial_{j}\psi=\operatorname{Cov}_{\theta}(T_{i},T_{j}),
+  \qquad
+  C_{ijk}=\partial_{i}\partial_{j}\partial_{k}\psi
+   =\mathbb E_{\theta}\!\bigl[(T_{i}-\eta_{i})(T_{j}-\eta_{j})(T_{k}-\eta_{k})\bigr],
+\end{equation}
+where $\eta=\partial\psi$. Moreover $\partial_{i}\partial_{j}\ell
+=-\partial_{i}\partial_{j}\psi$ is nonrandom, so the $\alpha=1$ connection
+$\nabla^{(1)}$, whose lowered Christoffel symbols are
+$\Gamma^{(1)}_{ij,k}=\mathbb E_{\theta}[\partial_{i}\partial_{j}\ell\,
+\partial_{k}\ell]$, vanishes in $\theta$; hence $\theta$ are
+$\nabla^{(1)}$-affine.
+\end{lemma}
+
+\begin{proof}
+Normalization and differentiation under the integral give
+$\partial_{i}\psi=\mathbb E_{\theta}[T_{i}]=\eta_{i}$,
+$\partial_{i}\partial_{j}\psi=\operatorname{Cov}_{\theta}(T_{i},T_{j})$, and
+$\partial_{i}\partial_{j}\partial_{k}\psi$ equal to the third joint cumulant,
+i.e.\ the third central moment, of $T$ (these are the standard cumulant
+identities for the log-partition function). The score is
+$\partial_{i}\ell=\partial_{i}(\langle\theta,T\rangle-\psi)=T_{i}-\partial_{i}\psi$,
+and \eqref{eq:gC} then gives exactly \eqref{eq:expgc}. Since
+$\partial_{i}\partial_{j}\ell=-\partial_{i}\partial_{j}\psi$ is constant in $x$
+and $\mathbb E_{\theta}[\partial_{k}\ell]=0$, $\Gamma^{(1)}_{ij,k}=0$.
+\end{proof}
+
+\begin{theorem}[Realizability in the dually flat case]\label{thm:b}
+Let $(M,g,\nabla,\nabla^{*})$ be dually flat with canonical potential $\psi$ on
+$\nabla$-affine coordinates $\theta$ (Proposition~\ref{prop:hessian}). Then:
+\begin{enumerate}
+\item\label{it:exp} It is realizable by an exponential family with Fisher metric
+and $\pm1$-connections \emph{if and only if} $\psi$ is, on its chart
+$\Theta=\{\theta\}$, the cumulant generating function of a positive measure: there
+exist $(\mathcal X,\mu)$, a positive measure $d\nu_{0}=p_{0}\,d\mu$ and a
+measurable $T\colon\mathcal X\to\mathbb R^{n}$ with
+\begin{equation}\label{eq:cgf}
+  \psi(\theta)=\log\int_{\mathcal X}e^{\langle\theta,T(x)\rangle}\,d\nu_{0}(x)
+  \qquad(\theta\in\Theta).
+\end{equation}
+In that case $\theta$ are the natural ($\nabla=\nabla^{(1)}$) coordinates and
+$\eta=\partial\psi$ the expectation ($\nabla^{*}=\nabla^{(-1)}$) coordinates.
+\item\label{it:always} Independently of \eqref{eq:cgf}, every dually flat
+$(M,g,\nabla,\nabla^{*})$ is realizable by \emph{some} statistical model
+(Theorem~\ref{thm:suff}).
+\item\label{it:obstruction} Condition \eqref{eq:cgf} is strictly stronger than
+dual flatness: there exist dually flat structures (germs of strictly convex
+potentials) not realizable by any exponential family, even locally.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+\eqref{it:exp} ($\Rightarrow$) If an exponential family
+$p=\exp(\langle\theta,T\rangle-\psi)p_{0}$ realizes the structure with
+$d\nu_{0}=p_{0}\,d\mu$, then $\int p\,d\mu=1$ forces \eqref{eq:cgf}, and by
+Lemma~\ref{lem:exp} its metric and AC tensor are $\partial^{2}\psi$ and
+$\partial^{3}\psi$, with $\theta$ $\nabla^{(1)}$-affine. By
+Proposition~\ref{prop:hessian} these coincide with the canonical potential of
+the structure (an affine change of $\theta$ does not affect being a CGF), so
+\eqref{eq:cgf} holds for the canonical $\psi$.
+
+($\Leftarrow$) If \eqref{eq:cgf} holds for some positive $\nu_{0}$ and statistic
+$T$ on an open convex $\Theta$ containing the chart, set
+$p(x,\theta)=e^{\langle\theta,T(x)\rangle-\psi(\theta)}p_{0}(x)$. This is a
+smooth, strictly positive (where $p_{0}>0$) exponential family; by
+Lemma~\ref{lem:exp} its Fisher metric is $\partial^{2}\psi=g$, its AC tensor is
+$\partial^{3}\psi=C$, and $\theta$ are $\nabla^{(1)}$-affine. By \eqref{eq:hess}
+and Corollary~\ref{cor:reduce} it realizes $(M,g,\nabla,\nabla^{*})$ on the chart.
+
+\eqref{it:always} A dually flat statistical manifold has positive-definite $g$,
+so Theorem~\ref{thm:suff} applies.
+
+\eqref{it:obstruction} It suffices to exhibit a strictly convex germ
+$\psi$ at $0\in\mathbb R$ that is not the CGF of any \emph{finite} positive
+measure. If $\psi$ were such a CGF, then after normalizing $\nu_{0}$ to a
+probability measure (subtracting the constant $\log\nu_{0}(\mathcal X)$, which
+changes no derivative of $\psi$) the derivatives $\kappa_{m}:=\psi^{(m)}(0)$
+would be the cumulants of a genuine random variable $X$. The fourth moment about
+the mean is then $m_{4}=\kappa_{4}+3\kappa_{2}^{2}$ and must satisfy
+$m_{4}=\mathbb E[(X-\mathbb E X)^{4}]\ge0$. Take
+\[
+  \psi(\theta)=\tfrac12\theta^{2}-\tfrac{10}{24}\,\theta^{4}+R\,\theta^{6},
+  \qquad R>\tfrac{5}{24}.
+\]
+Then $\psi''(\theta)=1-5\theta^{2}+30R\,\theta^{4}$; as a quadratic in
+$u=\theta^{2}\ge0$ its discriminant is $25-120R<0$ for $R>\tfrac{5}{24}$, so
+$\psi''>0$ on all of $\mathbb R$ and $\psi$ is strictly convex. Its low-order
+derivatives at $0$ are $\kappa_{2}=\psi''(0)=1$, $\kappa_{3}=\psi'''(0)=0$,
+$\kappa_{4}=\psi^{(4)}(0)=-10$, giving
+$m_{4}=\kappa_{4}+3\kappa_{2}^{2}=-10+3=-7<0$, impossible. Hence $\psi$ is a
+strictly convex potential---defining, via the converse of
+Proposition~\ref{prop:hessian}, a $1$-dimensional dually flat statistical
+manifold---that is not realizable by any exponential family, on any neighborhood
+of $0$. (Affine reparametrizations $\theta\mapsto a\theta$ scale $m_{4}$ by
+$a^{4}>0$ and hence cannot repair the sign; so the obstruction is intrinsic to the
+structure, not to the coordinate.)
+\end{proof}
+
+\medskip
+\noindent\textbf{Answer to (b).}
+\emph{A dually flat statistical manifold is realizable specifically by an
+exponential family (Fisher metric and $\pm1$-connections) if and only if its
+canonical convex potential $\psi$ (with $g=\operatorname{Hess}\psi$,
+$C=\partial^{3}\psi$ in $\nabla$-affine coordinates) is the cumulant generating
+function of a positive measure, equation \eqref{eq:cgf}. This is strictly
+stronger than dual flatness: dual flatness is equivalent merely to the existence
+of a strictly convex potential, and not every strictly convex potential is a CGF
+(Theorem~\ref{thm:b}\eqref{it:obstruction}). By part (a), however, every dually
+flat statistical manifold is realizable by some---generally
+non-exponential---statistical model.}
+
+\end{document}

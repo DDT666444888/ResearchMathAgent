@@ -3,7 +3,7 @@
   "problem_id": "prob-09",
   "dataset": "first_proof_1",
   "title": "Self-contained proof of hook super-Schur formula s_{(a,1^b)}(q/u)",
-  "status": "open",
+  "status": "resolved",
   "labels": [
     "proof-gap"
   ],
@@ -26,6 +26,28 @@
       "role": "agent",
       "body": "**Sub-lemma G5.** Lemma `\\ref{lem:schur-1-1}` is currently delegated entirely to \\cite{ChengWangBook}. For a self-contained solution, derive from the definition\n$$s_\\lambda(q/u)=\\sum_{\\nu\\subseteq\\lambda}s_\\nu(q)\\,s_{\\lambda'/\\nu'}(u)$$\n(single commuting variable $q$, single anticommuting variable $u$) that:\n\n- $s_{(a,1^b)}(q/u)=q^a u^b+q^{a-1}u^{b+1}$ for $a\\ge1,\\ b\\ge0$;\n- $s_\\varnothing(q/u)=1$;\n- $s_\\lambda(q/u)=0$ whenever $\\lambda$ is **not** a hook.\n\n**Approach.** In one variable, $s_\\nu(q)\\ne0$ iff $\\nu$ is a single row $(\\nu=(r))$, with $s_{(r)}(q)=q^r$; a single-variable skew Schur $s_{\\mu/\\nu}(u)\\ne0$ iff $\\mu/\\nu$ is a single column (horizontal-strip-free vertical strip), equal to $u^{|\\mu/\\nu|}$. Enumerate the two surviving $\\nu\\subseteq(a,1^b)$ for which both factors are nonzero, and show all non-hook $\\lambda$ have no surviving $\\nu$.\n\nThis is a short computation (a few lines) but should be present rather than cited, to make the hook-coefficient extraction (G2) self-contained.",
       "created_at": "2026-06-23T02:11:50Z"
+    },
+    {
+      "id": "cf8b0f5ab",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Re-review against current draft — ADDRESSED.**\n`lem:schur-1-1` is now self-contained: Fact A ($s_\\nu(q)=q^r$ iff $\\nu=(r)$, else\n$0$) and Fact B (single-variable skew Schur $=u^{|\\mu/\\nu|}$ iff $\\mu/\\nu$ is a\nhorizontal strip) are derived from SSYT fillings with entries in $\\{1\\}$, and the\ntwo surviving $\\nu\\in\\{(a),(a-1)\\}$ for $(a,1^b)$ plus the non-hook vanishing are\nenumerated. I verified the resulting $s_{(a,1^b)}(q/u)=q^au^b+q^{a-1}u^{b+1}$ and\nthe non-hook vanishing against the Hilbert series ($n\\le5$). No remaining gap.",
+      "created_at": "2026-06-27T02:56:22Z"
+    },
+    {
+      "id": "ca1ea7349",
+      "author": "solver-agent",
+      "role": "agent",
+      "body": "**Verified: lem:schur-1-1 is self-contained and correct — resolving.**\n\nI independently re-checked the current proof of `lem:schur-1-1`. It derives the hook super-Schur formula directly from the definition $s_\\lambda(q/u)=\\sum_{\\nu\\subseteq\\lambda}s_\\nu(q)\\,s_{\\lambda'/\\nu'}(u)$ with no computational reliance on \\cite{ChengWangBook} (only the definition is cited, which is appropriate). The two ingredients are stated and proved from SSYT fillings with entries in {1}:\n\n- **Fact A**: $s_\\nu(q)=q^r$ iff $\\nu=(r)$ (single row, $r\\ge0$), else $0$ — exactly one column-strict {1}-filling exists iff every column has length $\\le 1$.\n- **Fact B**: single-variable skew $s_{\\mu/\\nu}(u)=u^{|\\mu/\\nu|}$ iff $\\mu/\\nu$ is a horizontal strip, else $0$.\n\nCombining gives the survival criterion: a term survives iff $\\nu=(r)$ is a single row AND $\\lambda/\\nu$ is a vertical strip (conjugate of Fact B's horizontal strip). The three cases follow cleanly:\n- (i) $\\lambda=\\varnothing$: only $\\nu=\\varnothing$, value $1$.\n- (ii) $\\lambda=(a,1^b)$: $\\nu=(r)\\subseteq\\lambda$ needs $0\\le r\\le a$, and $\\lambda/(r)$ is a vertical strip iff $a-r\\le1$, i.e. $r\\in\\{a,a-1\\}$, giving $q^au^b+q^{a-1}u^{b+1}$.\n- (iii) $\\lambda_2\\ge2$: any single-row $\\nu$ leaves $\\ge2$ cells in row 2 of $\\lambda/\\nu$, so it is never a vertical strip; the sum is $0$.\n\n**Numerical verification (sympy).** I implemented the super-Schur expansion via Facts A/B directly and confirmed: for all hooks $(a,1^b)$ with $1\\le a\\le3$, $0\\le b\\le3$, $s_{(a,1^b)}(q/u)=q^au^b+q^{a-1}u^{b+1}$; $s_\\varnothing(q/u)=1$; and $s_\\lambda(q/u)=0$ for non-hooks $[2,2],[3,2],[2,2,1],[3,3],[2,2,2]$. I also exhaustively verified the conjugacy fact used in the proof ($\\lambda'/\\nu'$ horizontal strip $\\iff$ $\\lambda/\\nu$ vertical strip) for all $\\nu\\subseteq\\lambda$ with $|\\lambda|\\le6$.\n\nNo remaining gap; the lemma is rigorous and self-contained. No edit to solution.tex was required. Closing.",
+      "created_at": "2026-06-27T10:28:46Z"
+    },
+    {
+      "id": "ev4e1d1a7a",
+      "author": "system",
+      "role": "event",
+      "event_type": "status_changed",
+      "body": "✅ Status changed: **open** → **resolved**",
+      "created_at": "2026-06-27T10:28:50Z"
     }
   ]
 }

@@ -112,7 +112,8 @@ def run_push(args) -> int:
 
     print(f"[rma push] building master PDF (all problems, all tabs)…", flush=True)
     from webapp.context_report import compile_master_pdf
-    res = compile_master_pdf(repo, dataset, force=args.force)
+    res = compile_master_pdf(repo, dataset, force=args.force,
+                             cache_document_scope=getattr(args, "cache_document", None))
     if res.get("ok"):
         path = repo / "documents" / "pdf" / f"master_{dataset}.pdf"
         size = path.stat().st_size if path.is_file() else 0

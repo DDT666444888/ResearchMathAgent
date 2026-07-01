@@ -3,7 +3,7 @@
   "problem_id": "prob-09",
   "dataset": "first_proof_1",
   "title": "Survivors T_{n,l,b}, sign reconciliation, and the positive formula",
-  "status": "open",
+  "status": "resolved",
   "labels": [
     "proof-gap"
   ],
@@ -26,6 +26,28 @@
       "role": "agent",
       "body": "**Sub-lemma G4.** Prove the main theorem (`\\ref{thm:improved-coefficient-formula}`):\n$$c_{(a,1^b)}(n)=\\#\\{w\\in\\OSP(n,n-b)\\ :\\ \\inv(w)=a,\\ w\\text{ is type I}\\}.$$\n\nTake $\\ell=a+2b$, so $S_{n,a+2b,b}=\\bigcup_{i=0}^b\\{w\\in\\OSP(n,n-b+i):\\inv(w)=a+i\\}$ matches $(\\star)$ under $c=i$, $\\sgn(w)=(-1)^{n-\\blocks(w)}=(-1)^c=(-1)^i$.\n\nTwo things must be proved in full:\n\n1. **Survivor set.** $\\phi$ pairs elements of $S$ with opposite signs and equal $q$-contribution **except** the type-I elements with $c=b$ that $\\phi$ maps out of $S$ (Lemma G3(i)). Show the set of unpaired elements is exactly\n$$T_{n,a+2b,b}=\\{w\\in\\OSP(n,n-b):\\inv(w)=a,\\ w\\text{ type I}\\}.$$\nCare: one must confirm $\\phi$ is a genuine **involution within the paired part** (G3(ii)/(iii) give $\\phi(w)\\in S$ and $\\phi$ is its own inverse), so cancellation is complete on $S\\setminus T$.\n\n2. **Sign reconciliation (most likely real gap).** Survivors lie in $\\OSP(n,n-b)$, i.e. $c=b$, so $\\sgn=(-1)^b$. The alternating sum $(\\star)$ has leading sign $(-1)^b$ on the $i=b$ term. The proof must explicitly show the signed sum\n$$\\sum_{w\\in S}(-1)^{c(w)}=\\#T$$\nreduces to a **plain positive count** of $T$ — i.e. that all survivors contribute $+1$ after factoring out the global structure — and that this equals $c_{(a,1^b)}(n)$ as given by $(\\star)$. The current proof's final paragraph asserts this in one line without the sign reconciliation; this is exactly an \"unjustified key step\" (F3).\n\n**Status:** positive formula $=$ alternating formula verified numerically for $n\\le6$; $n=4$ table fully reproduced. The gap is the rigorous cancellation + sign argument.",
       "created_at": "2026-06-23T02:11:50Z"
+    },
+    {
+      "id": "ceea475f0",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Re-review against current draft — largely ADDRESSED.**\n`lem:survivors` now spells out: (a) $T_{n,\\ell,b}\\subseteq S_{n,\\ell,b}$;\n(b) $\\phi$ maps $T$ out of $S$ (via `lem:classify`(i)); (c) $\\phi$ restricts to a\nfixed-point-free, sign-reversing involution on $S\\setminus T$ — including the\ncheck that $\\phi(w)\\in S\\setminus T$ in both cases (ii)/(iii); (d) the sign\nreconciliation: survivors have $c=b$, hence $\\varepsilon=(-1)^0=+1$, so the signed\nsum equals the plain count $\\#T$. The main theorem then sets $\\ell=a+2b$ and\nreindexes $(-1)^i=\\varepsilon(w)$ correctly. I verified the signed-sum=count and\nthe $n=4$ table exactly. Residual dependency: `lem:phi-props`'s $\\Delta\\inv=\\pm1$\n(see prob-09-4). Otherwise this step looks complete.",
+      "created_at": "2026-06-27T02:56:22Z"
+    },
+    {
+      "id": "ce25519e5",
+      "author": "solver-agent",
+      "role": "agent",
+      "body": "**Verified — issue resolved.**\n\nI reviewed the current `solution.tex` and ran independent numerical checks. All three pieces flagged in this issue are now present and rigorous:\n\n**1. Survivor set (cancellation).** `lem:classify` strata-tracks $\\phi$ on $S_{n,\\ell,b}$:\n- (i) type I, $c=b$ ($\\inv=\\ell-2b$) $\\Rightarrow \\phi(w)\\notin S$;\n- (ii) type I, $c<b \\Rightarrow \\phi(w)\\in S$, lands in $\\OSP(n,n-(c+1))$;\n- (iii) type II $\\Rightarrow c>0$, $\\phi(w)\\in S$, lands in $\\OSP(n,n-(c-1))$;\n- (iv) type III impossible (would force $\\ell=b>\\lfloor(\\ell-1)/2\\rfloor$).\n\n`lem:survivors` assembles these: $T_{n,\\ell,b}\\subseteq S$; $\\phi$ maps $T$ out of $S$; and crucially it checks $\\phi(w)\\in S\\setminus T$ in BOTH cases (ii) [image type II, never in $T$] and (iii) [image type I in $\\OSP(n,n-(c-1))$, in $T$ only if $c=b+1$, impossible]. Since $\\phi$ is a global involution (`lem:phi-props`), it restricts to a fixed-point-free (no type III) sign-reversing involution on $S\\setminus T$, so cancellation on $S\\setminus T$ is complete.\n\n**2. Sign reconciliation.** With $\\varepsilon(w)=(-1)^{\\blocks(w)-(n-b)}=(-1)^{b-c}$, cases (ii)/(iii) flip $\\blocks$ by $\\pm1$, hence flip $\\varepsilon$ — that is precisely why cancellation is sign-reversing. Survivors lie in $\\OSP(n,n-b)$ so $c=b$ and $\\varepsilon=(-1)^0=+1$; therefore $\\sum_{w\\in S}\\varepsilon(w)=\\#T$ is a genuine positive count (eq. `signed-sum`).\n\n**3. Main theorem.** Setting $\\ell=a+2b$ (so $b\\le\\lfloor(\\ell-1)/2\\rfloor$ and $\\ell-2b=a$) and reindexing the alternating formula by $c=b-i$, the sign $(-1)^i=(-1)^{b-c}=\\varepsilon(w)$ matches exactly, giving $c_{(a,1^b)}(n)=\\#T_{n,a+2b,b}=\\#\\{w\\in\\OSP(n,n-b):\\inv(w)=a,\\text{ type I}\\}$.\n\n**Residual dependency closed.** The critic's last residual was `lem:phi-props`'s $\\Delta\\inv=\\pm1$; this is now fully proved in the file via the crossing form `lem:inv-cross` and the position-of-large-values lemma `lem:large-values`.\n\n**Numerical confirmation (this session):**\n- $\\phi$ is an involution with $(\\Delta\\blocks,\\Delta\\inv)=(-1,-1)$ on type I, $(+1,+1)$ on type II, fixing type III — verified exhaustively for $n=5$.\n- The alternating formula `(first-formula-coeffs)` equals the positive formula `(second-formula-coeffs)` for ALL $(n,a,b)$ with $n\\le6$, $1\\le a<2n$, $0\\le b<n$.\n\nNo further edits to `solution.tex` were needed; the gap described in this issue is closed. Resolving.",
+      "created_at": "2026-06-27T10:30:30Z"
+    },
+    {
+      "id": "ev672a65c9",
+      "author": "system",
+      "role": "event",
+      "event_type": "status_changed",
+      "body": "✅ Status changed: **open** → **resolved**",
+      "created_at": "2026-06-27T10:30:30Z"
     }
   ]
 }

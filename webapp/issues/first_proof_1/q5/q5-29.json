@@ -3,7 +3,7 @@
   "problem_id": "q5",
   "dataset": "first_proof_1",
   "title": "S3/G3: Geometric fixed points of O-slice cells and closure under the filtration",
-  "status": "open",
+  "status": "resolved",
   "labels": [
     "proof-gap"
   ],
@@ -26,6 +26,21 @@
       "role": "agent",
       "body": "**Necessity direction, computational core.** To prove that membership in $\\tau^{\\aO}_{\\ge n}$ implies the geometric-fixed-point connectivity bound, compute $\\Phi^H$ on the generators and show the bound is preserved.\n\n**To prove.**\n1. Double-coset/Weyl formula for geometric fixed points of an induction: $\\Phi^H(G_+\\wedge_K Y)\\simeq \\bigvee_{[g]\\in (H\\backslash G/K)_{\\mathrm{rel}}}\\Phi^{H\\cap{}^gK}(c_g^* Y)$, with the correct index set.\n2. $\\Phi^K S^{m\\rho_K}\\simeq S^{m}$, more generally $\\Phi^K S^{V}\\simeq S^{\\dim V^K}$.\n3. Deduce the connectivity of $\\Phi^H(G_+\\wedge_K S^{m\\rho_K})$ and verify it equals the claimed $f_{\\aO}(n,H)$ bound on generators.\n4. Show the connectivity bound is closed under the colimits and extensions defining $\\tau^{\\aO}_{\\ge n}$, using exactness/colimit-preservation of $\\Phi^H$ and closure of connectivity in $\\mathrm{Sp}$.\n\nReference: HHR 2016 §B (geometric fixed points), Hill primer.",
       "created_at": "2026-06-23T15:32:59Z"
+    },
+    {
+      "id": "c6c938d8a",
+      "author": "solver-agent",
+      "role": "agent",
+      "body": "**Resolution of q5-29 (necessity direction: geometric fixed points of O-slice cells and closure under the filtration).**\n\nI reviewed the existing proof and found that the computational core requested by this issue was, in substance, already present and rigorous, distributed across:\n\n- **Prop. `prop:phiNT`** ($\\Phi^G N^T S^1 \\simeq S^{|T/G|}$, fully proved via $N^TS^1\\cong S^{\\mathbb R\\cdot T}$ and $\\Phi^G S^V\\simeq S^{V^G}$);\n- **Lemma `lem:index`** (the index bound $|T|\\le r_H\\cdot|T/H|$, $r_H=[H:\\chi^{\\mathcal O}(H)]$);\n- **Lemma `lem:restr`** (the full Mackey double-coset formula for $i_H^*$ of an induction, used to reduce to the top group);\n- **Lemma `lem:forward`** (Steps 0-4: per-subgroup reduction; $\\Phi^G$ kills proper inductions; closure of the $\\Phi^G$-connectivity bound under (o1)-(o3); generators satisfy the bound).\n\nTo make the proof transparently complete against the four explicit items, I added two passages.\n\n**1. General geometric-fixed-point double-coset (Weyl) formula** (new `eq:phi-dc`, Step 1' of `lem:forward`):\n$$\\Phi^H(G_+\\wedge_K Y)\\simeq\\bigvee_{[g]\\in H\\backslash G/K:\\,H\\subseteq gKg^{-1}}\\Phi^H(c_g\\,i^*_{g^{-1}Hg}Y),$$\nderived from the Mackey formula + $\\Phi^H\\simeq\\Phi^H i_H^*$ + the proper-induction vanishing. I explain that necessity only needs the top-group special case (empty wedge, hence $\\Phi^G(G_+\\wedge_K Y)\\simeq0$ for $K\\subsetneq G$), because Step 0 already moved evaluation to the top group of $(H,\\mathcal O|_H)$. This addresses **item 1** and clarifies why the slick vanishing in Step 1 suffices.\n\n**2. Regular-representation slice cells** (new `rem:rho-cells`): $\\rho_K=\\mathbb R\\cdot(K/e)$, so $S^{m\\rho_K}\\cong N^{\\coprod_1^m K/e}S^1$, and Prop. `prop:phiNT` (equivalently `eq:phiSV` with $(m\\rho_K)^K\\cong\\mathbb R^m$) gives $\\Phi^K S^{m\\rho_K}\\simeq S^m$. This addresses **item 2** in classical HHR form, noting that in the incomplete setting $K/e$ need not be admissible -- the reason the proof works with general admissible-norm cells $N^TS^1$.\n\n**Items 3 and 4** were already complete: Step 3 of `lem:forward` deduces $\\mathrm{conn}(\\Phi^G N^TS^1)=|T/G|$ and verifies $r_G\\cdot|T/G|\\ge|T|\\ge n$ on generators (matching the bound $n/r_H$); Step 2 verifies closure under colimits, cofibers-of-objects, extensions, retracts, and orbit tensors via exactness/colimit-preservation of $\\Phi^G$ and one-sided closure of $\\mathrm{Sp}_{\\ge m}$. I sanity-checked $|T|\\le r_H|T/H|$ on $C_4$ examples (complete and trivial transfer systems); consistent.\n\nNo mathematical gap remained; the edits make all four requested steps explicit and self-contained. (LaTeX toolchain not installed, so no compile; I verified $-balance, macro hygiene, and that all referenced labels resolve.)\n\nMarking resolved.",
+      "created_at": "2026-06-27T05:37:09Z"
+    },
+    {
+      "id": "ev7d01542f",
+      "author": "system",
+      "role": "event",
+      "event_type": "status_changed",
+      "body": "✅ Status changed: **open** → **resolved**",
+      "created_at": "2026-06-27T05:37:09Z"
     }
   ]
 }

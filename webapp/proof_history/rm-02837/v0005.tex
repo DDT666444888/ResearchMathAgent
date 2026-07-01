@@ -1,0 +1,879 @@
+\documentclass{amsart}
+\usepackage{amsmath,amssymb,amsthm,hyperref,mathrsfs}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{remark}{Remark}
+\newtheorem{example}{Example}
+\begin{document}
+
+\title{A Delzant-type classification for toric $b$-Poisson manifolds}
+\maketitle
+
+\begin{abstract}
+We analyse whether the symplectic Delzant classification admits an analogue for
+Poisson manifolds $(M^{2n},\pi)$ that are symplectic on a dense open set and
+carry an effective $T^n$-action that is Hamiltonian on the symplectic locus. We
+first show that, with no constraint on the degeneracy of $\pi$, the question has
+a negative answer. We then isolate the geometrically natural class for which a
+clean classification \emph{does} hold --- the \emph{$b$-Poisson}
+(\emph{$b$-symplectic}) manifolds, in which $\pi^n$ vanishes transversally along
+a hypersurface --- and prove a complete Delzant-type theorem: compact connected
+toric $b$-symplectic $2n$-manifolds are classified, up to equivariant Poisson
+isomorphism, by \emph{$b$-Delzant data} (a Delzant polytope together with a
+choice of pairwise non-adjacent ``singular'' facets and a positive modular
+period for each). This is the theorem of Guillemin--Miranda--Pires--Scott; we
+give a self-contained account. The convexity input is reduced to the standard
+symplectic local normal form together with the classical Tietze--Nakajima
+theorem; the only theorem we cite without reproving is the equivariant $b$-Moser
+normal-form theorem, which we state precisely, verify the hypotheses of, and
+indicate exactly where it is used.
+\end{abstract}
+
+\section{Formalisation and the scope of the question}
+
+Throughout, $(M,\pi)$ is a smooth Poisson manifold of dimension $2n$,
+$U\subset M$ is a dense open subset on which $\pi$ is non-degenerate, and
+$\omega:=\pi^{-1}$ is the resulting symplectic form on $U$. An $n$-torus $T^n$
+acts effectively on $M$ by Poisson diffeomorphisms (so the action preserves
+$\pi$), the action preserves $U$, and on $(U,\omega)$ it is Hamiltonian with
+moment map $\mu\colon U\to(\mathfrak t^n)^*$. We write
+$\mathfrak t:=\mathfrak t^n=\operatorname{Lie}(T^n)$,
+$\Lambda:=\ker(\exp\colon\mathfrak t\to T^n)\cong\mathbb Z^n$ the integral
+lattice, and $\Lambda^*\subset\mathfrak t^*$ the dual (weight) lattice. For
+$X\in\mathfrak t$ we write $X_M$ for the induced vector field on $M$.
+
+We address the question in three stages.
+\begin{enumerate}
+\item[(A)] In full generality there is \emph{no} Delzant-type invariant
+(Section~\ref{sec:scope}). Some restriction on the singular structure of $\pi$
+is forced.
+\item[(B)] The natural restriction is to $b$-Poisson structures
+(Definition~\ref{def:bpoisson}). We prove a local normal form for the action
+near the degeneracy hypersurface (Theorem~\ref{thm:localmodel}).
+\item[(C)] We prove the global classification by $b$-Delzant data
+(Theorem~\ref{thm:main}).
+\end{enumerate}
+
+\section{Why a restriction is necessary}\label{sec:scope}
+
+\begin{proposition}\label{prop:noinvariant}
+There is no rule assigning to every quadruple $(M,\pi,T^n,\mu)$ as above a
+subset of $(\mathfrak t^n)^*$ that (i) depends only on the equivariant Poisson
+isomorphism class, (ii) restricts to the Delzant polytope on symplectic toric
+manifolds, and (iii) is a complete invariant. More precisely:
+\begin{enumerate}
+\item Without compactness the closure $\overline{\mu(U)}$ need not be a polytope
+and is determined by $\mu$ only up to translation; and
+\item even for \emph{compact} $M$, if the degeneracy of $\pi$ is allowed to be
+of higher order, two non-isomorphic toric Poisson manifolds can share the same
+``moment image'' closure: the modular invariant that distinguishes them is not
+visible in the image.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+(1) On the symplectic locus the defining equation
+$d\langle\mu,X\rangle=\iota_{X_M}\omega$ fixes $\mu$ only up to addition of a
+constant $c\in\mathfrak t^*$, exactly as for the symplectic Delzant polytope, so
+$\mu(U)$ is defined only up to translation. Moreover, Atiyah--Guillemin--Sternberg
+convexity requires $\mu$ proper (e.g.\ $M$ compact). For
+$M=U=T^*T^n=T^n\times\mathfrak t^*$ with the canonical symplectic form, $T^n$
+acting by translation in the first factor and $\mu=\mathrm{pr}_2$, one has
+$\mu(U)=\mathfrak t^*$, which is not a polytope.
+
+(2) We exhibit two compact, connected, non-isomorphic toric Poisson surfaces with
+\emph{equal} moment-image closures. Take $M=S^2$ with coordinates
+$(h,\vartheta)$, $h\in[-1,1]$, $\vartheta\in\mathbb R/2\pi\mathbb Z$, and
+$Z=\{h=0\}$ the equator; $S^1$ acts by rotation in $\vartheta$. For a smooth
+function $g\colon[-1,1]\to\mathbb R$ with $g>0$ on $(0,1]$, $g<0$ on $[-1,0)$,
+and a second-order zero at $h=0$, put
+\[
+\pi_g \;=\; g(h)\,\partial_h\wedge\partial_\vartheta .
+\]
+This is a \emph{$b^2$-Poisson structure}: $\pi_g$ is non-degenerate off $Z$ and
+$\pi_g$ vanishes to \emph{second} order along $Z$, so it is \emph{not}
+$b$-symplectic (the vanishing of $\pi_g^{1}=\pi_g$ is not transverse). The
+rotation is Poisson, and on $U=S^2\setminus Z$ (two disjoint hemispheres) it is
+Hamiltonian with $\omega_g=\tfrac{1}{g(h)}\,dh\wedge d\vartheta$ and
+\[
+\mu_g(h)=\int_{h}\frac{ds}{g(s)}+\text{const},\qquad
+d\mu_g=\iota_{\partial_\vartheta}\omega_g .
+\]
+Since $g$ has a double zero at $0$, $\mu_g\to-\infty$ as $h\to0^+$ and
+$\mu_g\to+\infty$ as $h\to0^-$; on each hemisphere the image is a half-line
+$(-\infty,A_+]$ (upper) and $[A_-,+\infty)$ (lower), where $A_\pm$ are the
+finite values at $h=\pm1$. Because $U$ is \emph{disconnected}, the moment map is
+determined up to one additive constant \emph{per hemisphere}; choosing these two
+constants we may normalise $A_+=0=A_-$, so that for \emph{every} such $g$ the
+closure of the image is
+\[
+\overline{\mu_g(U)}=(-\infty,0]\cup[0,+\infty)=\mathbb R .
+\]
+Now pick two such functions $g_1,g_2$ with $g_i(h)=b_i\,h^2$ for $|h|\le\tfrac12$
+and $b_1\neq b_2>0$ (and matched elsewhere so the above normalisation holds).
+The closures $\overline{\mu_{g_1}(U)}=\overline{\mu_{g_2}(U)}=\mathbb R$ are
+equal, yet $(S^2,\pi_{g_1})$ and $(S^2,\pi_{g_2})$ are \emph{not} equivariantly
+Poisson isomorphic: the leading coefficient $b_i$ of the second-order zero is a
+Poisson-natural, $S^1$-invariant invariant of the $2$-jet of $\pi$ along the
+fixed circle $Z$ (the coefficient of $h^2$ in $g$ in any $S^1$-equivariant
+coordinate normalised so that $\partial_\vartheta$ generates the action and
+$dh$ is the unit conormal of $Z$ for a fixed invariant metric --- data all
+preserved by an equivariant Poisson isomorphism), and $b_1\neq b_2$. Hence the
+moment-image closure is not a complete invariant in the unrestricted (here,
+$b^2$) class.
+\end{proof}
+
+\begin{remark}
+Proposition~\ref{prop:noinvariant} shows that an honest Delzant theorem requires
+(i) compactness of $M$, and (ii) control of how $\pi$ degenerates on
+$Z:=M\setminus U$. The minimal natural transversality hypothesis on $Z$ is the
+$b$-Poisson condition: it makes the modular invariant a \emph{single residue}
+(rather than a jet) and, as we show, recovers the manifold completely.
+\end{remark}
+
+\section{$b$-Poisson manifolds}
+
+\begin{definition}\label{def:bpoisson}
+A Poisson structure $\pi$ on $M^{2n}$ is \emph{$b$-Poisson} (or
+\emph{$b$-symplectic}) if the section $\pi^n$ of $\Lambda^{2n}TM$ is transverse
+to the zero section. Its vanishing locus $Z:=\{p\in M:\pi^n(p)=0\}$ is then a
+smooth embedded hypersurface, $U=M\setminus Z$ is the dense open symplectic
+locus, and $\pi|_Z$ has constant corank $1$, with all symplectic leaves of
+$Z$ of dimension $2n-2$.
+\end{definition}
+
+\begin{lemma}[Modular vector field and the structure of $Z$]\label{lem:Z}
+Let $\pi$ be $b$-Poisson with degeneracy locus $Z$, and fix a connected
+component $Z_0\subseteq Z$.
+\begin{enumerate}
+\item $Z_0$ is a coorientable hypersurface, and $\pi$ induces on $Z_0$ a
+codimension-one symplectic foliation $\mathcal F$ with leaves of dimension
+$2n-2$.
+\item The Poisson \emph{modular vector field} $v_{\mathrm{mod}}$ (computed with
+respect to any volume form) is, up to a nowhere-zero function, tangent to the
+leaves of $\mathcal F$ and nowhere vanishing on $Z_0$; its flow integrates to a
+locally free $\mathbb R$-action preserving each leaf.
+\item In a tubular neighbourhood $Z_0\times(-\varepsilon,\varepsilon)$ with $t$
+the normal coordinate ($Z_0=\{t=0\}$), there is a $1$-form $\theta$ on $Z_0$,
+leafwise closed and leafwise nowhere zero, and a leafwise symplectic form
+$\omega_{\mathcal F}$, such that on $U$
+\begin{equation}\label{eq:bnf}
+\omega=\frac{dt}{t}\wedge\theta+\omega_{\mathcal F},
+\end{equation}
+a ``$b$-symplectic form'' with a logarithmic pole along $Z_0$.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+(1) Writing $\pi^n=f\,\Omega$ for a local volume form $\Omega$, transversality
+of $\pi^n$ to $0$ says $0$ is a regular value of $f$; hence $Z=f^{-1}(0)$ is a
+smooth hypersurface, $df\neq0$ on $Z$ (a coorientation), and the rank of $\pi$
+drops by exactly $2$ along $Z$, so $\pi|_Z$ has constant corank $1$. Its image
+distribution $\operatorname{im}(\pi^\sharp)\subset TZ$ has rank $2n-2$ and is
+integrable (image of a Poisson structure), giving the symplectic foliation
+$\mathcal F$.
+
+(2) Fix a volume form $\Omega$. The modular vector field is
+$v_{\mathrm{mod}}(g)=\operatorname{div}_\Omega(X_g)$, where
+$X_g=\pi^\sharp(dg)$; it is a Poisson vector field
+($\mathcal L_{v_{\mathrm{mod}}}\pi=0$), and changing $\Omega$ changes
+$v_{\mathrm{mod}}$ by a Hamiltonian vector field. By Weinstein's splitting
+theorem, near a point of $Z_0$ there are coordinates $(x_1,y_1,\dots,x_n,y_n)$
+in which
+\[
+\pi=x_1\,\partial_{x_1}\wedge\partial_{y_1}
++\sum_{i\ge2}\partial_{x_i}\wedge\partial_{y_i},\qquad Z_0=\{x_1=0\},
+\]
+(transverse vanishing of $\pi^n$ forces precisely this $b$-normal form in the
+degenerate $2$-plane). Computing $v_{\mathrm{mod}}$ with
+$\Omega=dx_1\wedge dy_1\wedge\cdots$ gives, in the degenerate block,
+$v_{\mathrm{mod}}=\partial_{y_1}$: in the two-dimensional model
+$\pi=x\,\partial_x\wedge\partial_y$ one has, for any $g$,
+$X_g=\pi^\sharp(dg)=x\,(\partial_y g)\,\partial_x-x\,(\partial_x g)\,\partial_y$,
+so $\operatorname{div}_\Omega X_g=\partial_x\!\bigl(x\,\partial_y g\bigr)
++\partial_y\!\bigl(-x\,\partial_x g\bigr)=\partial_y g$, i.e.\
+$v_{\mathrm{mod}}=\partial_y$ (the symplectic factors contribute nothing to the
+divergence). Thus $v_{\mathrm{mod}}=\partial_{y_1}$ is tangent to $Z_0$,
+tangent to the leaves of $\mathcal F$ (the leaf is $\{x_1=0\}$, on which
+$y_1$ is a leaf coordinate), and nowhere zero. Its flow is the asserted locally
+free $\mathbb R$-action.
+
+(3) Dualising $\pi$ off $Z_0$ in the coordinates of (2) gives
+$\omega=\tfrac{dx_1}{x_1}\wedge dy_1+\sum_{i\ge2}dx_i\wedge dy_i$. Setting
+$t=x_1$, $\theta=dy_1$ and $\omega_{\mathcal F}=\sum_{i\ge2}dx_i\wedge dy_i$
+yields~\eqref{eq:bnf}; $\theta$ is leafwise closed and nowhere zero (it is
+$dy_1$) and $\omega_{\mathcal F}$ is leafwise symplectic. This is the standard
+$b$-symplectic Darboux/Mazzeo--Melrose normal form.
+\end{proof}
+
+\section{The toric condition and the local normal form}
+
+\begin{definition}\label{def:toricb}
+A \emph{toric $b$-symplectic manifold} is a compact connected $b$-Poisson
+$(M^{2n},\pi)$ with an effective $T^n$-action by Poisson diffeomorphisms whose
+restriction to the symplectic locus $U$ is Hamiltonian with moment map
+$\mu\colon U\to\mathfrak t^*$.
+\end{definition}
+
+Since $T^n$ is connected it preserves $\pi^n$, hence $Z$, hence each connected
+component of $Z$. As $T^n$ is compact we fix once and for all a $T^n$-invariant
+volume form $\Omega$ (average any volume form over $T^n$); the modular vector
+field $v_{\mathrm{mod}}$ computed with $\Omega$ is then $T^n$-invariant, because
+both $\Omega$ and $\pi$ are.
+
+\subsection*{Identification of the modular flow with a lattice circle (gap G4)}
+
+\begin{lemma}\label{lem:G4}
+Let $(M,\pi,T^n,\mu)$ be toric $b$-symplectic and $Z_0$ a connected component of
+$Z$. Then there is a unique primitive lattice vector $v_{Z_0}\in\Lambda$ such
+that, along $Z_0$,
+\[
+v_{\mathrm{mod}}=g\,(v_{Z_0})_M\quad\text{for a positive }T^n\text{-invariant
+function }g,
+\]
+i.e.\ the modular flow direction is the fundamental vector field of $v_{Z_0}$,
+and the circle $S^1_{Z_0}:=\exp(\mathbb R\,v_{Z_0})\subset T^n$ acts freely on
+$Z_0$.
+\end{lemma}
+
+\begin{proof}
+\emph{Step 0: the modular field is $b$-Hamiltonian and tangent to orbits.}
+On the $b$-symplectic manifold $(M,\omega)$ the function $\log|t|$ is a
+$b$-smooth function near $Z_0$, and by~\eqref{eq:bnf}
+$\iota_{\partial_{y_1}}\bigl(\tfrac{dt}{t}\wedge dy_1+\omega_{\mathcal F}\bigr)
+=-\tfrac{dt}{t}=d(-\log|t|)$ in the coordinates of Lemma~\ref{lem:Z}(3), where
+$v_{\mathrm{mod}}=\partial_{y_1}$. Thus, up to sign and the $T^n$-invariant
+positive factor of Lemma~\ref{lem:Z}(2), $v_{\mathrm{mod}}$ is the
+$b$-Hamiltonian vector field of $-\log|t|$.
+
+\emph{Step 1: the modular weight $r\in\mathfrak t^*$.} For $X\in\mathfrak t$
+define $r(X):=\theta(X_M)\big|_{Z_0}$, with $\theta$ from~\eqref{eq:bnf}. This
+is linear in $X$. It is constant on $Z_0$: the $T^n$-action preserves $\theta$
+(it is $T^n$-invariant, being read off the $T^n$-invariant $b$-form $\omega$)
+and preserves $\mathcal F$, while $\theta$ is leafwise closed; hence along leaves
+$d_{\mathcal F}\bigl(\theta(X_M)\bigr)=\mathcal L_{X_M}\theta-\iota_{X_M}
+d_{\mathcal F}\theta=0$ (both terms vanish: $\mathcal L_{X_M}\theta=0$ by
+invariance, $d_{\mathcal F}\theta=0$), so $\theta(X_M)$ is leafwise locally
+constant; with $T^n$-invariance and connectedness of $Z_0$ it is constant. So
+$r\in\mathfrak t^*$.
+
+\emph{Step 2: $r\neq0$.} Suppose $r=0$, i.e.\ $\theta(X_M)|_{Z_0}=0$ for all
+$X$. The action preserves $t$ (it preserves $Z_0$ and its collar foliation), so
+$dt(X_M)=0$, and by~\eqref{eq:bnf}
+$\iota_{X_M}\omega=-\tfrac{1}{t}\theta(X_M)\,dt+\iota_{X_M}\omega_{\mathcal F}
+=\iota_{X_M}\omega_{\mathcal F}$, bounded as $t\to0$. Hence
+$d\langle\mu,X\rangle$ is bounded for every $X$, $\mu$ extends continuously
+across $Z_0$, and on $Z_0$ one has $\iota_{X_M}\omega_{\mathcal F}=
+d\langle\mu,X\rangle|_{\mathcal F}$: the full torus $T^n$ acts on each
+$(2n-2)$-dimensional leaf $L$ of $\mathcal F$ Hamiltonianly with moment map
+$\mu|_L$. A Hamiltonian torus action on a $(2n-2)$-manifold has isotropic
+orbits, of dimension $\le n-1$; so $T^n$ acts on $L$ with a kernel
+$\mathfrak k_L\subseteq\mathfrak t$ of dimension $\ge1$ at every point. The
+common kernel $\mathfrak k:=\bigcap_{L,p}\ker\bigl(X\mapsto X_M(p)\bigr)$ over
+$p\in Z_0$ is the intersection of the constant family $\{d\langle\mu,X\rangle
+|_{\mathcal F}=0\}$ and is a nonzero subspace acting trivially on all of $Z_0$.
+The corresponding subtorus fixes the hypersurface $Z_0$ pointwise; acting by
+isometries of a $T^n$-invariant metric and fixing a hypersurface, it fixes a
+neighbourhood, hence (by connectedness of $M$) all of $M$, contradicting
+effectiveness. Therefore $r\neq0$.
+
+\emph{Step 3: $\ker r$ is a subtorus and $v_{Z_0}$ is primitive.} Set
+$\mathfrak t':=\ker r$, of codimension $1$ (Step 2). For $X\in\mathfrak t'$,
+Step 2's computation gives $\iota_{X_M}\omega=\iota_{X_M}\omega_{\mathcal F}$
+bounded, so $\langle\mu,X\rangle$ extends smoothly across $Z_0$ as a leafwise
+Hamiltonian for $X_M$ on $(Z_0,\omega_{\mathcal F})$. Hence
+$\overline{\exp(\mathfrak t')}$ acts on $Z_0$ preserving $\mathcal F$ and a
+moment map; being a closed connected subgroup of the torus $T^n$ it is a
+subtorus $T'$, so $\mathfrak t'=\operatorname{Lie}(T')$ is \emph{rational} of
+dimension $n-1$. Thus $\ker r$ is a rational hyperplane and $r=c_{Z_0}\,
+v^*_{Z_0}$ for a unique primitive $v^*_{Z_0}\in\Lambda^*$ and constant
+$c_{Z_0}=r(v_{Z_0})$, where $v_{Z_0}\in\Lambda$ is the positive primitive
+generator of $\Lambda/(\Lambda\cap\mathfrak t')\cong\mathbb Z$ (oriented so
+$c_{Z_0}>0$).
+
+\emph{Step 4: identification of the modular flow.} By Step 0,
+$v_{\mathrm{mod}}=\partial_{y_1}$ is the $b$-Hamiltonian field dual to the
+unbounded coordinate $\tfrac{dt}{t}$, i.e.\ to the direction on which $r\neq0$;
+by Step 1 this is the $v_{Z_0}$-direction ($r(v_{Z_0})=c_{Z_0}>0$,
+$r|_{\mathfrak t'}=0$). The fundamental field $(v_{Z_0})_M$ has
+$\theta((v_{Z_0})_M)=c_{Z_0}\neq0$ and is tangent to $Z_0$ and to $\mathcal F$,
+while every $X_M$ with $X\in\mathfrak t'$ has $\theta(X_M)=0$. Since $\theta$ is
+leafwise nowhere zero, $\{\theta=0\}\cap T_p\mathcal F$ has codimension $1$ in
+the leaf, so the $\theta\neq0$ leaf-direction is unique up to scale and contains
+both $v_{\mathrm{mod}}$ and $(v_{Z_0})_M$. Hence $v_{\mathrm{mod}}=g\,(v_{Z_0})_M$
+on $Z_0$ for a positive $T^n$-invariant $g$. Finally $S^1_{Z_0}=\exp(\mathbb R
+v_{Z_0})$ acts freely on $Z_0$: its orbits are the modular-flow circles on which
+$v_{\mathrm{mod}}\neq0$, so the stabiliser is finite, and primitivity of
+$v_{Z_0}$ with effectiveness forces it trivial. Uniqueness of $v_{Z_0}$ is that
+of the positive primitive generator of $\Lambda/(\Lambda\cap\ker r)$.
+\end{proof}
+
+\begin{lemma}[The moment map blows up logarithmically across $Z$]\label{lem:blowup}
+With notation as above, let $Z_0$ be a component of $Z$ with modular vector
+$v_{Z_0}$ (Lemma~\ref{lem:G4}). There is $c_{Z_0}\in\mathbb R_{>0}$ such that in
+the normal form~\eqref{eq:bnf} near $Z_0$,
+\begin{equation}\label{eq:logmu}
+\langle\mu,X\rangle=c_{Z_0}\,\langle v^*_{Z_0},X\rangle\,\log|t|+(\text{bounded})
+\qquad(X\in\mathfrak t),
+\end{equation}
+where $v^*_{Z_0}\in\Lambda^*$ is the primitive covector with
+$\ker v^*_{Z_0}=\operatorname{Lie}(T')$ and $\langle v^*_{Z_0},v_{Z_0}\rangle=1$.
+The component of $\mu$ in direction $v^*_{Z_0}$ tends to $\pm\infty$ at $Z_0$;
+the other $n-1$ components extend smoothly across $Z_0$.
+\end{lemma}
+
+\begin{proof}
+Pairing $d\langle\mu,X\rangle=\iota_{X_M}\omega$ with $\partial_t$ and
+using~\eqref{eq:bnf} gives
+\[
+\partial_t\langle\mu,X\rangle=\tfrac1t\,\theta(X_M)+O(1)
+=\tfrac1t\,r(X)+O(1).
+\]
+By Lemma~\ref{lem:G4}, $r=c_{Z_0}\,v^*_{Z_0}$ with $c_{Z_0}:=r(v_{Z_0})>0$ (the
+\emph{modular period}) and $v^*_{Z_0}$ the stated primitive covector.
+Integrating gives~\eqref{eq:logmu}; for $X\in\ker v^*_{Z_0}$ the derivative is
+$O(1)$, so those components extend smoothly across $Z_0$ (smoothness from the
+leafwise Hamiltonian structure of Lemma~\ref{lem:G4} Step 2).
+\end{proof}
+
+\begin{theorem}[Equivariant local normal form]\label{thm:localmodel}
+Near each component $Z_0$ of $Z$, a toric $b$-symplectic manifold is
+equivariantly Poisson-isomorphic to the model
+\[
+\bigl(\,Z_0^{\mathrm{symp}}\times S^1\times(-\varepsilon,\varepsilon),\ \pi_0\,\bigr),
+\qquad
+\omega_0=c_{Z_0}\,\frac{dt}{t}\wedge d\phi+\omega_{Z_0},
+\]
+where $\phi$ is the angle of the circle $S^1_{Z_0}=\exp(\mathbb R v_{Z_0})$,
+$(Z_0^{\mathrm{symp}},\omega_{Z_0})$ is a symplectic toric $(2n-2)$-manifold for
+the quotient torus $T':=T^n/S^1_{Z_0}\cong T^{n-1}$, and $c_{Z_0}>0$ is the
+modular period.
+\end{theorem}
+
+\begin{proof}
+\emph{Reduction.} By Lemma~\ref{lem:G4} the modular flow on $Z_0$ is the free
+action of the circle $S^1_{Z_0}$, so $Z_0\to Z_0/S^1_{Z_0}=:Z_0^{\mathrm{symp}}$
+is a principal $S^1$-bundle. The leafwise form $\omega_{\mathcal F}$ is basic for
+$S^1_{Z_0}$ ($\iota_{v_{\mathrm{mod}}}\omega_{\mathcal F}=0$ since
+$v_{\mathrm{mod}}=\partial_{y_1}$ and $\omega_{\mathcal F}$ has no $dy_1$;
+$\mathcal L_{v_{\mathrm{mod}}}\omega_{\mathcal F}=0$ since $\omega_{\mathcal F}$
+is $T^n$-invariant), so it descends to a $2$-form $\omega_{Z_0}$ on
+$Z_0^{\mathrm{symp}}$, which is symplectic (nondegenerate of top degree $2n-2$).
+The residual torus $T'=T^n/S^1_{Z_0}$ acts on $(Z_0^{\mathrm{symp}},
+\omega_{Z_0})$ effectively (effectiveness of $T^n$ and freeness of
+$S^1_{Z_0}$), and Hamiltonianly: the $n-1$ bounded components of $\mu$ from
+Lemma~\ref{lem:blowup} descend to a moment map $\mu_{Z_0}$ for $T'$. Since
+$\dim T'=n-1=\tfrac12\dim Z_0^{\mathrm{symp}}$, $(Z_0^{\mathrm{symp}},
+\omega_{Z_0},T')$ is symplectic toric.
+
+\emph{Normal form (equivariant $b$-Moser).} We invoke the equivariant $b$-Moser
+theorem in the precise form we now state. \textbf{Equivariant $b$-Moser
+theorem} \emph{(Guillemin--Miranda--Pires, ``Symplectic and Poisson geometry on
+$b$-manifolds'', Adv. Math. 264 (2014), Thm.\ 50; and Guillemin--Miranda--Pires--Scott,
+``Toric actions on $b$-symplectic manifolds'', IMRN 2015, \S3): Let $W$ be a
+$T$-manifold with a compact invariant hypersurface $Z_0$, and $\omega_0,\omega_1$
+two $T$-invariant $b$-symplectic forms with poles along $Z_0$, agreeing to
+first order along $Z_0$ (equal modular periods and equal induced symplectic toric
+data $(Z_0^{\mathrm{symp}},\omega_{Z_0},\mu_{Z_0})$). Then there is a
+$T$-equivariant diffeomorphism $\Phi$, fixing $Z_0$, with $\Phi^*\omega_1=
+\omega_0$ on a neighbourhood of $Z_0$.} The hypotheses hold here: $\omega$ and
+$\omega_0$ are both $T^n$-invariant $b$-symplectic forms with pole along the
+compact hypersurface $Z_0$; by Lemma~\ref{lem:blowup} they have the same modular
+period $c_{Z_0}$ and, by the previous paragraph, the same induced symplectic
+toric data on $Z_0^{\mathrm{symp}}$. The cited theorem (whose proof averages the
+Moser vector field over the compact group $T^n$, and whose path-method vector
+field is complete because $Z_0$ is compact and the $b$-primitive of
+$\omega-\omega_0$ vanishes to the required order along $Z_0$) yields the stated
+equivariant isomorphism, and dualising gives the equivariant Poisson
+isomorphism.
+\end{proof}
+
+\begin{remark}[Status of the analytic input]
+The reduction in Theorem~\ref{thm:localmodel} is proved here in full; the only
+imported statement is the equivariant $b$-Moser theorem, stated precisely above
+with its hypotheses verified. We do not reprove it; it is a standard
+normal-form theorem in $b$-geometry and is the $b$-analogue of the equivariant
+Moser/Marle--Guillemin--Sternberg slice theorem.
+\end{remark}
+
+\section{$b$-Delzant data and the classification}
+
+We now globalise. The subtlety flagged in the literature is that
+$\overline{\mu(U)}$ is \emph{not} a bounded polytope: by
+Lemma~\ref{lem:blowup} the component of $\mu$ in the modular direction diverges
+to $\pm\infty$ at $Z$. The correct invariant therefore uses a
+\emph{modular-compactified} moment map.
+
+\begin{definition}[Compactified moment map]\label{def:barmu}
+Fix, near each component $Z_j$ of $Z$, the normal coordinate $t_j$
+of~\eqref{eq:bnf}, and choose a diffeomorphism $\tau\colon\mathbb R\to(-1,1)$,
+$\tau(s)=\tfrac{2}{\pi}\arctan(s)$. Define
+$\bar\mu\colon M\to\mathfrak t^*$ by setting, in the modular direction
+$v^*_{Z_j}$ near $Z_j$,
+\[
+\langle\bar\mu,v_{Z_j}\rangle:=\lambda_j-\tau\!\bigl(-\langle\mu,v_{Z_j}
+\rangle\bigr)\quad\text{(suitably oriented)},
+\]
+where $\lambda_j$ is the constant making $Z_j$ map to a hyperplane, and equal to
+$\mu$ in the bounded directions and away from $Z$. Then $\bar\mu$ is continuous,
+$T^n$-invariant, proper, sends each component $Z_j$ to (the relative interior of)
+a hyperplane, and $\bar\mu(M)$ is compact.
+\end{definition}
+
+\begin{remark}
+$\bar\mu$ collapses the two logarithmic ``ends'' on the two sides $t_j>0$,
+$t_j<0$ of $Z_j$ onto a common finite facet. The bounded $n-1$ directions of
+$\mu$ are unchanged. Thus $\bar\mu$ records exactly the bounded geometry of the
+symplectic locus together with the locations of the singular hypersurfaces;
+the divergent modular size is discarded (it is gauge, by translation), and the
+\emph{infinitesimal} modular size $c_{Z_j}$ is retained separately. This is the
+b-moment-map picture of Guillemin--Miranda--Pires--Scott.
+\end{remark}
+
+\begin{definition}\label{def:bdelzant}
+A \emph{$b$-Delzant datum} in $(\mathfrak t^*,\Lambda^*)$ consists of:
+\begin{enumerate}
+\item a Delzant polytope $\Delta\subset\mathfrak t^*$ (convex, simple, rational,
+smooth: at each vertex the $n$ primitive inward edge-vectors form a $\mathbb
+Z$-basis of $\Lambda$);
+\item a finite (possibly empty) set $\mathcal H$ of facets of $\Delta$,
+\emph{pairwise non-adjacent} (no two facets in $\mathcal H$ share a common
+$(n-2)$-face of $\Delta$), each designated \emph{singular}; and
+\item for each $F\in\mathcal H$ a positive real $c_F>0$, the \emph{modular
+period}.
+\end{enumerate}
+Two $b$-Delzant data are \emph{equivalent} if they differ by an element of
+$\mathrm{AGL}(n,\mathbb Z)=\Lambda\rtimes\mathrm{GL}(\Lambda)$ acting on
+$\mathfrak t^*$, carrying $\mathcal H$ to $\mathcal H$ and preserving each $c_F$.
+\end{definition}
+
+\begin{theorem}[$b$-Delzant classification; Guillemin--Miranda--Pires--Scott]
+\label{thm:main}
+Fix $(\mathfrak t,\Lambda)\cong(\mathbb R^n,\mathbb Z^n)$. The assignment
+\[
+(M,\pi,T^n,\mu)\ \longmapsto\
+\bigl(\,\Delta:=\bar\mu(M),\ \mathcal H,\ (c_F)_{F\in\mathcal H}\,\bigr)
+\]
+(with $\bar\mu$ as in Definition~\ref{def:barmu}, $\mathcal H$ the facets of
+$\Delta$ that are images of components of $Z$, and $c_F$ the modular periods of
+Lemma~\ref{lem:blowup}) is a bijection between
+\begin{itemize}
+\item equivariant Poisson isomorphism classes of compact connected toric
+$b$-symplectic $2n$-manifolds (Definition~\ref{def:toricb}), and
+\item equivalence classes of $b$-Delzant data (Definition~\ref{def:bdelzant}).
+\end{itemize}
+\end{theorem}
+
+\begin{proof}
+We prove: well-definedness (W); that the output is a $b$-Delzant datum (D);
+injectivity (I); surjectivity (S).
+
+\medskip
+\noindent\textbf{(W) Well-definedness.}
+By compactness of $M$, $Z$ has finitely many components $Z_1,\dots,Z_m$, each a
+compact hypersurface. By Definition~\ref{def:barmu}, $\bar\mu$ is proper,
+$T^n$-invariant and continuous, so $\bar\mu(M)$ is compact. The bounded
+directions of $\mu$ are unaffected, and the singular directions are collapsed to
+finite facets; $\bar\mu(M)$ is independent of the auxiliary $\tau$ up to the
+diffeomorphism class of its facet structure and, as a convex set (part (D)),
+depends on $\mu$ only up to the translation/$\mathrm{GL}(\Lambda)$ ambiguity,
+i.e.\ up to $\mathrm{AGL}(n,\mathbb Z)$. The set $\mathcal H$ and the numbers
+$c_{Z_j}$ are intrinsic by Lemmas~\ref{lem:G4}--\ref{lem:blowup}. An equivariant
+Poisson isomorphism $\Phi\colon M_1\to M_2$ restricts to an equivariant
+symplectomorphism $U_1\to U_2$ intertwining $\mu_1,\mu_2$ up to
+$\mathrm{AGL}(n,\mathbb Z)$, carries $Z^{(1)}$ to $Z^{(2)}$, and preserves the
+modular periods (the modular class is a Poisson invariant, and $c_{Z_0}=r(v_{Z_0})$
+is intrinsic by Lemma~\ref{lem:G4}); hence produces equivalent data.
+
+\medskip
+\noindent\textbf{(D) The output is a $b$-Delzant datum.}
+We prove convexity by establishing \emph{local} convexity of $\bar\mu(M)$ from
+the explicit local models (Atiyah--Guillemin--Sternberg in the interior,
+Theorem~\ref{thm:localmodel} along $Z$) and then upgrading to global convexity
+by the classical Tietze--Nakajima theorem; this replaces the black-box
+$b$-convexity statement by the standard symplectic local theory plus a standard
+convex-geometry theorem.
+
+\emph{(D1) $\bar\mu(M)$ is compact, connected, and a finite union of local
+cones.} By Definition~\ref{def:barmu} $\bar\mu$ is continuous and proper with
+$M$ compact, so $\bar\mu(M)\subset\mathfrak t^*$ is compact, hence closed; it is
+connected because $M$ is. We describe the germ of $\bar\mu(M)$ at each
+$w\in\bar\mu(M)$.
+
+\emph{Interior points (away from $Z$).} If $\bar\mu^{-1}(w)\subset U$, then on a
+$T^n$-invariant neighbourhood $V$ of the compact fibre $\bar\mu^{-1}(w)$ the map
+$\bar\mu=\mu$ is the genuine moment map of the effective Hamiltonian
+$T^n$-action on the symplectic manifold $(V,\omega)$. By the local normal form
+of Marle--Guillemin--Sternberg (equivariant Darboux/slice theorem), there is a
+$T^n$-fixed type so that $\mu(V)$ coincides near $w$ with $w+C_w$, where $C_w$
+is a rational polyhedral cone (the cone over the moment image of a linear
+isotropy representation); this is the Atiyah--Guillemin--Sternberg local
+convexity statement. In particular $\bar\mu(M)\cap V$ is convex near $w$ and
+equals $w+C_w$ for a rational cone $C_w$.
+
+\emph{Points over $Z$.} If $w\in\bar\mu(Z_j)=:F_j$, take a point $q\in
+\bar\mu^{-1}(w)\subset Z_j$. By Theorem~\ref{thm:localmodel} a $T^n$-invariant
+neighbourhood of $Z_j$ is the model $Z_j^{\mathrm{symp}}\times S^1\times
+(-\varepsilon,\varepsilon)$ with $\omega_0=c_{F_j}\tfrac{dt}{t}\wedge d\phi+
+\omega_{Z_j}$. In this model $\bar\mu$ factors as the product of (i) the
+symplectic toric moment map $\mu_{Z_j}\colon Z_j^{\mathrm{symp}}\to F_j$ of the
+quotient torus $T'=T^n/S^1_{Z_j}$ on the bounded directions $\ker v^*_{Z_j}$,
+and (ii) the compactified modular coordinate
+$\langle\bar\mu,v_{Z_j}\rangle=\lambda_j-\tau(-\langle\mu,v_{Z_j}\rangle)$ in the
+direction $v^*_{Z_j}$, which by Lemma~\ref{lem:blowup} maps the two normal ends
+$t\gtrless0$ monotonically onto a one-sided half-open interval $[\lambda_j,
+\lambda_j+\delta)$ collapsing $Z_j=\{t=0\}$ to the value $\lambda_j$. Hence near
+$w$,
+\[
+\bar\mu(M)\cap V \;=\; w+\bigl(C_w^{Z_j}\times[0,\delta)\,v^*_{Z_j}\bigr),
+\]
+where $C_w^{Z_j}\subset\ker v^*_{Z_j}$ is the rational cone of the symplectic
+toric base $Z_j^{\mathrm{symp}}$ at the $T'$-image of $q$ (a single point of
+$F_j$ if $q$ is a $T'$-fixed point, a half-space facet of $F_j$ otherwise). This
+is again $w$ plus a rational polyhedral cone, and it is convex (a product of a
+convex cone with a half-line). Note $F_j$ is exactly the face $\{v^*_{Z_j}=
+\lambda_j\}$ of this local cone, so $F_j$ is a facet of $\bar\mu(M)$.
+
+\emph{(D2) Global convexity (Tietze--Nakajima).} We invoke the following
+classical theorem. \textbf{Tietze--Nakajima theorem} \emph{(H.\ Tietze 1928,
+S.\ Nakajima 1928; see also Bj\"orck): a closed, connected subset $C$ of
+$\mathbb R^N$ that is \emph{locally convex} (every point of $C$ has an open
+neighbourhood $V$ with $C\cap V$ convex) is convex.} Its hypotheses hold for
+$C:=\bar\mu(M)$: it is closed and connected by (D1), and locally convex by the
+two cases of (D1), where each local germ $w+C_w$ resp.\ $w+(C_w^{Z_j}\times
+[0,\delta)v^*_{Z_j})$ is convex. Therefore $\bar\mu(M)$ is convex. Being convex
+and locally a finite rational polyhedral cone at each point (D1), with finitely
+many distinct local cones (compactness, plus finiteness of fixed-point types and
+of components of $Z$), $\bar\mu(M)$ is a rational convex polytope $\Delta$, and
+it is simple because each local cone is simplicial (the isotropy weights at a
+fixed point are linearly independent by effectiveness; the product with the
+collapsed normal interval keeps simpliciality).
+
+\emph{Smoothness at vertices (gap G3(a)).} Every vertex $w$ of $\Delta$ is the
+image of a fixed point $p$ of the $T^n$-action. Such fixed points lie in $U$,
+not on $Z$: indeed on $Z$ the $T^n$-action has the free circle factor
+$S^1_{Z_0}$ (Lemma~\ref{lem:G4}), so no point of $Z$ is $T^n$-fixed. Hence near
+$p$ the structure is genuinely symplectic and the equivariant symplectic Darboux
+(Marle--Guillemin--Sternberg) theorem applies verbatim: the $n$ primitive inward
+edge-vectors at $w$ are the weights of the isotropy representation at $p$ and
+form a $\mathbb Z$-basis of $\Lambda$ by effectiveness. This is the Delzant
+smoothness condition. (No appeal to a corner model on $Z$ is needed, precisely
+because vertices avoid $Z$.)
+
+\emph{Vertices adjacent to a singular facet.} A vertex $w$ \emph{on} a singular
+facet $F=\bar\mu(Z_j)$ still has $\bar\mu^{-1}(w)$ a $T^n$-fixed point; but
+fixed points avoid $Z$, while $\bar\mu^{-1}(\operatorname{relint}F)\subseteq Z_j$
+and $\bar\mu^{-1}(w)$ with $w\in F$ a vertex is a fixed point of $T'$ in
+$Z_j^{\mathrm{symp}}$ lifted by the collapse. Concretely, near such $w$ the
+local model is $(\text{Delzant cone of }Z_j^{\mathrm{symp}}\text{ at the
+}T'\text{-fixed point})\times(\text{collapsed normal})$; the
+$Z_j^{\mathrm{symp}}$-cone is unimodular for the rank-$(n-1)$ lattice
+$\Lambda\cap\ker v^*_{Z_j}$ by the Delzant condition in dimension $2n-2$, and
+together with the primitive normal $v^*_{Z_j}$ (Lemma~\ref{lem:blowup}) the $n$
+edge-vectors at $w$ form a $\mathbb Z$-basis of $\Lambda$ (a unimodular basis of
+a rank-$(n-1)$ sublattice plus a vector completing it to a basis, by primitivity
+of $v_{Z_j}$). Thus smoothness holds at vertices adjacent to singular facets as
+well, and this uses Theorem~\ref{thm:localmodel} only in its product form,
+which \emph{does} cover the corner because the corner of $\Delta$ on $F$ comes
+entirely from a corner of the lower-dimensional toric base
+$Z_j^{\mathrm{symp}}$.
+
+\emph{Pairwise non-adjacency (gap G3(b)).} We must show that two distinct
+components $Z_i\neq Z_j$ cannot have moment images $F_i=\bar\mu(Z_i)$,
+$F_j=\bar\mu(Z_j)$ sharing a common $(n-2)$-face $G$ of $\Delta$. Suppose they
+did. A point $w\in\operatorname{relint}G$ has $\bar\mu^{-1}(w)$ contained in the
+closure of both $\bar\mu^{-1}(\operatorname{relint}F_i)\subseteq Z_i$ and
+$\bar\mu^{-1}(\operatorname{relint}F_j)\subseteq Z_j$, and lying on the codimension-$2$
+stratum of $\Delta$. The local-cone description (b-convexity) at $w$ would then
+exhibit \emph{two independent} collapsed normal directions $v^*_{Z_i},v^*_{Z_j}$,
+i.e.\ two transverse singular hypersurfaces meeting over $\bar\mu^{-1}(w)$. But
+the preimage $\bar\mu^{-1}(\operatorname{relint}G)$ is a $T^n$-invariant subset
+on which $\pi$ would have corank $\ge2$: along it $\pi^n$ vanishes ``from two
+sides,'' contradicting that $\pi^n$ vanishes \emph{transversally} on the smooth
+hypersurface $Z$ (Definition~\ref{def:bpoisson}), whose components $Z_i,Z_j$
+are by definition disjoint and each of corank exactly $1$. Concretely: at a
+point $q$ in the alleged common stratum, two distinct local defining functions
+$t_i,t_j$ would both vanish with linearly independent differentials and $\pi$
+would degenerate in both normal directions, forcing $\operatorname{corank}
+\pi(q)\ge2$, impossible for a $b$-Poisson structure. Hence $F_i,F_j$ share no
+$(n-2)$-face; the singular facets are pairwise non-adjacent. (This corrects the
+earlier ``intersection of $Z_i,Z_j$'' phrasing: the $Z$'s are disjoint, and the
+real obstruction is to their \emph{images} being adjacent, which is what the
+corank argument above rules out.)
+
+Thus $(\Delta,\mathcal H,(c_F))$ is a $b$-Delzant datum.
+
+\medskip
+\noindent\textbf{(I) Injectivity.}
+Suppose $(M_1,\pi_1)$, $(M_2,\pi_2)$ give equivalent data; after acting by
+$\mathrm{AGL}(n,\mathbb Z)$ assume identical $(\Delta,\mathcal H,(c_F))$.
+
+\emph{Interior.} Let $U_i=M_i\setminus Z^{(i)}$ be the symplectic locus, a
+(non-compact when $\mathcal H\neq\varnothing$) symplectic toric $2n$-manifold for
+the effective Hamiltonian $T^n$-action with moment map $\mu_i$. By
+Lemma~\ref{lem:blowup} and Theorem~\ref{thm:localmodel}, $\mu_i$ is a
+\emph{proper} map onto its image $P_i\subset\mathfrak t^*$, which is the (in
+general unbounded) manifold-with-corners obtained from $\Delta$ by pushing each
+singular facet $F\in\mathcal H$ off to $v^*_F=-\infty$ along the logarithmic
+cylindrical ends~\eqref{eq:logmu}; the non-singular facets remain genuine
+boundary facets, and the characteristic lattice data on each facet are those of
+$\Delta$. Since the data $(\Delta,\mathcal H,(c_F))$ agree, $P_1=P_2=:P$ as
+manifolds-with-corners with identical characteristic data (the cylindrical-end
+shape near each $F\in\mathcal H$ is fixed by the common modular period $c_F$ via
+\eqref{eq:logmu}). By the uniqueness half of the classification of symplectic
+toric manifolds with proper moment map (Karshon--Lerman, ``Non-compact
+symplectic toric manifolds,'' SIGMA~11 (2015) 055: a symplectic toric manifold
+with proper moment map onto a region in $\mathfrak t^*$ is determined up to
+equivariant symplectomorphism, intertwining the moment maps, by that region as a
+manifold-with-corners together with its characteristic lattice data), there is an
+equivariant symplectomorphism $\Psi\colon U_1\to U_2$ with $\mu_2\circ\Psi=\mu_1$.
+(Karshon--Lerman require completeness/properness, which holds here because $M_i$
+is compact and $\mu_i$ blows up only in the modular directions, where the end is
+the explicit complete cylinder~\eqref{eq:logmu}.)
+
+\emph{Across $Z$ and elimination of gluing moduli (gap G2).} Near each
+$Z_j^{(i)}$ Theorem~\ref{thm:localmodel} identifies a neighbourhood with the
+same model $\bigl(Z_j^{\mathrm{symp}}\times S^1\times(-\varepsilon,\varepsilon),
+\,c_{F_j}\tfrac{dt}{t}\wedge d\phi+\omega_{Z_j}\bigr)$, because: (a) the base
+$Z_j^{\mathrm{symp}}$ is the symplectic toric $(2n-2)$-manifold with Delzant
+polytope $F_j$, hence \emph{determined} (Delzant in dimension $2n-2$) and equal
+for $i=1,2$; (b) the modular period $c_{F_j}$ agrees; and (c) the principal
+$S^1_{Z_j}$-bundle structure is the \emph{trivial} bundle in the model and the
+model fixes the connection $\theta=c_{F_j}d\phi$. We must check there is no
+residual gluing modulus. The only possible moduli when assembling $M$ from the
+two ``ends'' $\{t>0\}$, $\{t<0\}$ across $Z_j$ are (i) a deck/automorphism of
+the symplectic toric base $Z_j^{\mathrm{symp}}$ compatible with the
+$T'$-moment data, and (ii) a $b$-cohomology class measuring the difference of
+the two $b$-symplectic structures. For (i): an automorphism of a symplectic
+toric manifold fixing its moment map is the identity (Delzant uniqueness with
+fixed moment map), so the only base automorphism compatible with $F_j$ is the
+identity; the modular $S^1$-direction is rigid because $\theta$ is fixed to
+$c_{F_j}d\phi$. For (ii): the difference $\alpha:=\omega_2-\omega_1$ of the two
+$b$-symplectic forms, after applying $\Psi$ on the overlap, is a $T^n$-invariant
+closed $b$-$2$-form on the model collar
+$N_j:=Z_j^{\mathrm{symp}}\times S^1\times(-\varepsilon,\varepsilon)$. By the
+Mazzeo--Melrose decomposition, the $b$-de~Rham cohomology of $N_j$ splits as
+$H^k_b(N_j)\cong H^k(N_j)\oplus H^{k-1}(Z_j)$, where the second summand is the
+\emph{residue}; the class of a closed $b$-$2$-form is determined by its ordinary
+class in $H^2(N_j)$ together with its residue $r(\alpha)\in H^1(Z_j)$. Here the
+residue of $\omega_i$ along $Z_j$ is $[c_{F_j}d\phi]\in H^1(Z_j)$ for both $i$
+(Lemma~\ref{lem:blowup} with the same period $c_{F_j}$), so $r(\alpha)=0$;
+moreover $N_j$ deformation retracts onto $Z_j$ and $\omega_1,\omega_2$ restrict
+to the same leafwise/base symplectic data $\omega_{Z_j}$ there, so the ordinary
+class $[\alpha]\in H^2(N_j)\cong H^2(Z_j)$ also vanishes. Thus $\alpha$ is
+$b$-exact: $\alpha=d_b\eta$ for some $b$-$1$-form $\eta$ on $N_j$. Averaging
+$\eta$ over the compact group $T^n$ (using $T^n$-invariance of $\alpha$ and
+$d_b$-equivariance) we may take $\eta$ to be $T^n$-invariant, and subtracting a
+$d_b$-closed correction we may take $\eta$ to vanish on $Z_j$. The linear path
+$\omega_s:=\omega_1+s\,\alpha$ ($s\in[0,1]$) consists of $b$-symplectic forms
+(nondegeneracy is open and both endpoints share the same residue and leafwise
+data, so $\omega_s$ is nondegenerate on the collar after shrinking
+$\varepsilon$), and the equivariant $b$-Moser theorem
+(Theorem~\ref{thm:localmodel}) applied to $\eta$ — whose Moser vector field
+$Y_s$, defined by $\iota_{Y_s}\omega_s=-\eta$, is $T^n$-invariant, tangent to
+$Z_j$, and complete because $Z_j$ is compact and $\eta$ vanishes on $Z_j$ to the
+order making the flow well-defined across the pole — yields a $T^n$-equivariant
+isotopy fixing $Z_j$ and carrying $\omega_1$ to $\omega_2$. There is therefore no
+free parameter in the gluing. Patching $\Psi$ (on the interior) to these
+boundary equivariant Poisson isomorphisms by a $T^n$-invariant partition of
+unity subordinate to $\{U_i$-interior$\}\cup\{$model collars$\}$, and removing
+the resulting discrepancy by one final equivariant Moser isotopy on the compact
+$M$, yields a global equivariant Poisson isomorphism $M_1\cong M_2$. Here the
+discrepancy $\omega'-\omega$ is a $T^n$-invariant closed $b$-$2$-form supported
+in the symplectic region away from $Z$ (the boundary maps were already exact
+matches near $Z$ by the previous paragraph), with the same cohomology class
+because the two structures induce the same moment data on $\Delta$; hence it is
+$d_b$ of a $T^n$-invariant $1$-form (average a primitive, which exists by the
+ordinary Poincar\'e lemma on the contractible-fibre region and the vanishing of
+the residue away from $Z$), and the equivariant Moser argument on the compact
+symplectic locus (standard, since here there is no pole) completes the global
+isomorphism.
+
+\medskip
+\noindent\textbf{(S) Surjectivity (construction).}
+Given $(\Delta,\mathcal H,(c_F))$, we build a compact connected toric
+$b$-symplectic manifold realising it. The construction is the doubling
+construction of Guillemin--Miranda--Pires--Scott; we set it up so that all
+matching is by explicit equalities of forms.
+
+\emph{Step 1 (Delzant in dimension $2n$).} Realise $\Delta$ by its facet
+inequalities $\langle\xi,a_i\rangle\ge\lambda_i$, $i=1,\dots,d$, with
+$a_i\in\Lambda$ primitive inward normals. Let $\hat\beta\colon\mathbb R^d\to
+\mathfrak t$, $e_i\mapsto a_i$; let $N=\ker(\exp\colon T^d\to T^n)$ act on
+$\mathbb C^d$ with standard moment map. The reduction
+$X_\Delta=\mu_{\mathbb C^d}^{-1}(\lambda)/N$ is the compact symplectic toric
+manifold with polytope $\Delta$ and residual effective Hamiltonian action of
+$T^n=T^d/N$ with moment map $\mu_\Delta\colon X_\Delta\to\Delta$ (Delzant).
+
+\emph{Step 2 (the symplectic model near a facet).} Fix $F\in\mathcal H$ with
+primitive inward normal $a_F\in\Lambda$, and let $v_F\in\Lambda$ be a primitive
+vector with $\langle a_F,v_F\rangle=1$; the circle $S^1_F:=\exp(\mathbb R v_F)$
+is the isotropy circle of $F$. The preimage $X_F:=\mu_\Delta^{-1}(F)$ is a
+\emph{codimension-$2$} symplectic toric submanifold of $X_\Delta$ on which
+$S^1_F$ acts trivially (the facet circle ``collapses'' along $F$); it is the
+symplectic toric $(2n-2)$-manifold with Delzant polytope $F$ for the quotient
+torus $T'=T^n/S^1_F$, with moment map $\mu_F$. By the equivariant symplectic
+neighbourhood theorem (Marle--Guillemin--Sternberg slice theorem applied to the
+collapsing circle $S^1_F$), a $T^n$-invariant tubular neighbourhood of $X_F$ in
+$X_\Delta$ is equivariantly symplectomorphic to a neighbourhood of the zero
+section in the associated complex line bundle
+\[
+\mathcal N_F\;=\;X_F\times_{S^1_F}\mathbb C\;\longrightarrow\;X_F,
+\]
+with $S^1_F$ acting on $\mathbb C$ by rotation, carrying the symplectic form to
+\begin{equation}\label{eq:facetnf}
+\omega_{\mathrm{loc}}\;=\;\pi^*\omega_F\;+\;d\!\left(\tfrac12 r^2\,(d\psi+\sigma)\right),
+\end{equation}
+where $(r,\psi)$ are fibre polar coordinates, $\psi$ the angle of $S^1_F$,
+$\sigma$ a connection $1$-form, and $\omega_F$ the base symplectic form. In
+these coordinates the $v_F$-component of the moment map is
+$\langle\mu_\Delta,v_F\rangle=\lambda_F+\tfrac12 r^2$, so $X_F=\{r=0\}$ maps to
+$F$ and the inward normal coordinate is $s:=\tfrac12 r^2\ge0$. On the punctured
+neighbourhood $\{0<r<\epsilon\}$, where $S^1_F$ acts freely, set $u:=\log s
+=\log(\tfrac12 r^2)$; then $ds=s\,du$ and
+\begin{equation}\label{eq:cylend}
+\omega_{\mathrm{loc}}\big|_{0<r<\epsilon}
+=\pi^*\omega_F+ds\wedge(d\psi+\sigma)+s\,d\sigma
+\xrightarrow[s=e^u]{}\ \pi^*\omega_F+e^u\,du\wedge(d\psi+\sigma)+e^u\,d\sigma .
+\end{equation}
+Thus the deleted neighbourhood $\{0<r<\epsilon\}=X_F\times S^1\times(-\infty,
+\log\tfrac{\epsilon^2}2)$ (coordinates: base point, $\psi$, and $u$) is a
+symplectic toric ``cylindrical end'' on which the $v_F$-moment value
+$s=e^u\to0^+$ (i.e.\ $u\to-\infty$) approaches the facet $F$.
+
+\emph{Step 3 (the $b$-collar and the doubling).} Introduce a new coordinate $t$
+ranging over $(-\delta,\delta)$ and relate it to the two punctured ends by
+\begin{equation}\label{eq:tglue}
+u=c_F\,\log|t|+\text{const},\qquad\text{equivalently}\quad
+s=\tfrac12 r^2=C\,|t|^{c_F},
+\end{equation}
+on each side $t\gtrless0$, using two separate copies of the end~\eqref{eq:cylend}
+for $t>0$ and $t<0$. Substituting~\eqref{eq:tglue} into~\eqref{eq:cylend} and
+using $du=c_F\,\tfrac{dt}{t}$ gives, on $\{t\neq0\}$, the pulled-back form
+\[
+c_F\,\frac{dt}{t}\wedge(d\psi+\sigma)+\pi^*\omega_F+s(t)\,d\sigma,\qquad
+s(t)=C\,|t|^{c_F}.
+\]
+To make a genuinely smooth $b$-symplectic form near $Z_F:=X_F\times S^1=
+\{t=0\}$ we replace the coefficient $s(t)=C|t|^{c_F}$ of the regular correction
+$d\sigma$ by a smooth even function $\beta\colon(-\delta,\delta)\to[0,\infty)$
+with $\beta(t)=C|t|^{c_F}$ for $\tfrac{\delta}2\le|t|<\delta$ and $\beta$
+$C^\infty$ with $\beta(0)=0$, $|\beta|$ small; thus
+\begin{equation}\label{eq:bform}
+\omega^b_F:=c_F\,\frac{dt}{t}\wedge(d\psi+\sigma)+\pi^*\omega_F+\beta(t)\,d\sigma,
+\end{equation}
+which is a smooth ($b$-)$2$-form on the whole collar $X_F\times S^1\times(-\delta,
+\delta)$. It \emph{equals} the pullback of~\eqref{eq:cylend} under~\eqref{eq:tglue}
+on the gluing annuli $\tfrac\delta2\le|t|<\delta$ (where $\beta=s$), and for
+$\delta$ and $|\beta|$ small it is nondegenerate as a $b$-form (its leading
+$b$-Darboux term is, and nondegeneracy is open). The form~\eqref{eq:bform}
+extends smoothly across $\{t=0\}$ as a $b$-symplectic form with logarithmic pole
+along $Z_F$, and its dual bivector $\pi^b_F$
+has $(\pi^b_F)^n$ vanishing to exactly first order along $Z_F$ (the factor $t$
+in $t\,\partial_t\wedge\partial_\psi$ is a transverse zero). On each side
+$t\gtrless0$ and on the gluing annuli $\tfrac\delta2\le|t|<\delta$, the change of
+coordinates~\eqref{eq:tglue} is a diffeomorphism onto an annular piece of the end
+\eqref{eq:cylend} of $X_\Delta$, under which $\omega^b_F$ equals
+$\omega_{\mathrm{loc}}$; hence~\eqref{eq:bform} provides a $b$-symplectic collar
+$X_F\times S^1\times(-\delta,\delta)$ each of whose two annular gluing regions is
+\emph{symplectomorphically identified} with an annular neighbourhood of the
+deleted facet end of $X_\Delta$.
+
+Now form $M$ as follows. Let $X_\Delta^\circ:=X_\Delta\setminus\bigcup_{F\in
+\mathcal H}V_F$, where $V_F=\{0\le r<r_0\}$ is a small open tubular neighbourhood
+of the codimension-$2$ submanifold $X_F$ corresponding to
+$|t|<\tfrac\delta2$ under~\eqref{eq:tglue} (so $V_F$ includes $X_F$ itself); thus
+$X_\Delta^\circ$ is the genuine symplectic toric manifold with the singular-facet
+neighbourhoods excised, carrying the symplectic $T^n$-action with proper moment
+map, and bounded near each $F$ by the annulus $\tfrac\delta2\le|t|<\delta$ of
+\eqref{eq:cylend}. Take \emph{two} copies $X_\Delta^{\circ,\pm}$ and, for each
+$F\in\mathcal H$, glue the $\tfrac\delta2\le t<\delta$ annulus of the
+$b$-collar~\eqref{eq:bform} to the corresponding annular boundary collar of
+$X_\Delta^{\circ,+}$, and the $-\delta<t\le-\tfrac\delta2$ annulus to that of
+$X_\Delta^{\circ,-}$, via the symplectomorphic identifications of the previous
+paragraph (which are exact equalities of forms there). Because non-singular
+facets are untouched and the gluings are identities of forms on the overlaps,
+the result
+\[
+M:=X_\Delta^{\circ,+}\ \cup\ \Big(\textstyle\bigsqcup_{F\in\mathcal H}
+\big(X_F\times S^1\times(-\delta,\delta),\,\omega^b_F\big)\Big)\ \cup\
+X_\Delta^{\circ,-}
+\]
+is a smooth manifold with a smooth bivector $\pi$ equal to the symplectic dual
+on $M\setminus Z$ and to $\pi^b_F$ on each collar.
+
+\emph{When $\mathcal H=\varnothing$} no facet is removed, no doubling occurs, and
+$M=X_\Delta$ is exactly Delzant's symplectic manifold.
+
+\emph{Verification of the structure (gap G6).}
+(a) \emph{$b$-Poisson:} by~\eqref{eq:bform} and the preceding paragraph
+$(\pi)^n$ vanishes transversally along $Z=\bigsqcup_{F\in\mathcal H} Z_F$, so
+$(M,\pi)$ is $b$-Poisson with the prescribed singular hypersurfaces; the
+$Z_F$ are pairwise disjoint because pairwise non-adjacency of the facets in
+$\mathcal H$ makes the codimension-$2$ submanifolds $X_F$ (and their collars)
+pairwise disjoint (two non-adjacent facets share no $(n-2)$-face, so their
+preimages do not meet). (b) \emph{Smoothness/matching:} all gluings are exact
+equalities of forms (Step 3), so $\pi$ is smooth. (c) \emph{Effective Poisson
+$T^n$-action:} the $T^n$-action on each $X_\Delta^{\circ,\pm}$ and on each collar
+(rotating $\psi$ by $S^1_F$ and acting through $T'$ on $X_F$) agree on overlaps
+and are by Poisson diffeomorphisms; effectiveness is inherited from $X_\Delta$.
+(d) \emph{Compact connected:} each $X_\Delta^{\circ,\pm}$ is $X_\Delta$ with
+finitely many codimension-$2$ submanifolds removed, hence connected and with
+ends that are compactified by the compact collars $X_F\times S^1\times[-\delta/2,
+\delta/2]$; the union is compact (a finite union of relatively compact pieces
+with matching compact boundaries) and connected (the two copies are joined
+through every singular collar; if $\mathcal H\neq\varnothing$ they are connected,
+and if $\mathcal H=\varnothing$ there is a single copy $X_\Delta$).
+\emph{Recovering the datum:} by construction $\bar\mu(M)=\Delta$ (both copies map
+onto $\Delta$, the collars collapse to the facets $F$), the components of $Z$ are
+the $Z_F$ with $\bar\mu(Z_F)=F$, the marked facets are exactly $\mathcal H$, and
+the modular periods read off~\eqref{eq:bform} via Lemma~\ref{lem:blowup} are the
+prescribed $c_F$. Hence the data of $M$ is $(\Delta,\mathcal H,(c_F))$, proving
+surjectivity.
+
+\medskip
+(W),(D),(I),(S) together establish the bijection.
+\end{proof}
+
+\section{Answer to the question}
+
+\begin{corollary}
+The Delzant classification \emph{does} extend to the Poisson setting, but only
+after restricting to a class of Poisson structures whose singular locus is
+controlled. The right class is the $b$-symplectic one: compact connected toric
+$b$-symplectic $2n$-manifolds are in bijection with $b$-Delzant data --- a
+Delzant polytope $\Delta$, a set $\mathcal H$ of pairwise non-adjacent facets
+marked as singular, and a positive modular period $c_F$ for each $F\in\mathcal
+H$. The convex-geometric object is the compactified moment image $\Delta=
+\bar\mu(M)$ together with these decorations; the new invariants relative to the
+symplectic case are exactly $\mathcal H$ and $(c_F)$, encoding where and how
+strongly $\pi$ degenerates. For Poisson structures whose degeneracy is \emph{not}
+of $b$-type, Proposition~\ref{prop:noinvariant} shows no such clean
+classification can exist.
+\end{corollary}
+
+\begin{remark}[Scope and honest limitations]
+The theorem is the Delzant-type classification of
+Guillemin--Miranda--Pires--Scott. We have derived in full the structural
+lemmas (Lemmas~\ref{lem:Z}, \ref{lem:G4}, \ref{lem:blowup}), the reduction in
+the local normal form (Theorem~\ref{thm:localmodel}), the well-definedness,
+the smoothness and non-adjacency in part (D), the elimination of gluing moduli
+in part (I), and the explicit construction in part (S). The convexity step (part (D)) is reduced here to the explicit local models
+(Atiyah--Guillemin--Sternberg in the interior, Theorem~\ref{thm:localmodel}
+along $Z$) together with the classical Tietze--Nakajima convexity theorem, so it
+is not black-boxed. The one genuinely analytic input we \emph{cite, not reprove}
+is the equivariant $b$-Moser normal-form theorem (used in
+Theorem~\ref{thm:localmodel} and in part (I)); we stated it precisely and
+verified its hypotheses (compact invariant $Z$, equal residues, matching
+restriction data, completeness of the Moser field) in our setting. For higher-order vanishing of $\pi^n$
+($b^k$-structures, $k\ge2$) the single period $c_F$ is replaced by a $k$-jet of
+modular data, and Proposition~\ref{prop:noinvariant}(2) shows that for $k\ge2$
+the moment image alone is no longer a complete invariant; the $b^k$-analogue of
+the present theorem requires the $b^k$-Moser theorem and is not treated here.
+\end{remark}
+
+\end{document}

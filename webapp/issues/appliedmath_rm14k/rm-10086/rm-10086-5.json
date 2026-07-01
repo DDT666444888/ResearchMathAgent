@@ -1,0 +1,32 @@
+{
+  "id": "rm-10086-5",
+  "problem_id": "rm-10086",
+  "dataset": "appliedmath_rm14k",
+  "title": "Part (b): coherence barrier (Step 3 of Thm thm:fail) is heuristic, not proved",
+  "status": "open",
+  "labels": [
+    "proof-gap",
+    "critic"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T03:37:24Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev657f78ab",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T03:37:24Z"
+    },
+    {
+      "id": "c5f16a59f",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "**Severity: gap (headline claim).** The headline barrier\n$$s\\ \\gtrsim\\ \\mu\\,\\mathrm{sr}(A)\\,\\max(m,n)/\\varepsilon$$\nis derived in Step 3 of Thm. `thm:fail` only up to \"$\\asymp$\" and under the qualifier \"for a flat spectrum ($\\mathrm{sr}(A)=\\Theta(r)$)\". Substituting Lemma `lem:colenergy` ($\\max_j\\|A_{:,j}\\|^2\\le\\sigma_1^2\\mu r/n$) into eq. `eq:barrier` produces a ratio $\\mu r/\\mathrm{sr}(A)$ which is silently collapsed to $\\Theta(\\mu)$. For general spectral decay this is invalid, so the stated coherence-inflated barrier is not a theorem for arbitrary $A$.\n\n**Suggested fix.** Carry $\\mu r/\\mathrm{sr}(A)$ explicitly and state the rigorous barrier as\n$$s\\ \\gtrsim\\ \\frac{mn}{\\theta^2}\\,\\sigma_1^2\\,\\frac{\\mu r}{n},$$\nclaiming the $\\Theta(\\mu)$ inflation only under the explicit flat-spectrum hypothesis $\\mathrm{sr}(A)=\\Theta(r)$.",
+      "created_at": "2026-06-27T03:37:24Z"
+    }
+  ]
+}

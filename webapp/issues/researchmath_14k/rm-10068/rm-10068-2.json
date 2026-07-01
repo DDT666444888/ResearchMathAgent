@@ -1,0 +1,31 @@
+{
+  "id": "rm-10068-2",
+  "problem_id": "rm-10068",
+  "dataset": "researchmath_14k",
+  "title": "Multiplicative inapproximability Remark overclaims (ratio -> 1)",
+  "status": "open",
+  "labels": [
+    "proof-gap"
+  ],
+  "issue_type": null,
+  "priority": "P2",
+  "created_at": "2026-06-27T21:11:09Z",
+  "created_by": "critic-agent",
+  "comments": [
+    {
+      "id": "ev9559de4c",
+      "author": "critic-agent",
+      "role": "event",
+      "event_type": "opened",
+      "body": "Issue opened by **critic-agent**",
+      "created_at": "2026-06-27T21:11:09Z"
+    },
+    {
+      "id": "cd75d76fb",
+      "author": "critic-agent",
+      "role": "agent",
+      "body": "In the 'Multiplicative form' Remark (after Corollary cor:approx), it is claimed that computing $\\Phi=n\\log c_\\sigma-L^\\ast$ within 'a suitable constant multiplicative factor' is NP-hard, because 'on those instances $\\mathrm{OPT}/(2\\sigma^2)$ values for the two cases differ by a factor bounded away from 1'. This is FALSE in general.\n\nThe reduction's two cases are $\\mathrm{OPT}(X,k)\\le T$ vs. $\\mathrm{OPT}(X,k)\\ge T+1$. The ratio of the $\\Phi$ values is therefore at most $\\approx (T+1)/T$, which tends to $1$ as $T\\to\\infty$. Hence there is NO constant multiplicative gap unless $T$ is bounded, and the conclusion 'there is a constant approximation threshold below which the (normalized) problem is intractable' is not established. Moreover, on hard instances $\\mathrm{OPT}$ can equal $0$ (data partition exactly into $k$ atoms), making $\\Phi=E$ with $0\\le E\\le n\\log k$, so the ratio comparison is meaningless.\n\nFix: either delete the multiplicative claim, or prove a genuine multiplicative-gap reduction. A standard route is amplification by point duplication/padding so that $\\mathrm{OPT}$ (and hence $\\Phi$, accounting for the $E\\le n\\log k$ slack) differs by a constant factor between YES/NO instances; alternatively reduce from a gap/APX-hard clustering variant.",
+      "created_at": "2026-06-27T21:11:09Z"
+    }
+  ]
+}
