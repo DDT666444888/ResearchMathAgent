@@ -72,6 +72,27 @@ def _update_concepts_and_insights(repo: Path, dataset: str, problems, force: boo
             log.warning("%s failed: %s", label, exc)
 
 
+def _build_reports(repo: Path, dataset: str, problems, languages, force: bool) -> None:
+    """Compile each problem's context report in every requested language, caching
+    a single date-time-stamped PDF + .tex per build into documents/cache/."""
+    from webapp.context_report import compile_report_pdf
+    from webapp.dataset_store import list_problems
+    pids = problems or [p["id"] for p in list_problems(dataset=dataset)]
+    for pid in pids:
+        for lang in languages:
+            label = "Chinese" if lang in ("cn", "zh") else "English"
+            try:
+                res = compile_report_pdf(repo, pid, dataset, force=force,
+                                         cache_document=True, language=lang)
+                if res.get("ok"):
+                    log.info("report %s [%s]: %s", pid, label,
+                             res.get("cached_copy") or res.get("log"))
+                else:
+                    log.warning("report %s [%s] failed: %s", pid, label, res.get("log"))
+            except Exception as exc:  # noqa: BLE001
+                log.warning("report %s [%s] error: %s", pid, label, exc)
+
+
 def run_push(args) -> int:
     provider = getattr(args, "provider", None) or "claude-code"
     os.environ["RMA_PROVIDER"] = provider
@@ -109,6 +130,12 @@ def run_push(args) -> int:
                     log.warning("documents %s failed: %s", p, exc)
         print(f"[rma push] updating concepts + insights…", flush=True)
         _update_concepts_and_insights(repo, dataset, problems, force=args.force)
+
+        # Per-problem context reports, one timestamped PDF+TeX per language.
+        # Default is BOTH English and Chinese ("each push forward generates both").
+        lang_arg = getattr(args, "language", "both") or "both"
+        languages = ("en", "cn") if lang_arg == "both" else (lang_arg,)
+        _build_reports(repo, dataset, problems, languages, force=args.force)
 
     print(f"[rma push] building master PDF (all problems, all tabs)…", flush=True)
     from webapp.context_report import compile_master_pdf

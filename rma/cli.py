@@ -125,6 +125,10 @@ def build_parser() -> argparse.ArgumentParser:
                       help="Skip the update; just (re)build the master PDF from current content.")
     push.add_argument("--no-meetings", action="store_true", dest="no_meetings",
                       help="Skip the meeting/issue cycle; still refresh docs + concepts + insights.")
+    push.add_argument("--language", "--lang", default="both", dest="language",
+                      choices=["both", "en", "cn", "zh"],
+                      help="Report language(s) to generate per problem (default: both = "
+                           "English + Chinese). 'cn'/'zh' = Chinese only, 'en' = English only.")
     push.add_argument("--cache-document", default=None, dest="cache_document",
                       help="Problem id whose report PDF to also copy into documents/cache/ for quick access (e.g. prob-09).")
     push.add_argument("--force", action="store_true", help="Force regenerate concepts/insights and recompile all reports.")

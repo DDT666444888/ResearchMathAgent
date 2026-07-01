@@ -107,6 +107,14 @@ def _proof_eval(repo_root: Path, pid: str) -> dict | None:
         return None
 
 
+def _push_forward_history(repo_root: Path, pid: str) -> list[dict]:
+    try:
+        from .push_forward import load_push_forward_history
+        return load_push_forward_history(repo_root, pid)
+    except Exception:
+        return []
+
+
 def _attempts(repo_root: Path, pid: str) -> list[dict]:
     mem = repo_root / "documents" / "strategy_memory.jsonl"
     if not mem.is_file():
@@ -365,23 +373,30 @@ def _full_proof_latex(repo_root: Path, pid: str, dataset: str) -> str:
 
 
 def _build_problem_latex_body(repo_root: Path, pid: str,
-                               dataset: str = "first_proof_1") -> tuple[str, str]:
+                               dataset: str = "first_proof_1",
+                               sections=None) -> tuple[str, str]:
     """Build a book-style LaTeX report for one problem.
 
     Returns:
         preamble — everything before \\begin{document} (ready for stub injection)
         body     — everything between \\begin{document} and \\end{document}
 
-    Chapter map:
+    Chapter map (each chapter is gated by the matching ``ReportSections`` flag;
+    all flags default to on, so omitting ``sections`` reproduces the full report):
         1  Problem Statement   (raw LaTeX from problem file — inserted verbatim)
         2  Evaluation          (score bars + verdict + analysis)
         3  Best Proof          (raw LaTeX proof body — inserted verbatim)
-        4  Key Concepts        (omitted when none)
-        5  Meetings            (omitted when none)
-        6  Open Issues         (omitted when none)
-        7  Resolved Issues     (omitted when none)
+        4  Key Concepts        (omitted when none, or when disabled)
+        5  Meetings            (omitted when none, or when disabled)
+        6  Open Issues         (omitted when none, or when disabled)
+        7  Resolved Issues     (omitted when none, or when disabled)
         8  Insights
+
+    ``sections`` — a ReportSections / dict / spec string / None (see
+    report_sections.resolve_sections). None ⇒ env-or-all-on.
     """
+    from .report_sections import resolve_sections
+    S = resolve_sections(sections)
     prof       = _profile(pid)
     issues     = _issues(repo_root, pid, dataset)
     best       = _best_proof(pid, dataset)
@@ -452,7 +467,7 @@ def _build_problem_latex_body(repo_root: Path, pid: str,
     # text; the Insights chapter (Chapter 7) still shows it in full.
 
     # Evaluation scores table
-    if pe:
+    if pe and S.evaluation:
         aa = pe.get("answer_accuracy")
         lc = pe.get("logical_correctness")
         pc = pe.get("proof_completeness")
@@ -520,50 +535,53 @@ def _build_problem_latex_body(repo_root: Path, pid: str,
         B.append("")
 
     # Research status
-    B.append(r"\section*{Research Status}")
-    B.append(r"\begin{description}[leftmargin=5cm,labelwidth=4.8cm,noitemsep]")
-    B.append(rf"\item[Proof quality] {quality_tex}")
-    B.append(
-        rf"\item[Open issues] \textbf{{{len(open_issues)}}}"
-        + (r" \textcolor{gray}{--- none}" if not open_issues else "")
-    )
-    if resolved_issues:
-        B.append(rf"\item[Resolved issues] {len(resolved_issues)}")
-    B.append(rf"\item[Research meetings] {len(meetings)}")
-    B.append(r"\end{description}")
-    B.append("")
-
-    if open_issues:
-        B.append(r"\paragraph{Open issues:}")
-        B.append(r"\begin{itemize}[noitemsep]")
-        for oi in open_issues:
-            sev_color = {"open": "BrickRed", "in_progress": "Goldenrod"}.get(
-                oi.get("status", ""), "Gray")
-            oi_title = _tex_escape(oi.get("title", oi["id"]))
-            oi_id    = _tex_escape(oi["id"])
-            B.append(
-                rf"\item \textcolor{{{sev_color}}}{{{oi_title}}}"
-                rf"\ \textcolor{{gray}}{{\texttt{{{oi_id}}}}}"
-            )
-        B.append(r"\end{itemize}")
+    if S.research_status:
+        B.append(r"\section*{Research Status}")
+        B.append(r"\begin{description}[leftmargin=5cm,labelwidth=4.8cm,noitemsep]")
+        B.append(rf"\item[Proof quality] {quality_tex}")
+        B.append(
+            rf"\item[Open issues] \textbf{{{len(open_issues)}}}"
+            + (r" \textcolor{gray}{--- none}" if not open_issues else "")
+        )
+        if resolved_issues:
+            B.append(rf"\item[Resolved issues] {len(resolved_issues)}")
+        B.append(rf"\item[Research meetings] {len(meetings)}")
+        B.append(r"\end{description}")
         B.append("")
+
+        if open_issues:
+            B.append(r"\paragraph{Open issues:}")
+            B.append(r"\begin{itemize}[noitemsep]")
+            for oi in open_issues:
+                sev_color = {"open": "BrickRed", "in_progress": "Goldenrod"}.get(
+                    oi.get("status", ""), "Gray")
+                oi_title = _tex_escape(oi.get("title", oi["id"]))
+                oi_id    = _tex_escape(oi["id"])
+                B.append(
+                    rf"\item \textcolor{{{sev_color}}}{{{oi_title}}}"
+                    rf"\ \textcolor{{gray}}{{\texttt{{{oi_id}}}}}"
+                )
+            B.append(r"\end{itemize}")
+            B.append("")
 
     B.append(r"\tableofcontents")
     B.append(r"\clearpage")
     B.append("")
 
     # ── Chapter 1: Problem Statement ──────────────────────────────────────────
-    B.append(r"\chapter{Problem Statement}")
-    stmt = _problem_statement(repo_root, pid, dataset)
-    if stmt:
-        B.append(stmt)           # already LaTeX — insert verbatim
-    else:
-        B.append(r"\textit{Problem statement not found.}")
-    B.append("")
+    if S.problem_statement:
+        B.append(r"\chapter{Problem Statement}")
+        stmt = _problem_statement(repo_root, pid, dataset)
+        if stmt:
+            B.append(stmt)           # already LaTeX — insert verbatim
+        else:
+            B.append(r"\textit{Problem statement not found.}")
+        B.append("")
 
     # ── Chapter 2: Evaluation ─────────────────────────────────────────────────
-    B.append(r"\chapter{Evaluation}")
-    if pe:
+    if S.evaluation:
+        B.append(r"\chapter{Evaluation}")
+    if S.evaluation and pe:
         aa = pe.get("answer_accuracy")
         lc = pe.get("logical_correctness")
         pc = pe.get("proof_completeness")
@@ -596,32 +614,80 @@ def _build_problem_latex_body(repo_root: Path, pid: str,
         if pe.get("notes"):
             B.append(r"\paragraph{Analysis.}\ " + _md_inline(pe["notes"]))
             B.append("")
-    else:
+    elif S.evaluation:
         B.append(r"\textit{No proof evaluation recorded yet.}")
         B.append("")
 
-    # ── Chapter 3: Best Proof ─────────────────────────────────────────────────
-    B.append(r"\chapter{Best Proof}")
-    if has_proof and sol_tex:
-        when = (best.get("updated_at") or best.get("created_at") or "")[:10]
-        if when:
-            B.append(rf"\textit{{Last updated: {_tex_escape(when)}}}")
-            B.append(r"\medskip")
-            B.append("")
-        # Strip the proof's own \documentclass preamble and insert the body verbatim.
-        proof_body = _full_proof_latex(repo_root, pid, dataset)
-        B.append(proof_body)
-    elif has_proof:
-        B.append(r"\textit{Proof file exists but source is unavailable.}")
-    else:
+    # Push-forward score history: how many push-forwards have run for this
+    # problem, and the proof score recorded at each one.
+    history = _push_forward_history(repo_root, pid)
+    if history and S.push_forward_history:
+        n_pf = len(history)
+        B.append(r"\section*{Push-forward History}")
         B.append(
-            r"\textit{No consolidated proof yet. "
-            r"Run solve\,+\,Consolidate in the Proofs tab.}"
+            rf"\textit{{{n_pf} push-forward{'s' if n_pf != 1 else ''} "
+            r"recorded for this problem. Each row is the proof-evaluation score "
+            r"captured at that push-forward.}"
         )
-    B.append("")
+        B.append("")
+        B.append(r"\begin{center}")
+        B.append(r"\begin{tabular}{clccccc}")
+        B.append(r"\toprule")
+        B.append(r"\# & Date & Answer & Logic & Complete & Clarity & Total \\")
+        B.append(r"\midrule")
+
+        def _cell(v, mx):
+            return f"{int(v)}/{mx}" if v is not None else r"\textcolor{gray}{--}"
+
+        for h in history:
+            sc = int(h.get("scale") or 10)
+            aa = h.get("answer_accuracy")
+            aa_cell = (r"\textcolor{gray}{--}" if aa is None
+                       else (r"1/1" if aa else r"0/1"))
+            tot = h.get("total")
+            mx = h.get("max")
+            tot_cell = (rf"\textbf{{{tot}/{mx}}}" if tot is not None and mx
+                        else r"\textcolor{gray}{--}")
+            B.append(
+                rf"{h.get('round', '')} & {_tex_escape(h.get('date') or '')} & "
+                rf"{aa_cell} & {_cell(h.get('logical_correctness'), sc)} & "
+                rf"{_cell(h.get('proof_completeness'), sc)} & "
+                rf"{_cell(h.get('proof_clarity'), sc)} & {tot_cell} \\"
+            )
+        B.append(r"\bottomrule")
+        B.append(r"\end{tabular}")
+        B.append(r"\end{center}")
+        B.append("")
+        if not any(h.get("recorded") for h in history):
+            B.append(
+                r"\textit{\small Scores for earlier push-forwards were not "
+                r"captured at the time and are shown as \textcolor{gray}{--}.}"
+            )
+            B.append("")
+
+    # ── Chapter 3: Best Proof ─────────────────────────────────────────────────
+    if S.best_proof:
+        B.append(r"\chapter{Best Proof}")
+        if has_proof and sol_tex:
+            when = (best.get("updated_at") or best.get("created_at") or "")[:10]
+            if when:
+                B.append(rf"\textit{{Last updated: {_tex_escape(when)}}}")
+                B.append(r"\medskip")
+                B.append("")
+            # Strip the proof's own \documentclass preamble and insert the body verbatim.
+            proof_body = _full_proof_latex(repo_root, pid, dataset)
+            B.append(proof_body)
+        elif has_proof:
+            B.append(r"\textit{Proof file exists but source is unavailable.}")
+        else:
+            B.append(
+                r"\textit{No consolidated proof yet. "
+                r"Run solve\,+\,Consolidate in the Proofs tab.}"
+            )
+        B.append("")
 
     # ── Chapter 4: Key Concepts ───────────────────────────────────────────────
-    if concepts:
+    if concepts and S.concepts:
         core = [c for c in concepts if c.get("category") == "core"]
         bg   = [c for c in concepts if c.get("category") != "core"]
         B.append(r"\chapter{Key Concepts}")
@@ -653,7 +719,7 @@ def _build_problem_latex_body(repo_root: Path, pid: str,
             B.append("")
 
     # ── Chapter 5: Meetings ───────────────────────────────────────────────────
-    if meetings:
+    if meetings and S.meetings:
         B.append(r"\chapter{Meetings}")
         for room in meetings:
             topic = _tex_escape(room.get("topic") or room.get("id") or "—")
@@ -708,7 +774,7 @@ def _build_problem_latex_body(repo_root: Path, pid: str,
                     B.append("")
 
     # ── Chapter 6: Open Issues ────────────────────────────────────────────────
-    if open_issues:
+    if open_issues and S.open_issues:
         B.append(r"\chapter{Open Issues}")
         for i in open_issues:
             sev_word  = {"open": "Open", "in_progress": "In Progress"}.get(
@@ -740,7 +806,7 @@ def _build_problem_latex_body(repo_root: Path, pid: str,
             B.append("")
 
     # ── Chapter 7: Resolved Issues ────────────────────────────────────────────
-    if resolved_issues:
+    if resolved_issues and S.resolved_issues:
         B.append(r"\chapter{Resolved Issues}")
         B.append(r"\begin{itemize}[noitemsep]")
         for i in resolved_issues:
@@ -751,9 +817,10 @@ def _build_problem_latex_body(repo_root: Path, pid: str,
         B.append("")
 
     # ── Chapter 8: Insights ───────────────────────────────────────────────────
-    B.append(r"\chapter{Insights}")
+    if S.insights:
+        B.append(r"\chapter{Insights}")
     wrote = False
-    if qinsight:
+    if S.insights and qinsight:
         if qinsight.get("summary"):
             B.append(_md_inline(qinsight["summary"]))
             B.append(""); wrote = True
@@ -769,14 +836,17 @@ def _build_problem_latex_body(repo_root: Path, pid: str,
                     B.append(rf"\item {_md_inline(v)}")
                 B.append(r"\end{itemize}")
                 B.append(""); wrote = True
-    if not wrote:
+    if S.insights and not wrote:
         B.append(r"\textit{No problem-specific insight generated yet.}")
         B.append("")
 
     return preamble, "\n".join(B)
 
 
-def build_problem_report(repo_root: Path, pid: str, dataset: str = "first_proof_1", full: bool = False) -> dict:
+def build_problem_report(repo_root: Path, pid: str, dataset: str = "first_proof_1",
+                         full: bool = False, sections=None) -> dict:
+    from .report_sections import resolve_sections
+    S = resolve_sections(sections)
     prof = _profile(pid)
     issues = _issues(repo_root, pid, dataset)
     best = _best_proof(pid, dataset)
@@ -832,14 +902,15 @@ def build_problem_report(repo_root: Path, pid: str, dataset: str = "first_proof_
 
     # ── 1. PROBLEM STATEMENT ────────────────────────────────────────────────
     stmt = _problem_statement(repo_root, pid, dataset)
-    if stmt:
+    if stmt and S.problem_statement:
         L.append("## Problem Statement")
         L.append(stmt[:4000])
         L.append("")
 
     # ── 2. EVALUATION ───────────────────────────────────────────────────────
-    L.append("## Evaluation")
-    if proof_eval and "error" not in proof_eval:
+    if S.evaluation:
+        L.append("## Evaluation")
+    if S.evaluation and proof_eval and "error" not in proof_eval:
         aa  = proof_eval.get("answer_accuracy", None)
         lc  = proof_eval.get("logical_correctness", None)
         pc  = proof_eval.get("proof_completeness", None)
@@ -864,31 +935,55 @@ def build_problem_report(repo_root: Path, pid: str, dataset: str = "first_proof_
         if notes:
             L.append(f"**Analysis:** {notes}")
             L.append("")
-    else:
+    elif S.evaluation:
         L.append("_No proof evaluation recorded yet._")
         L.append("")
 
+    # Push-forward score history
+    pf_history = _push_forward_history(repo_root, pid)
+    if pf_history and S.push_forward_history:
+        n_pf = len(pf_history)
+        L.append(f"### Push-forward History ({n_pf} recorded)")
+        L.append("")
+        L.append("| # | Date | Answer | Logic | Complete | Clarity | Total |")
+        L.append("|---|------|--------|-------|----------|---------|-------|")
+        for h in pf_history:
+            sc = int(h.get("scale") or 10)
+            aa = h.get("answer_accuracy")
+            aa_c = "—" if aa is None else ("1/1" if aa else "0/1")
+            def _c(v):
+                return f"{int(v)}/{sc}" if v is not None else "—"
+            tot = h.get("total"); mx = h.get("max")
+            tot_c = f"**{tot}/{mx}**" if tot is not None and mx else "—"
+            L.append(
+                f"| {h.get('round','')} | {h.get('date') or ''} | {aa_c} | "
+                f"{_c(h.get('logical_correctness'))} | {_c(h.get('proof_completeness'))} | "
+                f"{_c(h.get('proof_clarity'))} | {tot_c} |"
+            )
+        L.append("")
+
     # ── 3. BEST PROOF ───────────────────────────────────────────────────────
-    L.append("## Best Proof")
-    if best and best.get("has_solution"):
-        when = (best.get("updated_at") or best.get("created_at") or "")[:10]
-        if when:
-            L.append(f"_{when}_")
-            L.append("")
-        sol = (best.get("solution_tex") or "").strip()
-        if sol:
-            # Always show the proof excerpt — the PDF pages are appended separately.
-            excerpt = _proof_excerpt(sol, max_chars=2400)
-            if excerpt:
-                L.append(excerpt)
+    if S.best_proof:
+        L.append("## Best Proof")
+        if best and best.get("has_solution"):
+            when = (best.get("updated_at") or best.get("created_at") or "")[:10]
+            if when:
+                L.append(f"_{when}_")
+                L.append("")
+            sol = (best.get("solution_tex") or "").strip()
+            if sol:
+                # Always show the proof excerpt — the PDF pages are appended separately.
+                excerpt = _proof_excerpt(sol, max_chars=2400)
+                if excerpt:
+                    L.append(excerpt)
+            else:
+                L.append("_Proof source not available._")
         else:
-            L.append("_Proof source not available._")
-    else:
-        L.append("_No consolidated proof yet. Run a solve + Consolidate in the Proofs tab._")
-    L.append("")
+            L.append("_No consolidated proof yet. Run a solve + Consolidate in the Proofs tab._")
+        L.append("")
 
     # ── 4. KEY CONCEPTS ─────────────────────────────────────────────────────
-    if concepts:
+    if concepts and S.concepts:
         core = [c for c in concepts if c.get("category") == "core"]
         bg   = [c for c in concepts if c.get("category") != "core"]
         L.append("## Key Concepts")
@@ -1159,21 +1254,49 @@ def build_report(repo_root: Path, scope: str, dataset: str = "first_proof_1", fu
 
 # ── PDF compilation (reuse issue_pdf tectonic pipeline) ───────────────────────
 
-def compile_report_pdf(repo_root: Path, scope: str, dataset: str = "first_proof_1",
-                       force: bool = False, cache_document: bool = False) -> dict:
-    """Build a problem/system context report PDF (documents/pdf/report_*.pdf).
+def _norm_language(language: str) -> str:
+    """Map user input to a canonical language code: 'en' or 'cn'."""
+    l = (language or "en").strip().lower()
+    return "cn" if l in ("cn", "zh", "zh-cn", "chinese", "中文") else "en"
 
-    With cache_document=True, also copy the built PDF into documents/cache/ for
-    quick access (used selectively — e.g. for prob-09). Each build is retained as
-    a date-time-stamped file (report_<scope>_<dataset>_YYYYMMDD-HHMMSS.pdf), and
-    the plain report_<scope>_<dataset>.pdf is kept as the stable "latest" pointer.
+
+def compile_report_pdfs(repo_root: Path, scope: str, dataset: str = "first_proof_1",
+                        force: bool = False, cache_document: bool = False,
+                        languages=("en", "cn")) -> dict:
+    """Build the report in each requested language. Returns {lang: result}."""
+    out: dict = {}
+    seen: set = set()
+    for lang in languages:
+        code = _norm_language(lang)
+        if code in seen:
+            continue
+        seen.add(code)
+        out[code] = compile_report_pdf(repo_root, scope, dataset, force=force,
+                                       cache_document=cache_document, language=code)
+    return out
+
+
+def compile_report_pdf(repo_root: Path, scope: str, dataset: str = "first_proof_1",
+                       force: bool = False, cache_document: bool = False,
+                       language: str = "en") -> dict:
+    """Build a problem/system context report PDF.
+
+    language: 'en' (documents/pdf/report_*.pdf) or 'cn'/'zh'
+    (documents/pdf/cn_report_*.pdf — Chinese, ctex/fandol via tectonic).
+
+    With cache_document=True, also copy the built PDF + its .tex into
+    documents/cache/ as a **date-time-stamped** file only
+    (``[cn_]report_<scope>_<dataset>_YYYYMMDD-HHMMSS.pdf``). No un-timestamped
+    "latest" copy is written — every cached artifact carries its build time.
     """
-    res = _compile_report_pdf_impl(repo_root, scope, dataset, force)
+    lang = _norm_language(language)
+    res = _compile_report_pdf_impl(repo_root, scope, dataset, force, language=lang)
     if cache_document and res.get("ok"):
         import shutil
+        prefix = "cn_report" if lang == "cn" else "report"
         safe = re.sub(r"[^A-Za-z0-9_-]", "_", f"{scope}_{dataset}")
         pdf_dir = repo_root / "documents" / "pdf"
-        src = pdf_dir / f"report_{safe}.pdf"
+        src = pdf_dir / f"{prefix}_{safe}.pdf"
         if src.is_file():
             cache_dir = repo_root / "documents" / "cache"
             src_dir = cache_dir / "source"          # .tex sources live here
@@ -1182,24 +1305,22 @@ def compile_report_pdf(repo_root: Path, scope: str, dataset: str = "first_proof_
             ts = datetime.now().strftime("%Y%m%d-%H%M%S")
 
             def _cache(orig: Path, dest_dir: Path, stem: str, ext: str):
-                """Write a dated copy (retained) + a stable 'latest' copy."""
+                """Write a single date-time-stamped copy (never an unstamped one)."""
                 if not orig.is_file():
                     return None
-                shutil.copyfile(orig, dest_dir / f"{stem}_{ts}{ext}")     # retained version
-                shutil.copyfile(orig, dest_dir / f"{stem}{ext}")         # stable latest
+                shutil.copyfile(orig, dest_dir / f"{stem}_{ts}{ext}")
                 return f"{dest_dir.relative_to(repo_root)}/{stem}_{ts}{ext}"
 
-            res["cached_copy"]   = _cache(src, cache_dir, f"report_{safe}", ".pdf")
-            res["cached_latest"] = f"documents/cache/report_{safe}.pdf"
+            res["cached_copy"] = _cache(src, cache_dir, f"{prefix}_{safe}", ".pdf")
             # corresponding LaTeX sources → documents/cache/source/
-            res["cached_tex"]    = _cache(pdf_dir / f"report_{safe}.tex", src_dir, f"report_{safe}", ".tex")
+            res["cached_tex"]  = _cache(pdf_dir / f"{prefix}_{safe}.tex", src_dir, f"{prefix}_{safe}", ".tex")
             res["cached_supp_tex"] = _cache(repo_root.resolve().parent / "rma_supplementary.tex",
                                             src_dir, "rma_supplementary", ".tex")
     return res
 
 
 def _compile_report_pdf_impl(repo_root: Path, scope: str, dataset: str = "first_proof_1",
-                             force: bool = False) -> dict:
+                             force: bool = False, language: str = "en") -> dict:
     import hashlib
     import os
     import shutil
@@ -1208,8 +1329,9 @@ def _compile_report_pdf_impl(repo_root: Path, scope: str, dataset: str = "first_
     from .issue_pdf import _PREAMBLE, _TECTONIC
     from .proofs import _missing_from_log, _safety_block
 
+    is_cn = _norm_language(language) == "cn"
     safe_scope = re.sub(r"[^A-Za-z0-9_-]", "_", f"{scope}_{dataset}")
-    name     = f"report_{safe_scope}"
+    name     = f"{'cn_report' if is_cn else 'report'}_{safe_scope}"
     pdf_dir  = repo_root / "documents" / "pdf"
     pdf_dir.mkdir(parents=True, exist_ok=True)
     dest      = pdf_dir / f"{name}.pdf"
@@ -1222,6 +1344,14 @@ def _compile_report_pdf_impl(repo_root: Path, scope: str, dataset: str = "first_
     if not tectonic:
         return {"ok": False, "pdf_url": None, "log": "No LaTeX toolchain"}
     is_tec = "tectonic" in tectonic
+    # Chinese reports need a XeTeX/ctex-capable engine; pdflatex renders CJK as
+    # ????. tectonic drives XeTeX, so require it for cn.
+    if is_cn and not is_tec:
+        return {"ok": False, "pdf_url": None,
+                "log": "CN report needs tectonic (XeTeX/ctex); pdflatex cannot render CJK"}
+    # CN system reports aren't supported (system report is the EN markdown path).
+    if is_cn and scope == "system":
+        return {"ok": False, "pdf_url": None, "log": "CN not supported for system report"}
 
     def _run(cmd, cwd):
         try:
@@ -1292,13 +1422,34 @@ def _compile_report_pdf_impl(repo_root: Path, scope: str, dataset: str = "first_
     preamble, body = _build_problem_latex_body(repo_root, scope, dataset)
 
     # Stable hash — strip the timestamp so the cache survives across requests.
+    # (Computed from the ENGLISH source for both languages: the CN report is a
+    #  deterministic translation of it, so the EN hash also gates CN rebuilds.)
     _body_for_hash = re.sub(
         r"Generated \d{4}-\d{2}-\d{2} \d{2}:\d{2} UTC", "TS", body
     )
-    cur_hash = hashlib.md5((_body_for_hash + preamble).encode()).hexdigest()[:12]
+    cur_hash = hashlib.md5(
+        (("cn:" if is_cn else "en:") + _body_for_hash + preamble).encode()
+    ).hexdigest()[:12]
+
+    # For Chinese: swap in the ctex preamble and translate the prose body. Only
+    # reached on a cache miss (below), so translation is skipped when unchanged.
+    def _to_cn(preamble_en: str, body_en: str) -> tuple[str, str]:
+        from .cn_report import translate_body, translate_title, build_cn_preamble
+        m = re.search(r"\\title\{\\Large\\bfseries (.*?)\\\\", preamble_en, re.S)
+        title_en = m.group(1).strip() if m else scope
+        am = re.search(r"\\author\{(.*?)\}\s*$", preamble_en, re.M)
+        meta_line = am.group(1) if am else ""
+        ts = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M")
+        body_cn = translate_body(body_en) or body_en
+        title_cn = translate_title(title_en)
+        return build_cn_preamble(title_cn, meta_line, ts), body_cn
     if not force and dest.is_file() and hash_file.is_file() \
             and hash_file.read_text().strip() == cur_hash:
         return {"ok": True, "pdf_url": f"/api/pdf/{name}.pdf", "log": "cached"}
+
+    # Cache miss → for CN, translate now (English preamble/body → ctex + 中文).
+    if is_cn:
+        preamble, body = _to_cn(preamble, body)
 
     cs_stubs: set = set()
     env_stubs: set = set()

@@ -26,7 +26,7 @@ Everything is configurable through environment variables (see DEFAULTS below)
 so the caller (``for_yuchen_jul1.sh``) can tune it without editing this file.
 
     RMA_OUTPUT        output folder for the books  (default: outputs/context_books)
-    RMA_LANGUAGE      language tag baked into filenames (default: en)
+    RMA_LANGUAGE      report language(s): both | en | cn  (default: both = EN+CN)
     RMA_PUSHFORWARDS  push-forwards per problem     (default: 5)
     RMA_ROUNDS        meeting discussion rounds / push-forward (default: 2)
     RMA_PROVIDER      LLM backend: claude-code | api (default: claude-code)
@@ -58,7 +58,22 @@ def _flag(name: str, default: str = "0") -> bool:
 
 # ── configuration ─────────────────────────────────────────────────────────────
 OUTPUT       = Path(os.environ.get("RMA_OUTPUT", REPO / "outputs" / "context_books")).resolve()
-LANGUAGE     = re.sub(r"[^A-Za-z0-9-]", "-", os.environ.get("RMA_LANGUAGE", "en")).strip("-") or "en"
+
+def _languages() -> list[str]:
+    """RMA_LANGUAGE=both|en|cn|zh → canonical list. Default both (EN + CN)."""
+    raw = os.environ.get("RMA_LANGUAGE", "both").strip().lower()
+    if raw in ("both", "en+cn", "all", ""):
+        return ["en", "cn"]
+    codes = []
+    for tok in re.split(r"[\s,+]+", raw):
+        if not tok:
+            continue
+        c = "cn" if tok in ("cn", "zh", "zh-cn", "chinese", "中文") else "en"
+        if c not in codes:
+            codes.append(c)
+    return codes or ["en"]
+
+LANGUAGES    = _languages()
 PUSHFORWARDS = max(0, int(os.environ.get("RMA_PUSHFORWARDS", "5")))
 ROUNDS       = max(1, int(os.environ.get("RMA_ROUNDS", "2")))
 PROVIDER     = os.environ.get("RMA_PROVIDER", "claude-code")
@@ -107,10 +122,10 @@ def rma(*args: str) -> int:
     return subprocess.run(cmd, cwd=REPO).returncode
 
 
-def _stem(dataset: str, pid: str, when: datetime) -> str:
+def _stem(dataset: str, pid: str, when: datetime, lang: str) -> str:
     safe_ds  = re.sub(r"[^A-Za-z0-9_-]", "-", dataset)
     safe_pid = re.sub(r"[^A-Za-z0-9_-]", "-", pid)
-    return f"{when:%Y%m%d}_{when:%H%M%S}_{LANGUAGE}_{safe_ds}_{safe_pid}"
+    return f"{when:%Y%m%d}_{when:%H%M%S}_{lang}_{safe_ds}_{safe_pid}"
 
 
 def out_dir(dataset: str) -> Path:
@@ -118,71 +133,82 @@ def out_dir(dataset: str) -> Path:
 
 
 def already_done(dataset: str, pid: str) -> bool:
-    """A problem is done once its four artifacts exist for this language."""
+    """Done once the four artifacts exist for EVERY requested language."""
     d = out_dir(dataset)
     if not d.is_dir():
         return False
     safe_ds  = re.sub(r"[^A-Za-z0-9_-]", "-", dataset)
     safe_pid = re.sub(r"[^A-Za-z0-9_-]", "-", pid)
-    tail = f"_{LANGUAGE}_{safe_ds}_{safe_pid}_"
-    def _has(part: str, ext: str) -> bool:
+    def _has(lang: str, part: str, ext: str) -> bool:
+        tail = f"_{lang}_{safe_ds}_{safe_pid}_"
         return any(p.name.endswith(f"{part}.{ext}") and tail in p.name for p in d.glob("*"))
-    return _has("report", "pdf") and _has("report", "tex") \
-        and _has("proof", "pdf") and _has("proof", "tex")
+    return all(_has(l, "report", "pdf") and _has(l, "report", "tex")
+               and _has(l, "proof", "pdf") and _has(l, "proof", "tex")
+               for l in LANGUAGES)
 
 
 def export_book(dataset: str, pid: str) -> bool:
-    """Emit the four per-problem artifacts, all sharing one timestamped stem:
+    """For EACH requested language, emit four per-problem artifacts sharing one
+    timestamped, language-tagged stem
+    <date>_<time>_<language>_<dataset>_<problem>_… :
 
-        <stem>_report.tex   (1) the full context report LaTeX
-        <stem>_report.pdf   (3) its PDF rendering (for humans)
-        <stem>_proof.tex    (2) the best proof LaTeX
-        <stem>_proof.pdf    (4) its PDF rendering
+        _report.tex  (1) full context report LaTeX (English or Chinese)
+        _report.pdf  (3) its PDF rendering (for humans)
+        _proof.tex   (2) best proof LaTeX
+        _proof.pdf   (4) its PDF rendering
+
+    (The proof is language-neutral LaTeX; it is copied into each language's
+    bundle so every <language> set is self-contained.)
     """
     import shutil
     from webapp.context_report import compile_report_pdf
     from webapp.proofs import get_best_proof, compile_best_pdf, _best_dir
 
-    when = datetime.now()
     d = out_dir(dataset); d.mkdir(parents=True, exist_ok=True)
-    stem = _stem(dataset, pid, when)
-    got: list[str] = []
-
-    def _emit(src: Path, part: str, ext: str) -> None:
-        if src and src.is_file() and src.stat().st_size > 0:
-            shutil.copyfile(src, d / f"{stem}_{part}.{ext}")
-            got.append(f"{part}.{ext}")
-
-    def _write(text: str, part: str, ext: str) -> None:
-        if text and text.strip():
-            (d / f"{stem}_{part}.{ext}").write_text(text, encoding="utf-8")
-            got.append(f"{part}.{ext}")
-
-    # ── (1)+(3) report LaTeX + its PDF (proofs+evaluations+meetings+issues) ──
-    res = compile_report_pdf(REPO, pid, dataset, force=True)
-    safe = re.sub(r"[^A-Za-z0-9_-]", "_", f"{pid}_{dataset}")
     pdf_dir = REPO / "documents" / "pdf"
-    if res.get("ok"):
-        _emit(pdf_dir / f"report_{safe}.pdf", "report", "pdf")
-        _emit(pdf_dir / f"report_{safe}.tex", "report", "tex")
-    else:
-        log(f"  WARN: report compile failed for {dataset}/{pid}: {res.get('log')}")
+    safe = re.sub(r"[^A-Za-z0-9_-]", "_", f"{pid}_{dataset}")
 
-    # ── (2)+(4) best proof LaTeX + its PDF ──
+    # Best proof (shared across languages) — build once.
     bp = get_best_proof(pid, dataset)
-    if bp and bp.get("solution_tex"):
-        _write(bp["solution_tex"], "proof", "tex")
-    else:
-        log(f"  WARN: no best proof yet for {dataset}/{pid}")
+    proof_tex = (bp or {}).get("solution_tex") or ""
+    proof_pdf = None
     try:
         if compile_best_pdf(pid, dataset):
-            _emit(_best_dir(dataset) / pid / "solution.pdf", "proof", "pdf")
+            cand = _best_dir(dataset) / pid / "solution.pdf"
+            proof_pdf = cand if cand.is_file() else None
     except Exception as exc:                                        # noqa: BLE001
         log(f"  WARN: best-proof PDF failed for {dataset}/{pid}: {exc}")
 
-    log(f"  → wrote {len(got)}/4 artifacts: {', '.join(got) or 'NONE'}  (stem={stem})")
-    # success = at least the two LaTeX sources landed (the point of the export)
-    return ("report.tex" in got) and ("proof.tex" in got)
+    all_ok = True
+    for lang in LANGUAGES:
+        when = datetime.now()
+        stem = _stem(dataset, pid, when, lang)
+        got: list[str] = []
+
+        def _emit(src, part, ext):
+            if src and Path(src).is_file() and Path(src).stat().st_size > 0:
+                shutil.copyfile(src, d / f"{stem}_{part}.{ext}"); got.append(f"{part}.{ext}")
+
+        def _write(text, part, ext):
+            if text and text.strip():
+                (d / f"{stem}_{part}.{ext}").write_text(text, encoding="utf-8"); got.append(f"{part}.{ext}")
+
+        # (1)+(3) report LaTeX + PDF in this language
+        prefix = "cn_report" if lang == "cn" else "report"
+        res = compile_report_pdf(REPO, pid, dataset, force=True, language=lang)
+        if res.get("ok"):
+            _emit(pdf_dir / f"{prefix}_{safe}.pdf", "report", "pdf")
+            _emit(pdf_dir / f"{prefix}_{safe}.tex", "report", "tex")
+        else:
+            log(f"  WARN: {lang} report compile failed for {dataset}/{pid}: {res.get('log')}")
+
+        # (2)+(4) best proof LaTeX + PDF (shared content)
+        _write(proof_tex, "proof", "tex")
+        _emit(proof_pdf, "proof", "pdf")
+
+        log(f"  [{lang}] wrote {len(got)}/4: {', '.join(got) or 'NONE'}  (stem={stem})")
+        all_ok = all_ok and ("report.tex" in got) and ("proof.tex" in got)
+    return all_ok
 
 
 def main() -> int:
@@ -195,7 +221,7 @@ def main() -> int:
     total = sum(len(p) for _, p in datasets)
     log(f"repo:        {REPO}")
     log(f"output:      {OUTPUT}")
-    log(f"language:    {LANGUAGE}")
+    log(f"languages:   {', '.join(LANGUAGES)}")
     log(f"provider:    {PROVIDER}")
     log(f"pushforwards:{PUSHFORWARDS}  rounds/pf:{ROUNDS}  resume:{RESUME}")
     log(f"datasets:    {len(datasets)}  problems:{total}")
