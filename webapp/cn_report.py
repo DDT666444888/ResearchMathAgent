@@ -136,7 +136,7 @@ def _translate(text: str, model: str | None, timeout: int = 900) -> str | None:
         "Translate the following LaTeX body content to Simplified Chinese, "
         "following every rule. Return only the translated LaTeX body:\n\n" + text
     )
-    out = complete_via_cli(prompt, system=_SYSTEM, model=(model or "claude-fable-5"),
+    out = complete_via_cli(prompt, system=_SYSTEM, model=(model or "claude-opus-4-8"),
                            timeout=timeout)
     if not out:
         return None

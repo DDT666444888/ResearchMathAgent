@@ -15,7 +15,7 @@ Run it in a shell on the server:
 Configuration via env vars:
     RMA_DAILY_AT        target local time "HH:MM" (default "09:00")
     RMA_DAILY_PROBLEMS  comma list, e.g. "q6" or "q1,q2" (default: one rotating problem/day)
-    RMA_DAILY_MODEL     model id (default "claude-fable-5")
+    RMA_DAILY_MODEL     model id (default "claude-opus-4-8")
 """
 
 from __future__ import annotations

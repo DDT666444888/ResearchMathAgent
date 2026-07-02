@@ -48,7 +48,7 @@ def run_discussion_turn(
     from .llm import complete
 
     yield AgentEvent("status", {"state": "running", "label": f"{participant} thinking…"})
-    _DISCUSS_MODEL = None  # use DEFAULT_MODEL (claude-fable-5), only model available on this project
+    _DISCUSS_MODEL = None  # use DEFAULT_MODEL (claude-opus-4-8), only model available on this project
 
     room = get_room(repo_root, problem_id, room_id)
     if room is None:
@@ -144,7 +144,7 @@ def run_synthesis(
 ) -> Iterator[AgentEvent]:
     """Coordinator synthesizes a numbered action plan from the discussion."""
     from .llm import complete
-    _SYNTH_MODEL = None  # use DEFAULT_MODEL (claude-fable-5), only model available on this project
+    _SYNTH_MODEL = None  # use DEFAULT_MODEL (claude-opus-4-8), only model available on this project
 
     yield AgentEvent("status", {"state": "running", "label": "synthesizing plan…"})
 

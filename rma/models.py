@@ -500,9 +500,12 @@ def _find_pandoc() -> str | None:
 
 def _claude_code_model_arg(model: str) -> str | None:
     name = model.lower()
-    # Default: run everything on Claude Fable 5 explicitly (rather than
+    # Default: run everything on Claude Opus 4.8 explicitly (rather than
     # inheriting whatever the user's interactive `claude` default happens to be).
-    if name in {"claude-code", "claude-code-default", "claude-code-fable"}:
+    # Override the default with RMA_CLAUDE_CODE_MODEL.
+    if name in {"claude-code", "claude-code-default", "claude-code-opus48"}:
+        return os.environ.get("RMA_CLAUDE_CODE_MODEL", "claude-opus-4-8")
+    if name == "claude-code-fable":
         return "claude-fable-5"
     if name == "claude-code-sonnet":
         return "sonnet"
