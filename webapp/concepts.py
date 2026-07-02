@@ -79,8 +79,7 @@ Aim for 8-16 entries covering all essential mathematical content.
 """
 
 
-# Only claude-opus-4-8 (no version suffix) is available on the NAIRR Vertex project.
-_VERTEX_CONCEPT_MODEL = "claude-opus-4-8"
+_VERTEX_CONCEPT_MODEL = "claude-fable-5"
 # Gap between background extractions to avoid competing with solve-run quota.
 _EXTRACTION_GAP_SECS = 20
 
@@ -227,7 +226,7 @@ def generate_concepts(
     # Add metadata
     meta = {
         "_generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "_model": "claude-opus-4-8",
+        "_model": "claude-fable-5",
         "_qid": qid,
     }
     save_concepts(repo_root, qid, valid)

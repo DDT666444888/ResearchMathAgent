@@ -22,7 +22,7 @@ import json
 import re
 from pathlib import Path
 
-DEFAULT_MODEL = "claude-opus-4-8"
+DEFAULT_MODEL = "claude-fable-5"
 DEFAULT_SAMPLES = 5
 
 _VERIFIER_SYSTEM = (

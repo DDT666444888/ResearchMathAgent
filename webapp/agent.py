@@ -22,7 +22,7 @@ import anthropic
 
 from .tools import TOOL_DEFINITIONS, ToolContext, ToolError, execute_tool, seed_workspace
 
-DEFAULT_MODEL = "claude-opus-4-8"
+DEFAULT_MODEL = "claude-fable-5"
 MAX_TOKENS = 32_000
 MAX_ITERATIONS = 50
 THINKING_BUDGET = 16_000  # tokens budgeted for extended thinking per turn

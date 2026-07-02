@@ -609,8 +609,8 @@ def run_push_forward(
             _log("updating system literature survey…")
             added = 0
             for event in discover_system_literature(repo_root):
-                if event.get("type") == "done":
-                    added = event.get("added", 0)
+                if event.type == "done":
+                    added = event.data.get("added", 0)
             _log(f"system literature updated ({added} papers added/refreshed)")
         except Exception as le:
             log.warning("system literature update failed: %s", le)

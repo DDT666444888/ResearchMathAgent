@@ -6,6 +6,8 @@ import select
 import shutil
 import ssl
 import subprocess
+import tempfile
+import threading
 import time
 import urllib.error
 import urllib.request
@@ -45,7 +47,7 @@ def should_use_anthropic(model_name: str, provider: str | None = None) -> bool:
 def should_use_claude_code(model_name: str, provider: str | None = None) -> bool:
     provider = _model_provider(provider)
     name = model_name.lower()
-    return provider == "claude-code" or name in {"claude-code", "claude-code-sonnet", "claude-code-opus", "claude-code-haiku"}
+    return provider == "claude-code" or name in {"claude-code", "claude-code-fable", "claude-code-sonnet", "claude-code-opus", "claude-code-haiku"}
 
 
 def _model_provider(provider: str | None) -> str:
@@ -71,10 +73,13 @@ def call_anthropic(
     payload = {
         "model": model,
         "max_tokens": max_tokens,
-        "temperature": temperature,
         "system": system,
         "messages": [{"role": "user", "content": prompt}],
     }
+    # Fable 5 / Opus 4.7+ / Sonnet 5 reject sampling params (HTTP 400); only
+    # attach temperature for models that still accept it.
+    if not any(k in model for k in ("fable", "opus-4-7", "opus-4-8", "sonnet-5")):
+        payload["temperature"] = temperature
     request = urllib.request.Request(
         ANTHROPIC_API_URL,
         data=json.dumps(payload).encode("utf-8"),
@@ -147,9 +152,12 @@ def call_claude_code(
     system: str,
     prompt: str,
     cwd: Path,
-    timeout: int = 1800,
+    # <=0 means NO time limit — deep-thinking runs are monitored externally
+    # rather than killed (set RMA_CLAUDE_CODE_TIMEOUT to restore a ceiling).
+    timeout: int = 0,
     partial_output_dir: Path | None = None,
     fallback_file: Path | None = None,
+    effort: str | None = None,
 ) -> ModelResponse:
     claude_bin = shutil.which("claude")
     if claude_bin is None:
@@ -160,6 +168,26 @@ def call_claude_code(
 
     timeout = int(os.environ.get("RMA_CLAUDE_CODE_TIMEOUT", timeout))
     max_turns = int(os.environ.get("RMA_CLAUDE_CODE_MAX_TURNS", "5"))
+    # Headless permission model: tools on this allowlist are auto-approved,
+    # everything else is auto-denied (no human present to answer prompts).
+    # Literature search plus read-only inspection and a few safe commands —
+    # deliberately NOT --dangerously-skip-permissions.
+    allowed_tools = os.environ.get(
+        "RMA_CLAUDE_CODE_ALLOWED_TOOLS",
+        "WebSearch,WebFetch,Read,Glob,Grep,"
+        "Bash(curl:*),Bash(latexmk:*),Bash(pdflatex:*),Bash(bibtex:*),"
+        "Bash(ls:*),Bash(cat:*),Bash(head:*),Bash(tail:*),Bash(grep:*),Bash(wc:*)",
+    )
+    # Benchmark-fairness hardening: even with read access allowed, prior
+    # solutions must stay unreadable (deny wins over allow).
+    disallowed_tools = os.environ.get(
+        "RMA_CLAUDE_CODE_DISALLOWED_TOOLS",
+        "Read(**/output_solutions/**),Read(**/final_solutions/**),"
+        "Read(**/baselines/**),Read(**/skill_solutions/**)",
+    )
+    # Interactive-session effort (often "max") makes deep-thinking turns exceed
+    # the 30-minute request budget; pin proofs to xhigh unless overridden.
+    effort = effort or os.environ.get("RMA_CLAUDE_CODE_EFFORT", "xhigh")
 
     command = [
         claude_bin,
@@ -172,6 +200,12 @@ def call_claude_code(
         system,
         "--max-turns",
         str(max_turns),
+        "--allowedTools",
+        allowed_tools,
+        "--disallowedTools",
+        disallowed_tools,
+        "--effort",
+        effort,
         "--no-session-persistence",
     ]
     model_arg = _claude_code_model_arg(model)
@@ -192,11 +226,17 @@ def call_claude_code(
     _partial_dir.mkdir(parents=True, exist_ok=True)
     partial_path = _partial_dir / "partial_output.tex"
 
+    # stderr goes to a spooled file, NOT a pipe: with --verbose the CLI logs
+    # enough to fill a 16KB pipe that nobody drains, which blocks the child on
+    # write() and deadlocks the whole call (observed as 40+ min of 0% CPU on
+    # both sides while the 30-min deadline never fired because we were stuck
+    # in readline()).
+    stderr_spool = tempfile.TemporaryFile(mode="w+", encoding="utf-8", errors="replace")
     proc = subprocess.Popen(
         command,
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        stderr=stderr_spool,
         text=True,
         cwd=cwd,
         env=env,
@@ -209,19 +249,53 @@ def call_claude_code(
         pass
 
     accumulated: list[str] = []
-    deadline = time.monotonic() + timeout
+    infinite = timeout <= 0
+    deadline = None if infinite else time.monotonic() + timeout
     last_partial_write = 0.0
+
+    # Unbypassable timeout: the in-loop deadline check can be skated past when
+    # readline() blocks on a partial line (observed: worker alive at 35+ min
+    # with a 30-min budget). A watchdog kills the child no matter where the
+    # reader is stuck; the reader then sees EOF and unwinds normally.
+    # With no time limit (timeout <= 0) neither mechanism is armed.
+    watchdog_fired = threading.Event()
+
+    def _watchdog() -> None:
+        watchdog_fired.set()
+        try:
+            proc.kill()
+        except OSError:
+            pass
+
+    watchdog: threading.Timer | None = None
+    if not infinite:
+        watchdog = threading.Timer(timeout + 5, _watchdog)
+        watchdog.daemon = True
+        watchdog.start()
 
     try:
         while True:
-            remaining = deadline - time.monotonic()
-            if remaining <= 0:
+            if deadline is None:
+                remaining = 60.0
+            else:
+                remaining = deadline - time.monotonic()
+            if deadline is not None and remaining <= 0:
                 proc.kill()
                 proc.wait()
                 text = "".join(accumulated).strip()
                 if not text and fallback_file is not None and fallback_file.is_file():
                     text = fallback_file.read_text(encoding="utf-8", errors="replace").strip()
                 if text:
+                    # Same quality gate as the normal path: salvage a real LaTeX
+                    # document if one made it out, refuse narration-only output.
+                    doc = _extract_latex_document(text)
+                    if doc:
+                        text = doc
+                    elif not _looks_like_latex(text):
+                        raise ModelRequestError(
+                            "Claude Code timed out with narration-only output: "
+                            + text[:300].replace("\n", " ")
+                        )
                     try:
                         partial_path.write_text(text)
                         _try_compile_latex(partial_path)
@@ -292,6 +366,8 @@ def call_claude_code(
                         pass
 
     finally:
+        if watchdog is not None:
+            watchdog.cancel()
         try:
             proc.stdout.close()
         except OSError:
@@ -300,18 +376,38 @@ def call_claude_code(
     proc.wait()
 
     try:
-        stderr_output = proc.stderr.read()
+        stderr_spool.seek(0)
+        stderr_output = stderr_spool.read()
     except OSError:
         stderr_output = ""
+    finally:
+        stderr_spool.close()
 
     text = "".join(accumulated).strip()
     if not text and fallback_file is not None and fallback_file.is_file():
         text = fallback_file.read_text(encoding="utf-8", errors="replace").strip()
     if not text:
+        if watchdog_fired.is_set():
+            raise ModelRequestError(
+                f"Claude Code request timed out after {timeout}s (watchdog kill) and produced no output."
+            )
         if proc.returncode != 0:
             raise ModelRequestError(f"Claude Code returned exit code {proc.returncode}: {stderr_output.strip()[-4000:]}")
         # Process succeeded but streamed no text — model wrote output via file tools.
         return ModelResponse(text="", provider="claude-code", model=model_arg or "claude-code")
+
+    # The stream concatenates EVERY assistant text block, so tool-chatter or
+    # progress narration can precede (or entirely replace) the document. Keep
+    # only the LaTeX document when one is present; refuse narration-only output
+    # instead of letting it masquerade as a proof downstream.
+    doc = _extract_latex_document(text)
+    if doc:
+        text = doc
+    elif not _looks_like_latex(text):
+        raise ModelRequestError(
+            "Claude Code produced no LaTeX document (narration-only output): "
+            + text[:300].replace("\n", " ")
+        )
 
     for suffix in (".tex", ".aux", ".log"):
         try:
@@ -320,6 +416,25 @@ def call_claude_code(
             pass
 
     return ModelResponse(text=text, provider="claude-code", model=model_arg or "claude-code")
+
+
+def _extract_latex_document(text: str) -> str | None:
+    """Return the last complete \\documentclass … \\end{document} span, if any."""
+    start = text.rfind("\\documentclass")
+    if start == -1:
+        return None
+    end_marker = "\\end{document}"
+    end = text.find(end_marker, start)
+    if end == -1:
+        return None
+    return text[start : end + len(end_marker)].strip()
+
+
+def _looks_like_latex(text: str) -> bool:
+    """Heuristic: does this read as LaTeX mathematics rather than narration?"""
+    if "\\documentclass" in text or "\\begin{" in text:
+        return True
+    return len(text) > 1000 and text.count("$") >= 4
 
 
 def _try_compile_latex(tex_path: Path) -> None:
@@ -385,8 +500,10 @@ def _find_pandoc() -> str | None:
 
 def _claude_code_model_arg(model: str) -> str | None:
     name = model.lower()
-    if name in {"claude-code", "claude-code-default"}:
-        return None
+    # Default: run everything on Claude Fable 5 explicitly (rather than
+    # inheriting whatever the user's interactive `claude` default happens to be).
+    if name in {"claude-code", "claude-code-default", "claude-code-fable"}:
+        return "claude-fable-5"
     if name == "claude-code-sonnet":
         return "sonnet"
     if name == "claude-code-opus":

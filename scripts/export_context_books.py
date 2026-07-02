@@ -43,6 +43,8 @@ import os
 import re
 import subprocess
 import sys
+import threading
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from pathlib import Path
 
@@ -79,6 +81,11 @@ ROUNDS       = max(1, int(os.environ.get("RMA_ROUNDS", "2")))
 PROVIDER     = os.environ.get("RMA_PROVIDER", "claude-code")
 LIMIT        = int(os.environ.get("RMA_LIMIT", "0"))          # 0 = no cap
 RESUME       = _flag("RMA_RESUME", "1")
+# How many problems run their SOLVE stage concurrently. Push-forwards, eval
+# and book export mutate shared state (discussion index, system literature,
+# per-dataset master PDF, documents/pdf compile dir), so that tail stays
+# serialized behind one lock regardless of this setting.
+PARALLEL     = max(1, int(os.environ.get("RMA_PARALLEL", "4")))
 _DS_FILTER   = re.split(r"[\s,]+", os.environ.get("RMA_DATASETS", "").strip())
 DS_FILTER    = {d for d in _DS_FILTER if d}
 
@@ -228,29 +235,55 @@ def main() -> int:
     for slug, pids in datasets:
         log(f"    {slug}: {len(pids)} problems")
 
-    ok = fail = skipped = 0
-    for slug, pids in datasets:
-        for pid in pids:
-            log(f"══ {slug} / {pid} ══")
-            if RESUME and already_done(slug, pid):
-                log("  resume: book already exists, skipping")
-                skipped += 1
-                continue
+    log(f"parallel:    {PARALLEL} concurrent solves (push/export serialized)")
 
-            # 1. solve → initial proof
-            rma("solve", pid, "--dataset", slug, "--model-provider", PROVIDER)
+    # Shared-state lock: push-forwards, eval and book export all write global
+    # files (documents/discussions/index.tex, _system_ literature, per-dataset
+    # master PDF, the documents/pdf compile dir). Solves are per-problem and
+    # run concurrently; everything downstream funnels through this lock.
+    shared_lock = threading.Lock()
 
-            # 2. five push-forwards → issues, meetings, evaluations
+    def process_problem(slug: str, pid: str) -> str:
+        tag = f"{slug}/{pid}"
+        if RESUME and already_done(slug, pid):
+            log(f"[{tag}] resume: book already exists, skipping")
+            return "skipped"
+
+        # 1. solve → initial proof (parallel-safe: per-problem output dirs)
+        log(f"[{tag}] solve starting")
+        rma("solve", pid, "--dataset", slug, "--model-provider", PROVIDER)
+        log(f"[{tag}] solve finished; queueing for push/export")
+
+        with shared_lock:
+            # 2. push-forwards → issues, meetings, evaluations
             for i in range(1, PUSHFORWARDS + 1):
-                log(f"  push-forward {i}/{PUSHFORWARDS}")
+                log(f"[{tag}] push-forward {i}/{PUSHFORWARDS}")
                 rma("push", "--dataset", slug, "--problems", pid,
                     "--provider", PROVIDER, "--rounds", str(ROUNDS))
-
             # 3+4. compile & export the context book
-            if export_book(slug, pid):
+            return "ok" if export_book(slug, pid) else "fail"
+
+    tasks = [(slug, pid) for slug, pids in datasets for pid in pids]
+    ok = fail = skipped = 0
+    done = 0
+    with ThreadPoolExecutor(max_workers=PARALLEL) as pool:
+        futures = {pool.submit(process_problem, slug, pid): (slug, pid)
+                   for slug, pid in tasks}
+        for fut in as_completed(futures):
+            slug, pid = futures[fut]
+            done += 1
+            try:
+                result = fut.result()
+            except Exception as exc:                                # noqa: BLE001
+                result = "fail"
+                log(f"[{slug}/{pid}] EXCEPTION: {exc}")
+            if result == "ok":
                 ok += 1
+            elif result == "skipped":
+                skipped += 1
             else:
                 fail += 1
+            log(f"[{slug}/{pid}] ═ {result.upper()} ═  ({done}/{len(tasks)} done: {ok} ok, {fail} fail, {skipped} skipped)")
 
     log("─" * 60)
     log(f"DONE  exported:{ok}  failed:{fail}  skipped:{skipped}  → {OUTPUT}")

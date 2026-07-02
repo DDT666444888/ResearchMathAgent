@@ -176,11 +176,10 @@ def _plan_strategies(
     )
     try:
         response = call_anthropic(
-            model="claude-haiku-4-5-20251001",
+            model="claude-fable-5",
             system="You are a concise mathematics strategy planner.",
             prompt=prompt,
-            max_tokens=800,
-            temperature=0.9,
+            max_tokens=4000,
         )
         raw = response.text.strip()
         fence = re.match(r"^```(?:json)?\s*(.*?)\s*```$", raw, re.DOTALL)
@@ -202,11 +201,10 @@ def _sanity_check_strategy(problem_area: str, strategy_text: str, args: Namespac
         return True
     try:
         response = call_anthropic(
-            model="claude-haiku-4-5-20251001",
+            model="claude-fable-5",
             system="You assess if a math proof strategy is plausible. Reply only PROCEED or STOP.",
             prompt=f"Area: {problem_area}\nStrategy: {strategy_text[:600]}\n\nIs this mathematically plausible? PROCEED or STOP.",
-            max_tokens=5,
-            temperature=0.0,
+            max_tokens=512,
         )
         return "STOP" not in response.text.upper()
     except Exception:
@@ -1160,18 +1158,38 @@ def _generate_solution_text(
         memory_context=memory_context, strategy_override=strategy_override,
     )
     if should_use_claude_code(model_name, provider):
-        response = call_claude_code(
-            model=model_name,
-            system=_model_system_prompt(),
-            prompt=prompt,
-            cwd=repo_root,
-            partial_output_dir=partial_output_dir,
-            fallback_file=fallback_file,
-        )
+        method = "claude_code_print_mode"
+        try:
+            response = call_claude_code(
+                model=model_name,
+                system=_model_system_prompt(),
+                prompt=prompt,
+                cwd=repo_root,
+                partial_output_dir=partial_output_dir,
+                fallback_file=fallback_file,
+            )
+        except ModelRequestError as exc:
+            if "timed out" not in str(exc).lower():
+                raise
+            # Degraded retry: research-grade problems at xhigh sometimes think
+            # past the whole request budget without emitting text (observed on
+            # aim_addcombapp_0009 twice). "high" thinks shallower and starts
+            # writing sooner, so a within-budget best-effort proof beats a
+            # missing one. Same 30-min budget, one retry only.
+            response = call_claude_code(
+                model=model_name,
+                system=_model_system_prompt(),
+                prompt=prompt,
+                cwd=repo_root,
+                partial_output_dir=partial_output_dir,
+                fallback_file=fallback_file,
+                effort="high",
+            )
+            method = "claude_code_print_mode+effort_high_retry"
         return _strip_markdown_fences(response.text), {
             "provider": response.provider,
             "model": response.model,
-            "method": "claude_code_print_mode",
+            "method": method,
         }
     if should_use_anthropic(model_name, provider):
         max_tokens = int(os.environ.get("RMA_MAX_TOKENS", "8192"))
@@ -1199,7 +1217,18 @@ def _model_system_prompt() -> str:
         "Produce rigorous, self-contained research mathematics in LaTeX. "
         "You must not consult, infer from, or mention official solutions, prior AI solutions, baselines, final_solutions, "
         "outputs, or skill_solutions. Use only the problem statement, allowed skill instructions, and same-run "
-        "verifier feedback supplied in the prompt. The output must be a single compilable LaTeX article, not Markdown."
+        "verifier feedback supplied in the prompt. "
+        # Headless run with a limited tool allowlist: literature search and
+        # read-only inspection are fine; anything else is auto-denied, so don't
+        # burn turns probing for it.
+        "You are running non-interactively with a limited tool allowlist: web search/fetch (literature), read-only "
+        "file access, and safe shell commands (curl, latexmk) are available; other tools are denied — do not retry "
+        "them. HARD TURN BUDGET: you have only a handful of turns. Spend AT MOST ONE turn on literature "
+        "search/fetching, then STOP researching and write. A complete document from your own knowledge is worth "
+        "more than any amount of unfinished research — running out of turns mid-research means total failure. "
+        "Do not narrate your plans or progress in the reply text. Your final reply must consist of exactly one "
+        "complete compilable LaTeX document — it starts with \\documentclass and ends with \\end{document}, with "
+        "no text before or after it, and no Markdown."
     )
 
 
