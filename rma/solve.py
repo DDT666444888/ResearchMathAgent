@@ -1197,7 +1197,15 @@ def _model_system_prompt() -> str:
         "Produce rigorous, self-contained research mathematics in LaTeX. "
         "You must not consult, infer from, or mention official solutions, prior AI solutions, baselines, final_solutions, "
         "outputs, or skill_solutions. Use only the problem statement, allowed skill instructions, and same-run "
-        "verifier feedback supplied in the prompt. The output must be a single compilable LaTeX article, not Markdown."
+        "verifier feedback supplied in the prompt. "
+        # Headless runs have NO tools: web search / fetch / shell are denied, and a
+        # turn spent trying them is wasted (this previously produced narration-only
+        # 'proofs'). Be explicit so the model goes straight to writing mathematics.
+        "You are running non-interactively with no tools: do not attempt web searches, external lookups, file "
+        "operations, or shell commands — work entirely from the problem statement and your own knowledge. "
+        "Do not narrate your plans or progress. Your reply must consist of exactly one complete compilable LaTeX "
+        "document — it starts with \\documentclass and ends with \\end{document}, with no text before or after it, "
+        "and no Markdown."
     )
 
 

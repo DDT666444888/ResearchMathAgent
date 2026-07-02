@@ -150,7 +150,10 @@ def call_claude_code(
     system: str,
     prompt: str,
     cwd: Path,
-    timeout: int = 1800,
+    # Fable-class models at high effort can legitimately think for >30 min on a
+    # research-level proof before emitting text; 90 min is a safety ceiling,
+    # not a target (override with RMA_CLAUDE_CODE_TIMEOUT).
+    timeout: int = 5400,
     partial_output_dir: Path | None = None,
     fallback_file: Path | None = None,
 ) -> ModelResponse:
@@ -162,7 +165,9 @@ def call_claude_code(
         )
 
     timeout = int(os.environ.get("RMA_CLAUDE_CODE_TIMEOUT", timeout))
-    max_turns = int(os.environ.get("RMA_CLAUDE_CODE_MAX_TURNS", "5"))
+    # A few turns get burned if the model probes for (denied) tools before
+    # settling down to write; 8 gives Fable-class models room to finish.
+    max_turns = int(os.environ.get("RMA_CLAUDE_CODE_MAX_TURNS", "8"))
 
     command = [
         claude_bin,
@@ -225,6 +230,16 @@ def call_claude_code(
                 if not text and fallback_file is not None and fallback_file.is_file():
                     text = fallback_file.read_text(encoding="utf-8", errors="replace").strip()
                 if text:
+                    # Same quality gate as the normal path: salvage a real LaTeX
+                    # document if one made it out, refuse narration-only output.
+                    doc = _extract_latex_document(text)
+                    if doc:
+                        text = doc
+                    elif not _looks_like_latex(text):
+                        raise ModelRequestError(
+                            "Claude Code timed out with narration-only output: "
+                            + text[:300].replace("\n", " ")
+                        )
                     try:
                         partial_path.write_text(text)
                         _try_compile_latex(partial_path)
@@ -316,6 +331,19 @@ def call_claude_code(
         # Process succeeded but streamed no text — model wrote output via file tools.
         return ModelResponse(text="", provider="claude-code", model=model_arg or "claude-code")
 
+    # The stream concatenates EVERY assistant text block, so tool-chatter or
+    # progress narration can precede (or entirely replace) the document. Keep
+    # only the LaTeX document when one is present; refuse narration-only output
+    # instead of letting it masquerade as a proof downstream.
+    doc = _extract_latex_document(text)
+    if doc:
+        text = doc
+    elif not _looks_like_latex(text):
+        raise ModelRequestError(
+            "Claude Code produced no LaTeX document (narration-only output): "
+            + text[:300].replace("\n", " ")
+        )
+
     for suffix in (".tex", ".aux", ".log"):
         try:
             partial_path.with_suffix(suffix).unlink(missing_ok=True)
@@ -323,6 +351,25 @@ def call_claude_code(
             pass
 
     return ModelResponse(text=text, provider="claude-code", model=model_arg or "claude-code")
+
+
+def _extract_latex_document(text: str) -> str | None:
+    """Return the last complete \\documentclass … \\end{document} span, if any."""
+    start = text.rfind("\\documentclass")
+    if start == -1:
+        return None
+    end_marker = "\\end{document}"
+    end = text.find(end_marker, start)
+    if end == -1:
+        return None
+    return text[start : end + len(end_marker)].strip()
+
+
+def _looks_like_latex(text: str) -> bool:
+    """Heuristic: does this read as LaTeX mathematics rather than narration?"""
+    if "\\documentclass" in text or "\\begin{" in text:
+        return True
+    return len(text) > 1000 and text.count("$") >= 4
 
 
 def _try_compile_latex(tex_path: Path) -> None:
