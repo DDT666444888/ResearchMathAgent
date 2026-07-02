@@ -497,10 +497,18 @@ def _build_context(command: str, args: Namespace) -> tuple[Path, tuple[str, ...]
         print("FAIL repo root: could not find README.md and data/first_proof_1/problems from this directory")
         return None
 
-    problems = PROBLEM_IDS if getattr(args, "all", False) else (_normalize_problem_id(getattr(args, "problem", None)),)
-    if any(problem is None for problem in problems):
+    dataset = getattr(args, "dataset", None) or "first_proof_1"
+    if getattr(args, "all", False):
+        problems = _dataset_problem_ids(repo_root, dataset)
+    else:
+        problems = (_normalize_problem_id(getattr(args, "problem", None), dataset),)
+    if not problems or any(problem is None for problem in problems):
         print(f"RMA {command}")
-        print("FAIL problem: expected q1 through q10, or use --all")
+        if dataset == "first_proof_1":
+            print("FAIL problem: expected q1 through q10, or use --all")
+        else:
+            print(f"FAIL problem: give a valid problem id for dataset '{dataset}' "
+                  f"(e.g. erdos_0060, prob-01, fc1613), or use --all")
         return None
 
     try:
@@ -586,7 +594,7 @@ def _propose_solution(
         _parse_problem(repo_root, output_dir, problem_id, args, skill_info)
 
     parsed = _read_json(parsed_path)
-    profile = PROBLEM_PROFILES[problem_id]
+    profile = _profile_for(problem_id, parsed)
     n_strategies = max(1, int(getattr(args, "strategies", 1)))
 
     # Load memory context for prompt injection
@@ -729,7 +737,7 @@ def _verify_solution(
     # Record outcome to strategy memory
     try:
         parsed_for_mem = _read_json(paths["artifacts"] / "parsed_problem.json")
-        profile_for_mem = PROBLEM_PROFILES[problem_id]
+        profile_for_mem = _profile_for(problem_id, parsed_for_mem)
         proposal_meta_path = _latest_file(paths["proposals"], "proposal", ".json")
         strategy_used = profile_for_mem["strategy"]
         if proposal_meta_path is not None:
@@ -784,7 +792,7 @@ def _refine_solution(
         solution_text, model_backend = _generate_solution_text(
             repo_root,
             parsed,
-            PROBLEM_PROFILES[problem_id],
+            _profile_for(problem_id, parsed),
             skill_info,
             iteration + 1,
             args,
@@ -851,11 +859,57 @@ def _is_already_proposed(output_dir: Path, problem_id: str) -> bool:
     return paths["solution"].is_file()
 
 
-def _normalize_problem_id(problem: str | None) -> str | None:
+def _normalize_problem_id(problem: str | None, dataset: str | None = "first_proof_1") -> str | None:
     if problem is None:
         return None
-    problem = problem.lower().strip()
-    return problem if PROBLEM_RE.match(problem) else None
+    problem = problem.strip()
+    if (dataset or "first_proof_1") == "first_proof_1":
+        p = problem.lower()
+        return p if PROBLEM_RE.match(p) else None
+    # Other datasets use free-form ids (erdos_0060, prob-01, fc1613, um00085…):
+    # accept as given; existence is validated when the problem is loaded.
+    return problem or None
+
+
+_GENERIC_PROFILE = {
+    "area": "mathematics",
+    "strategy": ("Identify the key objects, claims and hypotheses in the statement, "
+                 "then develop a rigorous step-by-step proof from the definitions and "
+                 "standard results."),
+    "candidate": "State the correct answer or claim implied by the problem, then prove it.",
+    "construction": "Build the required objects or arguments directly from the definitions.",
+    "verification": "Check every step against the stated hypotheses; cite standard results used.",
+}
+
+
+def _profile_for(problem_id: str, parsed: dict | None = None) -> dict:
+    """Curated first_proof_1 profile if present, else a generic profile (other
+    datasets have no per-problem seeds; the LLM does the real work from the
+    parsed statement + skill)."""
+    prof = PROBLEM_PROFILES.get(problem_id)
+    if prof:
+        return prof
+    p = dict(_GENERIC_PROFILE)
+    if parsed and parsed.get("area"):
+        p["area"] = str(parsed["area"])
+    return p
+
+
+def _dataset_problem_ids(repo_root: Path, dataset: str) -> tuple[str, ...]:
+    """All problem ids to solve for `--all`: q1..q10 for first_proof_1, else the
+    dataset's curated solve_set (falling back to every problem in the dataset)."""
+    if (dataset or "first_proof_1") == "first_proof_1":
+        return PROBLEM_IDS
+    try:
+        import sys
+        sys.path.insert(0, str(repo_root))
+        from webapp.dataset_store import get_solve_set, list_problems
+        ss = get_solve_set(dataset)
+        if ss:
+            return tuple(ss)
+        return tuple(p["id"] for p in list_problems(dataset=dataset))
+    except Exception:
+        return ()
 
 
 def _display_path(repo_root: Path, path: Path) -> str:
@@ -904,7 +958,10 @@ def _resolve_output_dir(repo_root: Path, args: Namespace) -> Path:
         now = datetime.now()
         exp_name = getattr(args, "exp_name", None) or f"proofs_v1_{MONTH_NAMES[now.month - 1]}{now.day}"
         folder_name = f"{_safe_name(exp_name)}_{_safe_name(getattr(args, 'model_name', 'rma-skeleton'))}"
-        output_dir = repo_root / OUTPUT_BASE_DIR / folder_name
+        # Route outputs per dataset so best/ consolidation + report export find
+        # them (outputs/<dataset>/…), not always outputs/first_proof_1.
+        dataset = getattr(args, "dataset", None) or "first_proof_1"
+        output_dir = repo_root / "outputs" / dataset / folder_name
     output_dir = output_dir.resolve()
     _ensure_allowed_output(repo_root, output_dir)
     return output_dir
@@ -973,16 +1030,19 @@ def _latest_file(directory: Path, stem: str, suffix: str) -> Path | None:
 def _build_parsed_problem(problem_meta: dict[str, str], source: str, output_dir: Path) -> dict[str, object]:
     statement = problem_meta["statement_excerpt"]
     problem_id = problem_meta["id"]
-    profile = PROBLEM_PROFILES[problem_id]
+    # first_proof_1 has curated profiles; other datasets carry their area in the
+    # store metadata (tags → "area"). Fall back gracefully so any dataset works.
+    profile = PROBLEM_PROFILES.get(problem_id, {})
+    area = profile.get("area") or problem_meta.get("area") or "mathematics"
     return {
         "problem_id": problem_id,
         "title": problem_meta["title"],
-        "author": problem_meta["author"],
+        "author": problem_meta.get("author", ""),
         "source_input": f"{problem_id}/input/problem.tex",
         "statement_excerpt": statement,
         "normalized_statement": _normalize_statement(statement),
         "problem_type": _infer_problem_type(statement),
-        "area": profile["area"],
+        "area": area,
         "objects": _extract_math_objects(statement),
         "definitions": _extract_definitions(statement),
         "quantifier_summary": _extract_quantifier_summary(statement),
