@@ -43,7 +43,6 @@ import os
 import re
 import subprocess
 import sys
-import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from pathlib import Path
@@ -235,33 +234,31 @@ def main() -> int:
     for slug, pids in datasets:
         log(f"    {slug}: {len(pids)} problems")
 
-    log(f"parallel:    {PARALLEL} concurrent solves (push/export serialized)")
+    log(f"parallel:    {PARALLEL} concurrent problem pipelines")
 
-    # Shared-state lock: push-forwards, eval and book export all write global
-    # files (documents/discussions/index.tex, _system_ literature, per-dataset
-    # master PDF, the documents/pdf compile dir). Solves are per-problem and
-    # run concurrently; everything downstream funnels through this lock.
-    shared_lock = threading.Lock()
-
+    # Fully parallel per-problem pipelines. Per-problem artifacts are
+    # path-disjoint; the handful of files shared ACROSS problems (system
+    # literature, dataset/system insights, discussion index, push-state
+    # registry, per-dataset master PDF, strategy memory) are protected by
+    # cross-process fcntl locks inside webapp (see webapp/locks.py).
     def process_problem(slug: str, pid: str) -> str:
         tag = f"{slug}/{pid}"
         if RESUME and already_done(slug, pid):
             log(f"[{tag}] resume: book already exists, skipping")
             return "skipped"
 
-        # 1. solve → initial proof (parallel-safe: per-problem output dirs)
+        # 1. solve → initial proof
         log(f"[{tag}] solve starting")
         rma("solve", pid, "--dataset", slug, "--model-provider", PROVIDER)
-        log(f"[{tag}] solve finished; queueing for push/export")
+        log(f"[{tag}] solve finished")
 
-        with shared_lock:
-            # 2. push-forwards → issues, meetings, evaluations
-            for i in range(1, PUSHFORWARDS + 1):
-                log(f"[{tag}] push-forward {i}/{PUSHFORWARDS}")
-                rma("push", "--dataset", slug, "--problems", pid,
-                    "--provider", PROVIDER, "--rounds", str(ROUNDS))
-            # 3+4. compile & export the context book
-            return "ok" if export_book(slug, pid) else "fail"
+        # 2. push-forwards → issues, meetings, evaluations
+        for i in range(1, PUSHFORWARDS + 1):
+            log(f"[{tag}] push-forward {i}/{PUSHFORWARDS}")
+            rma("push", "--dataset", slug, "--problems", pid,
+                "--provider", PROVIDER, "--rounds", str(ROUNDS))
+        # 3+4. compile & export the context book
+        return "ok" if export_book(slug, pid) else "fail"
 
     tasks = [(slug, pid) for slug, pids in datasets for pid in pids]
     ok = fail = skipped = 0

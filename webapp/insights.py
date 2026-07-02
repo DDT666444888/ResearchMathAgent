@@ -77,6 +77,10 @@ def get_question_insight(repo_root: Path, qid: str, dataset: str = "first_proof_
         return None
 
 
+from .locks import locked
+
+
+@locked("insights")
 def save_system_insight(repo_root: Path, data: dict) -> dict:
     data.setdefault("generated_by", "document-manager")
     data.setdefault("generated_at", datetime.now(timezone.utc).isoformat())
@@ -86,6 +90,7 @@ def save_system_insight(repo_root: Path, data: dict) -> dict:
     return data
 
 
+@locked("insights")
 def save_dataset_insight(repo_root: Path, slug: str, data: dict) -> dict:
     data.setdefault("generated_by", "document-manager")
     data.setdefault("generated_at", datetime.now(timezone.utc).isoformat())

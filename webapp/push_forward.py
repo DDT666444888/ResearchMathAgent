@@ -119,11 +119,14 @@ def snapshot_metrics(repo_root: Path, job_id: str, problems: list[str], dataset:
 
 
 def append_metrics_snapshot(repo_root: Path, snap: dict) -> None:
-    metrics = load_metrics(repo_root)
-    snapshots = metrics.setdefault("snapshots", [])
-    snap["round"] = len(snapshots) + 1
-    snapshots.append(snap)
-    _save_metrics(repo_root, metrics)
+    # Read-modify-write on a global file — locked across processes.
+    from .locks import file_lock
+    with file_lock(repo_root, "push_metrics"):
+        metrics = load_metrics(repo_root)
+        snapshots = metrics.setdefault("snapshots", [])
+        snap["round"] = len(snapshots) + 1
+        snapshots.append(snap)
+        _save_metrics(repo_root, metrics)
 
 
 # ── Per-problem push-forward score history ────────────────────────────────────
@@ -569,23 +572,26 @@ def run_push_forward(
                     "error": cycle_error,
                 })
 
-        # Persist run record
-        state = load_state(repo_root)
-        state["last_run_date"] = today
+        # Persist run record — read-modify-write under a cross-process lock so
+        # concurrent per-problem push subprocesses don't drop each other's runs.
+        from .locks import file_lock
         with _LOCK:
             saved_results = list(_JOBS.get(job_id, {}).get("results", []))
-        state.setdefault("runs", []).append({
-            "date": today,
-            "job_id": job_id,
-            "dataset": dataset,
-            "problems": active,
-            "n_meeting_rounds": n_meeting_rounds,
-            "completed_at": datetime.now(timezone.utc).isoformat(),
-            "results": saved_results,
-        })
-        # Keep at most 30 run records to avoid unbounded growth
-        state["runs"] = state["runs"][-30:]
-        _save_state(repo_root, state)
+        with file_lock(repo_root, "push_state"):
+            state = load_state(repo_root)
+            state["last_run_date"] = today
+            state.setdefault("runs", []).append({
+                "date": today,
+                "job_id": job_id,
+                "dataset": dataset,
+                "problems": active,
+                "n_meeting_rounds": n_meeting_rounds,
+                "completed_at": datetime.now(timezone.utc).isoformat(),
+                "results": saved_results,
+            })
+            # Keep at most 30 run records to avoid unbounded growth
+            state["runs"] = state["runs"][-30:]
+            _save_state(repo_root, state)
 
         # Snapshot metrics into data/push_forward_metrics.json
         try:

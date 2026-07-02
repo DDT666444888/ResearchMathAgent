@@ -1212,6 +1212,11 @@ def seed_all_question_documents(repo_root: Path) -> dict[str, list[Path]]:
 # ── discussions/index.tex ──────────────────────────────────────────────────────
 
 def update_discussion_index(repo_root: Path) -> Path:
+    from .locks import locked as _locked  # local import to avoid cycles
+    return _locked("discussions")(_update_discussion_index_unlocked)(repo_root)
+
+
+def _update_discussion_index_unlocked(repo_root: Path) -> Path:
     now = _now()
 
     # Per-problem status summary

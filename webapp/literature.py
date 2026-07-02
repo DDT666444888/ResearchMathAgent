@@ -41,6 +41,10 @@ def _paper_id(url: str) -> str:
     return hashlib.sha1(url.strip().encode()).hexdigest()[:10]
 
 
+from .locks import locked
+
+
+@locked("literature")
 def add_paper(
     repo_root: Path,
     qid: str,
@@ -78,6 +82,7 @@ def add_paper(
     return entry
 
 
+@locked("literature")
 def update_paper(repo_root: Path, qid: str, paper_id: str, **kwargs) -> dict | None:
     papers = load_index(repo_root, qid)
     for p in papers:
