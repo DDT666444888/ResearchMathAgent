@@ -6,6 +6,7 @@ import select
 import shutil
 import ssl
 import subprocess
+import tempfile
 import time
 import urllib.error
 import urllib.request
@@ -221,11 +222,17 @@ def call_claude_code(
     _partial_dir.mkdir(parents=True, exist_ok=True)
     partial_path = _partial_dir / "partial_output.tex"
 
+    # stderr goes to a spooled file, NOT a pipe: with --verbose the CLI logs
+    # enough to fill a 16KB pipe that nobody drains, which blocks the child on
+    # write() and deadlocks the whole call (observed as 40+ min of 0% CPU on
+    # both sides while the 30-min deadline never fired because we were stuck
+    # in readline()).
+    stderr_spool = tempfile.TemporaryFile(mode="w+", encoding="utf-8", errors="replace")
     proc = subprocess.Popen(
         command,
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        stderr=stderr_spool,
         text=True,
         cwd=cwd,
         env=env,
@@ -339,9 +346,12 @@ def call_claude_code(
     proc.wait()
 
     try:
-        stderr_output = proc.stderr.read()
+        stderr_spool.seek(0)
+        stderr_output = stderr_spool.read()
     except OSError:
         stderr_output = ""
+    finally:
+        stderr_spool.close()
 
     text = "".join(accumulated).strip()
     if not text and fallback_file is not None and fallback_file.is_file():
