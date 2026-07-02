@@ -45,7 +45,7 @@ def should_use_anthropic(model_name: str, provider: str | None = None) -> bool:
 def should_use_claude_code(model_name: str, provider: str | None = None) -> bool:
     provider = _model_provider(provider)
     name = model_name.lower()
-    return provider == "claude-code" or name in {"claude-code", "claude-code-sonnet", "claude-code-opus", "claude-code-haiku"}
+    return provider == "claude-code" or name in {"claude-code", "claude-code-fable", "claude-code-sonnet", "claude-code-opus", "claude-code-haiku"}
 
 
 def _model_provider(provider: str | None) -> str:
@@ -71,10 +71,13 @@ def call_anthropic(
     payload = {
         "model": model,
         "max_tokens": max_tokens,
-        "temperature": temperature,
         "system": system,
         "messages": [{"role": "user", "content": prompt}],
     }
+    # Fable 5 / Opus 4.7+ / Sonnet 5 reject sampling params (HTTP 400); only
+    # attach temperature for models that still accept it.
+    if not any(k in model for k in ("fable", "opus-4-7", "opus-4-8", "sonnet-5")):
+        payload["temperature"] = temperature
     request = urllib.request.Request(
         ANTHROPIC_API_URL,
         data=json.dumps(payload).encode("utf-8"),
@@ -385,8 +388,10 @@ def _find_pandoc() -> str | None:
 
 def _claude_code_model_arg(model: str) -> str | None:
     name = model.lower()
-    if name in {"claude-code", "claude-code-default"}:
-        return None
+    # Default: run everything on Claude Fable 5 explicitly (rather than
+    # inheriting whatever the user's interactive `claude` default happens to be).
+    if name in {"claude-code", "claude-code-default", "claude-code-fable"}:
+        return "claude-fable-5"
     if name == "claude-code-sonnet":
         return "sonnet"
     if name == "claude-code-opus":

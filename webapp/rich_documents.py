@@ -904,7 +904,7 @@ def update_progress(
     # Next steps
     next_steps = []
     if not any(a.get("model", "") not in ("rma-skeleton", "") for a in attempts):
-        next_steps.append("Run with a real model (claude-opus-4-8 or claude-sonnet-4-6) — all current attempts used the skeleton model")
+        next_steps.append("Run with a real model (claude-fable-5 or claude-opus-4-8) — all current attempts used the skeleton model")
     next_steps += [
         "Try `--strategies 3` to explore multiple proof approaches in parallel",
         "Run the issue discovery agent to identify specific mathematical gaps",

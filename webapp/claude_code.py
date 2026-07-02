@@ -324,7 +324,7 @@ def complete_via_cli(prompt: str, system: str = "", model: str | None = None,
     if system:
         cmd += ["--append-system-prompt", system]
     m = (model or "").lower()
-    alias = "opus" if "opus" in m else "sonnet" if "sonnet" in m else "haiku" if "haiku" in m else ""
+    alias = "claude-fable-5" if "fable" in m else "opus" if "opus" in m else "sonnet" if "sonnet" in m else "haiku" if "haiku" in m else ""
     if alias:
         cmd += ["--model", alias]
     env = dict(os.environ)

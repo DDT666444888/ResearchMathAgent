@@ -176,11 +176,10 @@ def _plan_strategies(
     )
     try:
         response = call_anthropic(
-            model="claude-haiku-4-5-20251001",
+            model="claude-fable-5",
             system="You are a concise mathematics strategy planner.",
             prompt=prompt,
-            max_tokens=800,
-            temperature=0.9,
+            max_tokens=4000,
         )
         raw = response.text.strip()
         fence = re.match(r"^```(?:json)?\s*(.*?)\s*```$", raw, re.DOTALL)
@@ -202,11 +201,10 @@ def _sanity_check_strategy(problem_area: str, strategy_text: str, args: Namespac
         return True
     try:
         response = call_anthropic(
-            model="claude-haiku-4-5-20251001",
+            model="claude-fable-5",
             system="You assess if a math proof strategy is plausible. Reply only PROCEED or STOP.",
             prompt=f"Area: {problem_area}\nStrategy: {strategy_text[:600]}\n\nIs this mathematically plausible? PROCEED or STOP.",
-            max_tokens=5,
-            temperature=0.0,
+            max_tokens=512,
         )
         return "STOP" not in response.text.upper()
     except Exception:
