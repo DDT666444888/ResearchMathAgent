@@ -131,6 +131,14 @@ def build_parser() -> argparse.ArgumentParser:
                            "English + Chinese). 'cn'/'zh' = Chinese only, 'en' = English only.")
     push.add_argument("--cache-document", default=None, dest="cache_document",
                       help="Problem id whose report PDF to also copy into documents/cache/ for quick access (e.g. prob-09).")
+    push.add_argument("--sections", default=None, dest="sections",
+                      help="Ablate report sections for this build, e.g. "
+                           "--sections 'concepts=0,meetings=off' or "
+                           "--sections no_concepts,no_meetings. Ablated PDFs are written to "
+                           "*__abl-<sig>.pdf so they never overwrite the full report. "
+                           "Available: evaluation, research_status, push_forward_history, "
+                           "problem_statement, best_proof, concepts, meetings, open_issues, "
+                           "resolved_issues, insights, candidate_answer, strategy.")
     push.add_argument("--force", action="store_true", help="Force regenerate concepts/insights and recompile all reports.")
     push.add_argument("--repo-root", default=None)
     push.set_defaults(func=run_push)

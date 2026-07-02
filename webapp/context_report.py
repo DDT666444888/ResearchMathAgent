@@ -693,7 +693,7 @@ def _build_problem_latex_body(repo_root: Path, pid: str,
         B.append(r"\chapter{Key Concepts}")
         B.append(
             rf"\textit{{{len(concepts)} concepts"
-            r" --- full definitions in the Concept PDF.}}"
+            r" --- full definitions in the Concept PDF.}"
         )
         B.append("")
         if core:
@@ -1003,20 +1003,21 @@ def build_problem_report(repo_root: Path, pid: str, dataset: str = "first_proof_
         L.append("")
 
     # ── 5. MEETING RESULTS ──────────────────────────────────────────────────
-    if prof.get("candidate"):
+    if S.candidate_answer and prof.get("candidate"):
         L.append("## Candidate Answer")
         L.append(prof["candidate"])
         L.append("")
-    if prof.get("strategy"):
+    if S.candidate_answer and prof.get("strategy"):
         L.append("## Core Approach")
         L.append(prof["strategy"])
         L.append("")
 
-    L.append(f"## Meeting Results ({len(meetings)})")
-    if meetings and full:
+    if S.meetings:
+        L.append(f"## Meeting Results ({len(meetings)})")
+    if S.meetings and meetings and full:
         for room in meetings:
             L.append(_meeting_full_md(room))
-    elif meetings:
+    elif S.meetings and meetings:
         for room in meetings:
             topic = room.get("topic", room.get("id", ""))
             when = (room.get("created_at") or "")[:10]
@@ -1040,13 +1041,14 @@ def build_problem_report(repo_root: Path, pid: str, dataset: str = "first_proof_
                 for h in hl:
                     L.append(f"- {h}")
             L.append("")
-    else:
+    elif S.meetings:
         L.append("_No substantive meetings recorded yet._")
         L.append("")
 
     # ── 6. OPEN ISSUES ──────────────────────────────────────────────────────
-    L.append(f"## Open Issues ({len(open_issues)})")
-    if open_issues:
+    if S.open_issues:
+        L.append(f"## Open Issues ({len(open_issues)})")
+    if S.open_issues and open_issues:
         for i in open_issues:
             if full:
                 L.append(_issue_thread_md(i))
@@ -1060,12 +1062,12 @@ def build_problem_report(repo_root: Path, pid: str, dataset: str = "first_proof_
                     L.append("")
                     L.append(f"> {analysis}")
                 L.append("")
-    else:
+    elif S.open_issues:
         L.append("_None._")
         L.append("")
 
     # ── 7. RESOLVED ISSUES ──────────────────────────────────────────────────
-    if resolved_issues:
+    if resolved_issues and S.resolved_issues:
         L.append(f"## Resolved Issues ({len(resolved_issues)})")
         if full:
             for i in resolved_issues:
@@ -1076,9 +1078,10 @@ def build_problem_report(repo_root: Path, pid: str, dataset: str = "first_proof_
         L.append("")
 
     # ── 8. INSIGHTS & LESSONS ───────────────────────────────────────────────
-    L.append("## Insights & Lessons")
+    if S.insights:
+        L.append("## Insights & Lessons")
     wrote_insight = False
-    if qinsight:
+    if S.insights and qinsight:
         if qinsight.get("summary"):
             L.append(qinsight["summary"]); L.append(""); wrote_insight = True
         for key, head in (("highlights", "Highlights"), ("mistakes", "Mistakes & lessons")):
@@ -1089,12 +1092,12 @@ def build_problem_report(repo_root: Path, pid: str, dataset: str = "first_proof_
                     L.append(f"- {v}")
                 L.append("")
                 wrote_insight = True
-    if not wrote_insight:
+    if S.insights and not wrote_insight:
         L.append("_No problem-specific insight generated yet._")
         L.append("")
 
     # ── 9. STRATEGY ─────────────────────────────────────────────────────────
-    if prof.get("difficulty") or attempts:
+    if S.strategy and (prof.get("difficulty") or attempts):
         L.append("## Strategy & Difficulty")
         if prof.get("difficulty"):
             L.append(prof["difficulty"])
@@ -1246,10 +1249,11 @@ def build_system_report(repo_root: Path, dataset: str = "first_proof_1") -> dict
     }
 
 
-def build_report(repo_root: Path, scope: str, dataset: str = "first_proof_1", full: bool = False) -> dict:
+def build_report(repo_root: Path, scope: str, dataset: str = "first_proof_1",
+                 full: bool = False, sections=None) -> dict:
     if scope == "system":
         return build_system_report(repo_root, dataset)
-    return build_problem_report(repo_root, scope, dataset, full=full)
+    return build_problem_report(repo_root, scope, dataset, full=full, sections=sections)
 
 
 # ── PDF compilation (reuse issue_pdf tectonic pipeline) ───────────────────────
@@ -1260,9 +1264,19 @@ def _norm_language(language: str) -> str:
     return "cn" if l in ("cn", "zh", "zh-cn", "chinese", "中文") else "en"
 
 
+def _variant_suffix(sections=None) -> str:
+    """Filename/cache-key suffix that distinguishes an ablated report from the
+    canonical all-on report. Empty when every section is enabled (the default),
+    so canonical outputs keep their existing names untouched.
+    """
+    from .report_sections import resolve_sections
+    sig = resolve_sections(sections).signature()
+    return f"__abl-{sig}" if sig else ""
+
+
 def compile_report_pdfs(repo_root: Path, scope: str, dataset: str = "first_proof_1",
                         force: bool = False, cache_document: bool = False,
-                        languages=("en", "cn")) -> dict:
+                        languages=("en", "cn"), sections=None) -> dict:
     """Build the report in each requested language. Returns {lang: result}."""
     out: dict = {}
     seen: set = set()
@@ -1272,13 +1286,14 @@ def compile_report_pdfs(repo_root: Path, scope: str, dataset: str = "first_proof
             continue
         seen.add(code)
         out[code] = compile_report_pdf(repo_root, scope, dataset, force=force,
-                                       cache_document=cache_document, language=code)
+                                       cache_document=cache_document, language=code,
+                                       sections=sections)
     return out
 
 
 def compile_report_pdf(repo_root: Path, scope: str, dataset: str = "first_proof_1",
                        force: bool = False, cache_document: bool = False,
-                       language: str = "en") -> dict:
+                       language: str = "en", sections=None) -> dict:
     """Build a problem/system context report PDF.
 
     language: 'en' (documents/pdf/report_*.pdf) or 'cn'/'zh'
@@ -1290,11 +1305,13 @@ def compile_report_pdf(repo_root: Path, scope: str, dataset: str = "first_proof_
     "latest" copy is written — every cached artifact carries its build time.
     """
     lang = _norm_language(language)
-    res = _compile_report_pdf_impl(repo_root, scope, dataset, force, language=lang)
+    res = _compile_report_pdf_impl(repo_root, scope, dataset, force, language=lang,
+                                   sections=sections)
     if cache_document and res.get("ok"):
         import shutil
         prefix = "cn_report" if lang == "cn" else "report"
-        safe = re.sub(r"[^A-Za-z0-9_-]", "_", f"{scope}_{dataset}")
+        suffix = _variant_suffix(sections)
+        safe = re.sub(r"[^A-Za-z0-9_-]", "_", f"{scope}_{dataset}") + suffix
         pdf_dir = repo_root / "documents" / "pdf"
         src = pdf_dir / f"{prefix}_{safe}.pdf"
         if src.is_file():
@@ -1320,7 +1337,8 @@ def compile_report_pdf(repo_root: Path, scope: str, dataset: str = "first_proof_
 
 
 def _compile_report_pdf_impl(repo_root: Path, scope: str, dataset: str = "first_proof_1",
-                             force: bool = False, language: str = "en") -> dict:
+                             force: bool = False, language: str = "en",
+                             sections=None) -> dict:
     import hashlib
     import os
     import shutil
@@ -1330,7 +1348,8 @@ def _compile_report_pdf_impl(repo_root: Path, scope: str, dataset: str = "first_
     from .proofs import _missing_from_log, _safety_block
 
     is_cn = _norm_language(language) == "cn"
-    safe_scope = re.sub(r"[^A-Za-z0-9_-]", "_", f"{scope}_{dataset}")
+    suffix = _variant_suffix(sections)   # "" when all sections on ⇒ canonical name
+    safe_scope = re.sub(r"[^A-Za-z0-9_-]", "_", f"{scope}_{dataset}") + suffix
     name     = f"{'cn_report' if is_cn else 'report'}_{safe_scope}"
     pdf_dir  = repo_root / "documents" / "pdf"
     pdf_dir.mkdir(parents=True, exist_ok=True)
@@ -1419,7 +1438,7 @@ def _compile_report_pdf_impl(repo_root: Path, scope: str, dataset: str = "first_
     # ── problem report: native LaTeX book ─────────────────────────────────────
     # _build_problem_latex_body() assembles a \documentclass{report} document
     # with \chapter sections and the proof body inserted inline in Chapter 3.
-    preamble, body = _build_problem_latex_body(repo_root, scope, dataset)
+    preamble, body = _build_problem_latex_body(repo_root, scope, dataset, sections=sections)
 
     # Stable hash — strip the timestamp so the cache survives across requests.
     # (Computed from the ENGLISH source for both languages: the CN report is a
@@ -1506,7 +1525,7 @@ def _compile_report_pdf_impl(repo_root: Path, scope: str, dataset: str = "first_
 # ── dataset master report: ONE huge PDF of everything (all problems, all tabs) ──
 
 def compile_master_pdf(repo_root: Path, dataset: str = "first_proof_1", force: bool = False,
-                       cache_document_scope: str | None = None) -> dict:
+                       cache_document_scope: str | None = None, sections=None) -> dict:
     """Compile ONE huge PDF for a whole dataset: the system overview followed by
     every problem's full combined report (statement, concepts, insights, issues,
     meetings, and the full proof). Reuses ``compile_report_pdf`` per scope and
@@ -1514,15 +1533,20 @@ def compile_master_pdf(repo_root: Path, dataset: str = "first_proof_1", force: b
 
     If cache_document_scope is set (a problem id), that one problem's report PDF
     is also copied into documents/cache/ for quick access.
+
+    ``sections`` ablates the same set of sections in every per-problem report
+    (see report_sections). When ablated, the master file is named
+    ``master_<dataset>__abl-<sig>.pdf`` so it never clobbers the canonical one.
     """
     import shutil
     import subprocess
 
+    suffix = _variant_suffix(sections)
     pdf_dir = repo_root / "documents" / "pdf"
     pdf_dir.mkdir(parents=True, exist_ok=True)
 
     def _report_path(scope: str) -> Path:
-        safe = re.sub(r"[^A-Za-z0-9_-]", "_", f"{scope}_{dataset}")
+        safe = re.sub(r"[^A-Za-z0-9_-]", "_", f"{scope}_{dataset}") + suffix
         return pdf_dir / f"report_{safe}.pdf"
 
     parts: list[Path] = []
@@ -1532,7 +1556,8 @@ def compile_master_pdf(repo_root: Path, dataset: str = "first_proof_1", force: b
     #    best proof → others within each), so the document leads with problems.
     for pid in problem_ids(dataset):
         r = compile_report_pdf(repo_root, pid, dataset, force=force,
-                               cache_document=(pid == cache_document_scope))
+                               cache_document=(pid == cache_document_scope),
+                               sections=sections)
         fp = _report_path(pid)
         if r.get("ok") and fp.is_file():
             parts.append(fp)
@@ -1541,7 +1566,7 @@ def compile_master_pdf(repo_root: Path, dataset: str = "first_proof_1", force: b
             logs.append(f"{pid}=fail")
 
     # 2) system overview (cross-problem dashboard) last
-    sysr = compile_report_pdf(repo_root, "system", dataset, force=force)
+    sysr = compile_report_pdf(repo_root, "system", dataset, force=force, sections=sections)
     if sysr.get("ok") and _report_path("system").is_file():
         parts.append(_report_path("system"))
     logs.append(f"system={'ok' if sysr.get('ok') else 'fail'}")
@@ -1549,7 +1574,7 @@ def compile_master_pdf(repo_root: Path, dataset: str = "first_proof_1", force: b
     if not parts:
         return {"ok": False, "pdf_url": None, "log": "no report parts; " + " ".join(logs)}
 
-    dest = pdf_dir / f"master_{dataset}.pdf"
+    dest = pdf_dir / f"master_{dataset}{suffix}.pdf"
     ok = False
     if len(parts) == 1:
         shutil.copyfile(parts[0], dest); ok = dest.is_file()
@@ -1572,5 +1597,5 @@ def compile_master_pdf(repo_root: Path, dataset: str = "first_proof_1", force: b
                 ok = False
     if not ok:
         return {"ok": False, "pdf_url": None, "log": "merge failed; " + " ".join(logs)}
-    return {"ok": True, "pdf_url": f"/api/pdf/master_{dataset}.pdf",
+    return {"ok": True, "pdf_url": f"/api/pdf/master_{dataset}{suffix}.pdf",
             "parts": len(parts), "log": "OK; " + " ".join(logs)}

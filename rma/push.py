@@ -109,8 +109,17 @@ def run_push(args) -> int:
 
     dataset = args.dataset
     problems = args.problems or None
+
+    # Section-ablation: publish the spec to the environment so every downstream
+    # report build in this process (per-problem PDFs + master) picks it up via
+    # report_sections.resolve_sections. Empty/None ⇒ full report (canonical names).
+    sections_spec = getattr(args, "sections", None)
+    if sections_spec:
+        os.environ["RMA_REPORT_SECTIONS"] = sections_spec
+
     print(f"[rma push] dataset={dataset} problems={problems or 'all'} "
-          f"pdf_only={args.pdf_only} provider={provider}", flush=True)
+          f"pdf_only={args.pdf_only} provider={provider}"
+          + (f" sections={sections_spec}" if sections_spec else ""), flush=True)
 
     if not args.pdf_only:
         if not args.no_meetings:

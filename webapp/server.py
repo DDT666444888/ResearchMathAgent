@@ -959,20 +959,24 @@ def context_report_index(dataset: str = Query(None)) -> JSONResponse:
 
 
 @app.get("/api/context-report/{scope}")
-def context_report_ep(scope: str, dataset: str = Query(None)) -> JSONResponse:
+def context_report_ep(scope: str, dataset: str = Query(None),
+                      sections: str = Query(None)) -> JSONResponse:
+    # `sections` ablates report parts, e.g. ?sections=concepts=0,meetings=off
+    # (or no_concepts,no_meetings). Omit for the full report. See report_sections.
     from .context_report import build_report
     ds = _ds_from_query(dataset)
     try:
-        return JSONResponse(build_report(REPO_ROOT, scope, ds))
+        return JSONResponse(build_report(REPO_ROOT, scope, ds, sections=sections))
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=500)
 
 
 @app.get("/api/context-report/{scope}/pdf")
-def context_report_pdf_ep(scope: str, dataset: str = Query(None), force: bool = Query(False)) -> JSONResponse:
+def context_report_pdf_ep(scope: str, dataset: str = Query(None), force: bool = Query(False),
+                          sections: str = Query(None)) -> JSONResponse:
     from .context_report import compile_report_pdf
     ds = _ds_from_query(dataset)
-    return JSONResponse(compile_report_pdf(REPO_ROOT, scope, ds, force=force))
+    return JSONResponse(compile_report_pdf(REPO_ROOT, scope, ds, force=force, sections=sections))
 
 
 @app.get("/api/document/{name:path}")

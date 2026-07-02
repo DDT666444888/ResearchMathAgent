@@ -126,6 +126,134 @@ def append_metrics_snapshot(repo_root: Path, snap: dict) -> None:
     _save_metrics(repo_root, metrics)
 
 
+# ── Per-problem push-forward score history ────────────────────────────────────
+# Every push-forward for a problem appends one entry recording how many
+# push-forwards have run and the proof-evaluation score at that point, so the
+# Evaluation chapter can show the score trajectory.  Stored next to the proof
+# evaluation itself so it travels with the problem's documents.
+
+def _history_path(repo_root: Path, pid: str) -> Path:
+    return repo_root / "documents" / "questions" / pid / "push_forward_history.json"
+
+
+def load_push_forward_history(repo_root: Path, pid: str) -> list[dict]:
+    """Return the ordered list of push-forward score entries for a problem."""
+    p = _history_path(repo_root, pid)
+    if p.is_file():
+        try:
+            data = json.loads(p.read_text(encoding="utf-8"))
+            hist = data.get("history", data if isinstance(data, list) else [])
+            return hist if isinstance(hist, list) else []
+        except Exception:
+            pass
+    return []
+
+
+def _save_push_forward_history(repo_root: Path, pid: str, history: list[dict]) -> None:
+    p = _history_path(repo_root, pid)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(json.dumps({"history": history}, indent=2, ensure_ascii=False),
+                 encoding="utf-8")
+
+
+def _score_from_proof_eval(pe: dict | None) -> dict:
+    """Extract a compact score record (with total/max) from a proof_eval dict."""
+    if not pe or "error" in pe:
+        return {"answer_accuracy": None, "logical_correctness": None,
+                "proof_completeness": None, "proof_clarity": None,
+                "scale": 10, "total": None, "max": None, "recorded": False}
+    scale = int(pe.get("scale") or 10)
+    aa = pe.get("answer_accuracy")
+    lc = pe.get("logical_correctness")
+    pc = pe.get("proof_completeness")
+    cl = pe.get("proof_clarity")
+    vals = [(1 if aa else 0) if aa is not None else None,
+            int(lc) if lc is not None else None,
+            int(pc) if pc is not None else None,
+            int(cl) if cl is not None else None]
+    maxes = [1 if aa is not None else None,
+             scale if lc is not None else None,
+             scale if pc is not None else None,
+             scale if cl is not None else None]
+    total = sum(v for v in vals if v is not None) if any(v is not None for v in vals) else None
+    mx = sum(v for v in maxes if v is not None) if any(v is not None for v in maxes) else None
+    return {"answer_accuracy": aa, "logical_correctness": lc,
+            "proof_completeness": pc, "proof_clarity": cl,
+            "scale": scale, "total": total, "max": mx, "recorded": total is not None}
+
+
+def append_push_forward_score(repo_root: Path, pid: str, dataset: str = "first_proof_1",
+                              room_id: str | None = None, job_id: str | None = None,
+                              date: str | None = None) -> dict:
+    """Record the current proof-evaluation score as the next push-forward entry.
+
+    Reads documents/questions/<pid>/proof_eval.json, computes the total, and
+    appends a numbered entry to the problem's push-forward history.  Returns the
+    entry that was appended.
+    """
+    try:
+        from .proof_eval import load_proof_eval
+        pe = load_proof_eval(repo_root, pid)
+    except Exception:
+        pe = None
+    entry = {
+        "round": 0,  # filled below
+        "date": date or datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+        "dataset": dataset,
+        "job_id": job_id,
+        "room_id": room_id,
+        **_score_from_proof_eval(pe),
+    }
+    history = load_push_forward_history(repo_root, pid)
+    entry["round"] = len(history) + 1
+    history.append(entry)
+    _save_push_forward_history(repo_root, pid, history)
+    return entry
+
+
+def backfill_push_forward_history(repo_root: Path, pid: str,
+                                  dataset: str = "first_proof_1") -> int:
+    """Seed history with past push-forwards recorded in push_forward_state.json.
+
+    Historical proof scores were not captured at the time, so those entries carry
+    null scores (recorded=False) but give an accurate push-forward count and
+    date/room lineage.  Runs already present in the history (matched by job_id)
+    are skipped, so this is idempotent.  Returns the number of entries added.
+    """
+    history = load_push_forward_history(repo_root, pid)
+    known_jobs = {h.get("job_id") for h in history if h.get("job_id")}
+    added = 0
+    for run in load_state(repo_root).get("runs", []):
+        if run.get("dataset") != dataset or pid not in (run.get("problems") or []):
+            continue
+        jid = run.get("job_id")
+        if jid and jid in known_jobs:
+            continue
+        room_id = None
+        for res in run.get("results", []):
+            if res.get("problem") == pid:
+                room_id = res.get("room_id")
+                break
+        entry = {
+            "round": len(history) + 1,
+            "date": run.get("date"),
+            "dataset": dataset,
+            "job_id": jid,
+            "room_id": room_id,
+            **_score_from_proof_eval(None),  # historical scores unknown
+        }
+        history.append(entry)
+        known_jobs.add(jid)
+        added += 1
+    if added:
+        # keep chronological order, then renumber rounds
+        history.sort(key=lambda h: (h.get("date") or "", h.get("round") or 0))
+        for i, h in enumerate(history, 1):
+            h["round"] = i
+        _save_push_forward_history(repo_root, pid, history)
+    return added
+
+
 def load_state(repo_root: Path) -> dict:
     p = _state_path(repo_root)
     if p.is_file():
@@ -406,6 +534,22 @@ def run_push_forward(
                 _log(f"{pid}: documents updated (progress, timeline, strategies)")
             except Exception as de:
                 log.warning("[push-forward %s] document update for %s failed: %s", job_id[:8], pid, de)
+
+            # Re-evaluate the (possibly improved) proof and record this
+            # push-forward's score so the Evaluation chapter can track the
+            # per-push-forward trajectory. Both steps are best-effort.
+            try:
+                from .proof_eval import evaluate_proof
+                evaluate_proof(repo_root, pid, dataset=dataset, force=True)
+            except Exception as ee:
+                log.warning("[push-forward %s] proof re-eval for %s failed: %s", job_id[:8], pid, ee)
+            try:
+                rec = append_push_forward_score(repo_root, pid, dataset=dataset,
+                                                room_id=room_id, job_id=job_id, date=today)
+                _log(f"{pid}: push-forward #{rec['round']} score "
+                     f"{rec.get('total')}/{rec.get('max')} recorded")
+            except Exception as se:
+                log.warning("[push-forward %s] score record for %s failed: %s", job_id[:8], pid, se)
 
             with _LOCK:
                 job = _JOBS.get(job_id, {})
