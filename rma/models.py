@@ -152,7 +152,9 @@ def call_claude_code(
     system: str,
     prompt: str,
     cwd: Path,
-    timeout: int = 1800,
+    # <=0 means NO time limit — deep-thinking runs are monitored externally
+    # rather than killed (set RMA_CLAUDE_CODE_TIMEOUT to restore a ceiling).
+    timeout: int = 0,
     partial_output_dir: Path | None = None,
     fallback_file: Path | None = None,
     effort: str | None = None,
@@ -247,13 +249,15 @@ def call_claude_code(
         pass
 
     accumulated: list[str] = []
-    deadline = time.monotonic() + timeout
+    infinite = timeout <= 0
+    deadline = None if infinite else time.monotonic() + timeout
     last_partial_write = 0.0
 
     # Unbypassable timeout: the in-loop deadline check can be skated past when
     # readline() blocks on a partial line (observed: worker alive at 35+ min
     # with a 30-min budget). A watchdog kills the child no matter where the
     # reader is stuck; the reader then sees EOF and unwinds normally.
+    # With no time limit (timeout <= 0) neither mechanism is armed.
     watchdog_fired = threading.Event()
 
     def _watchdog() -> None:
@@ -263,14 +267,19 @@ def call_claude_code(
         except OSError:
             pass
 
-    watchdog = threading.Timer(timeout + 5, _watchdog)
-    watchdog.daemon = True
-    watchdog.start()
+    watchdog: threading.Timer | None = None
+    if not infinite:
+        watchdog = threading.Timer(timeout + 5, _watchdog)
+        watchdog.daemon = True
+        watchdog.start()
 
     try:
         while True:
-            remaining = deadline - time.monotonic()
-            if remaining <= 0:
+            if deadline is None:
+                remaining = 60.0
+            else:
+                remaining = deadline - time.monotonic()
+            if deadline is not None and remaining <= 0:
                 proc.kill()
                 proc.wait()
                 text = "".join(accumulated).strip()
@@ -357,7 +366,8 @@ def call_claude_code(
                         pass
 
     finally:
-        watchdog.cancel()
+        if watchdog is not None:
+            watchdog.cancel()
         try:
             proc.stdout.close()
         except OSError:
