@@ -7,6 +7,7 @@ import shutil
 import ssl
 import subprocess
 import tempfile
+import threading
 import time
 import urllib.error
 import urllib.request
@@ -248,6 +249,23 @@ def call_claude_code(
     deadline = time.monotonic() + timeout
     last_partial_write = 0.0
 
+    # Unbypassable timeout: the in-loop deadline check can be skated past when
+    # readline() blocks on a partial line (observed: worker alive at 35+ min
+    # with a 30-min budget). A watchdog kills the child no matter where the
+    # reader is stuck; the reader then sees EOF and unwinds normally.
+    watchdog_fired = threading.Event()
+
+    def _watchdog() -> None:
+        watchdog_fired.set()
+        try:
+            proc.kill()
+        except OSError:
+            pass
+
+    watchdog = threading.Timer(timeout + 5, _watchdog)
+    watchdog.daemon = True
+    watchdog.start()
+
     try:
         while True:
             remaining = deadline - time.monotonic()
@@ -338,6 +356,7 @@ def call_claude_code(
                         pass
 
     finally:
+        watchdog.cancel()
         try:
             proc.stdout.close()
         except OSError:
@@ -357,6 +376,10 @@ def call_claude_code(
     if not text and fallback_file is not None and fallback_file.is_file():
         text = fallback_file.read_text(encoding="utf-8", errors="replace").strip()
     if not text:
+        if watchdog_fired.is_set():
+            raise ModelRequestError(
+                f"Claude Code request timed out after {timeout}s (watchdog kill) and produced no output."
+            )
         if proc.returncode != 0:
             raise ModelRequestError(f"Claude Code returned exit code {proc.returncode}: {stderr_output.strip()[-4000:]}")
         # Process succeeded but streamed no text — model wrote output via file tools.
