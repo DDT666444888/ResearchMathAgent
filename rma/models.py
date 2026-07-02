@@ -155,6 +155,7 @@ def call_claude_code(
     timeout: int = 1800,
     partial_output_dir: Path | None = None,
     fallback_file: Path | None = None,
+    effort: str | None = None,
 ) -> ModelResponse:
     claude_bin = shutil.which("claude")
     if claude_bin is None:
@@ -184,7 +185,7 @@ def call_claude_code(
     )
     # Interactive-session effort (often "max") makes deep-thinking turns exceed
     # the 30-minute request budget; pin proofs to xhigh unless overridden.
-    effort = os.environ.get("RMA_CLAUDE_CODE_EFFORT", "xhigh")
+    effort = effort or os.environ.get("RMA_CLAUDE_CODE_EFFORT", "xhigh")
 
     command = [
         claude_bin,

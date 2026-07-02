@@ -1158,18 +1158,38 @@ def _generate_solution_text(
         memory_context=memory_context, strategy_override=strategy_override,
     )
     if should_use_claude_code(model_name, provider):
-        response = call_claude_code(
-            model=model_name,
-            system=_model_system_prompt(),
-            prompt=prompt,
-            cwd=repo_root,
-            partial_output_dir=partial_output_dir,
-            fallback_file=fallback_file,
-        )
+        method = "claude_code_print_mode"
+        try:
+            response = call_claude_code(
+                model=model_name,
+                system=_model_system_prompt(),
+                prompt=prompt,
+                cwd=repo_root,
+                partial_output_dir=partial_output_dir,
+                fallback_file=fallback_file,
+            )
+        except ModelRequestError as exc:
+            if "timed out" not in str(exc).lower():
+                raise
+            # Degraded retry: research-grade problems at xhigh sometimes think
+            # past the whole request budget without emitting text (observed on
+            # aim_addcombapp_0009 twice). "high" thinks shallower and starts
+            # writing sooner, so a within-budget best-effort proof beats a
+            # missing one. Same 30-min budget, one retry only.
+            response = call_claude_code(
+                model=model_name,
+                system=_model_system_prompt(),
+                prompt=prompt,
+                cwd=repo_root,
+                partial_output_dir=partial_output_dir,
+                fallback_file=fallback_file,
+                effort="high",
+            )
+            method = "claude_code_print_mode+effort_high_retry"
         return _strip_markdown_fences(response.text), {
             "provider": response.provider,
             "model": response.model,
-            "method": "claude_code_print_mode",
+            "method": method,
         }
     if should_use_anthropic(model_name, provider):
         max_tokens = int(os.environ.get("RMA_MAX_TOKENS", "8192"))
