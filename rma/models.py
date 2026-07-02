@@ -150,10 +150,7 @@ def call_claude_code(
     system: str,
     prompt: str,
     cwd: Path,
-    # Fable-class models at high effort can legitimately think for >30 min on a
-    # research-level proof before emitting text; 90 min is a safety ceiling,
-    # not a target (override with RMA_CLAUDE_CODE_TIMEOUT).
-    timeout: int = 5400,
+    timeout: int = 1800,
     partial_output_dir: Path | None = None,
     fallback_file: Path | None = None,
 ) -> ModelResponse:
@@ -165,9 +162,17 @@ def call_claude_code(
         )
 
     timeout = int(os.environ.get("RMA_CLAUDE_CODE_TIMEOUT", timeout))
-    # A few turns get burned if the model probes for (denied) tools before
-    # settling down to write; 8 gives Fable-class models room to finish.
-    max_turns = int(os.environ.get("RMA_CLAUDE_CODE_MAX_TURNS", "8"))
+    max_turns = int(os.environ.get("RMA_CLAUDE_CODE_MAX_TURNS", "5"))
+    # Headless permission model: tools on this allowlist are auto-approved,
+    # everything else is auto-denied (no human present to answer prompts).
+    # Literature search plus read-only inspection and a few safe commands —
+    # deliberately NOT --dangerously-skip-permissions.
+    allowed_tools = os.environ.get(
+        "RMA_CLAUDE_CODE_ALLOWED_TOOLS",
+        "WebSearch,WebFetch,Read,Glob,Grep,"
+        "Bash(curl:*),Bash(latexmk:*),Bash(pdflatex:*),Bash(bibtex:*),"
+        "Bash(ls:*),Bash(cat:*),Bash(head:*),Bash(tail:*),Bash(grep:*),Bash(wc:*)",
+    )
 
     command = [
         claude_bin,
@@ -180,6 +185,8 @@ def call_claude_code(
         system,
         "--max-turns",
         str(max_turns),
+        "--allowedTools",
+        allowed_tools,
         "--no-session-persistence",
     ]
     model_arg = _claude_code_model_arg(model)

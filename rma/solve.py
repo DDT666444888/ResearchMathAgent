@@ -1198,14 +1198,15 @@ def _model_system_prompt() -> str:
         "You must not consult, infer from, or mention official solutions, prior AI solutions, baselines, final_solutions, "
         "outputs, or skill_solutions. Use only the problem statement, allowed skill instructions, and same-run "
         "verifier feedback supplied in the prompt. "
-        # Headless runs have NO tools: web search / fetch / shell are denied, and a
-        # turn spent trying them is wasted (this previously produced narration-only
-        # 'proofs'). Be explicit so the model goes straight to writing mathematics.
-        "You are running non-interactively with no tools: do not attempt web searches, external lookups, file "
-        "operations, or shell commands — work entirely from the problem statement and your own knowledge. "
-        "Do not narrate your plans or progress. Your reply must consist of exactly one complete compilable LaTeX "
-        "document — it starts with \\documentclass and ends with \\end{document}, with no text before or after it, "
-        "and no Markdown."
+        # Headless run with a limited tool allowlist: literature search and
+        # read-only inspection are fine; anything else is auto-denied, so don't
+        # burn turns probing for it.
+        "You are running non-interactively with a limited tool allowlist: web search/fetch (literature), read-only "
+        "file access, and safe shell commands (curl, latexmk) are available; other tools are denied — do not retry "
+        "them. Budget your turns: finish any research quickly and spend your effort writing the mathematics. "
+        "Do not narrate your plans or progress in the reply text. Your final reply must consist of exactly one "
+        "complete compilable LaTeX document — it starts with \\documentclass and ends with \\end{document}, with "
+        "no text before or after it, and no Markdown."
     )
 
 
