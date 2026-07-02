@@ -173,6 +173,16 @@ def call_claude_code(
         "Bash(curl:*),Bash(latexmk:*),Bash(pdflatex:*),Bash(bibtex:*),"
         "Bash(ls:*),Bash(cat:*),Bash(head:*),Bash(tail:*),Bash(grep:*),Bash(wc:*)",
     )
+    # Benchmark-fairness hardening: even with read access allowed, prior
+    # solutions must stay unreadable (deny wins over allow).
+    disallowed_tools = os.environ.get(
+        "RMA_CLAUDE_CODE_DISALLOWED_TOOLS",
+        "Read(**/output_solutions/**),Read(**/final_solutions/**),"
+        "Read(**/baselines/**),Read(**/skill_solutions/**)",
+    )
+    # Interactive-session effort (often "max") makes deep-thinking turns exceed
+    # the 30-minute request budget; pin proofs to xhigh unless overridden.
+    effort = os.environ.get("RMA_CLAUDE_CODE_EFFORT", "xhigh")
 
     command = [
         claude_bin,
@@ -187,6 +197,10 @@ def call_claude_code(
         str(max_turns),
         "--allowedTools",
         allowed_tools,
+        "--disallowedTools",
+        disallowed_tools,
+        "--effort",
+        effort,
         "--no-session-persistence",
     ]
     model_arg = _claude_code_model_arg(model)
