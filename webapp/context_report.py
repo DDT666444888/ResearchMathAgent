@@ -1648,6 +1648,15 @@ def _compile_report_pdf_impl(repo_root: Path, scope: str, dataset: str = "first_
 
 def compile_master_pdf(repo_root: Path, dataset: str = "first_proof_1", force: bool = False,
                        cache_document_scope: str | None = None, sections=None) -> dict:
+    """Cross-process serialized per dataset: two concurrent compiles of the same
+    master PDF share latexmk aux files and corrupt each other."""
+    from .locks import file_lock
+    with file_lock(repo_root, f"master_pdf_{dataset}"):
+        return _compile_master_pdf_unlocked(repo_root, dataset, force, cache_document_scope, sections)
+
+
+def _compile_master_pdf_unlocked(repo_root: Path, dataset: str = "first_proof_1", force: bool = False,
+                                 cache_document_scope: str | None = None, sections=None) -> dict:
     """Compile ONE huge PDF for a whole dataset: the system overview followed by
     every problem's full combined report (statement, concepts, insights, issues,
     meetings, and the full proof). Reuses ``compile_report_pdf`` per scope and

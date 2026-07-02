@@ -167,7 +167,7 @@ def call_claude_code(
         )
 
     timeout = int(os.environ.get("RMA_CLAUDE_CODE_TIMEOUT", timeout))
-    max_turns = int(os.environ.get("RMA_CLAUDE_CODE_MAX_TURNS", "5"))
+    max_turns = int(os.environ.get("RMA_CLAUDE_CODE_MAX_TURNS", "12"))
     # Headless permission model: tools on this allowlist are auto-approved,
     # everything else is auto-denied (no human present to answer prompts).
     # Literature search plus read-only inspection and a few safe commands —

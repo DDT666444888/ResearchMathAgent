@@ -37,8 +37,18 @@ def record_attempt(
         "date": datetime.now().strftime("%Y-%m-%d"),
     }
     memory_file = documents_dir / MEMORY_FILE_NAME
-    with memory_file.open("a", encoding="utf-8") as f:
-        f.write(json.dumps(entry) + "\n")
+    # Cross-process appends from concurrent solves; lock keeps lines whole.
+    import sys as _sys
+    _sys.path.insert(0, str(documents_dir.parent))
+    try:
+        from webapp.locks import file_lock
+        lock_ctx = file_lock(documents_dir.parent, "strategy_memory")
+    except Exception:  # pragma: no cover - lock module unavailable
+        from contextlib import nullcontext
+        lock_ctx = nullcontext()
+    with lock_ctx:
+        with memory_file.open("a", encoding="utf-8") as f:
+            f.write(json.dumps(entry) + "\n")
 
 
 def query_memory(
