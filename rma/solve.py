@@ -1843,7 +1843,11 @@ def _render_solution(solution_path: Path) -> subprocess.CompletedProcess[str]:
         part.replace("{file}", solution_path.name).replace("{outdir}", str(solution_path.parent))
         for part in compiler_template
     ]
-    return subprocess.run(cmd, cwd=solution_path.parent, text=True, capture_output=True)
+    # errors="replace": LaTeX engines emit non-UTF-8 bytes in their logs; the
+    # default strict decode raised UnicodeDecodeError here, which propagated out
+    # of _verify_solution and aborted the whole solve before best/ promotion.
+    return subprocess.run(cmd, cwd=solution_path.parent, text=True,
+                          capture_output=True, encoding="utf-8", errors="replace")
 
 
 def _cleanup_latex_artifacts(solution_path: Path) -> None:

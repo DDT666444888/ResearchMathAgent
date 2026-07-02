@@ -138,7 +138,8 @@ def _load_anthropic_api_key_from_keychain() -> str | None:
         command[2:2] = ["-a", account]
 
     try:
-        result = subprocess.run(command, text=True, capture_output=True, timeout=10)
+        result = subprocess.run(command, text=True, capture_output=True, timeout=10,
+                                encoding="utf-8", errors="replace")
     except (OSError, subprocess.TimeoutExpired):
         return None
     if result.returncode != 0:
@@ -238,6 +239,10 @@ def call_claude_code(
         stdout=subprocess.PIPE,
         stderr=stderr_spool,
         text=True,
+        # Never let a stray/partial byte in the model stream raise mid-read and
+        # abort the solve; replace undecodable bytes instead.
+        encoding="utf-8",
+        errors="replace",
         cwd=cwd,
         env=env,
     )
