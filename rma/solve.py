@@ -1203,7 +1203,9 @@ def _model_system_prompt() -> str:
         # burn turns probing for it.
         "You are running non-interactively with a limited tool allowlist: web search/fetch (literature), read-only "
         "file access, and safe shell commands (curl, latexmk) are available; other tools are denied — do not retry "
-        "them. Budget your turns: finish any research quickly and spend your effort writing the mathematics. "
+        "them. HARD TURN BUDGET: you have only a handful of turns. Spend AT MOST ONE turn on literature "
+        "search/fetching, then STOP researching and write. A complete document from your own knowledge is worth "
+        "more than any amount of unfinished research — running out of turns mid-research means total failure. "
         "Do not narrate your plans or progress in the reply text. Your final reply must consist of exactly one "
         "complete compilable LaTeX document — it starts with \\documentclass and ends with \\end{document}, with "
         "no text before or after it, and no Markdown."
