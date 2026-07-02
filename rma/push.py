@@ -48,6 +48,20 @@ def _update_concepts_and_insights(repo: Path, dataset: str, problems, force: boo
                      f"complete={ev.get('proof_completeness')} clarity={ev.get('proof_clarity')}")
         except Exception as exc:  # noqa: BLE001
             log.warning("eval %s failed: %s", pid, exc)
+        # Comparison to the human reference solution (first_proof_2 only).
+        if dataset == "first_proof_2":
+            try:
+                from webapp.human_solution import generate_human_comparison
+                hc = generate_human_comparison(repo, pid, dataset, force=True)
+                if hc.get("available"):
+                    log.info("human-cmp %s: sim=%s complete=%s correct=%s steps=%s/%s",
+                             pid, hc.get("approach_similarity"), hc.get("completeness_vs_human"),
+                             hc.get("correctness_vs_human"), hc.get("ai_matched_steps"),
+                             hc.get("human_key_steps"))
+                else:
+                    log.info("human-cmp %s: skipped (%s)", pid, hc.get("reason"))
+            except Exception as exc:  # noqa: BLE001
+                log.warning("human-cmp %s failed: %s", pid, exc)
         # Concepts (only if missing, unless --force)
         try:
             if force or not load_concepts(repo, pid):

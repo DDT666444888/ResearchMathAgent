@@ -107,6 +107,17 @@ def _proof_eval(repo_root: Path, pid: str) -> dict | None:
         return None
 
 
+def _human_comparison(repo_root: Path, pid: str, dataset: str) -> dict | None:
+    """Cached AI-vs-human-solution comparison (first_proof_2 only). Read-only:
+    the comparison is (re)generated during `rma push`, not here."""
+    try:
+        from .human_solution import load_human_comparison
+        hc = load_human_comparison(repo_root, pid)
+        return hc if (hc and hc.get("available")) else None
+    except Exception:
+        return None
+
+
 def _push_forward_history(repo_root: Path, pid: str) -> list[dict]:
     try:
         from .push_forward import load_push_forward_history
@@ -404,6 +415,7 @@ def _build_problem_latex_body(repo_root: Path, pid: str,
     qinsight   = _question_insight(repo_root, pid, dataset)
     proof_eval = _proof_eval(repo_root, pid)
     concepts   = _concepts(repo_root, pid)
+    hcmp       = _human_comparison(repo_root, pid, dataset)
 
     open_issues     = [i for i in issues if i.get("status") in ("open", "in_progress")]
     resolved_issues = [i for i in issues if i.get("status") == "resolved"]
@@ -665,6 +677,41 @@ def _build_problem_latex_body(repo_root: Path, pid: str,
             )
             B.append("")
 
+    # Comparison to the human reference solution — numeric summary inside the
+    # Evaluation chapter (first_proof_2 only; full analysis is its own chapter).
+    def _hcmp_table(hc: dict) -> list[str]:
+        rows = [r"\begin{center}", r"\begin{tabular}{lcc}", r"\toprule",
+                r"Dimension (vs.\ human reference) & Score & Max \\", r"\midrule"]
+        for key, label in (("approach_similarity",   "Approach similarity"),
+                           ("completeness_vs_human", "Completeness vs.\\ human"),
+                           ("correctness_vs_human",  "Correctness vs.\\ human"),
+                           ("rigor_vs_human",        "Rigor vs.\\ human")):
+            v = hc.get(key)
+            if v is not None:
+                rows.append(rf"{label} & {int(v)} & 10 \\")
+        hk = int(hc.get("human_key_steps") or 0)
+        if hk:
+            rows.append(r"\midrule")
+            rows.append(rf"Key steps matched & {int(hc.get('ai_matched_steps') or 0)} & {hk} \\")
+        rows += [r"\bottomrule", r"\end{tabular}", r"\end{center}"]
+        return rows
+
+    if hcmp and S.human_comparison:
+        same = hcmp.get("same_final_answer")
+        same_cell = (r"\textcolor{OliveGreen}{Yes}" if same
+                     else r"\textcolor{BrickRed}{No}")
+        B.append(r"\section*{Comparison to Human Solution}")
+        B.append(r"The AI proof is scored \emph{against the official human reference "
+                 r"solution} on the axes below (full analysis in the "
+                 r"``Comparison to Human Solution'' chapter).")
+        B.append("")
+        B.extend(_hcmp_table(hcmp))
+        B.append(rf"\noindent Reaches the human's conclusion: {same_cell}.")
+        B.append("")
+        if hcmp.get("verdict"):
+            B.append(r"\paragraph{Summary.}\ " + _md_inline(hcmp["verdict"]))
+            B.append("")
+
     # ── Chapter 3: Best Proof ─────────────────────────────────────────────────
     if S.best_proof:
         B.append(r"\chapter{Best Proof}")
@@ -685,6 +732,43 @@ def _build_problem_latex_body(repo_root: Path, pid: str,
                 r"Run solve\,+\,Consolidate in the Proofs tab.}"
             )
         B.append("")
+
+    # ── Chapter: Comparison to Human Solution (first_proof_2) ─────────────────
+    if hcmp and S.human_comparison:
+        B.append(r"\chapter{Comparison to Human Solution}")
+        B.append(r"This chapter compares the AI's best proof against the official "
+                 r"human (reference) solution for this problem, taking the human "
+                 r"solution as ground truth. The table restates the quantitative "
+                 r"scores; the analysis below is qualitative.")
+        B.append("")
+        B.extend(_hcmp_table(hcmp))
+        same = hcmp.get("same_final_answer")
+        B.append(rf"\noindent \textbf{{Same final answer/conclusion as the human "
+                 rf"solution:}} {'Yes' if same else 'No'}.")
+        B.append("")
+        if hcmp.get("approach_summary"):
+            B.append(r"\section*{How the two approaches relate}")
+            B.append(_md_inline(hcmp["approach_summary"]))
+            B.append("")
+        missing = hcmp.get("ai_missing_steps") or []
+        if missing:
+            B.append(r"\section*{Human-solution steps the AI omits or leaves incomplete}")
+            B.append(r"\begin{itemize}[noitemsep]")
+            for s in missing:
+                B.append(rf"\item {_md_inline(str(s))}")
+            B.append(r"\end{itemize}")
+            B.append("")
+        div = hcmp.get("ai_divergences") or []
+        if div:
+            B.append(r"\section*{Where the AI diverges from or extends the human solution}")
+            B.append(r"\begin{itemize}[noitemsep]")
+            for s in div:
+                B.append(rf"\item {_md_inline(str(s))}")
+            B.append(r"\end{itemize}")
+            B.append("")
+        if hcmp.get("verdict"):
+            B.append(r"\paragraph{Overall.}\ " + _md_inline(hcmp["verdict"]))
+            B.append("")
 
     # ── Chapter 4: Key Concepts ───────────────────────────────────────────────
     if concepts and S.concepts:
@@ -855,6 +939,7 @@ def build_problem_report(repo_root: Path, pid: str, dataset: str = "first_proof_
     attempts = _attempts(repo_root, pid)
     proof_eval = _proof_eval(repo_root, pid)
     concepts = _concepts(repo_root, pid)
+    hcmp = _human_comparison(repo_root, pid, dataset)
 
     open_issues = [i for i in issues if i.get("status") in ("open", "in_progress")]
     resolved_issues = [i for i in issues if i.get("status") == "resolved"]
@@ -981,6 +1066,43 @@ def build_problem_report(repo_root: Path, pid: str, dataset: str = "first_proof_
         else:
             L.append("_No consolidated proof yet. Run a solve + Consolidate in the Proofs tab._")
         L.append("")
+
+    # ── Comparison to Human Solution (first_proof_2) ─────────────────────────
+    if hcmp and S.human_comparison:
+        L.append("## Comparison to Human Solution")
+        L.append("_AI best proof scored against the official human reference solution._")
+        L.append("")
+        L.append("| Dimension (vs. human) | Score | Max |")
+        L.append("|---|---|---|")
+        for key, label in (("approach_similarity",   "Approach similarity"),
+                           ("completeness_vs_human", "Completeness vs. human"),
+                           ("correctness_vs_human",  "Correctness vs. human"),
+                           ("rigor_vs_human",        "Rigor vs. human")):
+            v = hcmp.get(key)
+            if v is not None:
+                L.append(f"| {label} | {int(v)} | 10 |")
+        hk = int(hcmp.get("human_key_steps") or 0)
+        if hk:
+            L.append(f"| Key steps matched | {int(hcmp.get('ai_matched_steps') or 0)} | {hk} |")
+        L.append("")
+        L.append(f"**Same final answer as human:** {'Yes' if hcmp.get('same_final_answer') else 'No'}")
+        L.append("")
+        if hcmp.get("approach_summary"):
+            L.append(hcmp["approach_summary"]); L.append("")
+        missing = hcmp.get("ai_missing_steps") or []
+        if missing:
+            L.append("**Human-solution steps the AI omits/leaves incomplete:**")
+            for s in missing:
+                L.append(f"- {s}")
+            L.append("")
+        div = hcmp.get("ai_divergences") or []
+        if div:
+            L.append("**Where the AI diverges/extends:**")
+            for s in div:
+                L.append(f"- {s}")
+            L.append("")
+        if hcmp.get("verdict"):
+            L.append(hcmp["verdict"]); L.append("")
 
     # ── 4. KEY CONCEPTS ─────────────────────────────────────────────────────
     if concepts and S.concepts:

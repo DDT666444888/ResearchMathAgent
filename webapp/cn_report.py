@@ -146,9 +146,60 @@ def _translate(text: str, model: str | None, timeout: int = 900) -> str | None:
     return out.strip() or None
 
 
+def _chunks(body: str, max_chars: int = 6000) -> list[str]:
+    """Split the body into translation-sized pieces on chapter/section
+    boundaries (a whole report body overflows a single completion's output, so
+    one-shot translation silently truncates → falls back to English). Delimiters
+    stay attached to the segment they introduce, so nothing is dropped and
+    ``"".join(chunks) == body``."""
+    def _split(text: str, pattern: str) -> list[str]:
+        parts = re.split(pattern, text)
+        return [p for p in parts if p]
+
+    out: list[str] = []
+    for part in _split(body, r"(?=\\chapter\b|\\chapter\*)"):
+        if len(part) <= max_chars:
+            out.append(part)
+            continue
+        buf = ""
+        for sec in _split(part, r"(?=\\section\b|\\section\*)"):
+            if len(sec) > max_chars:                     # still huge → paragraph split
+                for para in re.split(r"(\n\s*\n)", sec):
+                    if buf and len(buf) + len(para) > max_chars:
+                        out.append(buf); buf = ""
+                    buf += para
+                continue
+            if buf and len(buf) + len(sec) > max_chars:
+                out.append(buf); buf = ""
+            buf += sec
+        if buf:
+            out.append(buf)
+    return out or [body]
+
+
 def translate_body(body_en: str, model: str | None = None) -> str | None:
-    """Translate the report body (between \\begin{document}/\\end{document})."""
-    return _translate(body_en, model)
+    """Translate the report body to Chinese, chunked so each LLM call stays
+    within a reliable output size. A chunk that fails to translate is kept in
+    English rather than dropping the whole document to English."""
+    import logging
+    log = logging.getLogger(__name__)
+    chunks = _chunks(body_en)
+    if len(chunks) <= 1:
+        return _translate(body_en, model)
+    parts: list[str] = []
+    failed = 0
+    for i, ch in enumerate(chunks, 1):
+        t = _translate(ch, model)
+        if t:
+            parts.append(t)
+        else:
+            parts.append(ch)   # per-chunk English fallback
+            failed += 1
+        log.info("cn translate chunk %d/%d (%d chars) → %s",
+                 i, len(chunks), len(ch), "ok" if t else "FALLBACK-en")
+    if failed == len(chunks):
+        return None            # nothing translated → let caller fall back
+    return "".join(parts)
 
 
 def translate_title(title_en: str, model: str | None = None) -> str:

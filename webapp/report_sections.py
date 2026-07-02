@@ -48,6 +48,8 @@ class ReportSections:
     open_issues: bool = True           # Chapter: Open Issues
     resolved_issues: bool = True       # Chapter: Resolved Issues
     insights: bool = True              # Chapter: Insights & lessons
+    human_comparison: bool = True      # Eval subsection + Chapter: Comparison to Human Solution
+                                       # (first_proof_2 only; needs a human ref solution)
 
     # ── markdown-report extras (system/UI markdown path only) ─────────────────
     candidate_answer: bool = True      # "Candidate Answer" + "Core Approach"
