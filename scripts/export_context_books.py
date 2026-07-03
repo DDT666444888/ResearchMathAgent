@@ -125,7 +125,7 @@ def filtered_datasets() -> list[tuple[str, list[str]]]:
 # limit — far above any real solve (observed max ~70 min) — it only rescues a
 # subprocess that has truly hung (frozen network call, stuck CLI), which would
 # otherwise occupy a parallel slot forever. 0 disables it entirely.
-STEP_TIMEOUT = int(os.environ.get("RMA_STEP_TIMEOUT", "7200"))
+STEP_TIMEOUT = int(os.environ.get("RMA_STEP_TIMEOUT", "28800"))  # 8h
 
 
 def rma(*args: str) -> int:
