@@ -41,6 +41,7 @@ from __future__ import annotations
 
 import os
 import re
+import signal
 import subprocess
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -120,11 +121,34 @@ def filtered_datasets() -> list[tuple[str, list[str]]]:
     return out
 
 
+# Generous per-subprocess wall-clock backstop (seconds). Not a working time
+# limit — far above any real solve (observed max ~70 min) — it only rescues a
+# subprocess that has truly hung (frozen network call, stuck CLI), which would
+# otherwise occupy a parallel slot forever. 0 disables it entirely.
+STEP_TIMEOUT = int(os.environ.get("RMA_STEP_TIMEOUT", "7200"))
+
+
 def rma(*args: str) -> int:
-    """Invoke the rma CLI as a module so it works without PATH tweaks."""
+    """Invoke the rma CLI as a module so it works without PATH tweaks.
+
+    Runs in its own process group so the hang backstop can kill the whole tree
+    (python -m rma AND the claude grandchild), not just the direct child.
+    """
     cmd = [sys.executable, "-m", "rma", *args]
     log("$ " + " ".join(cmd))
-    return subprocess.run(cmd, cwd=REPO).returncode
+    if STEP_TIMEOUT <= 0:
+        return subprocess.run(cmd, cwd=REPO).returncode
+    proc = subprocess.Popen(cmd, cwd=REPO, start_new_session=True)
+    try:
+        return proc.wait(timeout=STEP_TIMEOUT)
+    except subprocess.TimeoutExpired:
+        log(f"  ⏱ step exceeded {STEP_TIMEOUT}s backstop — killing hung subprocess tree: {' '.join(args[:3])}")
+        try:
+            os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
+        except (ProcessLookupError, PermissionError):
+            proc.kill()
+        proc.wait()
+        raise  # propagate: process_problem aborts this task, pool marks it fail, run continues
 
 
 def _safe(name: str) -> str:
@@ -222,6 +246,10 @@ def export_book(dataset: str, pid: str) -> bool:
 
 def main() -> int:
     OUTPUT.mkdir(parents=True, exist_ok=True)
+    # Don't rebuild the whole-dataset master PDF on every push (redundant here —
+    # each problem's own report is built by export_book — and it serializes the
+    # parallel pushes under the master lock). Child `rma push` procs inherit this.
+    os.environ.setdefault("RMA_PUSH_SKIP_MASTER", "1")
     datasets = filtered_datasets()
     if not datasets:
         log("No filtered datasets found (need data/datasets/<slug>/solve_set.json).")
