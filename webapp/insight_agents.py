@@ -31,7 +31,7 @@ _SYSTEM_JSON_SCHEMA = (
 )
 
 
-_INSIGHT_MODEL = "claude-fable-5"
+_INSIGHT_MODEL = "claude-opus-4-8"
 
 
 def _one_shot(prompt: str) -> dict:

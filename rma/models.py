@@ -138,7 +138,8 @@ def _load_anthropic_api_key_from_keychain() -> str | None:
         command[2:2] = ["-a", account]
 
     try:
-        result = subprocess.run(command, text=True, capture_output=True, timeout=10)
+        result = subprocess.run(command, text=True, capture_output=True, timeout=10,
+                                encoding="utf-8", errors="replace")
     except (OSError, subprocess.TimeoutExpired):
         return None
     if result.returncode != 0:
@@ -238,6 +239,10 @@ def call_claude_code(
         stdout=subprocess.PIPE,
         stderr=stderr_spool,
         text=True,
+        # Never let a stray/partial byte in the model stream raise mid-read and
+        # abort the solve; replace undecodable bytes instead.
+        encoding="utf-8",
+        errors="replace",
         cwd=cwd,
         env=env,
     )
@@ -500,9 +505,12 @@ def _find_pandoc() -> str | None:
 
 def _claude_code_model_arg(model: str) -> str | None:
     name = model.lower()
-    # Default: run everything on Claude Fable 5 explicitly (rather than
+    # Default: run everything on Claude Opus 4.8 explicitly (rather than
     # inheriting whatever the user's interactive `claude` default happens to be).
-    if name in {"claude-code", "claude-code-default", "claude-code-fable"}:
+    # Override the default with RMA_CLAUDE_CODE_MODEL.
+    if name in {"claude-code", "claude-code-default", "claude-code-opus48"}:
+        return os.environ.get("RMA_CLAUDE_CODE_MODEL", "claude-opus-4-8")
+    if name == "claude-code-fable":
         return "claude-fable-5"
     if name == "claude-code-sonnet":
         return "sonnet"

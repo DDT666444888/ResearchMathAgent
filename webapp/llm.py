@@ -11,7 +11,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_MODEL = "claude-fable-5"
+DEFAULT_MODEL = "claude-opus-4-8"
 
 
 def complete(

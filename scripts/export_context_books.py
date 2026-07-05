@@ -41,10 +41,10 @@ from __future__ import annotations
 
 import os
 import re
+import signal
 import subprocess
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import datetime
 from pathlib import Path
 
 
@@ -121,56 +121,85 @@ def filtered_datasets() -> list[tuple[str, list[str]]]:
     return out
 
 
+# Generous per-subprocess wall-clock backstop (seconds). Not a working time
+# limit — far above any real solve (observed max ~70 min) — it only rescues a
+# subprocess that has truly hung (frozen network call, stuck CLI), which would
+# otherwise occupy a parallel slot forever. 0 disables it entirely.
+STEP_TIMEOUT = int(os.environ.get("RMA_STEP_TIMEOUT", "28800"))  # 8h
+
+
 def rma(*args: str) -> int:
-    """Invoke the rma CLI as a module so it works without PATH tweaks."""
+    """Invoke the rma CLI as a module so it works without PATH tweaks.
+
+    Runs in its own process group so the hang backstop can kill the whole tree
+    (python -m rma AND the claude grandchild), not just the direct child.
+    """
     cmd = [sys.executable, "-m", "rma", *args]
     log("$ " + " ".join(cmd))
-    return subprocess.run(cmd, cwd=REPO).returncode
+    if STEP_TIMEOUT <= 0:
+        return subprocess.run(cmd, cwd=REPO).returncode
+    proc = subprocess.Popen(cmd, cwd=REPO, start_new_session=True)
+    try:
+        return proc.wait(timeout=STEP_TIMEOUT)
+    except subprocess.TimeoutExpired:
+        log(f"  ⏱ step exceeded {STEP_TIMEOUT}s backstop — killing hung subprocess tree: {' '.join(args[:3])}")
+        try:
+            os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
+        except (ProcessLookupError, PermissionError):
+            proc.kill()
+        proc.wait()
+        raise  # propagate: process_problem aborts this task, pool marks it fail, run continues
 
 
-def _stem(dataset: str, pid: str, when: datetime, lang: str) -> str:
-    safe_ds  = re.sub(r"[^A-Za-z0-9_-]", "-", dataset)
-    safe_pid = re.sub(r"[^A-Za-z0-9_-]", "-", pid)
-    return f"{when:%Y%m%d}_{when:%H%M%S}_{lang}_{safe_ds}_{safe_pid}"
+def _safe(name: str) -> str:
+    return re.sub(r"[^A-Za-z0-9_-]", "-", name)
 
 
-def out_dir(dataset: str) -> Path:
-    return OUTPUT / re.sub(r"[^A-Za-z0-9_-]", "-", dataset)
+def problem_dir(dataset: str, pid: str) -> Path:
+    """Per-problem output subfolder: OUTPUT/<dataset>/<task>/ — report + proof
+    for one problem live together here, the folder named after the task."""
+    return OUTPUT / _safe(dataset) / _safe(pid)
+
+
+def _fname(lang: str, part: str, ext: str) -> str:
+    """Artifact filename inside a problem folder. With one language the names
+    are clean (report.pdf, proof.tex); with several they're language-prefixed
+    (en_report.pdf, cn_report.pdf) so they don't collide in the same folder."""
+    stem = part if len(LANGUAGES) == 1 else f"{lang}_{part}"
+    return f"{stem}.{ext}"
 
 
 def already_done(dataset: str, pid: str) -> bool:
     """Done once the four artifacts exist for EVERY requested language."""
-    d = out_dir(dataset)
+    d = problem_dir(dataset, pid)
     if not d.is_dir():
         return False
-    safe_ds  = re.sub(r"[^A-Za-z0-9_-]", "-", dataset)
-    safe_pid = re.sub(r"[^A-Za-z0-9_-]", "-", pid)
-    def _has(lang: str, part: str, ext: str) -> bool:
-        tail = f"_{lang}_{safe_ds}_{safe_pid}_"
-        return any(p.name.endswith(f"{part}.{ext}") and tail in p.name for p in d.glob("*"))
-    return all(_has(l, "report", "pdf") and _has(l, "report", "tex")
-               and _has(l, "proof", "pdf") and _has(l, "proof", "tex")
+    return all((d / _fname(l, "report", "pdf")).is_file()
+               and (d / _fname(l, "report", "tex")).is_file()
+               and (d / _fname(l, "proof", "pdf")).is_file()
+               and (d / _fname(l, "proof", "tex")).is_file()
                for l in LANGUAGES)
 
 
 def export_book(dataset: str, pid: str) -> bool:
-    """For EACH requested language, emit four per-problem artifacts sharing one
-    timestamped, language-tagged stem
-    <date>_<time>_<language>_<dataset>_<problem>_… :
+    """Emit one problem's context book into its own subfolder:
 
-        _report.tex  (1) full context report LaTeX (English or Chinese)
-        _report.pdf  (3) its PDF rendering (for humans)
-        _proof.tex   (2) best proof LaTeX
-        _proof.pdf   (4) its PDF rendering
+        OUTPUT/<dataset>/<task>/
+            report.tex   full context report LaTeX   (en_report.tex if multi-lang)
+            report.pdf   its PDF rendering
+            proof.tex    best proof LaTeX
+            proof.pdf    its PDF rendering
 
-    (The proof is language-neutral LaTeX; it is copied into each language's
-    bundle so every <language> set is self-contained.)
+    The folder is named after the task (problem id) so datasets stay grouped
+    and each problem's report + proof live together. With multiple requested
+    languages the filenames are language-prefixed to avoid collisions.
+    (The proof is language-neutral; it is copied into each language set.)
     """
     import shutil
     from webapp.context_report import compile_report_pdf
     from webapp.proofs import get_best_proof, compile_best_pdf, _best_dir
 
-    d = out_dir(dataset); d.mkdir(parents=True, exist_ok=True)
+    d = problem_dir(dataset, pid); d.mkdir(parents=True, exist_ok=True)
     pdf_dir = REPO / "documents" / "pdf"
     safe = re.sub(r"[^A-Za-z0-9_-]", "_", f"{pid}_{dataset}")
 
@@ -187,17 +216,15 @@ def export_book(dataset: str, pid: str) -> bool:
 
     all_ok = True
     for lang in LANGUAGES:
-        when = datetime.now()
-        stem = _stem(dataset, pid, when, lang)
         got: list[str] = []
 
         def _emit(src, part, ext):
             if src and Path(src).is_file() and Path(src).stat().st_size > 0:
-                shutil.copyfile(src, d / f"{stem}_{part}.{ext}"); got.append(f"{part}.{ext}")
+                shutil.copyfile(src, d / _fname(lang, part, ext)); got.append(f"{part}.{ext}")
 
         def _write(text, part, ext):
             if text and text.strip():
-                (d / f"{stem}_{part}.{ext}").write_text(text, encoding="utf-8"); got.append(f"{part}.{ext}")
+                (d / _fname(lang, part, ext)).write_text(text, encoding="utf-8"); got.append(f"{part}.{ext}")
 
         # (1)+(3) report LaTeX + PDF in this language
         prefix = "cn_report" if lang == "cn" else "report"
@@ -212,13 +239,17 @@ def export_book(dataset: str, pid: str) -> bool:
         _write(proof_tex, "proof", "tex")
         _emit(proof_pdf, "proof", "pdf")
 
-        log(f"  [{lang}] wrote {len(got)}/4: {', '.join(got) or 'NONE'}  (stem={stem})")
+        log(f"  [{lang}] {dataset}/{pid} → {d.relative_to(OUTPUT)}/  wrote {len(got)}/4: {', '.join(got) or 'NONE'}")
         all_ok = all_ok and ("report.tex" in got) and ("proof.tex" in got)
     return all_ok
 
 
 def main() -> int:
     OUTPUT.mkdir(parents=True, exist_ok=True)
+    # Don't rebuild the whole-dataset master PDF on every push (redundant here —
+    # each problem's own report is built by export_book — and it serializes the
+    # parallel pushes under the master lock). Child `rma push` procs inherit this.
+    os.environ.setdefault("RMA_PUSH_SKIP_MASTER", "1")
     datasets = filtered_datasets()
     if not datasets:
         log("No filtered datasets found (need data/datasets/<slug>/solve_set.json).")

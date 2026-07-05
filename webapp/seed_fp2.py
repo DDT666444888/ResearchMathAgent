@@ -86,7 +86,7 @@ def _write_progress(q_dir: Path, pid: str, title: str) -> None:
 \\subsection*{{Recommended Next Steps}}
 
 \\begin{{enumerate}}
-\\item Run the solver agent with \\texttt{{claude-fable-5}} on the Claude subscription.
+\\item Run the solver agent with \\texttt{{claude-opus-4-8}} on the Claude subscription.
 \\item Run the issue discovery agent to surface mathematical gaps.
 \\item Review generated concepts and literature to refine strategy.
 \\end{{enumerate}}
@@ -152,7 +152,7 @@ def _tex(s: str) -> str:
 def _call_llm(prompt: str, system: str) -> str | None:
     try:
         from .llm import complete
-        return complete(prompt, system=system, model="claude-fable-5", max_tokens=8192)
+        return complete(prompt, system=system, model="claude-opus-4-8", max_tokens=8192)
     except Exception as e:
         _log(f"LLM call failed: {e}")
         return None

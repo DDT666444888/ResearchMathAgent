@@ -176,7 +176,7 @@ def _plan_strategies(
     )
     try:
         response = call_anthropic(
-            model="claude-fable-5",
+            model="claude-opus-4-8",
             system="You are a concise mathematics strategy planner.",
             prompt=prompt,
             max_tokens=4000,
@@ -201,7 +201,7 @@ def _sanity_check_strategy(problem_area: str, strategy_text: str, args: Namespac
         return True
     try:
         response = call_anthropic(
-            model="claude-fable-5",
+            model="claude-opus-4-8",
             system="You assess if a math proof strategy is plausible. Reply only PROCEED or STOP.",
             prompt=f"Area: {problem_area}\nStrategy: {strategy_text[:600]}\n\nIs this mathematically plausible? PROCEED or STOP.",
             max_tokens=512,
@@ -1843,7 +1843,11 @@ def _render_solution(solution_path: Path) -> subprocess.CompletedProcess[str]:
         part.replace("{file}", solution_path.name).replace("{outdir}", str(solution_path.parent))
         for part in compiler_template
     ]
-    return subprocess.run(cmd, cwd=solution_path.parent, text=True, capture_output=True)
+    # errors="replace": LaTeX engines emit non-UTF-8 bytes in their logs; the
+    # default strict decode raised UnicodeDecodeError here, which propagated out
+    # of _verify_solution and aborted the whole solve before best/ promotion.
+    return subprocess.run(cmd, cwd=solution_path.parent, text=True,
+                          capture_output=True, encoding="utf-8", errors="replace")
 
 
 def _cleanup_latex_artifacts(solution_path: Path) -> None:

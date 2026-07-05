@@ -160,6 +160,15 @@ def run_push(args) -> int:
         languages = ("en", "cn") if lang_arg == "both" else (lang_arg,)
         _build_reports(repo, dataset, problems, languages, force=args.force)
 
+    # The dataset-wide master PDF recompiles EVERY problem in the dataset on
+    # every push — needless when a driver runs one problem at a time (the
+    # context-book export builds its own per-problem report), and under the
+    # per-dataset master lock it serializes otherwise-parallel pushes. Let a
+    # batch driver skip it and build masters once at the end.
+    if os.environ.get("RMA_PUSH_SKIP_MASTER", "").strip().lower() in ("1", "true", "yes", "on"):
+        print("[rma push] skipping master PDF (RMA_PUSH_SKIP_MASTER set)", flush=True)
+        return 0
+
     print(f"[rma push] building master PDF (all problems, all tabs)…", flush=True)
     from webapp.context_report import compile_master_pdf
     res = compile_master_pdf(repo, dataset, force=args.force,
