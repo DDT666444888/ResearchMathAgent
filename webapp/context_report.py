@@ -375,6 +375,14 @@ def _full_proof_latex(repo_root: Path, pid: str, dataset: str) -> str:
     sol = ((best or {}).get("solution_tex") or "").strip()
     if not sol:
         return r"\textit{No consolidated proof yet.}"
+    # Defensive: older runs stored model narration + a ```latex fence into the
+    # proof body (the revise op did not clean its reply). Strip that here so the
+    # Best-Proof chapter is pure LaTeX even for proofs produced before the fix.
+    try:
+        from rma.models import clean_latex_reply
+        sol = clean_latex_reply(sol)
+    except Exception:
+        pass
     m = re.search(r"\\begin\{document\}([\s\S]*?)\\end\{document\}", sol)
     body = m.group(1) if m else sol
     body = re.sub(r"\\(maketitle|tableofcontents)\b", "", body)

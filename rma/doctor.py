@@ -8,18 +8,22 @@ from dataclasses import dataclass
 from pathlib import Path
 
 
+# Each entry is (label, candidate paths). A check passes when ANY candidate
+# exists, so a path that legitimately moved does not have to fail forever. Paper
+# sources live under drafts/<version>/ since the Aug10 submission was cut, but a
+# root-level main.tex (older layout, or a working copy) still counts.
 REQUIRED_PATHS = (
-    "README.md",
-    "TODO.md",
-    "main.tex",
-    "references.bib",
-    "neurips_2026.sty",
-    "data/first_proof_1/problems",
-    "skills",
-    "outputs/first_proof_1",
-    "figures/teaser.pdf",
-    "figures/model.pdf",
-    "config/default.yaml",
+    ("README.md", ("README.md",)),
+    ("TODO.md", ("TODO.md",)),
+    ("main.tex", ("main.tex", "drafts/*/main.tex")),
+    ("references.bib", ("references.bib", "drafts/*/references.bib")),
+    ("neurips_2026.sty", ("neurips_2026.sty", "drafts/*/neurips_2026.sty", "drafts/*/acl.sty")),
+    ("data/first_proof_1/problems", ("data/first_proof_1/problems",)),
+    ("skills", ("skills",)),
+    ("outputs/first_proof_1", ("outputs/first_proof_1",)),
+    ("figures/teaser.pdf", ("figures/teaser.pdf", "drafts/*/figures/teaser.pdf")),
+    ("figures/model.pdf", ("figures/model.pdf", "drafts/*/figures/model.pdf")),
+    ("config/default.yaml", ("config/default.yaml",)),
 )
 
 OPTIONAL_TOOLS = (
@@ -94,14 +98,27 @@ def _check_python() -> list[Check]:
     return [Check("FAIL", "python", f"{detail}; Python >= 3.10 is required")]
 
 
+def _first_existing(repo_root: Path, candidates: tuple[str, ...]) -> Path | None:
+    for candidate in candidates:
+        if "*" in candidate:
+            match = next(iter(sorted(repo_root.glob(candidate))), None)
+            if match is not None:
+                return match
+        elif (repo_root / candidate).exists():
+            return repo_root / candidate
+    return None
+
+
 def _check_required_paths(repo_root: Path) -> list[Check]:
     checks = []
-    for relative in REQUIRED_PATHS:
-        path = repo_root / relative
-        if path.exists():
-            checks.append(Check("PASS", relative, "found"))
-        else:
-            checks.append(Check("FAIL", relative, "missing"))
+    for label, candidates in REQUIRED_PATHS:
+        found = _first_existing(repo_root, candidates)
+        if found is None:
+            checks.append(Check("FAIL", label, "missing"))
+            continue
+        relative = found.relative_to(repo_root)
+        detail = "found" if str(relative) == label else f"found at {relative}"
+        checks.append(Check("PASS", label, detail))
     return checks
 
 

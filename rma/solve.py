@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import os
 import re
 import shutil
 import subprocess
@@ -10,6 +9,10 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from pathlib import Path
 
+from . import claims as _claims
+from . import completeness as _completeness
+from . import finalize as _finalize
+from .config import RunConfig
 from .doctor import _resolve_repo_root
 from .memory import format_memory_context, query_memory, record_attempt
 from .models import (
@@ -17,6 +20,7 @@ from .models import (
     ModelRequestError,
     call_anthropic,
     call_claude_code,
+    call_json,
     should_use_anthropic,
     should_use_claude_code,
 )
@@ -343,9 +347,19 @@ def run_solve(args: Namespace) -> int:
         return 1
     repo_root, problems, output_dir, skill_info = context
 
-    max_rounds = max(1, int(getattr(args, "max_rounds", 3)))
+    # Round budget comes from RunConfig so the paper's N_R=5 is the default and
+    # --max-rounds / --rounds / RMA_N_ROUNDS all resolve in one place.
+    cfg = RunConfig.from_args(args)
+    max_rounds = max(1, cfg.n_rounds)
     resume = getattr(args, "resume", False)
     fast = getattr(args, "fast", False)
+    # The Algorithm 1 orchestrator is the DEFAULT. The legacy verify/refine
+    # pipeline is opt-in via --legacy-pipeline. `--backend fake` runs the
+    # orchestrator fully offline (deterministic, no tokens). `--orchestrator`
+    # is kept as an explicit no-op that also forces the orchestrator even if a
+    # legacy default is ever restored.
+    backend_mode = getattr(args, "backend", "auto")
+    use_orchestrator = not getattr(args, "legacy_pipeline", False)
     n_strategies = max(1, int(getattr(args, "strategies", 1)))
     _write_run_meta(output_dir, args, n_strategies)
     final_results = []
@@ -367,6 +381,18 @@ def run_solve(args: Namespace) -> int:
             all_passed = False
             continue
 
+        if use_orchestrator:
+            summary = _run_orchestrator(repo_root, output_dir, problem_id, args, cfg,
+                                        backend_mode)
+            solution_path = _problem_paths(output_dir, problem_id)["solution"]
+            final_results.append((solution_path, {"passed": bool(summary.get("solved")),
+                                                   "orchestrator": summary}))
+            print(f"  {problem_id}: orchestrator {summary.get('rounds')} rounds, "
+                  f"stop={summary.get('stop_reason')}, "
+                  f"delivered round {summary.get('delivered_round')}")
+            all_passed = all_passed and bool(summary.get("solved"))
+            continue
+
         if fast:
             solution_path = _problem_paths(output_dir, problem_id)["solution"]
             final_results.append((solution_path, {"passed": False, "skipped": True}))
@@ -385,6 +411,34 @@ def run_solve(args: Namespace) -> int:
                     print("RMA solve")
                     print(f"FAIL model ({problem_id}): {exc}")
                     break
+
+        # FinalizeRound: refinement is not monotone, so ship the best round
+        # rather than whichever one happened to run last.
+        try:
+            _sel = _finalize.finalize_problem(_problem_paths(output_dir, problem_id))
+            if _sel and _sel.get("replaced_last_round"):
+                print(f"  {problem_id}: delivered round {_sel['delivered_round']} "
+                      f"(last round {_sel['last_round']} had "
+                      f"{_sel['issues_last_round']} issues vs {_sel['issues_delivered']})")
+        except Exception:
+            pass
+
+        # #7 completeness summary: final score, lemma-DAG, question shape.
+        try:
+            _paths = _problem_paths(output_dir, problem_id)
+            _parsed = _read_json(_paths["artifacts"] / "parsed_problem.json")
+            _shape = _completeness.classify_question_shape(
+                str(_parsed.get("normalized_statement") or _parsed.get("statement_excerpt") or ""))
+            (_paths["artifacts"] / "completeness_summary.json").write_text(
+                json.dumps({
+                    "problem_id": problem_id,
+                    "passed": bool(verification.get("passed")),
+                    "completeness_score": verification.get("completeness_score"),
+                    "lemma_dag": verification.get("lemma_dag"),
+                    "question_shape": _shape,
+                }, indent=2) + "\n", encoding="utf-8")
+        except Exception:
+            pass
 
         solution_path = _problem_paths(output_dir, problem_id)["solution"]
         final_results.append((solution_path, verification))
@@ -422,6 +476,114 @@ def run_solve(args: Namespace) -> int:
         pass  # non-critical
 
     return 0 if all_passed else 1
+
+
+def _run_orchestrator(repo_root: Path, output_dir: Path, problem_id: str,
+                      args: Namespace, cfg, backend_mode: str) -> dict:
+    """Run the Algorithm 1 round loop for one problem over its research store.
+
+    Seeds the store from the proposed proof, runs solve_problem, then writes the
+    delivered (best) proof back to the output tree so best/ consolidation and
+    the reports still find it. Returns a compact summary.
+    """
+    from .round_loop import solve_problem
+    from .store import open_store, memory_model_for
+
+    paths = _problem_paths(output_dir, problem_id)
+    parsed = _read_json(paths["artifacts"] / "parsed_problem.json")
+    dataset = getattr(args, "dataset", None) or "first_proof_1"
+
+    # `--backend fake` is for offline testing: it must NOT write into the real
+    # research store (webapp/issues, documents/questions, ...). Those are keyed
+    # by repo_root, so a fake run at the real repo would pollute the persistent
+    # store with stub issues/concepts. Point the store at an isolated root under
+    # the run's own output dir instead. A real run uses the real store.
+    store_root = repo_root
+    if backend_mode == "fake":
+        store_root = output_dir / "_fake_store"
+        store_root.mkdir(parents=True, exist_ok=True)
+    store = open_store(store_root, problem_id, dataset, memory=memory_model_for(cfg))
+    # Seed Pi from THIS run's freshly-proposed proof. The store is persistent
+    # and keyed by (problem, dataset), so a proof left by a prior run is still
+    # present; seeding only "if current_proof() is None" would make the new run
+    # silently work on the stale proof and ignore the proposal. add_proof_revision
+    # is a no-op when the content is byte-identical (proof_history dedups), so a
+    # genuine resume does not pile up duplicates.
+    if paths["solution"].is_file():
+        proposed = paths["solution"].read_text(encoding="utf-8", errors="replace")
+        current = store.current_proof()
+        if current is None or current.body != proposed:
+            store.add_proof_revision(proposed, produced_by="proposer", round=0)
+
+    backend = _fake_backend() if backend_mode == "fake" else None
+    analyses = _fake_critic_analyses() if backend_mode == "fake" else None
+    telemetry = paths["artifacts"] / "orchestration_log.jsonl"
+
+    result = solve_problem(store, parsed, cfg, backend=backend,
+                           critic_analyses=analyses, telemetry_path=telemetry)
+
+    # Deliver the BEST round's proof, not the last — refinement is not monotone.
+    delivered = store.get(result.delivered_proof_id) if result.delivered_proof_id else None
+    proof = delivered or store.current_proof()
+    if proof is not None:
+        paths["solution"].write_text(proof.body, encoding="utf-8")
+
+    summary = {
+        "problem_id": problem_id,
+        "rounds": len(result.rounds),
+        "stop_reason": result.stop_reason,
+        "solved": result.stop_reason == "solved",
+        "final_proof_id": result.final_proof_id,
+        "delivered_round": result.delivered_round,
+        "per_round": [{"round": r.round, "units": r.units,
+                       "completeness": (r.metrics.completeness if r.metrics else None),
+                       "open_critical": (r.metrics.open_critical if r.metrics else None),
+                       "stop": r.stop} for r in result.rounds],
+    }
+    (paths["artifacts"] / "orchestrator_summary.json").write_text(
+        json.dumps(summary, indent=2) + "\n", encoding="utf-8")
+    return summary
+
+
+def _fake_backend():
+    """Deterministic offline backend for `--backend fake`: canned per-unit
+    artifacts so the whole round loop runs with no model and no tokens."""
+    from .ops.base import FakeBackend
+
+    def _solver(_obs):
+        # a no-op-but-valid patch: append a short proof line to the first lemma
+        return {"replaced_text": "", "replacement": "",
+                "new_lemmas": [r"\begin{lemma}[aux]\end{lemma}\begin{proof}Filled offline.\end{proof}"]}
+
+    return FakeBackend({
+        "solver": _solver,
+        "literature": [{"theorem_or_technique": "offline reference",
+                        "assumptions": "n/a", "claims_supported": [],
+                        "applicability_limits": "offline stub", "source": "offline"}],
+        "meeting": {"record": "offline meeting", "action_plan": {"summary": "no-op", "steps": []},
+                    "insights": ["offline insight"]},
+        "revise": "",   # empty -> no coordinated rewrite offline (keeps the proof stable)
+        "concepts": [{"name": "offline concept", "definition": "stub"}],
+        "evaluator": {"answer_accuracy": 0, "logical_correctness": 4,
+                      "proof_completeness": 3, "proof_clarity": 5, "verdict": "offline stub"},
+    })
+
+
+def _fake_critic_analyses():
+    """Offline critic analyses: one deterministic LM-style gap, no semantic gate."""
+    from .ranking import Issue
+
+    def _lm(proof_text, args):
+        return [Issue(id="offline-lm-0", code="logical_gap",
+                      message="offline: an intermediate step is unjustified.")]
+
+    def _sem(problem_text, proof_text, args):
+        # Emit one itemized missing step so disabling the semantic analysis has
+        # an observable effect (one fewer issue), and return a completeness score.
+        return 3.0, [Issue(id="offline-sem-0", code="incomplete_step",
+                           message="offline: the boundary case is not addressed.")]
+
+    return {"lm": _lm, "semantic": _sem}
 
 
 def run_diff(args: Namespace) -> int:
@@ -680,6 +842,20 @@ def _verify_solution(
     parsed = _read_json(parsed_path)
     solution_text = paths["solution"].read_text(encoding="utf-8")
     issues = _collect_verification_issues(parsed, solution_text, repo_root, args)
+    # ── completeness pipeline ────────────────────────────────────────────────
+    # #1 semantic completeness gate, #2 multi-sample gap enumeration,
+    # #6 code-discharge of finite claims, #3 lemma-DAG completeness fraction.
+    problem_text = str(
+        parsed.get("normalized_statement")
+        or parsed.get("statement_excerpt")
+        or parsed.get("title")
+        or ""
+    )
+    comp_score, comp_issues = _completeness.completeness_gate(problem_text, solution_text, args)
+    issues.extend(comp_issues)
+    issues.extend(_completeness.enumerate_gaps(solution_text, args))
+    issues.extend(_completeness.unchecked_finite_issues(solution_text))
+    dag = _completeness.lemma_dag(solution_text)
     render_info = _verify_render(paths["solution"], getattr(args, "no_render", False))
     if not render_info["passed"]:
         issues.append(
@@ -708,12 +884,23 @@ def _verify_solution(
             "forbidden_phrases": "passed" if not any(issue["code"] == "forbidden_phrase" for issue in issues) else "failed",
             "required_sections": "passed" if not any(issue["code"] == "missing_required_section" for issue in issues) else "failed",
             "mathematical_completeness": "passed" if not any(issue["code"] in MATHEMATICAL_ISSUE_CODES for issue in issues) else "failed",
+            "semantic_completeness": "passed" if not any(issue["code"] in _completeness.COMPLETENESS_ISSUE_CODES and issue["severity"] == "error" for issue in issues) else "failed",
             "render": render_info["status"],
         },
+        "completeness_score": comp_score,
+        "lemma_dag": dag,
         "issues": issues,
         "created_at": _timestamp(),
     }
     report_path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    # #7 telemetry: per-round completeness trajectory + gaps opened/closed.
+    try:
+        gapstate = paths["artifacts"] / "completeness_gaps_prev.json"
+        prev = set(tuple(x) for x in json.loads(gapstate.read_text())) if gapstate.is_file() else set()
+        cur = _completeness.record_round(output_dir, problem_id, iteration, comp_score, dag, issues, prev)
+        gapstate.write_text(json.dumps([list(k) for k in cur]) + "\n", encoding="utf-8")
+    except Exception:
+        pass
     _write_verification_markdown(report_md_path, report)
     _write_state(
         output_dir,
@@ -754,7 +941,8 @@ def _verify_solution(
     except Exception:
         pass  # memory recording is best-effort
 
-    return {"passed": passed, "report_path": report_path, "issues": issues, "render": render_info}
+    return {"passed": passed, "report_path": report_path, "issues": issues,
+            "render": render_info, "completeness_score": comp_score, "lemma_dag": dag}
 
 
 def _refine_solution(
@@ -787,6 +975,7 @@ def _refine_solution(
         if not parsed_path.is_file():
             _parse_problem(repo_root, output_dir, problem_id, args, skill_info)
         parsed = _read_json(parsed_path)
+        focus_gap = _completeness.select_priority_gap(verification.get("issues", []))
         solution_text, model_backend = _generate_solution_text(
             repo_root,
             parsed,
@@ -797,6 +986,7 @@ def _refine_solution(
             verification=verification,
             partial_output_dir=paths["problem"],
             fallback_file=paths["solution"],
+            focus_gap=focus_gap,
         )
         if not solution_text and paths["solution"].is_file():
             solution_text = paths["solution"].read_text(encoding="utf-8")
@@ -1150,12 +1340,14 @@ def _generate_solution_text(
     fallback_file: Path | None = None,
     memory_context: str = "",
     strategy_override: str | None = None,
+    focus_gap: dict | None = None,
 ) -> tuple[str, dict[str, str]]:
     model_name = getattr(args, "model_name", "rma-skeleton")
     provider = getattr(args, "model_provider", "auto")
     prompt = _model_user_prompt(
         repo_root, parsed, profile, skill_info, iteration, verification,
         memory_context=memory_context, strategy_override=strategy_override,
+        focus_gap=focus_gap,
     )
     if should_use_claude_code(model_name, provider):
         method = "claude_code_print_mode"
@@ -1192,7 +1384,8 @@ def _generate_solution_text(
             "method": method,
         }
     if should_use_anthropic(model_name, provider):
-        max_tokens = int(os.environ.get("RMA_MAX_TOKENS", "8192"))
+        # Paper: 64,000-token maximum output length per call (main.tex:1251-1262).
+        max_tokens = RunConfig.from_args(args).max_output_tokens
         response = call_anthropic(
             model=model_name,
             system=_model_system_prompt(),
@@ -1241,6 +1434,7 @@ def _model_user_prompt(
     verification: dict[str, object] | None,
     memory_context: str = "",
     strategy_override: str | None = None,
+    focus_gap: dict | None = None,
 ) -> str:
     verification_block = "No verifier feedback yet. This is the initial complete solution pass."
     if verification is not None:
@@ -1312,7 +1506,7 @@ def _model_user_prompt(
 - Define every symbol you introduce. Keep notation consistent with the problem statement.
 - Do not mention blocked directories or missing access in the proof text.
 - Do not wrap output in Markdown fences.
-"""
+{_completeness.solve_directives()}{_completeness.focus_directive(focus_gap)}"""
 
 
 def _skill_prompt_excerpt(repo_root: Path, skill_info: dict[str, str]) -> str:
@@ -1457,29 +1651,41 @@ def _collect_verification_issues(
                 }
             )
 
-    required_patterns = {
-        "theorem environment": r"\\begin\{theorem\}",
-        "proof environment": r"\\begin\{proof\}",
-        "answer/construction paragraph": r"Answer and construction",
-        "boundary checks": r"Boundary and consistency checks",
-    }
-    for label, pattern in required_patterns.items():
-        if not re.search(pattern, solution_text):
-            issues.append(
-                {
-                    "code": "missing_required_section",
-                    "severity": "error",
-                    "message": f"Missing required solution component: {label}",
-                    "detail": pattern,
-                }
-            )
+    # Structural requirements. These used to demand the literal strings
+    # "Answer and construction" and "Boundary and consistency checks" — headings
+    # emitted by _render_solution_document, the OFFLINE SKELETON template. No
+    # model-written proof contains them, so every real proof failed this check
+    # and `passed` could never be True: across a full First Proof B2 run the
+    # early-exit `if verification["passed"]: break` never once fired and all ten
+    # problems burned their entire round budget. The checks now test for the
+    # mathematical structure those headings stood in for.
+    graph = _claims.parse_claims(solution_text)
+    if len(graph) == 0:
+        issues.append({
+            "code": "missing_required_section",
+            "severity": "error",
+            "message": ("No theorem/lemma/claim/proposition environment found; the solution "
+                        "must state its results as claims."),
+            "detail": "claim environment",
+        })
+    if not re.search(r"\\begin\{proof\}", solution_text):
+        issues.append({
+            "code": "missing_required_section",
+            "severity": "error",
+            "message": "Missing required solution component: proof environment",
+            "detail": r"\\begin\{proof\}",
+        })
     title = str(parsed.get("title", ""))
     if title and _latex_escape_text(title) not in solution_text:
         issues.append(
             {
                 "code": "statement_mismatch",
-                "severity": "error",
-                "message": "Parsed title does not appear in the solution.",
+                # Warning, not error. Requiring the parsed title verbatim
+                # ("Problem 1: Descriptive Aspects of Structures with Countable
+                # Automorphism Group") is not a property of a correct proof, and
+                # as an error it blocked 9 of 10 problems from ever passing.
+                "severity": "warning",
+                "message": "Parsed title does not appear verbatim in the solution.",
                 "detail": title,
             }
         )
@@ -1505,7 +1711,8 @@ def _model_verify_proof(solution_text: str, args: Namespace) -> list[dict[str, s
         "are not explicitly checked for the objects in this proof.\n"
         "2. LOGICAL_GAP: A step's conclusion does not follow from the stated premises — the logical link is missing.\n"
         "3. UNJUSTIFIED_CLAIM: A non-trivial claim is stated without proof or citation.\n\n"
-        "Return ONLY a JSON array (no prose, no fences). Each element:\n"
+        "Return ONLY a JSON array (no prose, no fences). Every element MUST use "
+        "exactly these four keys — do not rename them:\n"
         '{"code": "hypothesis_not_verified"|"logical_gap"|"unjustified_claim", '
         '"severity": "error", "message": "<specific description>", "detail": "<the theorem name or claim>"}\n\n'
         "If the proof is sound, return exactly: []\n\n"
@@ -1513,28 +1720,73 @@ def _model_verify_proof(solution_text: str, args: Namespace) -> list[dict[str, s
     )
 
     try:
-        if should_use_claude_code(model_name, provider):
-            import tempfile
-            with tempfile.TemporaryDirectory() as tmp:
-                response = call_claude_code(model=model_name, system=system, prompt=prompt, cwd=Path(tmp))
-        else:
-            response = call_anthropic(model=model_name, system=system, prompt=prompt, max_tokens=2048, temperature=0.0)
-        raw = response.text.strip()
-        fence = re.match(r"^```(?:json)?\s*(.*?)\s*```$", raw, re.DOTALL)
-        if fence:
-            raw = fence.group(1).strip()
-        issues = json.loads(raw)
+        # call_json, NOT call_claude_code: the latter enforces a LaTeX quality
+        # gate that rejected every JSON reply, so this critic used to return []
+        # on every default (claude-code) run.
+        issues = call_json(model=model_name, system=system, prompt=prompt, provider=provider, max_tokens=2048)
         if not isinstance(issues, list):
             return []
-        valid = []
-        for item in issues:
-            if isinstance(item, dict) and "code" in item and "message" in item:
-                item.setdefault("severity", "error")
-                item.setdefault("detail", "")
-                valid.append({k: str(item[k]) for k in ("code", "severity", "message", "detail")})
-        return valid
+        return normalize_issue_records(issues)
     except Exception:
         return []
+
+
+# Key names models actually use for each field, in preference order. The strict
+# filter this replaces required exactly {"code","message"} and silently dropped
+# every element when the model answered with {"issue","explanation",...} — so a
+# critic that had correctly found four gaps still reported none.
+_ISSUE_FIELD_ALIASES = {
+    "code": ("code", "issue", "type", "issue_type", "category", "kind"),
+    "message": ("message", "explanation", "description", "reason", "summary", "claim", "problem"),
+    "detail": ("detail", "details", "quote", "location", "where", "claim", "evidence"),
+    "severity": ("severity", "priority", "level"),
+}
+_KNOWN_ISSUE_CODES = {"hypothesis_not_verified", "logical_gap", "unjustified_claim"}
+
+
+def _first_present(item: dict, keys: tuple[str, ...]) -> str:
+    for key in keys:
+        value = item.get(key)
+        if isinstance(value, (str, int, float)) and str(value).strip():
+            return str(value).strip()
+        if isinstance(value, dict) and value:
+            return json.dumps(value)
+    return ""
+
+
+def normalize_issue_records(items: list) -> list[dict[str, str]]:
+    """Coerce a model's issue list into the verifier's {code,severity,message,detail}.
+
+    Accepts the field names models actually produce rather than demanding one
+    exact schema, because the alternative is a silent empty result that is
+    indistinguishable from "the proof is fine".
+    """
+    out: list[dict[str, str]] = []
+    for item in items:
+        if not isinstance(item, dict):
+            # A bare string is still a finding; keep it rather than drop it.
+            if isinstance(item, str) and item.strip():
+                out.append({"code": "unjustified_claim", "severity": "error",
+                            "message": item.strip()[:500], "detail": ""})
+            continue
+        code = _first_present(item, _ISSUE_FIELD_ALIASES["code"]).lower()
+        code = re.sub(r"[^a-z0-9]+", "_", code).strip("_")
+        message = _first_present(item, _ISSUE_FIELD_ALIASES["message"])
+        detail = _first_present(item, _ISSUE_FIELD_ALIASES["detail"])
+        if not message and not detail:
+            continue  # genuinely empty record
+        if not message:
+            message, detail = detail, ""
+        if code not in _KNOWN_ISSUE_CODES:
+            # Unrecognised label still counts as a finding; classify it as the
+            # weakest of the three rather than discarding the critic's work.
+            code = code if code else "unjustified_claim"
+        severity = _first_present(item, _ISSUE_FIELD_ALIASES["severity"]).lower() or "error"
+        if severity not in ("error", "warning"):
+            severity = "error"
+        out.append({"code": code, "severity": severity,
+                    "message": message[:1000], "detail": detail[:1000]})
+    return out
 
 
 def _mathematical_completeness_issues(solution_text: str) -> list[dict[str, str]]:

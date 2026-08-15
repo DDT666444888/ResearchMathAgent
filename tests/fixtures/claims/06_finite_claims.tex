@@ -1,0 +1,27 @@
+\documentclass{article}
+\begin{document}
+\begin{lemma}\label{lem:count}
+There are exactly 42 admissible configurations.
+\end{lemma}
+\begin{proof}
+One can verify this by an exhaustive check over the finite set.
+\end{proof}
+
+\begin{lemma}\label{lem:checked}
+The discriminant is positive.
+\end{lemma}
+\begin{proof}
+A direct calculation confirms it:
+\begin{verbatim}
+>>> import sympy; sympy.discriminant(x**2 - 3*x + 1) > 0
+True
+\end{verbatim}
+\end{proof}
+
+\begin{theorem}\label{thm:fin}
+The classification is complete.
+\end{theorem}
+\begin{proof}
+By Lemma 1 and Lemma 2 the enumeration is exhaustive.
+\end{proof}
+\end{document}

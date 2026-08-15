@@ -1,0 +1,24 @@
+\documentclass{article}
+\begin{document}
+\begin{lemma}\label{lem:paving}
+Every graph Laplacian admits an $r$-paving.
+\end{lemma}
+\begin{proof}
+This is the Marcus--Spielman--Srivastava theorem \cite{mss2015}.
+\end{proof}
+
+\begin{lemma}\label{lem:average}
+Some part has size at least $|V|/r$.
+\end{lemma}
+\begin{proof}
+Pigeonhole on the $r$ parts.
+\end{proof}
+
+\begin{theorem}\label{thm:main}
+There is $c>0$ with an $\varepsilon$-light subset of size $\ge c\varepsilon|V|$.
+\end{theorem}
+\begin{proof}
+Apply \ref{lem:paving} to obtain the partition, then \ref{lem:average}
+gives a large part. Combining these yields the bound.
+\end{proof}
+\end{document}

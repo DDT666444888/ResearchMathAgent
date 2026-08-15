@@ -1,0 +1,3 @@
+{"edges": [["theorem-1", "lemma-1"], ["theorem-1", "lemma-2"]],
+ "terminal": ["lemma-1", "lemma-2"],
+ "note": "lemma-1 asserts a finite check with no code; lemma-2 attaches one"}

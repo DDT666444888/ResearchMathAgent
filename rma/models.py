@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import select
 import shutil
 import ssl
@@ -14,6 +15,7 @@ import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
 
+from .config import DEFAULT_EFFORT, DEFAULT_MAX_OUTPUT_TOKENS, DEFAULT_MODEL
 
 ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages"
 ANTHROPIC_VERSION = "2023-06-01"
@@ -111,6 +113,74 @@ def call_anthropic(
     return ModelResponse(text=text, provider="anthropic", model=model)
 
 
+def call_json(
+    *,
+    model: str,
+    system: str,
+    prompt: str,
+    provider: str | None = None,
+    max_tokens: int = 4096,
+    cwd: Path | None = None,
+):
+    """Ask the model for a structured artifact and return the parsed JSON.
+
+    Returns a ``dict``/``list`` on success and ``None`` when no JSON could be
+    obtained. Never routes through the LaTeX quality gate in
+    ``call_claude_code`` — that gate exists to stop prose masquerading as a
+    proof, and applying it to a JSON reply rejected every structured call.
+
+    Every operation that returns structured data (issue lists, rubric scores,
+    action plans) must use this rather than ``call_claude_code`` directly.
+    """
+    if should_use_claude_code(model, provider):
+        with tempfile.TemporaryDirectory() as tmp:
+            response = call_claude_code(
+                model=model,
+                system=system,
+                prompt=prompt,
+                cwd=Path(cwd) if cwd is not None else Path(tmp),
+                expect="json",
+            )
+        return parse_json_response(response.text)
+    if should_use_anthropic(model, provider):
+        response = call_anthropic(
+            model=model,
+            system=system,
+            prompt=prompt,
+            max_tokens=max_tokens,
+            temperature=0.0,
+        )
+        return parse_json_response(response.text)
+    return None
+
+
+def parse_json_response(raw: str):
+    """Decode the first complete JSON value in a model reply.
+
+    Tolerates ```json fences and trailing prose. Returns None if there is no
+    decodable value. Mirrors rma.completeness._parse_json_block so both the
+    orchestrator and the completeness passes accept the same replies.
+    """
+    raw = (raw or "").strip()
+    fence = re.match(r"^```(?:json)?\s*(.*?)\s*```$", raw, re.DOTALL)
+    if fence:
+        raw = fence.group(1).strip()
+    try:
+        return json.loads(raw)
+    except Exception:
+        pass
+    # Decode the FIRST complete value starting at the earliest '{' or '[' so a
+    # wrapper object is not mistaken for one of its inner arrays.
+    decoder = json.JSONDecoder()
+    for start in sorted(i for i in (raw.find("{"), raw.find("[")) if i >= 0):
+        try:
+            value, _ = decoder.raw_decode(raw[start:])
+            return value
+        except Exception:
+            continue
+    return None
+
+
 def _ssl_context() -> ssl.SSLContext:
     try:
         import certifi
@@ -159,6 +229,13 @@ def call_claude_code(
     partial_output_dir: Path | None = None,
     fallback_file: Path | None = None,
     effort: str | None = None,
+    # "latex": the reply must be a proof document; narration-only output is
+    # refused (the quality gate that keeps prose from masquerading as a proof).
+    # "json":  the reply is a structured artifact (issue list, rubric scores,
+    # action plan). Applying the LaTeX gate here rejected every such reply and
+    # the caller's `except Exception` turned it into an empty result — which is
+    # why the LM gap critic silently contributed nothing. See call_json below.
+    expect: str = "latex",
 ) -> ModelResponse:
     claude_bin = shutil.which("claude")
     if claude_bin is None:
@@ -167,8 +244,10 @@ def call_claude_code(
             "Install Claude Code and log in before running RMA with --model-provider claude-code."
         )
 
+    want_latex = expect == "latex"
     timeout = int(os.environ.get("RMA_CLAUDE_CODE_TIMEOUT", timeout))
-    max_turns = int(os.environ.get("RMA_CLAUDE_CODE_MAX_TURNS", "12"))
+    # Structured calls are single-shot judgements, not research turns.
+    max_turns = int(os.environ.get("RMA_CLAUDE_CODE_MAX_TURNS", "12" if want_latex else "3"))
     # Headless permission model: tools on this allowlist are auto-approved,
     # everything else is auto-denied (no human present to answer prompts).
     # Literature search plus read-only inspection and a few safe commands —
@@ -186,14 +265,21 @@ def call_claude_code(
         "Read(**/output_solutions/**),Read(**/final_solutions/**),"
         "Read(**/baselines/**),Read(**/skill_solutions/**)",
     )
-    # Interactive-session effort (often "max") makes deep-thinking turns exceed
-    # the 30-minute request budget; pin proofs to xhigh unless overridden.
-    effort = effort or os.environ.get("RMA_CLAUDE_CODE_EFFORT", "xhigh")
+    # Paper: adaptive thinking at "high" reasoning effort (main.tex:1251-1262).
+    # Interactive-session effort (often "max") also makes deep-thinking turns
+    # exceed the 30-minute request budget, so high is both faithful and safer.
+    effort = effort or os.environ.get("RMA_CLAUDE_CODE_EFFORT") or DEFAULT_EFFORT
 
+    task_line = (
+        "Generate the requested Research Math Agent proof artifact from the prompt on stdin."
+        if want_latex
+        else "Answer the Research Math Agent request on stdin. Reply with the requested "
+             "structured data only — no prose, no Markdown fences."
+    )
     command = [
         claude_bin,
         "-p",
-        "Generate the requested Research Math Agent proof artifact from the prompt on stdin.",
+        task_line,
         "--output-format",
         "stream-json",
         "--verbose",
@@ -221,7 +307,7 @@ def call_claude_code(
     env.pop("ANTHROPIC_API_KEY", None)
     env.pop("ANTHROPIC_AUTH_TOKEN", None)
     if "CLAUDE_CODE_MAX_OUTPUT_TOKENS" not in env:
-        env["CLAUDE_CODE_MAX_OUTPUT_TOKENS"] = "100000"
+        env["CLAUDE_CODE_MAX_OUTPUT_TOKENS"] = str(DEFAULT_MAX_OUTPUT_TOKENS)
 
     _partial_dir = partial_output_dir if partial_output_dir is not None else cwd
     _partial_dir.mkdir(parents=True, exist_ok=True)
@@ -293,17 +379,19 @@ def call_claude_code(
                 if text:
                     # Same quality gate as the normal path: salvage a real LaTeX
                     # document if one made it out, refuse narration-only output.
-                    doc = _extract_latex_document(text)
-                    if doc:
-                        text = doc
-                    elif not _looks_like_latex(text):
-                        raise ModelRequestError(
-                            "Claude Code timed out with narration-only output: "
-                            + text[:300].replace("\n", " ")
-                        )
+                    if want_latex:
+                        doc = _extract_latex_document(text)
+                        if doc:
+                            text = doc
+                        elif not _looks_like_latex(text):
+                            raise ModelRequestError(
+                                "Claude Code timed out with narration-only output: "
+                                + text[:300].replace("\n", " ")
+                            )
                     try:
                         partial_path.write_text(text)
-                        _try_compile_latex(partial_path)
+                        if want_latex:
+                            _try_compile_latex(partial_path)
                     except OSError:
                         pass
                     return ModelResponse(text=text, provider="claude-code", model=model_arg or "claude-code")
@@ -405,14 +493,25 @@ def call_claude_code(
     # progress narration can precede (or entirely replace) the document. Keep
     # only the LaTeX document when one is present; refuse narration-only output
     # instead of letting it masquerade as a proof downstream.
-    doc = _extract_latex_document(text)
-    if doc:
-        text = doc
-    elif not _looks_like_latex(text):
-        raise ModelRequestError(
-            "Claude Code produced no LaTeX document (narration-only output): "
-            + text[:300].replace("\n", " ")
-        )
+    if want_latex:
+        doc = _extract_latex_document(text)
+        if doc:
+            text = doc
+        elif not _looks_like_latex(text):
+            # The CLI is an agent: it often WRITES the document with file tools
+            # and then narrates ("Writing the complete document now..."). The
+            # artifact exists, just not in the reply. Look on disk before
+            # discarding the whole turn — refusing here cost prob-05 four of
+            # its five refinement rounds, with the finished proof sitting in
+            # the output file the whole time.
+            salvaged = _salvage_latex_document(fallback_file, partial_path)
+            if salvaged:
+                text = salvaged
+            else:
+                raise ModelRequestError(
+                    "Claude Code produced no LaTeX document (narration-only output "
+                    "and no document on disk): " + text[:300].replace("\n", " ")
+                )
 
     for suffix in (".tex", ".aux", ".log"):
         try:
@@ -421,6 +520,32 @@ def call_claude_code(
             pass
 
     return ModelResponse(text=text, provider="claude-code", model=model_arg or "claude-code")
+
+
+def _salvage_latex_document(*candidates: Path | None) -> str | None:
+    """Return the first real LaTeX document found among these files.
+
+    Used when the model narrates instead of pasting the document. Only a
+    genuine document counts — a file holding the narration itself, or a stub,
+    is rejected, so this cannot smuggle prose through the quality gate.
+    """
+    for path in candidates:
+        if path is None:
+            continue
+        try:
+            if not path.is_file():
+                continue
+            content = path.read_text(encoding="utf-8", errors="replace").strip()
+        except OSError:
+            continue
+        if not content:
+            continue
+        doc = _extract_latex_document(content)
+        if doc:
+            return doc
+        if _looks_like_latex(content):
+            return content
+    return None
 
 
 def _extract_latex_document(text: str) -> str | None:
@@ -433,6 +558,65 @@ def _extract_latex_document(text: str) -> str | None:
     if end == -1:
         return None
     return text[start : end + len(end_marker)].strip()
+
+
+# A Markdown fence marker ON ITS OWN LINE (a real code fence), as opposed to a
+# ```latex the model typed inside a sentence when describing the bug it fixed.
+_FENCE_LINE_RE = re.compile(r"^[ \t]*```(?:latex|tex)?[ \t]*$", re.MULTILINE)
+# Any triple-backtick run (used to scrub stray inline markers from the body).
+_INLINE_FENCE_RE = re.compile(r"```(?:latex|tex)?")
+# The first token at which real LaTeX content plausibly begins.
+_LATEX_START_RE = re.compile(r"\\(documentclass|clearpage|section|chapter|"
+                             r"begin\{document\}|begin\{)")
+
+
+def clean_latex_reply(raw: str) -> str:
+    """Strip a model's narration and Markdown fences from a LaTeX reply.
+
+    A latex-returning operation (revise, the solver's full-rewrite fallback) is
+    told to return "ONLY the complete LaTeX document", but models routinely
+    prepend narration ("I'll execute the action plan…"), wrap the body in a
+    ```latex fence, add a closing note, and — worse — sometimes emit a stray
+    ```latex mid-document or describe one in prose with literal backticks.
+    Stored verbatim, that chatter pollutes Pi and every downstream artifact (the
+    report's Best-Proof chapter, the standalone proof PDF, the master PDF). This
+    returns just the LaTeX.
+
+    Strategy: find the fence markers that sit on their OWN line — the real code
+    fences, not the ```latex a model types inside a sentence. Keep the text
+    between the first and last such line (dropping leading/trailing narration),
+    then scrub any remaining inline ```latex runs (a stray fence injected into
+    the middle of the proof). Keeping *between the fence lines* — rather than
+    "the fenced block" — preserves the whole document even when the model closed
+    the fence prematurely. Then, if a full \\documentclass…\\end{document} span is
+    present, return it; otherwise drop any remaining leading prose.
+    Whitespace-only input and already-clean LaTeX pass through unchanged.
+    """
+    if not raw or not raw.strip():
+        return raw or ""
+    text = raw.strip()
+
+    fence_lines = list(_FENCE_LINE_RE.finditer(text))
+    if len(fence_lines) >= 2:
+        text = text[fence_lines[0].end():fence_lines[-1].start()]
+    elif len(fence_lines) == 1:
+        fl = fence_lines[0]
+        text = text[:fl.start()] + text[fl.end():]
+    # Scrub any stray inline fence markers left in the body (valid LaTeX never
+    # contains a triple backtick).
+    text = _INLINE_FENCE_RE.sub("", text).replace("```", "").strip()
+
+    doc = _extract_latex_document(text)
+    if doc is not None:
+        return doc
+
+    m = _LATEX_START_RE.search(text)
+    if m and m.start() > 0:
+        # Only trim if what precedes the first token looks like prose (no
+        # backslash command), so we never eat a legitimate leading macro.
+        if "\\" not in text[:m.start()]:
+            text = text[m.start():]
+    return text.strip()
 
 
 def _looks_like_latex(text: str) -> bool:
@@ -509,7 +693,7 @@ def _claude_code_model_arg(model: str) -> str | None:
     # inheriting whatever the user's interactive `claude` default happens to be).
     # Override the default with RMA_CLAUDE_CODE_MODEL.
     if name in {"claude-code", "claude-code-default", "claude-code-opus48"}:
-        return os.environ.get("RMA_CLAUDE_CODE_MODEL", "claude-opus-4-8")
+        return os.environ.get("RMA_CLAUDE_CODE_MODEL", DEFAULT_MODEL)
     if name == "claude-code-fable":
         return "claude-fable-5"
     if name == "claude-code-sonnet":

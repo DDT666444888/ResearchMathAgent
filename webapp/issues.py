@@ -27,6 +27,7 @@ Issue JSON schema:
 from __future__ import annotations
 
 import json
+import os
 import re
 import uuid
 from datetime import datetime, timezone
@@ -82,11 +83,17 @@ def list_issues(
     problem_id: str,
     dataset: str = "first_proof_1",
     status: str | None = None,
+    seed_if_empty: bool = False,
 ) -> list[dict]:
     """Return issues for problem_id, optionally filtered by status.
 
     status: comma-separated allowed statuses, e.g. "open,in_progress".
             None means return all statuses.
+    seed_if_empty: create the default "Proof: <title>" issue when the problem
+            has none. Off by default: reading a collection must not write to
+            it, or every inventory/evaluation pass fabricates the data it is
+            about to measure. UI entry points that want a starting issue opt in
+            explicitly.
     """
     d = _issues_dir(repo_root, problem_id, dataset)
     issues = []
@@ -95,10 +102,8 @@ def list_issues(
             issues.append(json.loads(f.read_text(encoding="utf-8")))
         except Exception:
             pass
-    # Seed a default issue if none exist (write directly, no recursion)
-    if not issues:
-        issue = _seed_issue_direct(repo_root, problem_id, dataset)
-        issues.append(issue)
+    if not issues and seed_if_empty:
+        issues.append(_seed_issue_direct(repo_root, problem_id, dataset))
     if status:
         allowed = {s.strip() for s in status.split(",")}
         issues = [i for i in issues if i.get("status", "open") in allowed]
@@ -136,6 +141,20 @@ def create_issue(repo_root: Path, problem_id: str, title: str,
                  dataset: str = "first_proof_1",
                  issue_type: str | None = None,
                  priority: str | None = None) -> dict:
+    # Allocate the id and write the file under one cross-process lock. _short_id
+    # is a max+1 scan, so two critic agents opening issues on the same problem
+    # concurrently used to compute the same id and one write silently won.
+    from .locks import file_lock
+
+    with file_lock(repo_root, f"issues_{dataset}_{problem_id}"):
+        return _create_issue_locked(repo_root, problem_id, title, body, author,
+                                    labels, dataset, issue_type, priority)
+
+
+def _create_issue_locked(repo_root: Path, problem_id: str, title: str,
+                         body: str, author: str, labels: list[str] | None,
+                         dataset: str, issue_type: str | None,
+                         priority: str | None) -> dict:
     d = _issues_dir(repo_root, problem_id, dataset)
     existing = [json.loads(f.read_text()) for f in d.glob("*.json") if f.is_file()]
     issue_id = _short_id(problem_id, existing)
@@ -361,8 +380,12 @@ def append_activity(repo_root: Path, problem_id: str, entry: str,
 # ── internal ────────────────────────────────────────────────────────────────
 
 def _save(repo_root: Path, problem_id: str, issue: dict, dataset: str = "first_proof_1") -> None:
+    # Atomic: write to a sibling temp file then rename, so a crash or a
+    # concurrent reader never observes a half-written record.
     path = _issues_dir(repo_root, problem_id, dataset) / f"{issue['id']}.json"
-    path.write_text(json.dumps(issue, indent=2, ensure_ascii=False), encoding="utf-8")
+    tmp = path.with_suffix(".json.tmp")
+    tmp.write_text(json.dumps(issue, indent=2, ensure_ascii=False), encoding="utf-8")
+    os.replace(tmp, path)
 
 
 def _seed_issue_direct(repo_root: Path, problem_id: str, dataset: str = "first_proof_1") -> dict:
@@ -414,9 +437,15 @@ def _seed_issue_direct(repo_root: Path, problem_id: str, dataset: str = "first_p
     issue = {
         "id": issue_id,
         "problem_id": problem_id,
+        # dataset/priority/issue_type were omitted here, so seeded records were
+        # the one shape consumers could not read uniformly. Always write the
+        # full schema: the whole proof obligation is P0 by definition.
+        "dataset": dataset,
         "title": f"Proof: {title}",
         "status": "open",
         "labels": ["proof-task"],
+        "issue_type": "proof-gap",
+        "priority": "P0",
         "created_at": now,
         "created_by": "system",
         "comments": [{

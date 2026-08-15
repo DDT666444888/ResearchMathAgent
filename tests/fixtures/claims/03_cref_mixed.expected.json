@@ -1,0 +1,3 @@
+{"edges": [["corollary-1", "lemma-1"], ["corollary-1", "lemma-2"],
+           ["theorem-1", "corollary-1"], ["theorem-1", "lemma-2"]],
+ "terminal": ["lemma-1", "lemma-2"], "note": "cref/Cref plus one prose ref"}

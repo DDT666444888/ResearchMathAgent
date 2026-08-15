@@ -1,0 +1,2 @@
+{"edges": [["lemma-1", "lemma-2"], ["lemma-2", "lemma-1"]],
+ "terminal": [], "note": "circular reasoning; cycles() must report it"}

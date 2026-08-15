@@ -1,0 +1,30 @@
+\documentclass{article}
+\begin{document}
+\begin{lemma}\label{lem:base}
+The base case holds for $n=1$.
+\end{lemma}
+\begin{proof}
+Direct substitution.
+\end{proof}
+
+\begin{lemma}\label{lem:step}
+The inductive step holds.
+\end{lemma}
+\begin{proof}
+Assume the claim for $n$; a short computation gives $n+1$.
+\end{proof}
+
+\begin{corollary}\label{cor:all}
+The identity holds for all $n$.
+\end{corollary}
+\begin{proof}
+By \cref{lem:base} and \Cref{lem:step}, induction closes the argument.
+\end{proof}
+
+\begin{theorem}\label{thm:top}
+The generating function is rational.
+\end{theorem}
+\begin{proof}
+\cref{cor:all} gives the identity, and Lemma 2 supplies the recursion.
+\end{proof}
+\end{document}

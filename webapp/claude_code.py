@@ -28,6 +28,8 @@ import time
 from pathlib import Path
 from typing import Iterator
 
+from rma import config as _cfg
+
 from .agent import AgentConfig, AgentEvent
 from .runs import RunHandle
 
@@ -108,15 +110,20 @@ def run_claude_code_agent(cfg: AgentConfig, handle: RunHandle | None = None) -> 
         "--allowedTools", _ALLOWED_TOOLS,
         "--max-turns", str(getattr(cfg, "max_iterations", None) or _MAX_TURNS),
         "--append-system-prompt", (cfg.system_prompt or _CC_SYSTEM),
+        # Paper: adaptive thinking at high reasoning effort. This path passed no
+        # --effort at all, so it silently inherited the interactive default.
+        "--effort", (getattr(cfg, "effort", None) or _cfg.DEFAULT_EFFORT),
         "--no-session-persistence",
     ]
-    if cfg.model:
-        cmd += ["--model", cfg.model]
+    # Pin the backbone: an empty cfg.model used to mean "no --model", leaving
+    # the run on whatever the user's interactive default happened to be.
+    cmd += ["--model", (cfg.model or _cfg.DEFAULT_MODEL)]
 
     # Subscription auth: ensure no API key shadows the OAuth credential.
     env = dict(os.environ)
     env.pop("ANTHROPIC_API_KEY", None)
     env.pop("ANTHROPIC_AUTH_TOKEN", None)
+    env.setdefault("CLAUDE_CODE_MAX_OUTPUT_TOKENS", str(_cfg.DEFAULT_MAX_OUTPUT_TOKENS))
 
     yield AgentEvent("status", {"state": "running", "model": cfg.model or "default",
                                 "provider": "claude-code", "workspace": str(workspace)})
@@ -187,7 +194,12 @@ def run_claude_code_agent(cfg: AgentConfig, handle: RunHandle | None = None) -> 
     solution = workspace / "solution.tex"
     if solution.is_file():
         text = solution.read_text(encoding="utf-8", errors="replace")
-        yield AgentEvent("artifact", {"name": "solution.tex", "content": text[:60_000]})
+        # Emit the proof whole; a silent [:60_000] used to drop the tail of long
+        # proofs with no signal to any consumer.
+        artifact = {"name": "solution.tex", "content": text}
+        if len(text) > 60_000:
+            artifact["oversized_chars"] = len(text)
+        yield AgentEvent("artifact", artifact)
 
     if not saw_result:
         msg = ("".join(stderr_chunks)).strip() or "claude CLI exited without a result."
@@ -323,13 +335,15 @@ def complete_via_cli(prompt: str, system: str = "", model: str | None = None,
     cmd = [binary, "-p", prompt, "--output-format", "json", "--no-session-persistence"]
     if system:
         cmd += ["--append-system-prompt", system]
-    m = (model or "").lower()
-    alias = "claude-fable-5" if "fable" in m else "opus" if "opus" in m else "sonnet" if "sonnet" in m else "haiku" if "haiku" in m else ""
-    if alias:
-        cmd += ["--model", alias]
+    # Pass the model through verbatim. Collapsing it to a floating alias
+    # ("claude-opus-4-8" -> "opus") meant a run could silently land on a
+    # different Opus build than the one the paper reports.
+    cmd += ["--model", (model or _cfg.DEFAULT_MODEL)]
+    cmd += ["--effort", _cfg.DEFAULT_EFFORT]
     env = dict(os.environ)
     env.pop("ANTHROPIC_API_KEY", None)
     env.pop("ANTHROPIC_AUTH_TOKEN", None)
+    env.setdefault("CLAUDE_CODE_MAX_OUTPUT_TOKENS", str(_cfg.DEFAULT_MAX_OUTPUT_TOKENS))
     try:
         proc = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout, env=env)
     except Exception:

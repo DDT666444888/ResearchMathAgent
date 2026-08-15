@@ -1,11 +1,17 @@
 from __future__ import annotations
 
 import argparse
+import os
 from collections.abc import Sequence
 
+from .ablations import run_ablate_matrix, run_report_ablations
+from .claims import run_claims
+from .config import ABLATIONS, CONTEXT_MODES, DEFAULT_N_ROUNDS, run_config
 from .doctor import run_doctor
+from .orchestrator import run_inspect_context
 from .push import run_push
 from .solve import run_diff, run_parse, run_propose, run_refine, run_solve, run_verify
+from .store import run_inspect_store
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -92,10 +98,110 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="SLUG",
         help="Dataset slug (e.g. aim_problem_lists, erdos_problems) when solving non-first_proof_1 problems.",
     )
+    solve.add_argument(
+        "--orchestrator",
+        action="store_true",
+        help="Run the Algorithm 1 round loop (critic -> solver -> literature -> "
+             "meeting -> revise -> concepts -> evaluator) over the research store. "
+             "This is the DEFAULT; the flag is kept for explicitness.",
+    )
+    solve.add_argument(
+        "--legacy-pipeline",
+        action="store_true",
+        dest="legacy_pipeline",
+        help="Opt into the older parse->propose->verify/refine pipeline instead of "
+             "the default Algorithm 1 orchestrator.",
+    )
+    solve.add_argument(
+        "--paper-faithful",
+        action="store_true",
+        dest="paper_faithful",
+        help="Reproduce paper Algorithm 1 LITERALLY: each round uses "
+             "pi = CurrentProof(S) = the last revision and the run outputs that "
+             "final pi, with no best-of-rounds selection and no carry-forward. "
+             "The default adds those two enhancements.",
+    )
+    solve.add_argument(
+        "--backend",
+        choices=("auto", "fake"),
+        default="auto",
+        help="Model backend for the orchestrator. 'fake' runs fully offline with "
+             "deterministic canned artifacts (no tokens); implies --orchestrator.",
+    )
     # `rma solve <q>` works out of the box on the user's Claude subscription
     # (claude-code = local `claude` CLI, billed to their Pro/Max plan — no API
     # key). Override with --model-name rma-skeleton for offline runs.
     solve.set_defaults(func=run_solve, model_name="claude-code")
+
+    config = subparsers.add_parser(
+        "config",
+        help="Show the resolved run configuration (Algorithm 1 parameters).",
+    )
+    config.add_argument("--print", action="store_true", dest="print_config",
+                        help="Print the resolved configuration (default action).")
+    config.add_argument("--json", action="store_true", help="Emit JSON instead of a summary line.")
+    _add_orchestration_arguments(config)
+    config.set_defaults(func=run_config, model_name=None, max_rounds=None)
+
+    inspect_store = subparsers.add_parser(
+        "inspect-store",
+        help="Show the research store S = (Pi, I, M, L, K, H, E) for one problem.",
+    )
+    inspect_store.add_argument("--problem", required=True, help="Problem id, e.g. q6.")
+    inspect_store.add_argument("--dataset", default="first_proof_1", help="Dataset slug.")
+    inspect_store.add_argument("--memory", choices=("full", "last-round-only", "stateless"),
+                               default="full", help="Memory model to read with.")
+    inspect_store.add_argument("--json", action="store_true", help="Emit JSON.")
+    inspect_store.add_argument("--repo-root", default=None)
+    inspect_store.set_defaults(func=run_inspect_store)
+
+    inspect_context = subparsers.add_parser(
+        "inspect-context",
+        help="Show the compiled observation O an operation would receive (no model call).",
+    )
+    inspect_context.add_argument("--problem", required=True, help="Problem id, e.g. q6.")
+    inspect_context.add_argument("--dataset", default="first_proof_1", help="Dataset slug.")
+    inspect_context.add_argument("--unit", default="critic",
+                                 help="Operation name (critic, solver, literature, ...).")
+    inspect_context.add_argument("--budget", type=int, default=None,
+                                 help="Context budget B in tokens (default: 60000).")
+    inspect_context.add_argument("--show-text", action="store_true", dest="show_text",
+                                 help="Include the compiled observation itself.")
+    inspect_context.add_argument("--json", action="store_true", help="Emit JSON.")
+    inspect_context.add_argument("--repo-root", default=None)
+    _add_orchestration_arguments(inspect_context)
+    inspect_context.set_defaults(func=run_inspect_context, model_name=None, max_rounds=None)
+
+    ablate = subparsers.add_parser(
+        "ablate-matrix",
+        help="List the runnable ablation configurations (paper Figure 5).",
+    )
+    ablate.add_argument("--list", action="store_true", dest="list_configs",
+                        help="List config names, one per line (default action).")
+    ablate.add_argument("--json", action="store_true", help="Emit JSON.")
+    ablate.set_defaults(func=run_ablate_matrix)
+
+    report_abl = subparsers.add_parser(
+        "report-ablations",
+        help="Run every ablation config offline and emit figure-ready metrics.",
+    )
+    report_abl.add_argument("--backend", choices=("fake",), default="fake",
+                            help="Only offline 'fake' is supported (deterministic).")
+    report_abl.add_argument("--rounds", type=int, default=3, help="Rounds per config.")
+    report_abl.add_argument("--out", default=None, help="Write JSON here.")
+    report_abl.set_defaults(func=run_report_ablations)
+
+    claims = subparsers.add_parser(
+        "claims",
+        help="Parse a proof into its claim-dependency graph, or evaluate extraction recall.",
+    )
+    claims.add_argument("tex", nargs="?", help="Path to a .tex proof.")
+    claims.add_argument("--eval", dest="eval_dir", default=None,
+                        help="Directory of *.tex + *.expected.json fixtures to score.")
+    claims.add_argument("--min-recall", type=float, default=0.80, dest="min_recall",
+                        help="Recall gate for --eval (default 0.80).")
+    claims.add_argument("--json", action="store_true", help="Emit JSON.")
+    claims.set_defaults(func=run_claims)
 
     diff = subparsers.add_parser(
         "diff",
@@ -146,6 +252,26 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def _add_orchestration_arguments(parser: argparse.ArgumentParser) -> None:
+    """Algorithm 1 parameters (paper defaults live in rma/config.py)."""
+    group = parser.add_argument_group("Algorithm 1 orchestration")
+    group.add_argument("--rounds", type=int, default=None, metavar="N_R",
+                       help=f"Research rounds N_R (default: {DEFAULT_N_ROUNDS}).")
+    group.add_argument("--issue-budget", type=int, default=None, metavar="B_ISSUES",
+                       dest="issue_budget",
+                       help="Issues repaired per round, b (default: 5).")
+    group.add_argument("--context-budget", type=int, default=None, metavar="TOKENS",
+                       dest="context_budget",
+                       help="Per-call context budget B in tokens (default: 60000).")
+    group.add_argument("--context-mode", choices=CONTEXT_MODES, default=None,
+                       dest="context_mode",
+                       help="How context is fitted to B (default: budget = PrefixToBudget).")
+    group.add_argument("--effort", default=None,
+                       help="Reasoning effort for the backbone (default: high).")
+    group.add_argument("--ablate", default=None, metavar="SPEC",
+                       help="Comma-separated ablations. Valid names: " + ", ".join(ABLATIONS))
+
+
 def _add_pipeline_arguments(parser: argparse.ArgumentParser, *, render: bool, max_rounds: bool) -> None:
     target = parser.add_mutually_exclusive_group(required=True)
     target.add_argument(
@@ -176,8 +302,9 @@ def _add_pipeline_arguments(parser: argparse.ArgumentParser, *, render: bool, ma
     )
     parser.add_argument(
         "--model-name",
-        default="rma-skeleton",
-        help="Model name for generation and the output subfolder.",
+        default=os.environ.get("RMA_MODEL", "rma-skeleton"),
+        help="Model name for generation and the output subfolder. Honors "
+             "RMA_MODEL (e.g. claude-fable-5); falls back to rma-skeleton (offline).",
     )
     parser.add_argument(
         "--model-provider",
@@ -197,9 +324,12 @@ def _add_pipeline_arguments(parser: argparse.ArgumentParser, *, render: bool, ma
         parser.add_argument(
             "--max-rounds",
             type=int,
-            default=3,
-            help="Maximum verifier/refiner rounds per problem.",
+            default=None,
+            help=f"Maximum verifier/refiner rounds per problem (default: N_R = {DEFAULT_N_ROUNDS}).",
         )
+        _add_orchestration_arguments(parser)
+    else:
+        parser.set_defaults(max_rounds=None)
     parser.add_argument(
         "--skill-path",
         default="skills/math-research/SKILL.md",

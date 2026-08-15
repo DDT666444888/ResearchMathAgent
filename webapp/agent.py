@@ -20,12 +20,20 @@ from typing import Iterator
 
 import anthropic
 
+from rma import config as _cfg
+
 from .tools import TOOL_DEFINITIONS, ToolContext, ToolError, execute_tool, seed_workspace
 
-DEFAULT_MODEL = "claude-opus-4-8"
-MAX_TOKENS = 32_000
+# Default solving model. Fable by default; override with RMA_MODEL=<model>
+# (e.g. RMA_MODEL=claude-opus-4-8) for a one-off or a whole deployment.
+# Paper backbone: claude-opus-4-8, 64,000 max output tokens, adaptive thinking
+# at high effort (main.tex:1251-1262). RMA_MODEL still overrides for one-offs.
+DEFAULT_MODEL = os.environ.get("RMA_MODEL", _cfg.DEFAULT_MODEL)
+MAX_TOKENS = _cfg.DEFAULT_MAX_OUTPUT_TOKENS
 MAX_ITERATIONS = 50
-THINKING_BUDGET = 16_000  # tokens budgeted for extended thinking per turn
+EFFORT = _cfg.DEFAULT_EFFORT
+# Proof artifacts above this size are flagged, never truncated.
+_ARTIFACT_WARN_CHARS = 60_000
 
 SYSTEM_PROMPT = """\
 You are the Research Math Agent, an autonomous mathematician working on the \
@@ -258,7 +266,13 @@ def _artifact_from_workspace(ctx: ToolContext) -> AgentEvent | None:
     text = sol.read_text(encoding="utf-8", errors="replace").strip()
     if not text:
         return None
-    return AgentEvent("artifact", {"name": "solution.tex", "content": text[:60_000]})
+    # The proof artifact is the run's product; clipping it silently at 60k chars
+    # lost the tail of long proofs with no signal anywhere. Emit it whole and
+    # record that it is oversized so a consumer can decide what to do.
+    event = {"name": "solution.tex", "content": text}
+    if len(text) > _ARTIFACT_WARN_CHARS:
+        event["oversized_chars"] = len(text)
+    return AgentEvent("artifact", event)
 
 
 def _finish_turn(ctx: ToolContext, reason: str) -> Iterator[AgentEvent]:
@@ -298,7 +312,7 @@ def run_agent(cfg: AgentConfig, handle=None) -> Iterator[AgentEvent]:
         # Opus 4.8 uses adaptive thinking; the old {"type":"enabled","budget_tokens":N}
         # form is rejected with a 400. effort=high maximizes reasoning depth.
         create_kwargs["thinking"] = {"type": "adaptive"}
-        create_kwargs["output_config"] = {"effort": "high"}
+        create_kwargs["output_config"] = {"effort": EFFORT}
 
     # First user message: problem + cached prefix context + instruction
     first_msg_content = _build_first_message_content(cfg)
