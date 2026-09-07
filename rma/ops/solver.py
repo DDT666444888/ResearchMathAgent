@@ -200,7 +200,23 @@ class SolverOperation(Operation):
         if not result.applied:
             # one retry is handled by the caller re-invoking; here we record the
             # reason. A full rewrite fallback is taken by run() after two tries.
+            # Persist the reason. It lived only in ctx.extra, so the single most
+            # important failure in the improvement loop -- why a localized edit
+            # could not be applied -- left no trace on disk and could not be
+            # diagnosed after the fact.
             ctx.extra.setdefault("patch_rejects", []).append(result.reason)
+            try:
+                import json as _json
+                from pathlib import Path as _P
+                d = getattr(ctx, "artifacts_dir", None) or ctx.extra.get("artifacts_dir")
+                if d:
+                    f = _P(d) / "patch_rejects.jsonl"
+                    with f.open("a", encoding="utf-8") as fh:
+                        fh.write(_json.dumps({"round": getattr(ctx, "round", None),
+                                              "reason": result.reason,
+                                              "mode": result.mode}) + "\n")
+            except Exception:
+                pass  # observability must never break the run
         ctx.extra["patch_result"] = result
         return result
 
@@ -282,6 +298,21 @@ def _full_rewrite(ctx, issue, invoke) -> list[dict] | None:
     tex = raw if isinstance(raw, str) else (raw or {}).get("tex", "")
     tex = clean_latex_reply(tex) if tex else tex
     if not tex:
+        return None
+    # This is where an improvement pass turns into a regression. The patch path
+    # is edit-based and preserves the document by construction; this fallback
+    # regenerates the whole thing and, until now, wrote back whatever came out.
+    # On audited ten-thousand-character proofs the anchors rarely match, so the
+    # fallback fires often, and a model asked to fix an issue in a proof it was
+    # shown tends to answer with a review OF that proof. Three blind judges
+    # described the delivered document the same way -- "a referee-style
+    # endorsement rather than an actual proof" -- and completeness fell from 8.0
+    # to 1.0. A fallback that cannot improve the document must leave it alone,
+    # which is exactly what returning None already means here.
+    from ..call_budget import is_regression
+    regressed, why = is_regression(ctx.current_proof_text(), tex)
+    if regressed:
+        ctx.extra.setdefault("fallback_rejects", []).append(why)
         return None
     return [{
         "component": "Pi", "kind": "proof_revision", "body": tex,

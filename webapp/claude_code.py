@@ -325,10 +325,75 @@ def _result_text(content) -> str:
 
 
 
+def _cli_slot():
+    """Machine-wide cap on concurrent `claude` CLI calls.
+
+    Every process on this box funnels through complete_via_cli -- benchmark arms,
+    the judge, the daily cycle -- and the CLI hard-times-out at 900 s once a few
+    requests overlap. Two whole experiment arms were lost to exactly that: both
+    of their calls timed out, the retry timed out too, and the run still reported
+    success with no output. An advisory lock over N slot files caps in-flight
+    calls no matter which process started them. Waiting costs seconds; a timeout
+    costs fifteen minutes and the result.
+
+    CLAUDE_CLI_SLOTS=0 disables the gate (the default is 2).
+    """
+    import contextlib
+    import fcntl
+    import time as _t
+
+    n = int(os.environ.get("CLAUDE_CLI_SLOTS", "2"))
+    d = Path(os.environ.get("CLAUDE_CLI_SLOT_DIR",
+                            "/work/nvme/bhov/zzhao18/fp2runs/.slots_cli"))
+
+    @contextlib.contextmanager
+    def _ctx():
+        if n <= 0:
+            yield
+            return
+        try:
+            d.mkdir(parents=True, exist_ok=True)
+        except OSError:
+            yield          # cannot make the slot dir: never block real work
+            return
+        while True:
+            for i in range(n):
+                f = open(d / f"slot{i}", "a+")
+                try:
+                    fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                except OSError:
+                    f.close()
+                    continue
+                try:
+                    yield
+                finally:
+                    fcntl.flock(f, fcntl.LOCK_UN)
+                    f.close()
+                return
+            _t.sleep(2.0)
+
+    return _ctx()
+
+
 def complete_via_cli(prompt: str, system: str = "", model: str | None = None,
                      timeout: int = 900) -> str | None:
     """One-shot completion on the Claude Pro/Max subscription via the `claude`
-    CLI (no tools, no Vertex/API). Returns text, or None on failure."""
+    CLI (no tools, no Vertex/API). Returns text, or None on failure.
+
+    CLAUDE_CLI_TIMEOUT raises the ceiling. The 900 s default is comfortable for a
+    reply but not for a long document: one benchmark cell asked for an improved
+    proof from a 14k-character prompt and returned empty twice in a row, having
+    burned 1197 s and 2097 s, because the generation itself needed longer than the
+    limit. A timeout that cuts off work we have already paid for is worse than a
+    slow call.
+    """
+    timeout = int(os.environ.get("CLAUDE_CLI_TIMEOUT", timeout))
+    with _cli_slot():
+        return _complete_via_cli_locked(prompt, system, model, timeout)
+
+
+def _complete_via_cli_locked(prompt: str, system: str = "", model: str | None = None,
+                             timeout: int = 900) -> str | None:
     binary = claude_code_available()
     if not binary:
         return None

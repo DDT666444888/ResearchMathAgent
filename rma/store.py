@@ -751,9 +751,46 @@ class ResearchStore:
     # ── Pi helpers ──────────────────────────────────────────────────────────
 
     def current_proof(self) -> Record | None:
-        """pi <- CurrentProof(S): the latest proof revision."""
+        """pi <- CurrentProof(S): the latest proof revision that is still a proof.
+
+        Taking the last revision unconditionally makes progress non-monotone: any
+        op that writes a degenerate revision -- an empty string, a backend refusal,
+        a stub that discards most of the argument -- instantly becomes "the current
+        proof" and the real one is gone. Measured on the improvement task, that is
+        exactly what happened: a run seeded with a 10,361-character proof reported
+        "nothing substantive to work on yet" one round later and delivered nothing,
+        three times out of five problems.
+
+        A revision is skipped as degenerate when it is empty, when it is a backend
+        refusal rather than mathematics, or when it has thrown away three quarters
+        of the longest revision written so far. If every revision is degenerate the
+        newest is still returned, so this can only ever preserve information.
+        """
         revisions = self.records("Pi")
-        return revisions[-1] if revisions else None
+        if not revisions:
+            return None
+
+        def body_of(rec) -> str:
+            return (getattr(rec, "body", None) or getattr(rec, "text", "") or "")
+
+        longest = max((len(body_of(r)) for r in revisions), default=0)
+
+        def degenerate(rec) -> bool:
+            text = body_of(rec).strip()
+            if not text:
+                return True
+            try:
+                from .call_budget import is_refusal
+                if is_refusal(text):
+                    return True
+            except Exception:
+                pass
+            return longest > 0 and len(text) < 0.25 * longest
+
+        for rec in reversed(revisions):
+            if not degenerate(rec):
+                return rec
+        return revisions[-1]
 
     def add_proof_revision(self, tex: str, *, produced_by: str,
                            round: int | None = None, parent_id: str | None = None,

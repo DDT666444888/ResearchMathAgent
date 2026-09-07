@@ -233,6 +233,10 @@ def enumerate_gaps(solution_text: str, args: Namespace,
     appears in a strict majority of samples (dampens single-shot noise)."""
     if not _backend_available(args):
         return []
+    # Under a call budget the three-sample ensemble is a variance reduction we
+    # may not be able to afford; one sample that runs beats three that cannot.
+    from . import call_budget as _budget
+    samples = _budget.gap_samples(samples)
     from collections import Counter
     tally: Counter = Counter()
     detail: dict[tuple, dict] = {}

@@ -19,8 +19,14 @@ logger = logging.getLogger(__name__)
 # with the RMA_EVAL_SAMPLES env var; 1 preserves the original single-shot cost.
 _DEFAULT_EVAL_SAMPLES = 1
 
+# PROVENANCE (corrected 2026-08-23). This prompt used to say the four dimensions
+# came "from the First Proof benchmark (Appendix E)". They do not. The First Proof
+# paper (arXiv:2602.05192) has no Appendix E, contains none of these dimension
+# names, and states plainly: "we have not specified a formal grading scheme for
+# answers ... assessment ... must at present be done by a human expert." The
+# rubric below is OURS. Do not cite it as First Proof's, in papers or reports.
 _EVAL_SYSTEM = """You are an expert mathematician evaluating a research-level mathematical proof.
-Evaluate the proof along the four fine-grained dimensions from the First Proof benchmark (Appendix E):
+Evaluate the proof along four dimensions:
 
 1. **Final Answer Accuracy** (0 or 1): Is the final answer/bound/construction claimed in the proof correct, independent of the derivation process?
    - 1 = the claimed conclusion is mathematically correct

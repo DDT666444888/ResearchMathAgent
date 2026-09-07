@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import json
 import re
 import shutil
@@ -240,6 +241,16 @@ def _run_parallel_strategies(
         except Exception as exc:
             return (idx, "", {"provider": "error", "model": "", "method": "error"}, [{"code": "generation_error", "severity": "error", "message": str(exc), "detail": ""}], strategy)
 
+        # A backend refusal is not a candidate proof. Dropping it here keeps it
+        # off disk entirely, so it can never be picked as the best candidate nor
+        # seeded into the store on a later run.
+        if not _deliverable(text):
+            reason = ("backend returned a refusal or non-substantive text"
+                      if text and text.strip() else "backend returned nothing")
+            return (idx, "", backend,
+                    [{"code": "backend_refusal", "severity": "error",
+                      "message": reason, "detail": (text or "").strip()[:200]}],
+                    strategy)
         issues = _collect_verification_issues(parsed, text)
         candidate_path = strategy_dir / "solution.tex"
         if text:
@@ -373,8 +384,22 @@ def run_solve(args: Namespace) -> int:
                 continue
 
         _parse_problem(repo_root, output_dir, problem_id, args, skill_info)
+        improve_from = getattr(args, "improve", None)
+        if improve_from:
+            # Improvement mode: the starting document is given, so proposing a
+            # fresh one would both waste the call budget and destroy the very
+            # thing every method is supposed to be improving. Seed it where the
+            # orchestrator looks for the current proof and go straight to the
+            # refine loop.
+            _paths = _problem_paths(output_dir, problem_id)
+            _paths["solution"].parent.mkdir(parents=True, exist_ok=True)
+            _paths["solution"].write_text(
+                Path(improve_from).read_text(encoding="utf-8", errors="replace"),
+                encoding="utf-8")
+            print(f"  {problem_id}: improving {improve_from}", flush=True)
         try:
-            _propose_solution(repo_root, output_dir, problem_id, args, skill_info)
+            if not improve_from:
+                _propose_solution(repo_root, output_dir, problem_id, args, skill_info)
         except (ModelConfigurationError, ModelRequestError) as exc:
             print("RMA solve")
             print(f"FAIL model ({problem_id}): {exc}")
@@ -401,6 +426,20 @@ def run_solve(args: Namespace) -> int:
 
         verification = {"passed": False}
         for _round in range(1, max_rounds + 1):
+            # Construct first, verify with what is left. One verification is four
+            # model calls; running it before a proof exists, or before the
+            # construction floor is met, is how an eight-call budget got spent
+            # auditing a document that was never written. See rma/budget.py.
+            from . import call_budget as _budget
+            _sol = _problem_paths(output_dir, problem_id)["solution"]
+            try:
+                _txt = _sol.read_text(encoding="utf-8", errors="replace") if _sol.is_file() else ""
+            except OSError:
+                _txt = ""
+            _ok, _why = _budget.may_verify(_txt)
+            if not _ok:
+                print(f"  {problem_id}: skipping verification round {_round} — {_why}")
+                break
             verification = _verify_solution(repo_root, output_dir, problem_id, args, skill_info)
             if verification["passed"]:
                 break
@@ -499,6 +538,15 @@ def _run_orchestrator(repo_root: Path, output_dir: Path, problem_id: str,
     # store with stub issues/concepts. Point the store at an isolated root under
     # the run's own output dir instead. A real run uses the real store.
     store_root = repo_root
+    # RMA_STORE_ROOT isolates the research store for this run. The store is
+    # persistent and keyed by (problem, dataset), so with the default shared root
+    # one arm's improved proof survives into the next arm's run and becomes its
+    # starting point. For a controlled comparison every arm must begin from the
+    # SAME given document and nothing else, so each cell gets its own root.
+    _iso = os.environ.get("RMA_STORE_ROOT")
+    if _iso:
+        store_root = Path(_iso)
+        store_root.mkdir(parents=True, exist_ok=True)
     if backend_mode == "fake":
         store_root = output_dir / "_fake_store"
         store_root.mkdir(parents=True, exist_ok=True)
@@ -511,9 +559,14 @@ def _run_orchestrator(repo_root: Path, output_dir: Path, problem_id: str,
     # genuine resume does not pile up duplicates.
     if paths["solution"].is_file():
         proposed = paths["solution"].read_text(encoding="utf-8", errors="replace")
-        current = store.current_proof()
-        if current is None or current.body != proposed:
-            store.add_proof_revision(proposed, produced_by="proposer", round=0)
+        # A refusal on disk must not become the proof the round loop refines:
+        # seeding it makes every later round "improve" an apology.
+        if not _deliverable(proposed):
+            print("  seed: ignoring non-substantive solution file on disk")
+        else:
+            current = store.current_proof()
+            if current is None or current.body != proposed:
+                store.add_proof_revision(proposed, produced_by="proposer", round=0)
 
     backend = _fake_backend() if backend_mode == "fake" else None
     analyses = _fake_critic_analyses() if backend_mode == "fake" else None
@@ -525,14 +578,42 @@ def _run_orchestrator(repo_root: Path, output_dir: Path, problem_id: str,
     # Deliver the BEST round's proof, not the last — refinement is not monotone.
     delivered = store.get(result.delivered_proof_id) if result.delivered_proof_id else None
     proof = delivered or store.current_proof()
-    if proof is not None:
+    delivered_ok = proof is not None and _deliverable(proof.body)
+    # Improvement mode carries a guarantee the plain solve path cannot: we know
+    # what the document looked like before, so we can refuse to hand back a worse
+    # one. Without this the loop's own output -- a critique -- is delivered as the
+    # proof and the run scores below the document it started from.
+    improve_seed = getattr(args, "improve", None)
+    if delivered_ok and improve_seed:
+        try:
+            seed_text = Path(improve_seed).read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            seed_text = ""
+        regressed, why = _is_regression(seed_text, proof.body)
+        if regressed:
+            print(f"  REGRESSION GUARD: keeping the input document ({why})", flush=True)
+            paths["solution"].write_text(seed_text, encoding="utf-8")
+            (paths["artifacts"] / "regression_guard.json").write_text(
+                json.dumps({"kept_input": True, "reason": why,
+                            "seed_chars": len(seed_text),
+                            "candidate_chars": len(proof.body)}, indent=2),
+                encoding="utf-8")
+            delivered_ok = False
+            proof = None
+    if delivered_ok:
         paths["solution"].write_text(proof.body, encoding="utf-8")
+    else:
+        # Say so, loudly, and leave no refusal behind masquerading as a proof.
+        paths["solution"].write_text("", encoding="utf-8")
+        print(f"  DELIVERED NOTHING: no substantive proof was produced "
+              f"(stop={result.stop_reason})")
 
     summary = {
         "problem_id": problem_id,
         "rounds": len(result.rounds),
         "stop_reason": result.stop_reason,
-        "solved": result.stop_reason == "solved",
+        "solved": result.stop_reason == "solved" and delivered_ok,
+        "delivered_ok": delivered_ok,
         "final_proof_id": result.final_proof_id,
         "delivered_round": result.delivered_round,
         "per_round": [{"round": r.round, "units": r.units,
@@ -543,6 +624,29 @@ def _run_orchestrator(repo_root: Path, output_dir: Path, problem_id: str,
     (paths["artifacts"] / "orchestrator_summary.json").write_text(
         json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     return summary
+
+
+from .call_budget import is_regression as _is_regression  # noqa: E402
+
+
+def _deliverable(text: str | None) -> bool:
+    """Is this text something we may hand over as the solution?
+
+    Twice now a run has shipped a 120-byte infrastructure refusal -- "BUDGET
+    EXHAUSTED: the call budget for this run is spent" -- as its proof, written
+    into <problem>_solution.tex, while the CLI printed "Completed ... solve
+    pipeline" and exited 0. The refusal came from the backend, was written by the
+    proposer, seeded back into the store as the current proof, and delivered.
+    Nothing on that path asked whether the bytes were mathematics.
+
+    Refusing to deliver is not cosmetic: a scored benchmark reads that file, and
+    a graceful-looking zero is worse than a loud failure because it is
+    indistinguishable from a genuine wrong answer.
+    """
+    if not text or not text.strip():
+        return False
+    from . import call_budget as _cb
+    return not _cb.is_refusal(text) and _cb.looks_substantive(text)
 
 
 def _fake_backend():
@@ -1475,6 +1579,18 @@ def _model_user_prompt(
 
 ### Problem
 {json.dumps(parsed_payload, indent=2)}
+
+IMPORTANT — reading the Problem block above: `statement_excerpt` and `normalized_statement` are the
+authoritative, ground-truth problem text (verbatim or near-verbatim from the source file). `objects`,
+`definitions`, `quantifier_summary`, and `boundary_cases` are produced by a cheap regex/heuristic
+extractor that frequently fails on dense LaTeX or statements that don't use a "Let X be..." phrasing —
+when it fails it emits generic filler (e.g. "matrix [A-Z]", "empty graph", "singular matrix",
+"No explicit `let ...` definition was detected") that can look wrong or unrelated to the real statement.
+This is a known extractor limitation, NOT evidence that the problem itself is empty, underspecified, or
+malformed. If `statement_excerpt`/`normalized_statement` contains a well-defined mathematical statement,
+you MUST treat that statement as the actual problem and solve it, ignoring any heuristic field that
+looks generic or inconsistent with it. Only report the problem as underspecified if
+`statement_excerpt`/`normalized_statement` itself is empty or genuinely incoherent.
 
 ### Proof strategy seed (hypothesis only — you must derive the actual proof)
 {json.dumps(profile_payload, indent=2)}

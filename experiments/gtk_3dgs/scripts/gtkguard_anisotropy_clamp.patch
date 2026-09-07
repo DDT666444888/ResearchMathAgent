@@ -1,0 +1,181 @@
+# GTK-Guard: periodic, population-wide anisotropy correction
+# ==============================================================================
+# Phase 4 arm. Layered ON TOP OF the existing "GTK-Floor" checkout/patch
+# (experiments/gtk_3dgs/scripts/gtkinformed_split_floor.patch: floored,
+# non-isotropic split + densify_from_iter=1500 coarse-to-fine delay) -- this
+# is NOT a replacement. Apply with `patch -p1` from the root of a checkout
+# that already has gtkinformed_split_floor.patch applied (i.e. a copy of
+# repos/gaussian-splatting-gtkinformed), producing
+# repos/gaussian-splatting-gtkguard.
+#
+# Motivation (main.tex thm:exact-gaussian-gtk, product-of-Gaussians identity
+# + Gershgorin's theorem, applied to REAL trained bonsai checkpoints via
+# gershgorin_analysis.py --attribute-worst-row): the median anisotropy
+# (scale.max()/scale.min()) among the top-8 blame-attributed Gaussians at two
+# independent local patches was
+#
+#     vanilla 3DGS:    71.8  and 14.0
+#     3DGS-MCMC:       1.27e6 and 1.63e4   (4-5 orders of magnitude worse)
+#     GTK-Floor:       13.7  and 11.3       (healthiest of the three)
+#
+# GTK-Floor's split-time floor is healthiest but not sufficient on its own:
+# it only ever intervenes AT a split. Between splits, ordinary Adam gradient
+# descent on the scale parameters is completely unconstrained and can still
+# drive a Gaussian toward extreme anisotropy -- the split operation is not
+# the only mechanism responsible for poor local conditioning. GTK-Guard adds
+# a direct, periodic correction that inspects the ENTIRE current population
+# (not just newly-split children) and fixes any Gaussian whose anisotropy has
+# drifted past a threshold, regardless of how it got there.
+#
+# Mechanism: a new GaussianModel.clamp_anisotropy(tau_aniso=100.0,
+# tau_opacity=0.1) method, modeled directly on the existing reset_opacity()
+# (same file, same get_activated-tensor -> flag ->
+# scaling_inverse_activation -> replace_tensor_to_optimizer pattern, so the
+# Adam moment buffers for every corrected Gaussian's scaling parameter are
+# reset exactly the way reset_opacity() already resets them for opacity --
+# without this, a sudden edit to the raw parameter would otherwise fight
+# stale momentum for many subsequent steps). For every Gaussian with
+# anisotropy = get_scaling.max()/get_scaling.min() > tau_aniso AND
+# get_opacity > tau_opacity (skip near-transparent, effectively-dead
+# Gaussians -- fixing their shape is moot), the smallest axis is RAISED
+# (never shrunk, never touches the other two axes) so the ratio becomes
+# exactly tau_aniso. All non-flagged Gaussians are left completely
+# untouched. A one-line print/log reports how many Gaussians were
+# flagged/corrected each time it fires.
+#
+# tau_aniso=100 is a round order-of-magnitude threshold, not fit to any one
+# number in the table above: comfortably above the healthy range observed in
+# the real analysis (~10-70, all three of vanilla/GTK-Floor's healthier
+# patch) and far below the pathological range (~1e4-1e6, 3DGS-MCMC and
+# vanilla's worse patch). tau_opacity=0.1 is the same kind of round
+# separator, well above the near-zero opacity of dead/about-to-be-pruned
+# Gaussians.
+#
+# --- v1 -> v2 fix (2026-08-27) ------------------------------------------
+# v1 called clamp_anisotropy() from the SAME `if iteration %
+# opt.opacity_reset_interval == 0` guard as the existing opacity reset,
+# nested inside `if iteration < opt.densify_until_iter:`. This compiled and
+# ran without error, but the real 30k-iteration run showed n_clamped=0 at
+# EVERY logged checkpoint (3000/6000/9000/12000) -- the guard never actually
+# corrected anything, because opacity resets (and hence the guard, nested
+# in the same block) stop firing once densify_until_iter passes (~iteration
+# 15000 by default), leaving the entire back half of training with no
+# correction at all -- exactly the regime the real checkpoint analysis
+# showed anisotropy outliers accumulating in. v1's PSNR/SSIM/LPIPS and
+# diagnostics are consequently indistinguishable from GTK-Floor's within
+# run-to-run noise, since the added mechanism never actually did anything.
+#
+# v2 (this patch) decouples the guard from opacity_reset_interval entirely:
+# a new, independent `clamp_interval = 1000`, checked OUTSIDE the
+# `densify_until_iter` gate, so it fires ~30 times across the full
+# 30k-iteration run rather than being silently capped at ~4-5 fires
+# confined to the first half. This is the version actually trained and
+# reported in main.tex/the compliance checklist; the v1 bug is recorded
+# here, not hidden, per this project's own audit-trail practice.
+# ==============================================================================
+diff --git a/scene/gaussian_model.py b/scene/gaussian_model.py
+--- a/scene/gaussian_model.py
++++ b/scene/gaussian_model.py
+@@ -260,6 +260,55 @@
+         optimizable_tensors = self.replace_tensor_to_optimizer(opacities_new, "opacity")
+         self._opacity = optimizable_tensors["opacity"]
+
++    # --- GTK-Guard change (thm:exact-gaussian-gtk) ------------------------
++    # GTK-Floor's split-time floor (see densify_and_split above) only ever
++    # intervenes AT a split -- it does nothing to a Gaussian's scale between
++    # splits, when ordinary Adam gradient steps are free to drive the scale
++    # parameters toward extreme anisotropy on their own. Real checkpoints
++    # confirm this actually happens: even under GTK-Floor, per-Gaussian
++    # anisotropy (scale.max()/scale.min()) is only "healthy" in a loose
++    # sense (median top-blame anisotropy ~11-14 at two analyzed patches),
++    # nowhere near a clean bound, and vanilla 3DGS/3DGS-MCMC checkpoints
++    # show it can reach 10^1-10^2 (vanilla) or 10^4-10^6 (3DGS-MCMC) at the
++    # same patches. This method adds a periodic, direct, population-wide
++    # correction, modeled on reset_opacity() immediately above (same
++    # get_activated-tensor -> flag -> replace_tensor_to_optimizer pattern,
++    # so the Adam moment buffers for every corrected Gaussian's scaling
++    # parameter are reset exactly the way reset_opacity() already resets
++    # them for opacity -- a sudden edit to the raw parameter without this
++    # would otherwise fight stale momentum for many subsequent steps).
++    #
++    # tau_aniso=100 is a round order-of-magnitude separator, not fit to any
++    # one number: comfortably above every healthy anisotropy value observed
++    # in the real checkpoint analysis (~10-70) and far below the pathological
++    # range (~10^4-10^6). tau_opacity=0.1 restricts the correction to
++    # Gaussians that still meaningfully contribute to the render (skipping
++    # near-transparent ones that are effectively already dead and about to
++    # be pruned, where "fixing" their shape is moot).
++    def clamp_anisotropy(self, tau_aniso=100.0, tau_opacity=0.1):
++        scaling = self.get_scaling                      # [N, 3], activated (current) scale
++        opacity = self.get_opacity.squeeze(-1)           # [N]
++        s_max, argmax = scaling.max(dim=1)
++        s_min, argmin = scaling.min(dim=1)
++        anisotropy = s_max / s_min.clamp_min(1e-12)
++        flagged = (anisotropy > tau_aniso) & (opacity > tau_opacity)
++        n_flagged = int(flagged.sum().item())
++        if n_flagged == 0:
++            return 0
++        new_scaling = scaling.clone()
++        # Only ever RAISES the smallest axis of a flagged Gaussian so its
++        # anisotropy ratio becomes exactly tau_aniso -- never shrinks
++        # anything, and every non-flagged Gaussian is left untouched.
++        flagged_idx = flagged.nonzero(as_tuple=True)[0]
++        min_axis = argmin[flagged_idx]
++        new_min = s_max[flagged_idx] / tau_aniso
++        new_scaling[flagged_idx, min_axis] = new_min
++        new_scaling_raw = self.scaling_inverse_activation(new_scaling)
++        optimizable_tensors = self.replace_tensor_to_optimizer(new_scaling_raw, "scaling")
++        self._scaling = optimizable_tensors["scaling"]
++        return n_flagged
++    # --- end GTK-Guard change ----------------------------------------------
++
+     def load_ply(self, path, use_train_test_exp = False):
+         plydata = PlyData.read(path)
+         if use_train_test_exp:
+diff --git a/train.py b/train.py
+--- a/train.py
++++ b/train.py
+@@ -182,6 +182,43 @@
+                 if iteration % opt.opacity_reset_interval == 0 or (dataset.white_background and iteration == opt.densify_from_iter):
+                     gaussians.reset_opacity()
+
++            # GTK-Guard: periodic population-wide anisotropy correction.
++            # FIX (2026-08-27): this was originally nested inside the
++            # `if iteration < opt.densify_until_iter:` block above, tied to
++            # opacity_reset_interval -- so it stopped firing once
++            # densification ended (densify_until_iter, typically ~iteration
++            # 15000), leaving the guard inactive for the back half of a
++            # 30k-iteration run. The real diagnostic finding motivating this
++            # method (main.tex thm:exact-gaussian-gtk analysis) measured
++            # anisotropy outliers at iteration 30000, i.e. potentially
++            # accumulating throughout the ENTIRE run, not just the
++            # densification window -- so the guard needs to run for the
++            # entire run too. Given its own fixed interval (clamp_interval,
++            # independent of opt.opacity_reset_interval / densify_until_iter)
++            # and moved outside the densification gate.
++            clamp_interval = 1000
++            if iteration % clamp_interval == 0:
++                # scene/gaussian_model.py::clamp_anisotropy and
++                # experiments/gtk_3dgs/scripts/gtkguard_anisotropy_clamp.patch.
++                n_clamped = gaussians.clamp_anisotropy()
++                n_total = gaussians.get_xyz.shape[0]
++                # NOTE: train.py's --quiet flag (safe_state) redirects sys.stdout
++                # through a filter that silently drops everything when quiet=True
++                # (utils/general_utils.py::safe_state) -- both this smoke test and
++                # the real 30k run use --quiet, so a plain print() here would be
++                # silently swallowed. Log to stderr (untouched by safe_state, and
++                # merged into the same sbatch --output file by SLURM) AND to a
++                # dedicated gtk_guard_log.jsonl (same append-per-checkpoint pattern
++                # as the existing losses.jsonl logger above) so this is robust to
++                # either being read.
++                print(f"[GTK-Guard] iter {iteration}: clamp_anisotropy corrected "
++                      f"{n_clamped}/{n_total} Gaussians "
++                      f"(tau_aniso=100.0, tau_opacity=0.1)", file=sys.stderr, flush=True)
++                with open(os.path.join(scene.model_path, "gtk_guard_log.jsonl"), "a") as _guard_f:
++                    _guard_f.write(json.dumps({"iteration": iteration, "n_clamped": n_clamped,
++                                                 "n_total": n_total, "tau_aniso": 100.0,
++                                                 "tau_opacity": 0.1}) + "\n")
++
+             # Optimizer step
+             if iteration < opt.iterations:
+                 gaussians.exposure_optimizer.step()

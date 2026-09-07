@@ -24,7 +24,19 @@ from .issue_pdf import md_to_latex
 def problem_ids(dataset: str) -> list[str]:
     if dataset == "first_proof_2":
         return [f"prob-{i:02d}" for i in range(1, 11)]
-    return [f"q{i}" for i in range(1, 11)]
+    if dataset in ("", "first_proof_1", None):
+        return [f"q{i}" for i in range(1, 11)]
+    # Any other dataset: read the ids from the dataset store (curated solve set
+    # first, else every problem). Keeps the system report usable for datasets
+    # that do not follow the two benchmark id conventions.
+    try:
+        from .dataset_store import get_solve_set, list_problems
+        ids = get_solve_set(dataset)
+        if ids:
+            return list(ids)
+        return [p["id"] for p in list_problems(dataset=dataset)]
+    except Exception:
+        return [f"q{i}" for i in range(1, 11)]
 
 
 # ── data-source accessors (lazy imports to avoid cycles) ──────────────────────
@@ -1327,15 +1339,20 @@ def build_system_report(repo_root: Path, dataset: str = "first_proof_1") -> dict
     L.extend(rows)
     L.append("")
 
-    # System insight
+    # System insight. Prefer the insight written for *this* dataset; the global
+    # system insight describes the default benchmark and would misdescribe any
+    # other dataset, so fall back to it only for that default.
     try:
-        from .insights import get_system_insight
-        sysi = get_system_insight(repo_root)
+        from .insights import get_dataset_insight, get_system_insight
+        sysi = get_dataset_insight(repo_root, dataset)
+        if not sysi and dataset in ("", "first_proof_1", None):
+            sysi = get_system_insight(repo_root)
     except Exception:
         sysi = None
     if sysi:
         L.append("---")
-        L.append("## System Insights")
+        L.append(f"## Insights — {dataset}" if dataset not in ("", "first_proof_1", None)
+                 else "## System Insights")
         if sysi.get("summary"):
             L.append(sysi["summary"]); L.append("")
         for key, head in (("highlights", "Highlights"),

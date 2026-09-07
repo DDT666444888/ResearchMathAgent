@@ -3,11 +3,14 @@
 <div align="center">
 
 [![arXiv](https://img.shields.io/badge/arXiv-2605.22875-b31b1b.svg)](https://arxiv.org/abs/2605.22875)
+[![COLM 2026 Workshop on Lifelong Agents](https://img.shields.io/badge/COLM%202026-Lifelong%20Agents%20Workshop-8A2BE2.svg?style=flat-square)](https://colmweb.org/)
 [![GitHub Stars](https://img.shields.io/github/stars/sjtuytc/ResearchMathAgent?style=flat-square)](https://github.com/sjtuytc/ResearchMathAgent/stargazers)
 [![GitHub Forks](https://img.shields.io/github/forks/sjtuytc/ResearchMathAgent?style=flat-square)](https://github.com/sjtuytc/ResearchMathAgent/network/members)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue?style=flat-square)](https://python.org)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/sjtuytc/ResearchMathAgent/pulls)
+
+*COLM 2026 · 第二届终身智能体研讨会（The 2nd Workshop on Lifelong Agents: Learning, Aligning, and Evolving）*
 
 **语言：** [English](README.md) | 中文
 

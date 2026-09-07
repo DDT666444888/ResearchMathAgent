@@ -79,7 +79,7 @@ if [[ -n "$PROXY_PID" ]]; then
     echo "[deploy] Proxy back on port ${PROD_PORT} (PID ${PROXY_PID}) ✓"
 else
     echo "[deploy] WARNING: proxy not yet on port ${PROD_PORT}. Watchdog should restart within 3s."
-    echo "[deploy] If nothing starts: run  bash start_server.sh &"
+    echo "[deploy] If nothing starts: run  bash scripts/start_server.sh &"
 fi
 
 echo ""

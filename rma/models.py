@@ -56,6 +56,24 @@ def _model_provider(provider: str | None) -> str:
     return (provider or os.environ.get("RMA_MODEL_PROVIDER", "auto")).lower()
 
 
+
+def _shim_complete(base: str, system: str, prompt: str) -> str | None:
+    """POST one chat completion to the local metering shim; None on failure."""
+    import json as _json
+    import urllib.request as _u
+
+    body = _json.dumps({"model": "rma", "messages": (
+        ([{"role": "system", "content": system}] if system else [])
+        + [{"role": "user", "content": prompt}])}).encode()
+    req = _u.Request(base.rstrip("/") + "/chat/completions", data=body,
+                     headers={"Content-Type": "application/json"})
+    try:
+        with _u.urlopen(req, timeout=1800) as r:
+            return _json.loads(r.read())["choices"][0]["message"]["content"]
+    except Exception:
+        return None
+
+
 def call_anthropic(
     *,
     model: str,
@@ -122,6 +140,32 @@ def call_json(
     max_tokens: int = 4096,
     cwd: Path | None = None,
 ):
+    # Benchmark hook (RMA_VIA_SHIM): send this completion to the local
+    # OpenAI-compatible shim instead of the provider. The backend model is the
+    # same either way; the point is that RMA's calls then land on the SAME meter
+    # as every other system in the comparison, so "compute used" is one number
+    # measured one way for everybody. Unset in normal operation.
+    _shim = os.environ.get("RMA_VIA_SHIM")
+    if _shim:
+        from . import call_budget as _budget
+        _budget.spend()
+        _t = _shim_complete(_shim, system, prompt)
+        if _t is None:
+            # Falling through here would reach the backend WITHOUT passing the
+            # meter, which is the one thing a cost comparison cannot survive: the
+            # arm would look cheap because its calls were never counted. One cell
+            # already finished with an empty call log and no output this way,
+            # after its shim failed to bind. Fail loudly instead.
+            raise ModelRequestError(
+                f"RMA_VIA_SHIM is set to {_shim} but the shim did not answer; "
+                "refusing to reach the backend unmetered")
+        if _t is not None:
+            # A refusal is not a proof. Returning it verbatim is how the 8-call
+            # arm ended up writing "BUDGET EXHAUSTED" into its solution file.
+            if _budget.is_refusal(_t):
+                return ModelResponse(text="", provider="shim-refused", model=model)
+            return ModelResponse(text=_t, provider="shim", model=model)
+
     """Ask the model for a structured artifact and return the parsed JSON.
 
     Returns a ``dict``/``list`` on success and ``None`` when no JSON could be
@@ -237,6 +281,39 @@ def call_claude_code(
     # why the LM gap critic silently contributed nothing. See call_json below.
     expect: str = "latex",
 ) -> ModelResponse:
+    # Benchmark hook (RMA_VIA_SHIM): route through the local metering shim.
+    # This is the choke point that matters -- rma/solve.py calls call_claude_code
+    # DIRECTLY for its proposal and refinement passes, so hooking only call_json
+    # meters the JSON ops and misses the calls that do the actual proving.
+    _shim = os.environ.get("RMA_VIA_SHIM")
+    if _shim:
+        from . import call_budget as _budget
+        _budget.spend()
+        _t = _shim_complete(_shim, system, prompt)
+        if _t is None:
+            # Falling through here would reach the backend WITHOUT passing the
+            # meter, which is the one thing a cost comparison cannot survive: the
+            # arm would look cheap because its calls were never counted. One cell
+            # already finished with an empty call log and no output this way,
+            # after its shim failed to bind. Fail loudly instead.
+            raise ModelRequestError(
+                f"RMA_VIA_SHIM is set to {_shim} but the shim did not answer; "
+                "refusing to reach the backend unmetered")
+        if _t is not None:
+            # A refusal is not a proof. Returning it verbatim is how the 8-call
+            # arm ended up writing "BUDGET EXHAUSTED" into its solution file.
+            if _budget.is_refusal(_t):
+                return ModelResponse(text="", provider="shim-refused", model=model)
+            # Apply the SAME reply processing the direct path applies. Returning
+            # the raw text here made the measured system differ from the shipped
+            # one: a benchmark arm was handed chatty replies that production
+            # would have cleaned, so its parses failed and its solver wrote back
+            # nothing twelve times in a row. A harness that changes the system
+            # under test is measuring itself.
+            if expect == "latex":
+                _t = clean_latex_reply(_t)
+            return ModelResponse(text=_t, provider="shim", model=model)
+
     claude_bin = shutil.which("claude")
     if claude_bin is None:
         raise ModelConfigurationError(

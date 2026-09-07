@@ -1,0 +1,36 @@
+diff --git a/scene/gaussian_model.py b/scene/gaussian_model.py
+index 473887d..f4185fd 100644
+--- a/scene/gaussian_model.py
++++ b/scene/gaussian_model.py
+@@ -420,7 +420,30 @@ class GaussianModel:
+         samples = torch.normal(mean=means, std=stds)
+         rots = build_rotation(self._rotation[selected_pts_mask]).repeat(N,1,1)
+         new_xyz = torch.bmm(rots, samples.unsqueeze(-1)).squeeze(-1) + self.get_xyz[selected_pts_mask].repeat(N, 1)
+-        new_scaling = self.scaling_inverse_activation(self.get_scaling[selected_pts_mask].repeat(N,1) / (0.8*N))
++
++        # --- GTK-informed change (thm:density-safe, clause S2) -------------
++        # Vanilla 3DGS shrinks a split Gaussian's scale isotropically on all
++        # 3 axes by 1/(0.8*N). That lets the smallest covariance eigenvalue
++        # (sigma_min) collapse across repeated splits with no floor at all.
++        # Here we keep the usual isotropic shrink for the two LARGER axes but
++        # clamp the smallest axis of each child so it never drops below the
++        # PARENT's own pre-split sigma_min on that axis -- a local,
++        # self-referential floor (s_0 read off the parent at each split, per
++        # the paper's Remark on per-node refinement) requiring no new global
++        # hyperparameter.
++        parent_scaling = self.get_scaling[selected_pts_mask]                 # [M, 3], pre-split
++        parent_argmin = torch.argmin(parent_scaling, dim=1)                  # [M]
++        parent_sigma_min = parent_scaling.gather(1, parent_argmin.unsqueeze(1)).squeeze(1)  # [M]
++
++        child_scaling = parent_scaling.repeat(N, 1) / (0.8 * N)              # [M*N, 3], usual shrink
++        child_argmin = parent_argmin.repeat(N)                               # [M*N]
++        child_floor = parent_sigma_min.repeat(N)                             # [M*N]
++        row_idx = torch.arange(child_scaling.shape[0], device="cuda")
++        child_scaling[row_idx, child_argmin] = torch.maximum(
++            child_scaling[row_idx, child_argmin], child_floor)
++        new_scaling = self.scaling_inverse_activation(child_scaling)
++        # --- end GTK-informed change ---------------------------------------
++
+         new_rotation = self._rotation[selected_pts_mask].repeat(N,1)
+         new_features_dc = self._features_dc[selected_pts_mask].repeat(N,1,1)
+         new_features_rest = self._features_rest[selected_pts_mask].repeat(N,1,1)

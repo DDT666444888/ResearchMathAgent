@@ -117,6 +117,42 @@ def _safe_op(store: ResearchStore, name: str, round_idx: int, fn):
         return None
 
 
+def _construction_first(store, unit: str) -> tuple[bool, str]:
+    """Should this round unit run, given the remaining call budget?
+
+    Measured against Danus on First Proof batch-2 with an eight-call ceiling:
+    RMA served one construction call and five auditing calls, then produced
+    nothing. The cause is visible in ROUND_UNIT_ORDER -- a round begins with the
+    CRITIC, i.e. it critiques before it has written anything, and only `solver`
+    and `revise` construct. Eight units per round against an eight-call budget
+    means the budget is gone before the first proof exists.
+
+    Danus does not fail this way on the same budget: its verifier is strictly
+    downstream of a worker submission. The rule below borrows that ordering
+    principle, not its machinery -- while there is no proof, only construction
+    units may spend; auditing units wait until there is something to audit.
+
+    Inert unless RMA_CALL_BUDGET is set, so normal operation is unchanged.
+    """
+    from . import call_budget as _cb
+    if not _cb.enabled():
+        return True, ""
+    CONSTRUCTIVE = {"solver", "revise", "literature"}
+    if unit in CONSTRUCTIVE:
+        return True, ""
+    proof = store.current_proof()
+    # The revision object carries its content in `body` (see solve.py, which
+    # delivers `proof.body`). Reading a non-existent `text` attribute made this
+    # gate see an empty proof forever, so the critic stayed switched off even
+    # after the solver had written something worth auditing.
+    text = (getattr(proof, "body", None) or getattr(proof, "text", "") or "") if proof else ""
+    if not _cb.looks_substantive(text):
+        return False, f"{unit}: nothing substantive to work on yet"
+    if _cb.remaining() <= 1:
+        return False, f"{unit}: budget spent, keeping the proof"
+    return True, ""
+
+
 def _critical_counts(store: ResearchStore) -> tuple[int, int]:
     """(open P0/P1, resolved P0/P1) from the issue store."""
     open_c = res_c = 0
@@ -188,10 +224,24 @@ def solve_problem(
             rr.units.append(name)
 
         # (Q,S) <- Run(Critic, ...)
-        _safe_op(store, "critic", r, lambda: get_operation("critic").run(
-            ctx, analyses=critic_analyses, telemetry_path=telemetry_path))
-        rr.units.append("critic")
+        _ok, _why = _construction_first(store, "critic")
+        if _ok:
+            _safe_op(store, "critic", r, lambda: get_operation("critic").run(
+                ctx, analyses=critic_analyses, telemetry_path=telemetry_path))
+            rr.units.append("critic")
+        else:
+            print(f"  round {r}: skip {_why}", flush=True)
         queue = ctx.extra.get("queue") or []
+        if not _ok and not queue:
+            # The solver is issue-driven: the loop below runs it once per queued
+            # issue, so a round with no critic has no issues and never calls the
+            # solver at all. Two arms proved this the expensive way -- they ran
+            # literature+finalize twice, spent three calls, and delivered nothing.
+            # With no proof yet the right first move is not "critique nothing"
+            # and not "skip the round", it is "write the first draft", so queue
+            # one explicit construction task against the problem statement.
+            queue = [_first_draft_issue()]
+            print(f"  round {r}: queued first-draft construction for solver", flush=True)
 
         # for iota in Q[:b]: Run(Solver, (p,iota), ...)
         for issue in queue[: cfg.issue_budget]:
@@ -204,19 +254,20 @@ def solve_problem(
             _run("literature", invoke=backend)
 
         # Run(Meeting, ...) -> (rho, a, dH) — skip if meeting ablated
-        if not cfg.ablated("meeting"):
+        if not cfg.ablated("meeting") and _construction_first(store, "meeting")[0]:
             _run("meeting", invoke=backend)
             # Run(Revise, (p,a), ...)
             _run("revise", invoke=backend)
 
         # UpdateConcepts(S, pi, dH) — skip if concepts ablated
-        if not cfg.ablated("concepts"):
+        if not cfg.ablated("concepts") and _construction_first(store, "concepts")[0]:
             _safe_op(store, "concepts", r, lambda: get_operation("concepts").run(
                 ctx, invoke=backend, telemetry_path=telemetry_path))
             rr.units.append("update_concepts")
 
         # (e,S) <- Run(Evaluator, (p,pi), ...)
-        _run("evaluator", invoke=backend)
+        if _construction_first(store, "evaluator")[0]:
+            _run("evaluator", invoke=backend)
 
         # FinalizeRound(S, r)
         metrics = _finalize_round(store, ctx, r, prev_resolved_critical)
@@ -309,6 +360,22 @@ def _finalize_round(store, ctx, round_idx, prev_resolved_critical) -> RoundMetri
                     "open_total": metrics.open_total},
               round=round_idx)
     return metrics
+
+
+class _FirstDraftIssue:
+    """The one issue that exists before any proof does: there is no proof."""
+    id = "construct-0"
+    code = "no_proof_yet"
+    severity = "P0"
+    claim_id = None
+    message = ("No proof has been written yet. Construct a complete proof of the "
+               "problem statement from scratch.")
+    detail = ("Work from the problem statement alone. Produce a full argument, "
+              "not a plan, an outline, or a critique.")
+
+
+def _first_draft_issue():
+    return _FirstDraftIssue()
 
 
 def _issue_dict(issue) -> dict:

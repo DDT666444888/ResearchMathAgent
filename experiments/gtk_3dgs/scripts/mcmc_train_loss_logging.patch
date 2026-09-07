@@ -1,0 +1,20 @@
+diff --git a/train.py b/train.py
+index 7a2225e..77b0b0f 100644
+--- a/train.py
++++ b/train.py
+@@ -109,6 +109,15 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations, checkpoi
+         with torch.no_grad():
+             # Progress bar
+             ema_loss_for_log = 0.4 * loss.item() + 0.6 * ema_loss_for_log
++
++            # GTK diagnostics: dump raw (non-EMA) loss every 1000 iterations,
++            # aligned with --save_iterations checkpoints, for the TPAMI GTK
++            # extension experiment plan (see experiments/gtk_3dgs/).
++            if iteration % 1000 == 0:
++                with open(os.path.join(scene.model_path, "losses.jsonl"), "a") as _gtk_f:
++                    _gtk_f.write(json.dumps({"iteration": iteration, "loss": loss.item(),
++                                              "l1_loss": Ll1.item()}) + "\n")
++
+             if iteration % 10 == 0:
+                 progress_bar.set_postfix({"Loss": f"{ema_loss_for_log:.{7}f}"})
+                 progress_bar.update(10)

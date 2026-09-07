@@ -164,6 +164,13 @@ def default_invoker(op: "Operation", ctx: OpContext) -> Callable[[str, str], obj
         system = f"You are the {unit} operation for Research Math Agent."
         if op.expects == "latex":
             if subscription:
+                # Benchmark hook: route LaTeX ops through the meter too, or the
+                # cost axis would count only the JSON ops and undercount RMA.
+                _shim = __import__("os").environ.get("RMA_VIA_SHIM")
+                if _shim:
+                    _t = models._shim_complete(_shim, system, observation)
+                    if _t is not None:
+                        return _t
                 response = models.call_claude_code(
                     model=model, system=system, prompt=observation,
                     cwd=ctx.store.repo_root, expect="latex")

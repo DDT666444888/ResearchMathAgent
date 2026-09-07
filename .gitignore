@@ -73,6 +73,7 @@ documents/*
 # Data and solver outputs (large, not versioned here)
 data/
 outputs/
+drafts/
 
 # Except the seed dataset metadata (small, should be in repo)
 !data/datasets/
@@ -89,3 +90,26 @@ outputs/
 .env.local
 
 logs
+
+# ------------------------------
+# Proof process & raw records (kept private on the `dev` remote;
+# never published to the public repo)
+# ------------------------------
+webapp/proof_history/
+webapp/issues/
+webapp/insights/datasets/
+webapp/insights/questions/
+webapp/insights/system.json
+webapp/insights/verification_report_*.json
+webapp/meets/
+webapp/push_forward_state.json
+webapp/push_forward_history.json
+webapp/token_log.jsonl
+webapp/todos/
+webapp/prefix/
+baselines/
+benchmarks/
+.locks/
+improved_solution.tex
+partial_output.tex
+partial_output.pdf

@@ -71,6 +71,14 @@ def build_parser() -> argparse.ArgumentParser:
         help="Skip problems that are already marked verified in the output folder.",
     )
     solve.add_argument(
+        "--improve",
+        metavar="PROOF.tex",
+        help="Start from an existing proof instead of writing one: seed the store "
+             "with this document, skip the proposer, and spend the round budget "
+             "refining it. Used for proof-improvement comparisons, where every "
+             "method must be handed the SAME starting document.",
+    )
+    solve.add_argument(
         "--fast",
         action="store_true",
         help="Skip verify and refine stages — only parse and propose. Useful for quick first-pass proof generation.",

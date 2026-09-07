@@ -38,17 +38,34 @@ from .runs import RunHandle
 _ALLOWED_TOOLS = "Read Write Edit Bash Glob"
 _MAX_TURNS = 50
 _WALL_SECONDS = 1200   # 20 min hard ceiling per agent
-_API_BASE = "http://localhost:8000"
+# Agents report back by curl-ing the API. Hard-coding port 8000 meant every
+# call silently failed on the dev server (8001) while run_issue_cycle still
+# reported success, because it only counts log lines.
+_API_BASE = os.environ.get("RMA_API_BASE", "http://localhost:8000").rstrip("/")
 
 # ── working proof helpers ────────────────────────────────────────────────────
 
-def working_proof_path(repo_root: Path, problem_id: str) -> Path:
-    return repo_root / "webapp" / "issues" / problem_id / "working_solution.tex"
+def working_proof_path(repo_root: Path, problem_id: str,
+                       dataset: str = "first_proof_1") -> Path:
+    """Dataset-scoped path to a problem's working proof.
+
+    This used to ignore its dataset argument entirely, so two datasets that
+    happen to share a problem id (prob-01, q1, …) overwrote each other's proof.
+    Legacy un-scoped files are still read when no scoped file exists yet.
+    """
+    scoped = repo_root / "webapp" / "issues" / dataset / problem_id / "working_solution.tex"
+    if scoped.is_file():
+        return scoped
+    legacy = repo_root / "webapp" / "issues" / problem_id / "working_solution.tex"
+    if legacy.is_file():
+        return legacy
+    return scoped
 
 
-def get_working_proof(repo_root: Path, problem_id: str) -> str:
+def get_working_proof(repo_root: Path, problem_id: str,
+                      dataset: str = "first_proof_1") -> str:
     """Return the best available proof tex for problem_id."""
-    ws = working_proof_path(repo_root, problem_id)
+    ws = working_proof_path(repo_root, problem_id, dataset)
     if ws.is_file():
         return ws.read_text(encoding="utf-8", errors="replace")
     # Fall back to the merged final-solutions file in the sibling repo
@@ -79,12 +96,16 @@ def save_working_proof(
     issue_id: str | None = None,
     issue_title: str | None = None,
     agent: str | None = None,
+    dataset: str = "first_proof_1",
 ) -> None:
     from .proof_history import record_proof_version
-    old_tex = get_working_proof(repo_root, problem_id)
-    p = working_proof_path(repo_root, problem_id)
+    old_tex = get_working_proof(repo_root, problem_id, dataset)
+    p = working_proof_path(repo_root, problem_id, dataset)
     p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_text(tex, encoding="utf-8")
+    # Atomic: a truncated write here loses the working proof outright.
+    tmp = p.with_suffix(".tex.tmp")
+    tmp.write_text(tex, encoding="utf-8")
+    os.replace(tmp, p)
     try:
         record_proof_version(
             repo_root, problem_id, tex,

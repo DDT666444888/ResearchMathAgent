@@ -33,6 +33,11 @@ class SolveTest(unittest.TestCase):
             max_rounds=3,
             skill_path="skills/math-research/SKILL.md",
             repo_root=".",
+            # These tests exercise the LEGACY parse->propose->verify pipeline
+            # (now opt-in; the orchestrator is the default).
+            legacy_pipeline=True,
+            orchestrator=False,
+            backend="auto",
         )
 
     def test_solve_creates_single_problem_run(self) -> None:

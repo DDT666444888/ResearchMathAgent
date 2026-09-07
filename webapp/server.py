@@ -14,9 +14,10 @@ import os
 import re
 import secrets
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 
-from fastapi import Body, FastAPI, Header, Query
+from fastapi import Body, FastAPI, Header, Query, Request
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -131,6 +132,39 @@ def _ensure_secret(var_name: str, *, label: str) -> str:
 # .env.local first, so normally these just read the configured values.
 _SMOKE_KEY = _ensure_secret("RMA_SMOKE_KEY", label="/api/solve")
 _AGENT_KEY = _ensure_secret("RMA_AGENT_KEY", label="/api/agent/*")
+
+# ── Lockdown: the ONLY sanctioned way to spend AI is an authenticated
+# POST /api/solve (run_rma.sh). When RMA_LOCKDOWN is set, every autonomous
+# AI background loop (issue solver, proof-eval, literature, concepts, library
+# seeding) is disabled so nothing consumes the model except that endpoint.
+_LOCKDOWN = os.environ.get("RMA_LOCKDOWN", "").strip().lower() in ("1", "true", "yes", "on")
+
+# Every /api/solve question payload is appended here (one JSON object per line).
+_SMOKE_LOG = REPO_ROOT / "documents" / "smoke_solve_questions.jsonl"
+_SMOKE_LOG_LOCK = threading.Lock()
+
+
+def _log_smoke_question(*, job_id: str, mode: str, pid: str, problem: str,
+                        rounds: int, max_wall: int, client: str) -> None:
+    """Append one call's question payload to the smoke-solve log (best-effort)."""
+    rec = {
+        "ts": datetime.now(timezone.utc).isoformat(),
+        "job_id": job_id,
+        "mode": mode,               # "async" | "wait"
+        "id": pid,
+        "rounds": rounds,
+        "max_wall_seconds": max_wall,
+        "client": client,
+        "problem_chars": len(problem),
+        "problem": problem,         # full question payload text
+    }
+    try:
+        with _SMOKE_LOG_LOCK:
+            _SMOKE_LOG.parent.mkdir(parents=True, exist_ok=True)
+            with _SMOKE_LOG.open("a", encoding="utf-8") as fh:
+                fh.write(json.dumps(rec, ensure_ascii=False) + "\n")
+    except Exception:
+        pass  # logging must never break a solve
 
 
 def _default_provider() -> str:
@@ -261,17 +295,12 @@ def _question_summary(repo_root: Path, qid: str) -> dict:
 app = FastAPI(title="Research Math Agent", version="0.2.0")
 
 
-# ── Action gate ──────────────────────────────────────────────────────────────
-# Policy: anyone may *view* (read-only GETs stay open), but every *operation* —
-# anything that mutates state or runs the model — requires the website key
-# (RMA_AGENT_KEY), passed as a `key` query param (EventSource can't set headers)
-# or an `X-API-Key` header. The public rma-solve endpoint is the one exception:
-# it enforces its own RMA_SMOKE_KEY in-handler, so it's allowlisted from this gate.
-#
-# Most operations are non-GET, but several GETs trigger expensive model/agent runs
-# (interactive solve, the agent loop, the *_eval re-runs, literature discovery,
-# concept generation, issue discussion) — those are matched explicitly below.
-_ACTION_GET_RE = re.compile(r"^/api/(solve$|agent/|.+/run$|.+/discover$|.+/generate$|.+/discuss$)")
+# ── API exposure gate ────────────────────────────────────────────────────────
+# Public API access is limited to run_rma.sh:
+#   POST /api/solve        submit a problem with RMA_SMOKE_KEY
+#   GET  /api/solve/<job>  poll that job with RMA_SMOKE_KEY
+# All other /api routes are intentionally hidden from the website/tunnel.
+_SOLVE_JOB_RE = re.compile(r"^/api/solve/[A-Za-z0-9]+$")
 
 
 @app.middleware("http")
@@ -280,22 +309,9 @@ async def _gate_actions(request, call_next):
     method = request.method
     if method in ("OPTIONS", "HEAD") or not path.startswith("/api/"):
         return await call_next(request)
-    # Public rma-solve API (POST /api/solve) + its status poll: gated by RMA_SMOKE_KEY
-    # inside the handler, not by the website key.
-    if (path == "/api/solve" and method == "POST") or path.startswith("/api/solve/"):
+    if (path == "/api/solve" and method == "POST") or (method == "GET" and _SOLVE_JOB_RE.match(path)):
         return await call_next(request)
-    is_action = method in ("POST", "PUT", "PATCH", "DELETE") or bool(_ACTION_GET_RE.match(path))
-    if is_action and not _agent_auth_ok(request.query_params.get("key") or request.headers.get("x-api-key")):
-        # Loopback trust: ONLY when RMA_TRUST_LOCAL=1 AND the client is loopback.
-        # Used for backend-only runs (e.g. the push-forward agent cycle posting to
-        # localhost) where NO proxy/tunnel is in front. Never enable this on a
-        # server that sits behind the proxy/tunnel — the proxy makes external
-        # traffic appear to originate from 127.0.0.1, which would bypass the gate.
-        client_host = (request.client.host if request.client else "")
-        if os.environ.get("RMA_TRUST_LOCAL") == "1" and client_host in ("127.0.0.1", "::1", "localhost"):
-            return await call_next(request)
-        return JSONResponse({"error": "unauthorized — this operation requires an API key"}, status_code=401)
-    return await call_next(request)
+    return JSONResponse({"error": "not found"}, status_code=404)
 
 
 def _precompile_problems():
@@ -310,23 +326,32 @@ def _precompile_problems():
             compile_problem_pdf(REPO_ROOT, pid)
 
 
+# PDF precompile uses only LaTeX (no AI), so it runs regardless of lockdown.
 threading.Thread(target=_precompile_problems, daemon=True).start()
-threading.Thread(
-    target=ensure_all_evaluated, args=(REPO_ROOT,), daemon=True
-).start()
-threading.Thread(
-    target=ensure_all_lit, args=(REPO_ROOT, _Q_TITLES), daemon=True
-).start()
-threading.Thread(target=seed_global_library, args=(REPO_ROOT,), daemon=True).start()
-threading.Thread(
-    target=ensure_all_concepts, args=(REPO_ROOT, _Q_TITLES), daemon=True
-).start()
-threading.Thread(target=ensure_fp2_concepts, args=(REPO_ROOT,), daemon=True).start()
-# NOTE: the old indiscriminate context bundle (all raw .tex fragments concatenated)
-# has been retired in favour of per-problem comprehensive Context Reports
-# (see context_report.py + /api/context-report/*). No startup prebuild needed.
+
+# Every thread below spends AI autonomously (proof-eval, literature, concepts,
+# library seeding, the issue-solver loop). Under RMA_LOCKDOWN none of them start,
+# so the ONLY thing that can consume the model is an authenticated POST /api/solve.
 from .issue_loop import run_issue_loop, evolve_once as _evolve_issues_once
-threading.Thread(target=run_issue_loop, args=(REPO_ROOT,), daemon=True).start()
+if _LOCKDOWN:
+    print("[server] RMA_LOCKDOWN=1 — autonomous AI loops disabled; "
+          "only authenticated POST /api/solve may spend AI.", flush=True)
+else:
+    threading.Thread(
+        target=ensure_all_evaluated, args=(REPO_ROOT,), daemon=True
+    ).start()
+    threading.Thread(
+        target=ensure_all_lit, args=(REPO_ROOT, _Q_TITLES), daemon=True
+    ).start()
+    threading.Thread(target=seed_global_library, args=(REPO_ROOT,), daemon=True).start()
+    threading.Thread(
+        target=ensure_all_concepts, args=(REPO_ROOT, _Q_TITLES), daemon=True
+    ).start()
+    threading.Thread(target=ensure_fp2_concepts, args=(REPO_ROOT,), daemon=True).start()
+    # NOTE: the old indiscriminate context bundle (all raw .tex fragments concatenated)
+    # has been retired in favour of per-problem comprehensive Context Reports
+    # (see context_report.py + /api/context-report/*). No startup prebuild needed.
+    threading.Thread(target=run_issue_loop, args=(REPO_ROOT,), daemon=True).start()
 
 
 @app.get("/api/problems")
@@ -450,7 +475,11 @@ def list_issues_ep(problem_id: str, dataset: str = Query(None), status: str = Qu
         return JSONResponse({"error": "invalid problem id"}, status_code=400)
     elif not _ID_RE_LOOSE.match(pid):
         return JSONResponse({"error": "invalid problem id"}, status_code=400)
-    return JSONResponse({"issues": list_issues(REPO_ROOT, pid, ds, status=status)})
+    # The UI wants a starting issue for a fresh problem, so this entry point
+    # opts into seeding explicitly. list_issues no longer writes by default.
+    return JSONResponse(
+        {"issues": list_issues(REPO_ROOT, pid, ds, status=status, seed_if_empty=True)}
+    )
 
 
 @app.post("/api/issues/{problem_id}")
@@ -466,6 +495,10 @@ def create_issue_ep(problem_id: str, payload: dict = Body(...), dataset: str = Q
         author=str(payload.get("author", "human")),
         labels=payload.get("labels", []),
         dataset=ds,
+        # Dropping these silently discarded the P0-P3 severity model: the critic
+        # agent posts them here, and create_issue has always accepted them.
+        issue_type=payload.get("issue_type"),
+        priority=payload.get("priority"),
     )
     return JSONResponse(issue)
 
@@ -1757,7 +1790,10 @@ def proof_eval_run_ep(problem_id: str, dataset: str = Query(None), force: bool =
     from .proof_eval import evaluate_proof
 
     def _stream():
-        result = evaluate_proof(REPO_ROOT, problem_id, _ds_from_query(dataset), force=force)
+        # Automated evals stay pinned to proof content (deterministic); an
+        # explicit manual force=true is a human override → allow a fresh roll.
+        result = evaluate_proof(REPO_ROOT, problem_id, _ds_from_query(dataset),
+                                force=force, reuse_if_unchanged=not force)
         if "error" in result:
             yield f"data: {json.dumps({'type': 'error', 'message': result['error']})}\n\n"
         else:
@@ -2367,7 +2403,8 @@ def _smoke_job_path(job_id: str) -> Path:
 
 
 @app.post("/api/solve")
-def smoke_solve(payload: dict = Body(...), x_api_key: str = Header(None)) -> JSONResponse:
+def smoke_solve(payload: dict = Body(...), x_api_key: str = Header(None),
+                request: Request = None) -> JSONResponse:
     """End-to-end solve + evaluation for external use (smoke test).
 
     A solve takes minutes, longer than most proxies/tunnels hold a connection, so
@@ -2411,8 +2448,16 @@ def smoke_solve(payload: dict = Body(...), x_api_key: str = Header(None)) -> JSO
     except (TypeError, ValueError):
         max_wall = 900
 
+    try:
+        _client = (request.headers.get("x-forwarded-for") if request else None) \
+            or (request.client.host if request and request.client else "?")
+    except Exception:
+        _client = "?"
+
     # Synchronous mode for direct callers that can hold the connection.
     if payload.get("wait"):
+        _log_smoke_question(job_id="-", mode="wait", pid=pid, problem=problem,
+                            rounds=rounds, max_wall=max_wall, client=_client)
         try:
             result = solve_and_evaluate(REPO_ROOT, problem, rounds=rounds, max_wall=max_wall)
             return JSONResponse({"id": pid, "status": "done", **result})
@@ -2421,6 +2466,8 @@ def smoke_solve(payload: dict = Body(...), x_api_key: str = Header(None)) -> JSO
 
     # Async job (default): return immediately, caller polls GET /api/solve/<job_id>.
     job_id = uuid.uuid4().hex[:12]
+    _log_smoke_question(job_id=job_id, mode="async", pid=pid, problem=problem,
+                        rounds=rounds, max_wall=max_wall, client=_client)
     _SMOKE_JOB_DIR.mkdir(parents=True, exist_ok=True)
     path = _smoke_job_path(job_id)
     path.write_text(json.dumps({"id": pid, "status": "running"}), encoding="utf-8")
@@ -2786,15 +2833,8 @@ def rmac_solve_root() -> _Redir:
     return _Redir("/rmac/solve/", status_code=302)
 
 def _index_html() -> HTMLResponse:
-    """Serve the SPA, injecting the agent key so same-origin EventSource calls can
-    authenticate (they can't set headers). Anonymous callers get no key."""
+    """Serve the SPA without embedding server-side shared secrets."""
     html = (STATIC_DIR / "index.html").read_text(encoding="utf-8")
-    if _AGENT_KEY:
-        html = html.replace(
-            "<head>",
-            f"<head>\n<script>window.RMA_AGENT_KEY={json.dumps(_AGENT_KEY)};</script>",
-            1,
-        )
     return HTMLResponse(html)
 
 
