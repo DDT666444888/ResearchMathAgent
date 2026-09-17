@@ -200,23 +200,7 @@ class SolverOperation(Operation):
         if not result.applied:
             # one retry is handled by the caller re-invoking; here we record the
             # reason. A full rewrite fallback is taken by run() after two tries.
-            # Persist the reason. It lived only in ctx.extra, so the single most
-            # important failure in the improvement loop -- why a localized edit
-            # could not be applied -- left no trace on disk and could not be
-            # diagnosed after the fact.
             ctx.extra.setdefault("patch_rejects", []).append(result.reason)
-            try:
-                import json as _json
-                from pathlib import Path as _P
-                d = getattr(ctx, "artifacts_dir", None) or ctx.extra.get("artifacts_dir")
-                if d:
-                    f = _P(d) / "patch_rejects.jsonl"
-                    with f.open("a", encoding="utf-8") as fh:
-                        fh.write(_json.dumps({"round": getattr(ctx, "round", None),
-                                              "reason": result.reason,
-                                              "mode": result.mode}) + "\n")
-            except Exception:
-                pass  # observability must never break the run
         ctx.extra["patch_result"] = result
         return result
 
@@ -242,12 +226,35 @@ class SolverOperation(Operation):
         result = super().run(ctx, invoke=invoke, telemetry_path=telemetry_path)
         patch_result = ctx.extra.get("patch_result")
 
+        def _record(pr, attempt):
+            """Why a localized edit could not be applied is the single most
+            useful fact about this loop, and it used to live only in memory:
+            twelve consecutive failures on the improvement task left nothing on
+            disk to diagnose. telemetry_path is the one handle here that knows
+            where this run writes."""
+            if pr is None or pr.applied or not telemetry_path:
+                return
+            try:
+                import json as _json
+                from pathlib import Path as _P
+                f = _P(telemetry_path).with_name("patch_rejects.jsonl")
+                with f.open("a", encoding="utf-8") as fh:
+                    fh.write(_json.dumps({
+                        "round": getattr(ctx, "round", None), "attempt": attempt,
+                        "reason": pr.reason, "mode": pr.mode,
+                        "issue": (ctx.extra.get("issue") or {}).get("code"),
+                    }) + "\n")
+            except Exception:
+                pass  # observability must never break the run
+
+        _record(patch_result, 1)
         attempts = 1
         while (patch_result is not None and not patch_result.applied
                and attempts < max_patch_attempts):
             attempts += 1
             result = super().run(ctx, invoke=invoke, telemetry_path=telemetry_path)
             patch_result = ctx.extra.get("patch_result")
+            _record(patch_result, attempts)
 
         if patch_result is not None and patch_result.applied:
             # The gap is closed — mark the issue resolved so open_issues() and

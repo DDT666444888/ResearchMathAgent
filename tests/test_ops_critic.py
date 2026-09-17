@@ -1,4 +1,4 @@
-"""T4.2 — Critic produces the ranked queue Q from three analyses.
+"""T4.2 — Critic produces the ranked queue Q from four analyses.
 
 All model-backed analyses are injected, so the whole test runs offline.
 """
@@ -38,15 +38,20 @@ def _mk_issues(raw, analysis):
 
 
 def _fake_analyses(lm=None, semantic=None, comp=6.0):
-    """Injectable stand-ins for the two model-backed analyses. They return
-    list[Issue], exactly like rma.ops.critic.lm_gap_analysis / semantic_analysis."""
+    """Injectable stand-ins for the three model-backed analyses. They return
+    list[Issue], exactly like rma.ops.critic.lm_gap_analysis / semantic_analysis /
+    fidelity_analysis. Every one must be stubbed: an analysis left out here falls
+    through to the real, model-calling implementation."""
     def _lm(proof_text, args):
         return _mk_issues(lm, "lm")
 
     def _sem(problem_text, proof_text, args):
         return comp, _mk_issues(semantic, "semantic")
 
-    return {"lm": _lm, "semantic": _sem}
+    def _fid(problem_text, proof_text, args):
+        return []
+
+    return {"lm": _lm, "semantic": _sem, "fidelity": _fid}
 
 
 class CriticTestBase(unittest.TestCase):

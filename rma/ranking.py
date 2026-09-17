@@ -27,8 +27,12 @@ _RANK = {p: i for i, p in enumerate(PRIORITIES)}
 
 ORDER_MODES = ("fifo", "severity", "severity+impact")
 
-# Issue codes that are correctness-critical wherever they land.
-_ALWAYS_P0 = {"circular_reasoning", "false_statement", "counterexample"}
+# Issue codes that are correctness-critical wherever they land. A misread
+# problem statement invalidates the whole conclusion exactly like a false
+# statement does -- the proof may be internally valid and still answer the
+# wrong problem.
+_ALWAYS_P0 = {"circular_reasoning", "false_statement", "counterexample",
+              "misread_problem_statement"}
 # Codes that never affect correctness.
 _PRESENTATION = {"notation", "typo", "presentation", "clarity", "formatting",
                  "unclear_def", "unclear-def"}
@@ -43,7 +47,7 @@ _NOTATION_TEXT = re.compile(
 _SUBSTANTIVE = {"unproved_lemma", "cited_blackbox_crux", "logical_gap", "logical_leap",
                 "hypothesis_not_verified", "incomplete_step", "proof_gap",
                 "circular_reasoning", "false_statement", "counterexample",
-                "unchecked_finite_claim"}
+                "unchecked_finite_claim", "misread_problem_statement"}
 
 
 @dataclass

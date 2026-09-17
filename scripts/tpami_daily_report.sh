@@ -9,9 +9,14 @@
 # Pattern mirrors agent_competitions/tools/daily_report.sh: a FACTS block
 # that is purely measured (page count, theorem count, checklist state,
 # running experiment jobs -- never invented), then a short reflection
-# written by `claude -p` from those facts plus yesterday's snapshot, then
-# a plain-text email via the shared local-SMTP mailer
-# (scripts/send_daily_report.py). Pure text, no tables, per user preference.
+# written by `claude -p` from those facts plus yesterday's snapshot.
+# Pure text, no tables, per user preference.
+#
+# 2026-09-08: no longer emails on its own. Per user request ("consolidate
+# the daily reports, don't send me many emails"), the finished report is
+# dropped into the shared daily-digest inbox instead; exactly one combined
+# email per day is sent by agent_competitions/tools/daily_digest.py (after
+# ARC's 21:00 slot, at 21:45).
 #
 # drafts/ is gitignored for this project (see .gitignore), so day-to-day
 # change detection can't use `git diff` -- state/history.json below is a
@@ -21,7 +26,7 @@ set -uo pipefail
 REPO=/projects/bhov/zzhao18/code/ResearchMathAgent-web
 PAPER_DIR="${REPO}/drafts/tpami_gtk_extension"
 CLAUDE="${CLAUDE_BIN:-/projects/bhov/zzhao18/software/npm-global/bin/claude}"
-MAILER="${REPO}/scripts/send_daily_report.py"
+INBOX=/projects/bhov/zzhao18/code/agent_competitions/tools/daily_digest_inbox
 # The bare `python3` on PATH resolves to the system's ancient 3.6 (no
 # capture_output=True, no text=True, no PEP 585 generics) -- use a real
 # interpreter directly rather than writing 3.6-compatible code.
@@ -260,7 +265,13 @@ if [ "${DRY_RUN}" = 1 ]; then
   exit 0
 fi
 
-"${PY}" "${MAILER}" "${SUBJ}" "${EMAIL}" --to "${TO}"
+mkdir -p "${INBOX}"
+{
+  echo "SUBJECT: ${SUBJ}"
+  echo
+  cat "${EMAIL}"
+} > "${INBOX}/tpami_${DATE}.txt"
+echo "queued for digest: ${SUBJ} -> ${INBOX}/tpami_${DATE}.txt"
 
 {
   echo "## ${DATE}"

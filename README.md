@@ -503,3 +503,13 @@ We gratefully acknowledge the creators and maintainers of the benchmark datasets
   year={2026}
 }
 ```
+
+
+## Lean proof reduction
+
+`rma reduce` adds Azure/OpenAI Responses generation, RMA research-store orchestration, kernel-verified candidate selection, and resumable cost control. On top of the round loop it searches with a beam of verified proofs, a UCB1 bandit over the strategy portfolio, and a cross-problem playbook of promoted transformations — each individually ablatable with `--ablate`. Reservations settle against metered usage, and `--probe` checks the deployment with one cheap live call before anything is compiled. See [the reduction guide](documents/development/rma-reduce.md).
+
+```sh
+.venv/bin/rma reduce --probe --model gpt-6-astra \
+  --credentials-file /private/path/to/credentials.txt --out /path/to/preflight
+```

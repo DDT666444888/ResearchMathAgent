@@ -45,6 +45,7 @@ ABLATIONS = (
     "critic.lm",
     "critic.structural",
     "critic.semantic",
+    "critic.fidelity",
     "meeting",
     "literature",
     "concepts",

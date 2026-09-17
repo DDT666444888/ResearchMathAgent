@@ -1,6 +1,6 @@
 """Claim-dependency graph — the paper's deterministic structural checker.
 
-Algorithm 1's critic runs three analyses; this is the second (main.tex:368):
+Algorithm 1's critic runs four analyses; this is the second (main.tex:368):
 
     "a deterministic structural checker parses the proof into claims and
      dependencies, measures the fraction of terminal claims supported by

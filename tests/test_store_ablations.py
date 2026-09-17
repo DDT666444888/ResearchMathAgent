@@ -1,6 +1,6 @@
 """T1.5 — the paper's memory ablations, as runnable store variants.
 
-Figure 5(d): stateless (1.8) -> last-round-only (3.4) -> full persistence (6.0).
+Figure 3(d): stateless (1.8) -> last-round-only (3.4) -> full persistence (6.0).
 Each must genuinely hide prior-round records, not merely deprioritise them,
 or the ablation measures nothing.
 """

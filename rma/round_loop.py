@@ -180,7 +180,7 @@ def solve_problem(
 
     ``backend(unit, observation) -> reply`` is the only seam to a model; an
     offline test passes a FakeBackend. ``critic_analyses`` injects the critic's
-    three analyses (the critic does not use ``backend`` — its analyses are its
+    four analyses (the critic does not use ``backend`` — its analyses are its
     invoke). Both default to the real implementations.
     """
     cfg = cfg or RunConfig()

@@ -1,7 +1,7 @@
 """Ablation matrix — every configuration the paper reports, as runnable runs.
 
-main.tex:880-940 reports two ablation figures: 5(c) leave-one-out component
-ablations, and 5(d) graded ladders. Per the paper's own protocol
+main.tex:880-940 reports two ablation panels: Figure 3(c) leave-one-out component
+ablations, and Figure 3(d) graded ladders. Per the paper's own protocol
 (app-ablation-protocol), each ablation must be a *runnable* configuration, not a
 deleted code path — "removing a component" means reducing it to its simplest
 functioning variant. Here every entry is a RunConfig that the round loop

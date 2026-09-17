@@ -69,6 +69,11 @@ documents/*
 # Keep the RMA supplementary (ACL system-details paper) — important, version it
 !documents/supplementary/
 !documents/supplementary/**
+# Keep the rma reduce design notes + literature review (hand-written, linked from README)
+!documents/development/
+documents/development/*
+!documents/development/rma-reduce.md
+!documents/development/rma-reduce-literature.md
 
 # Data and solver outputs (large, not versioned here)
 data/
@@ -91,10 +96,7 @@ drafts/
 
 logs
 
-# ------------------------------
-# Proof process & raw records (kept private on the `dev` remote;
-# never published to the public repo)
-# ------------------------------
+# Proof process & raw records (kept private on the `dev` remote; never published)
 webapp/proof_history/
 webapp/issues/
 webapp/insights/datasets/
@@ -113,3 +115,4 @@ benchmarks/
 improved_solution.tex
 partial_output.tex
 partial_output.pdf
+mobius_solution.tex

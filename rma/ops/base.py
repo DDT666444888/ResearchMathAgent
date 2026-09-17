@@ -57,11 +57,24 @@ class OpContext:
 
     @property
     def problem_text(self) -> str:
+        statement = ""
         for key in ("normalized_statement", "statement_excerpt", "title"):
             value = self.problem.get(key)
             if value:
-                return str(value)
-        return ""
+                statement = str(value)
+                break
+        # The author is dropped here in every prior version of this property,
+        # so no completeness/fidelity check downstream ever saw it. Measured
+        # cost: prob-02's author is Rich Schwartz, and the bare statement is
+        # (unnamed to the solver) his own optimal-paper-Moebius-band question —
+        # a problem authored by a mathematician known for one specific recent
+        # hard result is a stronger pointer to that result than anything in the
+        # restated conditions, and is exactly the signal fidelity_gate (#8 in
+        # rma/completeness.py) needs to catch a trivializing misreading.
+        author = self.problem.get("author")
+        if author and statement:
+            return f"[Problem author: {author}]\n{statement}"
+        return statement
 
     def current_proof_text(self) -> str:
         """The proof an operation acts ON — its subject, not ambient context.

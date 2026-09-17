@@ -501,3 +501,13 @@ latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex
   year={2026}
 }
 ```
+
+
+## Lean proof reduction
+
+`rma reduce` 在 RMA 的研究存储与编排之上做 Lean 证明压缩：Azure/OpenAI Responses 生成、内核验证后的候选选择、可续跑的预算控制。轮次循环之外还有三个可单独消融（`--ablate`）的搜索机制：已验证证明的 beam、对策略组合的 UCB1 bandit、跨题目的 playbook 记忆。预留额度会按实际用量结算，`--probe` 用一次廉价的真实调用先验证部署名与密钥，再开始编译。详见[压缩指南](documents/development/rma-reduce.md)。
+
+```sh
+.venv/bin/rma reduce --probe --model gpt-6-astra \
+  --credentials-file /private/path/to/credentials.txt --out /path/to/preflight
+```

@@ -82,7 +82,8 @@ class BestOfRoundsDeliveryTest(unittest.TestCase):
             })
 
             def _an():
-                return {"lm": lambda p, a: [], "semantic": lambda pr, p, a: (None, [])}
+                return {"lm": lambda p, a: [], "semantic": lambda pr, p, a: (None, []),
+                        "fidelity": lambda pr, p, a: []}
 
             res = solve_problem(store, {"title": "T"}, RunConfig(n_rounds=3),
                                 backend=backend, critic_analyses=_an())

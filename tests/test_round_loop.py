@@ -44,7 +44,10 @@ def _critic_analyses(lm=None, comp=6.0):
 
     def _sem(problem, proof, args):
         return comp, []
-    return {"lm": _lm, "semantic": _sem}
+
+    def _fid(problem, proof, args):
+        return []
+    return {"lm": _lm, "semantic": _sem, "fidelity": _fid}
 
 
 def _backend(revise_tex=COMPLETE, scores=None):

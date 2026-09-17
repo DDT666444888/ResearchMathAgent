@@ -21,6 +21,9 @@ def build_parser() -> argparse.ArgumentParser:
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
+    from .reduction.cli import register as register_reduce
+    register_reduce(subparsers)
+
     doctor = subparsers.add_parser(
         "doctor",
         help="Check whether the local repository is ready for RMA development.",
@@ -182,7 +185,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     ablate = subparsers.add_parser(
         "ablate-matrix",
-        help="List the runnable ablation configurations (paper Figure 5).",
+        help="List the runnable ablation configurations (paper Figure 3).",
     )
     ablate.add_argument("--list", action="store_true", dest="list_configs",
                         help="List config names, one per line (default action).")

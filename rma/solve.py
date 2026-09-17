@@ -687,7 +687,14 @@ def _fake_critic_analyses():
         return 3.0, [Issue(id="offline-sem-0", code="incomplete_step",
                            message="offline: the boundary case is not addressed.")]
 
-    return {"lm": _lm, "semantic": _sem}
+    def _fid(problem_text, proof_text, args):
+        # The fourth analysis needs an offline stand-in too: without one the critic
+        # falls through to rma.completeness.fidelity_gate, a live model call. One
+        # deterministic finding keeps disabling it observable, like _sem above.
+        return [Issue(id="offline-fid-0", code="misread_problem_statement",
+                      message="offline: the proof adopts an easier reading of the statement.")]
+
+    return {"lm": _lm, "semantic": _sem, "fidelity": _fid}
 
 
 def run_diff(args: Namespace) -> int:
@@ -948,15 +955,23 @@ def _verify_solution(
     issues = _collect_verification_issues(parsed, solution_text, repo_root, args)
     # ── completeness pipeline ────────────────────────────────────────────────
     # #1 semantic completeness gate, #2 multi-sample gap enumeration,
-    # #6 code-discharge of finite claims, #3 lemma-DAG completeness fraction.
+    # #6 code-discharge of finite claims, #3 lemma-DAG completeness fraction,
+    # #8 fidelity gate (right problem, not just complete given a chosen reading).
     problem_text = str(
         parsed.get("normalized_statement")
         or parsed.get("statement_excerpt")
         or parsed.get("title")
         or ""
     )
+    # See ops/base.py's problem_text property for why this matters: the author
+    # is captured in `parsed` (_build_parsed_problem) but was never forwarded
+    # into any gate's prompt until now.
+    _author = parsed.get("author")
+    if _author and problem_text:
+        problem_text = f"[Problem author: {_author}]\n{problem_text}"
     comp_score, comp_issues = _completeness.completeness_gate(problem_text, solution_text, args)
     issues.extend(comp_issues)
+    issues.extend(_completeness.fidelity_gate(problem_text, solution_text, args))
     issues.extend(_completeness.enumerate_gaps(solution_text, args))
     issues.extend(_completeness.unchecked_finite_issues(solution_text))
     dag = _completeness.lemma_dag(solution_text)

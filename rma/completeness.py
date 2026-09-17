@@ -26,6 +26,15 @@ makes *completeness itself* a driver of the solve loop:
                                        with an attached runnable check.
   #7 telemetry                      — per-round completeness trajectory,
                                        gaps opened/closed, question-shape tag.
+  #8 fidelity gate                  — is the chosen READING of the problem the one
+                                       its own citations point to? #1-#3 all grade
+                                       a proof given whatever interpretation it
+                                       committed to; none asks whether that
+                                       interpretation is the intended one. A proof
+                                       can be complete, gap-free, and answering a
+                                       trivialized version of a citation-backed hard
+                                       problem (see fidelity_gate's docstring for the
+                                       measured case that motivated this).
 
 Everything degrades gracefully: with no LLM backend (rma-skeleton / offline) the
 semantic passes return no issues and the structural DAG/telemetry still work, so
@@ -42,6 +51,7 @@ from argparse import Namespace
 from datetime import datetime, timezone
 from pathlib import Path
 
+from .budget import count_tokens
 from .models import (
     call_anthropic,
     call_claude_code,
@@ -63,9 +73,61 @@ UNPROVED_LEMMA = "unproved_lemma"            # #2 named sub-result asserted, not
 CITED_BLACKBOX = "cited_blackbox_crux"       # #2 crux hidden behind a citation
 LOGICAL_LEAP = "logical_leap"                # #2 "it follows that" with no argument
 UNCHECKED_FINITE = "unchecked_finite_claim"  # #6 finite/numeric claim with no code check
+MISREAD_STATEMENT = "misread_problem_statement"  # #8 wrong reading, not an incomplete one
 COMPLETENESS_ISSUE_CODES = {
     INCOMPLETE_STEP, UNPROVED_LEMMA, CITED_BLACKBOX, LOGICAL_LEAP, UNCHECKED_FINITE,
+    MISREAD_STATEMENT,
 }
+
+# Real ceiling on how much of the proof a grading call may see, in TOKENS —
+# matches the round loop's own DEFAULT_CONTEXT_BUDGET (rma/config.py, 60,000)
+# minus headroom for the problem statement/system prompt/JSON schema, not the
+# ~24,000/16,000-CHARACTER limits this replaces below. Those were 4-6x tighter
+# than even a token-based reading of the same budget, and on a real solve run
+# (prob-09, first_proof_2, 2026-09-02) cut a 44,271-char delivered proof before
+# its own theorem-main/theorem-closed sections -- the critic then reported
+# those sections as "entirely absent" for 2 rounds (~$27 of otherwise-wasted
+# spend) even though they were present later in the same document.
+_MAX_PROOF_TOKENS_FOR_GRADING = int(os.environ.get("RMA_GRADING_PROOF_TOKEN_BUDGET", "40000"))
+
+
+def _prepare_proof_for_grading(solution_text: str) -> tuple[str, bool]:
+    """Fit ``solution_text`` for a grading prompt without silently cutting off
+    the part of the proof that matters most: its own conclusion.
+
+    A plain prefix slice can -- and, on a real run, did -- cut a long proof
+    before it ever reaches the theorem it is proving, then have the critic
+    report the missing tail as the proof being incomplete. Two changes fix
+    that: the ceiling is a real token budget instead of an arbitrary character
+    count picked before proofs this long existed, and when a proof genuinely
+    exceeds it, the cut keeps BOTH ends (setup and conclusion) with the middle
+    elided and explicitly marked, instead of only the head.
+
+    Returns (text_to_grade, was_truncated).
+    """
+    if count_tokens(solution_text) <= _MAX_PROOF_TOKENS_FOR_GRADING:
+        return solution_text, False
+    # ~4 chars/token, the same fallback rate budget.count_tokens uses when no
+    # tokenizer is installed -- good enough for a split point; not scored.
+    char_budget = _MAX_PROOF_TOKENS_FOR_GRADING * 4
+    head = solution_text[: char_budget * 3 // 5]
+    tail = solution_text[-(char_budget * 2 // 5):]
+    omitted = len(solution_text) - len(head) - len(tail)
+    stitched = (
+        f"{head}\n\n"
+        f"...[{omitted} characters omitted here -- the proof continues below]...\n\n"
+        f"{tail}"
+    )
+    return stitched, True
+
+
+_TRUNCATION_NOTE = (
+    "NOTE: this proof was too long to include in full; you are seeing its "
+    "beginning and end only, with a middle section omitted and marked as such "
+    "above. Do NOT report content in the omitted region as 'missing', 'absent', "
+    "or 'never proved' -- you cannot see it, so you cannot make that claim. Only "
+    "report a gap if it is visibly missing WITHIN the text actually shown to you."
+)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -241,8 +303,12 @@ def enumerate_gaps(solution_text: str, args: Namespace,
     tally: Counter = Counter()
     detail: dict[tuple, dict] = {}
     valid = 0
+    proof_for_grading, truncated = _prepare_proof_for_grading(solution_text)
+    gap_prompt = _GAP_PROMPT.replace("{proof}", proof_for_grading)
+    if truncated:
+        gap_prompt = f"{_TRUNCATION_NOTE}\n\n{gap_prompt}"
     for _ in range(max(1, samples)):
-        raw = _model_call(args, _GAP_SYSTEM, _GAP_PROMPT.replace("{proof}", solution_text[:24000]))
+        raw = _model_call(args, _GAP_SYSTEM, gap_prompt)
         parsed = _parse_json_block(raw)
         if not isinstance(parsed, list):
             continue
@@ -275,6 +341,7 @@ def enumerate_gaps(solution_text: str, args: Namespace,
             "severity": "error" if crit else "warning",
             "message": f"{it.get('claim', 'Unproved step')} (at {it.get('location','?')})",
             "detail": f"agreement {count}/{valid}",
+            "input_truncated": truncated,
         })
     return issues
 
@@ -302,9 +369,12 @@ def completeness_gate(problem_text: str, solution_text: str,
     judge's ``missing`` notes become hard issues that block verification."""
     if not _backend_available(args):
         return None, []
-    raw = _model_call(args, _COMPLETE_SYSTEM,
-                      _COMPLETE_PROMPT.replace("{problem}", problem_text[:6000])
-                                      .replace("{proof}", solution_text[:24000]))
+    proof_for_grading, truncated = _prepare_proof_for_grading(solution_text)
+    prompt = (_COMPLETE_PROMPT.replace("{problem}", problem_text[:6000])
+                              .replace("{proof}", proof_for_grading))
+    if truncated:
+        prompt = f"{_TRUNCATION_NOTE}\n\n{prompt}"
+    raw = _model_call(args, _COMPLETE_SYSTEM, prompt)
     parsed = _parse_json_block(raw)
     if not isinstance(parsed, dict) or "completeness" not in parsed:
         return None, []
@@ -323,6 +393,7 @@ def completeness_gate(problem_text: str, solution_text: str,
             "message": f"Completeness {score:.0f}/10 (<{COMPLETENESS_THRESHOLD:.0f}); "
                        f"missing step: {str(m)[:300]}",
             "detail": str(m)[:300],
+            "input_truncated": truncated,
         })
     if not issues:  # low score but no itemized notes
         issues.append({
@@ -331,8 +402,83 @@ def completeness_gate(problem_text: str, solution_text: str,
             "message": f"Proof completeness scored {score:.0f}/10, below the "
                        f"{COMPLETENESS_THRESHOLD:.0f}/10 gate; essential steps are missing.",
             "detail": str(score),
+            "input_truncated": truncated,
         })
     return score, issues
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# #8  fidelity gate — right problem, not just a complete proof of *some* problem
+# ─────────────────────────────────────────────────────────────────────────────
+_FIDELITY_SYSTEM = (
+    "You are checking whether a proof engages with the SUBSTANCE of the problem it "
+    "claims to solve, not whether its individual steps are valid -- a different "
+    "question from completeness. A proof can be internally airtight and still answer "
+    "an easier problem than the one posed, by reading an ambiguous or loosely-worded "
+    "condition in whatever way makes the problem collapse: treating a strict "
+    "inequality as unbounded, discarding a stated identification, or exploiting a "
+    "literal reading that lets a free parameter be pushed to a degenerate limit. This "
+    "is most likely exactly when the problem names a specific paper, theorem, "
+    "conjecture, or author+year: a trivializing misreading is how a hard, "
+    "citation-backed problem quietly gets 'solved' by accident. Be skeptical of any "
+    "proof whose answer collapses a problem that cites specific, nontrivial prior "
+    "work into something easy -- but do not invent a citation or a mismatch that "
+    "is not really there."
+)
+_FIDELITY_PROMPT = (
+    "PROBLEM (note any cited papers, named theorems, authors, or years):\n{problem}\n\n"
+    "PROOF / ANSWER:\n{proof}\n\n"
+    "Does this proof's approach genuinely engage with the difficulty the problem's own "
+    "citations point to, or does it reach its answer via a reading of some condition "
+    "that trivializes the problem relative to what those citations establish? If the "
+    "problem cites no specific prior result, or the proof's approach clearly engages "
+    "the real difficulty, say so and return no issue. Return ONLY JSON:\n"
+    '{"trivializes": true|false, "cited_result": "<what the problem cites, or empty>", '
+    '"mismatch": "<one sentence naming the specific misreading, or empty>"}'
+)
+
+
+def fidelity_gate(problem_text: str, solution_text: str,
+                  args: Namespace) -> list[dict[str, str]]:
+    """#8: is the proof's chosen READING of the problem the one intended, not just
+    complete given whatever reading it picked?
+
+    Motivated by a real, measured failure, not a hypothetical: on First Proof
+    batch-2's flat-Moebius-band problem, three independently built systems (RMA,
+    Danus, and RMA-through-Danus's-own-verify-gate) each produced a complete,
+    internally valid proof of inf=0 by reading a "strictly shortens every boundary
+    subarc" condition as an unbounded one-sided contraction -- when the problem's
+    own citation (Schwartz, Annals of Math. 2025) is for the isometric threshold
+    sqrt(3). ``completeness_gate`` (#1) never catches this class of error: its own
+    system prompt scopes it to "ONLY proof completeness... ignore clarity and
+    style", which a wrong-but-complete proof of the wrong problem satisfies fully.
+    This gate asks the prior question instead, and is deliberately independent of
+    #1-#3 so an ablation can isolate its effect.
+    """
+    if not _backend_available(args):
+        return []
+    proof_for_grading, truncated = _prepare_proof_for_grading(solution_text)
+    prompt = (_FIDELITY_PROMPT.replace("{problem}", problem_text[:6000])
+                              .replace("{proof}", proof_for_grading))
+    if truncated:
+        prompt = f"{_TRUNCATION_NOTE}\n\n{prompt}"
+    raw = _model_call(args, _FIDELITY_SYSTEM, prompt)
+    parsed = _parse_json_block(raw)
+    if not isinstance(parsed, dict) or not parsed.get("trivializes"):
+        return []
+    mismatch = str(parsed.get("mismatch") or "").strip()
+    if not mismatch:
+        return []
+    cited = str(parsed.get("cited_result") or "").strip()
+    message = ("Proof may trivialize the problem relative to its own cited result"
+               f"{f' ({cited})' if cited else ''}: {mismatch}")
+    return [{
+        "code": MISREAD_STATEMENT,
+        "severity": "error",
+        "message": message[:400],
+        "detail": mismatch[:400],
+        "input_truncated": truncated,
+    }]
 
 
 # ─────────────────────────────────────────────────────────────────────────────

@@ -1,25 +1,31 @@
-"""Critic — issue discovery, the paper's three complementary analyses.
+"""Critic — issue discovery, the paper's four complementary analyses.
 
 main.tex:366-368:
 
-    "The critic operation applies three complementary analyses to the current
+    "The critic operation applies four complementary analyses to the current
      proof. First, an LM-based critic identifies logical gaps and returns them
      as typed issue records. Second, a deterministic structural checker parses
      the proof into claims and dependencies, measures the fraction of terminal
      claims supported by completed arguments, and flags finite or numerical
      claims that lack executable verification. Third, a semantic completeness
      judge assesses whether the proof establishes the target statement as a
-     whole and converts its itemized missing steps into severity-rated issues."
+     whole and, when its score falls below the completeness threshold, converts
+     its itemized missing steps into severity-rated issues. Those three all
+     grade the proof given whatever reading of the problem it adopted, so a
+     fourth, independent fidelity analysis asks whether that reading is the
+     intended one or one that trivializes the problem relative to its own
+     citations."
 
 The output is the ranked queue Q (main.tex:370): open issues ordered by
 severity, then by dependency impact. This operation produces Q; the round loop
 then repairs Q[:b].
 
 Each analysis is individually disable-able (``--ablate critic.lm |
-critic.structural | critic.semantic``) so the paper's per-analysis ablation
-(4.3 / 3.8 / 4.1 vs the full 6.0) is a runnable configuration.
+critic.structural | critic.semantic | critic.fidelity``) so the paper's
+per-analysis ablation (4.3 / 3.8 / 4.1 / 4.5 vs the full 6.0) is a runnable
+configuration.
 
-The two model-backed analyses are delegated to ``rma.completeness`` — the
+The three model-backed analyses are delegated to ``rma.completeness`` — the
 existing, tested seam — rather than re-implemented here, so this file makes no
 direct model call. They are injectable (``analyses=``) so the whole critic runs
 offline in tests with canned findings.
@@ -34,7 +40,7 @@ from .base import Operation, register
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# the three analyses (each returns a list of rma.ranking.Issue)
+# the four analyses (each returns a list of rma.ranking.Issue)
 # ─────────────────────────────────────────────────────────────────────────────
 def structural_analysis(proof_text: str) -> list[Issue]:
     """Deterministic. No model. Parses the claim graph and flags:
@@ -90,6 +96,16 @@ def semantic_analysis(problem_text: str, proof_text: str, args) -> tuple[float |
     """Semantic completeness judge — score + itemized missing steps as issues."""
     score, raw = _completeness.completeness_gate(problem_text, proof_text, args)
     return score, _issues_from_completeness(raw, "semantic")
+
+
+def fidelity_analysis(problem_text: str, proof_text: str, args) -> list[Issue]:
+    """Fidelity critic — is the proof's reading of the problem the intended one,
+    not just complete given whatever reading it picked? Delegates to
+    rma.completeness.fidelity_gate; see that function's docstring for the
+    measured failure (three independent systems, one shared misreading) that
+    motivated adding this as a fourth, independent analysis."""
+    raw = _completeness.fidelity_gate(problem_text, proof_text, args)
+    return _issues_from_completeness(raw, "fidelity")
 
 
 def _issues_from_completeness(raw: list[dict], analysis: str) -> list[Issue]:
@@ -150,10 +166,10 @@ class CriticOperation(Operation):
                      id=f"{ctx.store.problem_id}-critic-r{ctx.round}")
 
     def run(self, ctx, *, analyses: dict | None = None, telemetry_path=None):
-        """The critic is a compound operation: three analyses over the current
+        """The critic is a compound operation: four analyses over the current
         proof, merged into one ranked queue. It still goes through Run(u,q,S,B)
         — so it gets a budget-compiled observation and a telemetry line — but
-        its "invoke" is the three analyses rather than one model call. Every
+        its "invoke" is the four analyses rather than one model call. Every
         model-backed analysis is delegated to rma.completeness (or injected via
         ``analyses=``), so the operation itself makes no direct model call.
         """
@@ -175,7 +191,7 @@ class CriticOperation(Operation):
         result.artifact = ctx.extra.get("queue", result.artifact)
         return result
 
-    # ── the three analyses, collected into one issue list ───────────────────
+    # ── the four analyses, collected into one issue list ────────────────────
     def _collect(self, ctx, analyses: dict) -> list[Issue]:
         proof_text = ctx.current_proof_text()
         args = ctx.args_namespace()
@@ -191,6 +207,12 @@ class CriticOperation(Operation):
                 ctx.problem_text, proof_text, args)
             ctx.extra["completeness_score"] = comp_score
             found += sem_issues
+        # Independent of completeness on purpose: #1-#3 all grade the proof given
+        # whatever reading of the problem it committed to; this asks whether that
+        # reading is the intended one (see fidelity_analysis's docstring).
+        if not cfg.ablated("critic.fidelity"):
+            found += analyses.get("fidelity", fidelity_analysis)(
+                ctx.problem_text, proof_text, args)
         return found
 
     # ── parse: dedup + severity + rank into the queue Q ─────────────────────
