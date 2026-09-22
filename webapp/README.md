@@ -27,7 +27,7 @@ The sidebar also shows an **Active runs** panel (polls `GET /api/runs`) listing
 every in-flight run — interactive *and* daily — each with its own **Stop**
 button, so you can watch and control multiple parallel runs at once.
 
-## Two ways to call Claude
+## Model providers
 
 Pick the provider in the Agent tab:
 
@@ -63,6 +63,46 @@ The native Messages API tool-use loop (`webapp/agent.py`): streaming, adaptive
 thinking, prompt caching, and a sandboxed math tool surface (`webapp/tools.py`)
 that enforces the same `blocked_input_dirs` rule.
 
+### 3. ChatGPT subscription — Codex CLI (no API key)
+
+Install Codex and authenticate it using the official browser flow:
+
+```bash
+codex login
+```
+
+Choose **ChatGPT sign-in**. The Agent tab will then offer **ChatGPT subscription
+(Codex CLI)**. RMA runs `codex exec` in the same isolated workspace used by the
+Claude CLI provider; it never reads browser cookies or asks for your password.
+This uses the Codex access and limits attached to the logged-in ChatGPT account,
+not OpenAI API billing.
+
+Verify the login before starting the server:
+
+```bash
+codex login status
+```
+
+The expected status is `Logged in using ChatGPT`. In the Agent tab select
+**ChatGPT subscription (Codex CLI)**, leave the model field empty (Codex chooses
+an account-available model), and press **Solve**. The provider runs `codex exec`
+with workspace-write permissions in the per-run scratch directory. The **Stop**
+button terminates that CLI process group.
+
+For CLI solve/propose/verify/refine commands, pass `--model-provider codex`.
+Start with one round to confirm the integration before using a longer run:
+
+```bash
+rma solve q1 --model-provider codex --legacy-pipeline --max-rounds 1 \
+  --no-render --output local_outputs/codex-q1
+```
+
+The proof is written to `q1_solution.tex` beneath that output directory and the
+first verifier report is `q1/artifacts/verifications/verification_001.json`.
+`needs_refinement` means the verifier found mathematical gaps; it is not an
+authentication failure. Omit `--model-name` for Codex, because Claude model IDs
+are intentionally not forwarded to it.
+
 ## Run it
 
 ```bash
@@ -70,8 +110,8 @@ pip install -e ".[webapp]"     # installs fastapi + uvicorn (+ anthropic for API
 python -m webapp               # serves http://127.0.0.1:8000 (override with HOST/PORT)
 ```
 
-Open <http://127.0.0.1:8000>, pick a question, open the **Agent** tab, choose
-**Claude Code (subscription)**, and hit **Solve**.
+Open <http://127.0.0.1:8000>, pick a question, open the **Agent** tab, choose a
+configured provider, and hit **Solve**.
 
 ### On a Linux server with port forwarding
 
@@ -89,8 +129,8 @@ ssh -L 8000:localhost:8000 user@server
 
 If you forward by binding the server's interface instead, set
 `HOST=0.0.0.0 PORT=8000 python -m webapp` (and restrict access at the firewall —
-the app has no auth). The `claude` CLI and your `claude login` session must live
-on the **server**, since that's where the agent process runs.
+the app has no auth). The selected CLI (`claude` or `codex`) and its login session
+must live on the **server**, since that's where the agent process runs.
 
 ## Run control (full frontend↔backend lifecycle)
 

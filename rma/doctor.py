@@ -87,7 +87,11 @@ def _resolve_repo_root(repo_root: str | None) -> Path | None:
 
 
 def _looks_like_repo_root(path: Path) -> bool:
-    return (path / "README.md").is_file() and (path / "data" / "first_proof_1" / "problems").is_dir()
+    # A checkout can intentionally keep custom/private datasets in local_data/
+    # when the repository's data/ symlink points at an unavailable shared volume.
+    has_standard_data = (path / "data" / "first_proof_1" / "problems").is_dir()
+    has_local_datasets = (path / "local_data" / "datasets").is_dir()
+    return (path / "README.md").is_file() and (has_standard_data or has_local_datasets)
 
 
 def _check_python() -> list[Check]:

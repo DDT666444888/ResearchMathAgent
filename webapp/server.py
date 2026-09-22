@@ -25,6 +25,8 @@ import threading
 import uuid
 
 from .agent import DEFAULT_MODEL, AgentConfig, run_agent, build_prefix_context
+from .claude_code import run_claude_code_agent
+from .codex_cli import codex_available, run_codex_agent
 from .documents import list_documents, read_document
 from .dataset_store import (
     list_datasets, get_dataset_meta, list_problems as ds_list_problems,
@@ -175,6 +177,8 @@ def _default_provider() -> str:
         return "claude-code"
     if os.environ.get("ANTHROPIC_API_KEY"):
         return "api"
+    if codex_available():
+        return "codex"
     return "claude-code"
 
 
@@ -182,6 +186,7 @@ def _capabilities_payload() -> dict:
     from .claude_code import claude_code_available
     return {
         "claude_code": bool(claude_code_available()),
+        "codex": bool(codex_available()),
         "latex": bool(latex_available()),
         "default_provider": _default_provider(),
         "default_model": DEFAULT_MODEL,
@@ -927,7 +932,7 @@ def get_personas() -> JSONResponse:
 def solve(
     problem: str = Query(..., description="Problem id, e.g. q6"),
     model: str = Query(""),
-    provider: str = Query("", description="claude-code | api (default: auto)"),
+    provider: str = Query("", description="claude-code | codex | api (default: auto)"),
     thinking: int = Query(1),
     run_id: str = Query(""),
 ) -> StreamingResponse:
@@ -1893,6 +1898,8 @@ def _sse(problem: str, model: str, provider: str, thinking: bool, run_id: str):
     )
     if provider == "claude-code":
         runner = run_claude_code_agent
+    elif provider == "codex":
+        runner = run_codex_agent
     else:
         runner = run_agent
     handle = REGISTRY.register(run_id, {"problem": problem, "provider": provider, "model": cfg.model})

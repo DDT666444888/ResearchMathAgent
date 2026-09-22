@@ -15,12 +15,20 @@ Solvability scores are computed lazily from run outputs and cached in
 from __future__ import annotations
 
 import json
+import os
 import re
 from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-DATASETS_DIR = REPO_ROOT / "data" / "datasets"
+# `data/` is commonly a shared-volume symlink in research deployments.  A
+# local checkout may not have that volume mounted, so permit a repository-local
+# dataset root without altering the shared link.  Explicit RMA_DATASETS_DIR
+# wins; otherwise use `local_data/datasets` when present.
+_local_datasets = REPO_ROOT / "local_data" / "datasets"
+DATASETS_DIR = Path(os.environ.get("RMA_DATASETS_DIR", "")) if os.environ.get("RMA_DATASETS_DIR") else (
+    _local_datasets if _local_datasets.is_dir() else REPO_ROOT / "data" / "datasets"
+)
 
 
 # ── Dataset listing ─────────────────────────────────────────────────────────

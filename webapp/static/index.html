@@ -1686,12 +1686,13 @@ async function init(){
       if(!problems.length){ problems=STATIC_PROBLEMS; renderProblemList(problems); }
     });
     // Provider options from server capabilities (non-blocking)
-    let claudeCodeAvailable=false;
+    let claudeCodeAvailable=false, codexAvailable=false;
     try{
       const r=await fetchWithTimeout("/api/capabilities",5000);
       if(r.ok){
         const d=await r.json();
         claudeCodeAvailable=!!d.claude_code;
+        codexAvailable=!!d.codex;
       }
     }catch(_){}
     const prov=$("provider"); prov.innerHTML="";
@@ -1699,8 +1700,11 @@ async function init(){
     if(claudeCodeAvailable){
       prov.appendChild(new Option("Claude AI subscription (Claude Code)","claude-code"));
     }
+    if(codexAvailable){
+      prov.appendChild(new Option("ChatGPT subscription (Codex CLI)","codex"));
+    }
     prov.appendChild(new Option("Anthropic API (per-token)","api"));
-    prov.value = claudeCodeAvailable ? "claude-code" : "api";
+    prov.value = claudeCodeAvailable ? "claude-code" : (codexAvailable ? "codex" : "api");
     prov.onchange=onProviderChange; onProviderChange();
     await refreshUsage();
   }catch(e){
@@ -1711,9 +1715,13 @@ async function init(){
 
 function onProviderChange(){
   const p=$("provider").value;
-  $("model").value = "claude-opus-4-8";
+  // Codex resolves the account's currently available default model itself;
+  // never pass this project's Claude model identifier to it.
+  $("model").value = p==="codex" ? "" : "claude-opus-4-8";
   if(p==="claude-code"){
     $("prov-note").innerHTML = "Default provider: <strong>your Claude AI subscription</strong> (Claude Code CLI, billed to your Pro/Max plan — no per-token API credits used).";
+  } else if(p==="codex") {
+    $("prov-note").innerHTML = "ChatGPT subscription via <code>codex login</code> / Codex CLI. Uses your plan's Codex access and limits; no API key is sent by this app.";
   } else {
     $("prov-note").innerHTML = "Anthropic Messages API (requires <code>ANTHROPIC_API_KEY</code>, billed per token).";
   }

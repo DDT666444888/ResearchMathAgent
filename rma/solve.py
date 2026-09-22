@@ -20,9 +20,11 @@ from .models import (
     ModelConfigurationError,
     ModelRequestError,
     call_anthropic,
+    call_codex_cli,
     call_claude_code,
     call_json,
     should_use_anthropic,
+    should_use_codex,
     should_use_claude_code,
 )
 
@@ -164,7 +166,7 @@ def _plan_strategies(
 
     model_name = getattr(args, "model_name", "rma-skeleton")
     provider = getattr(args, "model_provider", "auto")
-    if not should_use_anthropic(model_name, provider):
+    if not (should_use_anthropic(model_name, provider) or should_use_codex(provider)):
         return [default] * n
 
     prompt = (
@@ -180,12 +182,10 @@ def _plan_strategies(
         f"Return ONLY the JSON array, no prose."
     )
     try:
-        response = call_anthropic(
-            model="claude-opus-4-8",
-            system="You are a concise mathematics strategy planner.",
-            prompt=prompt,
-            max_tokens=4000,
-        )
+        response = (call_codex_cli(model=model_name, system="You are a concise mathematics strategy planner.", prompt=prompt, expect="json")
+                    if should_use_codex(provider) else call_anthropic(
+                        model="claude-opus-4-8", system="You are a concise mathematics strategy planner.",
+                        prompt=prompt, max_tokens=4000))
         raw = response.text.strip()
         fence = re.match(r"^```(?:json)?\s*(.*?)\s*```$", raw, re.DOTALL)
         if fence:
@@ -202,15 +202,13 @@ def _sanity_check_strategy(problem_area: str, strategy_text: str, args: Namespac
     """Quick cheap check: is this strategy plausible? Returns True to proceed."""
     model_name = getattr(args, "model_name", "rma-skeleton")
     provider = getattr(args, "model_provider", "auto")
-    if not should_use_anthropic(model_name, provider):
+    if not (should_use_anthropic(model_name, provider) or should_use_codex(provider)):
         return True
     try:
-        response = call_anthropic(
-            model="claude-opus-4-8",
-            system="You assess if a math proof strategy is plausible. Reply only PROCEED or STOP.",
-            prompt=f"Area: {problem_area}\nStrategy: {strategy_text[:600]}\n\nIs this mathematically plausible? PROCEED or STOP.",
-            max_tokens=512,
-        )
+        response = (call_codex_cli(model=model_name, system="You assess if a math proof strategy is plausible. Reply only PROCEED or STOP.", prompt=f"Area: {problem_area}\nStrategy: {strategy_text[:600]}\n\nIs this mathematically plausible? PROCEED or STOP.", expect="json")
+                    if should_use_codex(provider) else call_anthropic(
+                        model="claude-opus-4-8", system="You assess if a math proof strategy is plausible. Reply only PROCEED or STOP.",
+                        prompt=f"Area: {problem_area}\nStrategy: {strategy_text[:600]}\n\nIs this mathematically plausible? PROCEED or STOP.", max_tokens=512))
         return "STOP" not in response.text.upper()
     except Exception:
         return True
@@ -1468,6 +1466,9 @@ def _generate_solution_text(
         memory_context=memory_context, strategy_override=strategy_override,
         focus_gap=focus_gap,
     )
+    if should_use_codex(provider):
+        response = call_codex_cli(model=model_name, system=_model_system_prompt(), prompt=prompt)
+        return _strip_markdown_fences(response.text), {"provider": response.provider, "model": response.model, "method": "codex_cli"}
     if should_use_claude_code(model_name, provider):
         method = "claude_code_print_mode"
         try:
@@ -1829,7 +1830,7 @@ def _collect_verification_issues(
 def _model_verify_proof(solution_text: str, args: Namespace) -> list[dict[str, str]]:
     model_name = getattr(args, "model_name", "rma-skeleton")
     provider = getattr(args, "model_provider", "auto")
-    if not (should_use_anthropic(model_name, provider) or should_use_claude_code(model_name, provider)):
+    if not (should_use_anthropic(model_name, provider) or should_use_claude_code(model_name, provider) or should_use_codex(provider)):
         return []
 
     system = (

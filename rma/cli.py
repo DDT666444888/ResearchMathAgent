@@ -319,9 +319,9 @@ def _add_pipeline_arguments(parser: argparse.ArgumentParser, *, render: bool, ma
     )
     parser.add_argument(
         "--model-provider",
-        choices=("auto", "offline", "anthropic", "claude-code"),
+        choices=("auto", "offline", "anthropic", "claude-code", "codex"),
         default="auto",
-        help="Generation backend. auto uses offline for rma-skeleton, Anthropic API for claude-* models, and Claude Code for claude-code.",
+        help="Generation backend. codex uses the local ChatGPT-authenticated Codex CLI; no API key is required.",
     )
     if render:
         parser.add_argument(

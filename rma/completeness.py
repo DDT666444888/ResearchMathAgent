@@ -54,8 +54,10 @@ from pathlib import Path
 from .budget import count_tokens
 from .models import (
     call_anthropic,
+    call_codex_cli,
     call_claude_code,
     should_use_anthropic,
+    should_use_codex,
     should_use_claude_code,
 )
 
@@ -138,7 +140,8 @@ def _backend_available(args: Namespace) -> bool:
     model_name = getattr(args, "model_name", "rma-skeleton")
     provider = getattr(args, "model_provider", "auto")
     return bool(should_use_anthropic(model_name, provider)
-                or should_use_claude_code(model_name, provider))
+                or should_use_claude_code(model_name, provider)
+                or should_use_codex(provider))
 
 
 def _model_call(args: Namespace, system: str, prompt: str, max_tokens: int = 2048) -> str:
@@ -148,6 +151,11 @@ def _model_call(args: Namespace, system: str, prompt: str, max_tokens: int = 204
     Falls back to the Anthropic API when an API model is configured."""
     model_name = getattr(args, "model_name", "rma-skeleton")
     provider = getattr(args, "model_provider", "auto")
+    if should_use_codex(provider):
+        try:
+            return call_codex_cli(model=model_name, system=system, prompt=prompt, expect="json").text.strip()
+        except Exception:
+            return ""
     # Preferred: one-shot subscription completion.
     try:
         from webapp.llm import complete as _complete  # repo root on sys.path under `python -m rma`

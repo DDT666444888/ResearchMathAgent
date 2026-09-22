@@ -119,7 +119,7 @@ class RunConfig:
             raise ConfigError(
                 f"context_mode must be one of {CONTEXT_MODES}, got {self.context_mode!r}"
             )
-        if self.provider not in ("claude-code", "subscription", "auto", "anthropic", "api", "offline"):
+        if self.provider not in ("claude-code", "codex", "subscription", "auto", "anthropic", "api", "offline"):
             raise ConfigError(
                 f"provider must be a known backend, got {self.provider!r}"
             )
@@ -218,7 +218,7 @@ class RunConfig:
         """True when the run bills to the Pro/Max subscription (no API tokens).
         "auto" resolves to the subscription here, matching how the orchestrator's
         default_invoker actually routes it (rma/ops/base.py)."""
-        return self.provider in ("claude-code", "subscription", "auto")
+        return self.provider in ("claude-code", "codex", "subscription", "auto")
 
     def describe(self) -> str:
         """One-line summary; the shape `rma config --print` emits."""

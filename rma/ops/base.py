@@ -170,13 +170,15 @@ def default_invoker(op: "Operation", ctx: OpContext) -> Callable[[str, str], obj
     # while the API path passes the concrete model name.
     from .. import models
 
-    subscription = provider in ("claude-code", "subscription", "auto")
-    model = "claude-code" if subscription else ctx.config.model
+    subscription = provider in ("claude-code", "subscription", "auto", "codex")
+    model = "claude-code" if provider in ("claude-code", "subscription", "auto") else ctx.config.model
 
     def _invoke(unit: str, observation: str):
         system = f"You are the {unit} operation for Research Math Agent."
         if op.expects == "latex":
-            if subscription:
+            if provider == "codex":
+                response = models.call_codex_cli(model=model, system=system, prompt=observation, expect="latex")
+            elif subscription:
                 # Benchmark hook: route LaTeX ops through the meter too, or the
                 # cost axis would count only the JSON ops and undercount RMA.
                 _shim = __import__("os").environ.get("RMA_VIA_SHIM")
@@ -196,7 +198,7 @@ def default_invoker(op: "Operation", ctx: OpContext) -> Callable[[str, str], obj
             return response.text
         return models.call_json(
             model=model, system=system, prompt=observation,
-            provider=("claude-code" if subscription else provider),
+            provider=("claude-code" if provider in ("claude-code", "subscription", "auto") else provider),
             max_tokens=ctx.config.max_output_tokens, cwd=ctx.store.repo_root)
 
     return _invoke

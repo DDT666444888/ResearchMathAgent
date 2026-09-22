@@ -2,11 +2,13 @@ from __future__ import annotations
 
 import json
 import os
+import queue
 import re
 import select
 import shutil
 import ssl
 import subprocess
+import sys
 import tempfile
 import threading
 import time
@@ -50,6 +52,11 @@ def should_use_claude_code(model_name: str, provider: str | None = None) -> bool
     provider = _model_provider(provider)
     name = model_name.lower()
     return provider == "claude-code" or name in {"claude-code", "claude-code-fable", "claude-code-sonnet", "claude-code-opus", "claude-code-haiku"}
+
+
+def should_use_codex(provider: str | None = None) -> bool:
+    """Whether to use the locally authenticated Codex CLI subscription path."""
+    return _model_provider(provider) == "codex"
 
 
 def _model_provider(provider: str | None) -> str:
@@ -186,6 +193,9 @@ def call_json(
                 expect="json",
             )
         return parse_json_response(response.text)
+    if should_use_codex(provider):
+        response = call_codex_cli(model=model, system=system, prompt=prompt, expect="json")
+        return parse_json_response(response.text)
     if should_use_anthropic(model, provider):
         response = call_anthropic(
             model=model,
@@ -196,6 +206,195 @@ def call_json(
         )
         return parse_json_response(response.text)
     return None
+
+
+def call_codex_cli(*, model: str, system: str, prompt: str, expect: str = "latex") -> ModelResponse:
+    """One isolated completion through ``codex exec`` and ChatGPT login.
+
+    Codex owns authentication through ``codex login``.  RMA deliberately never
+    consumes a browser session, cookie, password, or API key.  A fresh temporary
+    workspace also prevents this one-shot path from reading benchmark answers.
+    """
+    binary = os.environ.get("RMA_CODEX_BIN") or shutil.which("codex")
+    if not binary:
+        raise ModelConfigurationError(
+            "Codex backend requested, but `codex` is not installed or on PATH. "
+            "Install Codex and run `codex login` with ChatGPT first."
+        )
+    timeout = int(os.environ.get("RMA_CODEX_TIMEOUT", "1800"))
+    instruction = (
+        "Reply with the requested structured data only; no Markdown fences or commentary."
+        if expect == "json" else
+        "Return only the complete LaTeX proof document, with no Markdown fence or commentary."
+    )
+    with tempfile.TemporaryDirectory(prefix="rma_codex_") as tmp:
+        workspace = Path(tmp)
+        output = workspace / "last_message.txt"
+        command = [
+            str(binary), "exec", f"{system}\n\n{prompt}\n\n{instruction}",
+            "--cd", str(workspace), "--sandbox", "workspace-write",
+            "--skip-git-repo-check", "--ephemeral", "--output-last-message", str(output),
+        ]
+        stream = _codex_stream_enabled()
+        if stream:
+            # Codex writes structured progress to stdout only in JSONL mode.
+            # The final answer remains available via --output-last-message.
+            command.append("--json")
+            _codex_progress("streaming enabled")
+        model_arg = _codex_model_arg(model)
+        if model_arg:
+            command.extend(["--model", model_arg])
+        try:
+            result = (_run_codex_streaming(command, timeout=timeout)
+                      if stream else subprocess.run(command, capture_output=True, text=True, timeout=timeout))
+        except subprocess.TimeoutExpired as exc:
+            raise ModelRequestError(f"Codex request timed out after {timeout}s.") from exc
+        except OSError as exc:
+            raise ModelRequestError(f"Failed to start Codex CLI: {exc}") from exc
+        text = output.read_text(encoding="utf-8", errors="replace").strip() if output.is_file() else ""
+        if result.returncode != 0:
+            raise ModelRequestError(f"Codex CLI returned exit code {result.returncode}: {(result.stderr or '').strip()[-4000:]}")
+        if not text:
+            raise ModelRequestError("Codex CLI completed without a final response.")
+        if expect == "latex":
+            text = clean_latex_reply(text)
+        return ModelResponse(text=text, provider="codex", model=model_arg or "codex-default")
+
+
+def _codex_stream_enabled() -> bool:
+    """Whether the terminal should show safe summaries of Codex JSONL events."""
+    return os.environ.get("RMA_CODEX_STREAM", "").strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _run_codex_streaming(command: list[str], *, timeout: int) -> subprocess.CompletedProcess[str]:
+    """Run Codex JSONL while retaining a clean final-response channel.
+
+    The RMA parser consumes only ``--output-last-message`` after this function
+    returns. Progress is deliberately written to stderr so JSON/LaTeX artifacts
+    on stdout are never corrupted. We show operation names and commands, but
+    not tool-result payloads or hidden reasoning.
+    """
+    proc = subprocess.Popen(
+        command, text=True, bufsize=1, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+    )
+    stderr_chunks: list[str] = []
+    stderr_thread = threading.Thread(target=_drain_stream, args=(proc.stderr, stderr_chunks), daemon=True)
+    stderr_thread.start()
+    lines: queue.Queue[str | None] = queue.Queue()
+    stdout_thread = threading.Thread(target=_queue_stream_lines, args=(proc.stdout, lines), daemon=True)
+    stdout_thread.start()
+    deadline = time.monotonic() + timeout
+    try:
+        while True:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                proc.kill()
+                raise subprocess.TimeoutExpired(command, timeout)
+            try:
+                line = lines.get(timeout=min(0.2, remaining))
+            except queue.Empty:
+                if proc.poll() is not None:
+                    break
+                continue
+            if line is None:
+                break
+            try:
+                _print_codex_event(json.loads(line))
+            except json.JSONDecodeError:
+                continue
+        returncode = proc.wait(timeout=max(0.1, deadline - time.monotonic()))
+    finally:
+        if proc.poll() is None:
+            proc.kill()
+            proc.wait()
+        stdout_thread.join(timeout=1)
+        stderr_thread.join(timeout=1)
+        for stream in (proc.stdout, proc.stderr):
+            if stream is not None:
+                try:
+                    stream.close()
+                except OSError:
+                    pass
+    return subprocess.CompletedProcess(command, returncode, stdout="", stderr="".join(stderr_chunks))
+
+
+def _drain_stream(stream, sink: list[str]) -> None:
+    if stream is None:
+        return
+    try:
+        for line in stream:
+            sink.append(line)
+    except OSError:
+        pass
+
+
+def _queue_stream_lines(stream, sink: queue.Queue[str | None]) -> None:
+    if stream is None:
+        sink.put(None)
+        return
+    try:
+        for line in stream:
+            sink.put(line)
+    finally:
+        sink.put(None)
+
+
+def _print_codex_event(event: dict) -> None:
+    """Render a compact, non-sensitive Codex operation summary to stderr."""
+    kind = event.get("type", "")
+    if kind == "turn.started":
+        _codex_progress("turn started")
+        return
+    if kind == "turn.completed":
+        usage = event.get("usage") or {}
+        _codex_progress("turn completed · " + _usage_summary(usage))
+        return
+    if kind == "turn.failed":
+        _codex_progress("turn failed")
+        return
+    if kind == "error":
+        _codex_progress("error: " + str(event.get("message") or event.get("error") or "unknown error")[:300])
+        return
+    if not kind.startswith("item."):
+        return
+    item = event.get("item") or {}
+    item_type = item.get("type", "event")
+    if kind == "item.started":
+        if item_type == "command_execution":
+            _codex_progress("shell: " + _redact_command(str(item.get("command") or "")))
+        elif item_type == "web_search":
+            _codex_progress("web search: " + str(item.get("query") or "" )[:300])
+        elif item_type in {"file_change", "mcp_tool_call", "plan"}:
+            _codex_progress(item_type.replace("_", " ") + " started")
+        elif item_type == "reasoning":
+            _codex_progress("reasoning")
+        return
+    if kind == "item.completed" and item_type != "agent_message":
+        _codex_progress(item_type.replace("_", " ") + " completed")
+
+
+def _usage_summary(usage: dict) -> str:
+    return "in {input} · cached {cached} · out {output}".format(
+        input=usage.get("input_tokens", 0),
+        cached=usage.get("cached_input_tokens", 0),
+        output=usage.get("output_tokens", 0),
+    )
+
+
+def _redact_command(command: str) -> str:
+    """Avoid echoing likely credentials if Codex happens to invoke them."""
+    command = re.sub(r"(?i)([A-Z0-9_]*(?:KEY|TOKEN|SECRET|PASSWORD)[A-Z0-9_]*=)[^\s]+", r"\1[REDACTED]", command)
+    return command.replace("\n", " ")[:500]
+
+
+def _codex_progress(message: str) -> None:
+    print(f"[codex] {message}", file=sys.stderr, flush=True)
+
+
+def _codex_model_arg(model: str) -> str | None:
+    """Do not pass this project's Claude default to Codex."""
+    name = (model or "").strip()
+    return None if not name or name == "claude-code" or name.startswith("claude-") else name
 
 
 def parse_json_response(raw: str):

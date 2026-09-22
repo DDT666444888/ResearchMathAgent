@@ -7,11 +7,15 @@ the paper's LM gap critic contributed exactly zero issues on every run.
 """
 from __future__ import annotations
 
+import io
+import tempfile
 import unittest
 from argparse import Namespace
+from contextlib import redirect_stderr
+from pathlib import Path
 from unittest.mock import patch
 
-from rma.models import ModelRequestError, ModelResponse, call_json, parse_json_response
+from rma.models import ModelRequestError, ModelResponse, call_codex_cli, call_json, parse_json_response
 from rma.solve import _model_verify_proof
 
 
@@ -57,6 +61,38 @@ class CallJsonTest(unittest.TestCase):
             parse_json_response('{"completeness": 4, "missing": ["x"]}'),
             {"completeness": 4, "missing": ["x"]},
         )
+
+
+class CodexTerminalStreamTest(unittest.TestCase):
+    def test_stream_mode_prints_operations_but_keeps_final_latex_clean(self) -> None:
+        script = "\n".join([
+            "#!/bin/sh",
+            "out=",
+            'while [ "$#" -gt 0 ]; do',
+            '  if [ "$1" = "--output-last-message" ]; then out="$2"; shift 2; else shift; fi',
+            'done',
+            "printf '%s\\n' '{\"type\":\"turn.started\"}'",
+            "printf '%s\\n' '{\"type\":\"item.started\",\"item\":{\"type\":\"command_execution\",\"command\":\"API_KEY=secret-value python check.py\"}}'",
+            "printf '%s\\n' '{\"type\":\"item.completed\",\"item\":{\"type\":\"command_execution\"}}'",
+            "printf '%s\\n' '{\"type\":\"turn.completed\",\"usage\":{\"input_tokens\":7,\"cached_input_tokens\":2,\"output_tokens\":3}}'",
+            "printf '%s\\n' '\\documentclass{article}\\begin{document}ok\\end{document}' > \"$out\"",
+            "",
+        ])
+        with tempfile.NamedTemporaryFile("w", delete=False) as binary:
+            binary.write(script)
+            binary.flush()
+            path = Path(binary.name)
+        try:
+            path.chmod(0o755)
+            terminal = io.StringIO()
+            with patch.dict("os.environ", {"RMA_CODEX_BIN": str(path), "RMA_CODEX_STREAM": "1"}, clear=False):
+                with redirect_stderr(terminal):
+                    response = call_codex_cli(model="claude-code", system="s", prompt="p")
+            self.assertIn("\\documentclass", response.text)
+            self.assertIn("[codex] shell: API_KEY=[REDACTED] python check.py", terminal.getvalue())
+            self.assertIn("[codex] turn completed · in 7 · cached 2 · out 3", terminal.getvalue())
+        finally:
+            path.unlink(missing_ok=True)
 
 
 class ModelVerifyProofTest(unittest.TestCase):
